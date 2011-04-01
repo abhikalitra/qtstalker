@@ -128,7 +128,6 @@ void TestRuleWidget::addIndicator2 (QString d)
   }
 
   Indicator *i = new Indicator(0);
-  i->setTestFlag(1);
   plug->defaults(i->settings());
   _iList.append(i);
 
@@ -137,7 +136,7 @@ void TestRuleWidget::addIndicator2 (QString d)
   Setting *rule = new Setting;
   _ruleList.append(rule);
 
-  plug->dialog(this, i);
+//  plug->dialog(this, i);
   
   delete plug;
 }
@@ -171,7 +170,7 @@ void TestRuleWidget::editIndicator ()
   if (! i)
     return;
   
-  plug->dialog(this, i);
+//  plug->dialog(this, i);
 
   delete plug;
 }
@@ -194,7 +193,7 @@ void TestRuleWidget::editIndicatorRules ()
   if (! rule)
     return;
   
-  plug->testRuleDialog(this, rule);
+//  plug->testRuleDialog(this, rule);
   
   delete plug;
 }
@@ -281,7 +280,6 @@ int TestRuleWidget::load (QString name, QString prefix)
     }
     
     Indicator *i = new Indicator(0);
-    i->setTestFlag(1);
 
     Setting *set = i->settings();
     set->parse(data);

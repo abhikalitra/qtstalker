@@ -21,48 +21,48 @@
 
 #include "VARDialog.h"
 #include "Globals.h"
-#include "VAR.h"
 #include "InputType.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-VARDialog::VARDialog (QWidget *p, Setting *set) : Dialog (p)
+VARDialog::VARDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "VARDialog_window_size";
-  _keyPos = "VARDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "VAR" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-
-  loadSettings();
 }
 
 void VARDialog::createGeneralPage ()
 {
+  QFormLayout *form = new QFormLayout;
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+
   // input
   InputType it;
   QStringList l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(VAR::_INPUT), Qt::MatchExactly));
-  _form->addRow(tr("Input"), _input);
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
+  form->addRow(tr("Input"), _input);
 
   // period
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings->getInt(VAR::_PERIOD));
-  _form->addRow(tr("Period"), _period);
+  _period->setValue(_settings->getInt("PERIOD"));
+  form->addRow(tr("Period"), _period);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(VAR::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
-  _form->addRow(tr("Color"), _color);
+  form->addRow(tr("Color"), _color);
 
   // plot style
   Curve c;
@@ -70,21 +70,22 @@ void VARDialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(VAR::_STYLE), Qt::MatchExactly));
-  _form->addRow(tr("Style"), _style);
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
+  form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void VARDialog::done ()
+void VARDialog::save ()
 {
-  _settings->setData(VAR::_INPUT, _input->currentText());
-  _settings->setData(VAR::_COLOR, _color->color().name());
-  _settings->setData(VAR::_STYLE, _style->currentText());
-  _settings->setData(VAR::_PERIOD, _period->value());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("PERIOD", _period->value());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

@@ -38,30 +38,25 @@ T3::T3 ()
     qDebug("T3::T3: error on TA_Initialize");
 }
 
-int T3::calculate (BarData *bd, Indicator *i)
+int T3::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
+  int period = settings->getInt("PERIOD");
+  double vfactor = settings->getDouble("VFACTOR");
 
-  int period = settings->getInt(_PERIOD);
-  double vfactor = settings->getDouble(_VFACTOR);
-
-  InputType it;
-  Curve *in = it.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
 
-  // create bars
-  Curve *bars = it.ohlc(bd,
-			QColor(settings->data(_COLOR_BARS_UP)),
-			QColor(settings->data(_COLOR_BARS_DOWN)),
-			QColor(settings->data(_COLOR_BARS_NEUTRAL)));
-  if (settings->data(_STYLE_BARS) == "OHLC")
-    bars->setType(Curve::OHLC);
-  else
-    bars->setType(Curve::Candle);
-  bars->setLabel("BARS");
-  bars->setZ(0);
-  i->setLine("BARS", bars);
+    delFlag++;
+  }
 
   QList<int> keys;
   in->keys(keys);
@@ -79,6 +74,9 @@ int T3::calculate (BarData *bd, Indicator *i)
     input[loop] = (TA_Real) bar->data();
   }
 
+  if (delFlag)
+    delete in;
+  
   TA_RetCode rc = TA_T3(0,
                         size - 1,
                         &input[0],
@@ -105,11 +103,11 @@ int T3::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(1);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -212,26 +210,22 @@ int T3::command (Command *command)
   return 0;
 }
 
-void T3::dialog (QWidget *p, Indicator *i)
+QWidget * T3::dialog (QWidget *p, Setting *set)
 {
-  T3Dialog *dialog = new T3Dialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new T3Dialog(p, set);
 }
 
 void T3::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "yellow");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Line");
-  set->setData(_PERIOD, 5);
-  set->setData(_VFACTOR, 0.7);
-  set->setData(_INPUT, "Close");
-  set->setData(_STYLE_BARS, "OHLC");
-  set->setData(_COLOR_BARS_UP, "green");
-  set->setData(_COLOR_BARS_DOWN, "red");
-  set->setData(_COLOR_BARS_NEUTRAL, "dimgray");
+  set->setData("COLOR", QString("yellow"));
+  set->setData("LABEL", _plugin);
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD", 5);
+  set->setData("VFACTOR", 0.7);
+  set->setData("INPUT", QString("Close"));
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

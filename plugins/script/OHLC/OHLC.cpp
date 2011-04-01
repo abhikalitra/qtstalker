@@ -23,9 +23,6 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "OHLCDialog.h"
-#include "MAType.h"
-#include "InputType.h"
-#include "TestRuleDialog.h"
 
 #include <QtDebug>
 
@@ -35,21 +32,19 @@ OHLC::OHLC ()
   _plugin = "OHLC";
 }
 
-int OHLC::calculate (BarData *bd, Indicator *i)
+int OHLC::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-  
-  QColor upColor(settings->data(_COLOR_UP));
-  QColor downColor(settings->data(_COLOR_DOWN));
-  QColor neutralColor(settings->data(_COLOR_NEUTRAL));
+  QColor upColor(settings->data("COLOR_UP"));
+  QColor downColor(settings->data("COLOR_DOWN"));
+  QColor neutralColor(settings->data("COLOR_NEUTRAL"));
 
   Curve *line;
-  if (settings->data(_STYLE) == "OHLC")
+  if (settings->data("STYLE") == "OHLC")
     line = new Curve(Curve::OHLC);
   else
     line = new Curve(Curve::Candle);
     
-  line->setZ(0);
+  line->setZ(settings->getInt("Z"));
 
   int loop = 0;
   for (; loop < bd->count(); loop++)
@@ -80,77 +75,8 @@ int OHLC::calculate (BarData *bd, Indicator *i)
     line->setBar(loop, b);
   }
 
-  line->setLabel(settings->data(_LABEL));
-  i->setLine(settings->data(_LABEL), line);
-
-  // MA1
-  if (settings->getInt(_MA1_CHECK))
-  {
-    InputType it;
-    Curve *in = it.input(bd, settings->data(_MA1_INPUT));
-    if (in)
-    {
-      MAType mat;
-      Curve *ma = mat.getMA(in,
-			    settings->getInt(_MA1_PERIOD),
-			    mat.fromString(settings->data(_MA1_TYPE)));
-      if (ma)
-      {
-        ma->setAllColor(QColor(settings->data(_MA1_COLOR)));
-        ma->setLabel(settings->data(_MA1_LABEL));
-        ma->setType((Curve::Type) line->typeFromString(settings->data(_MA1_STYLE)));
-        ma->setZ(1);
-        i->setLine(settings->data(_MA1_LABEL), ma);
-      }
-      delete in;
-    }
-  }
-
-  // MA2
-  if (settings->getInt(_MA2_CHECK))
-  {
-    InputType it;
-    Curve *in = it.input(bd, settings->data(_MA2_INPUT));
-    if (in)
-    {
-      MAType mat;
-      Curve *ma = mat.getMA(line,
-			    settings->getInt(_MA2_PERIOD),
-			    mat.fromString(settings->data(_MA2_TYPE)));
-      if (ma)
-      {
-        ma->setAllColor(QColor(settings->data(_MA2_COLOR)));
-        ma->setLabel(settings->data(_MA2_LABEL));
-        ma->setType((Curve::Type) line->typeFromString(settings->data(_MA2_STYLE)));
-        ma->setZ(2);
-        i->setLine(settings->data(_MA2_LABEL), ma);
-      }
-      delete in;
-    }
-  }
-
-  // MA3
-  if (settings->getInt(_MA3_CHECK))
-  {
-    InputType it;
-    Curve *in = it.input(bd, settings->data(_MA3_INPUT));
-    if (in)
-    {
-      MAType mat;
-      Curve *ma = mat.getMA(line,
-			    settings->getInt(_MA3_PERIOD),
-			    mat.fromString(settings->data(_MA3_TYPE)));
-      if (ma)
-      {
-        ma->setAllColor(QColor(settings->data(_MA3_COLOR)));
-        ma->setLabel(settings->data(_MA3_LABEL));
-        ma->setType((Curve::Type) line->typeFromString(settings->data(_MA3_STYLE)));
-        ma->setZ(3);
-        i->setLine(settings->data(_MA3_LABEL), ma);
-      }
-      delete in;
-    }
-  }
+  line->setLabel("OHLC");
+  i->setLine("OHLC", line);
 
   return 0;
 }
@@ -299,53 +225,19 @@ int OHLC::command (Command *command)
   return 0;
 }
 
-void OHLC::dialog (QWidget *p, Indicator *i)
+QWidget * OHLC::dialog (QWidget *p, Setting *set)
 {
-  OHLCDialog *dialog = new OHLCDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
-}
-
-void OHLC::testRuleDialog (QWidget *p, Setting *set)
-{
-  QStringList l;
-  l << "Open" << "High" << "Low" << "Close" << "OHLC_MA1" << "OHLC_MA2" << "OHLC_MA3";
-  set->setData("INPUT", l.join(","));
-  
-  TestRuleDialog *dialog = new TestRuleDialog(p, set);
-//  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new OHLCDialog(p, set);
 }
 
 void OHLC::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR_UP, QString("green"));
-  set->setData(_COLOR_DOWN, QString("red"));
-  set->setData(_COLOR_NEUTRAL, QString("dimgray"));
-  set->setData(_LABEL, QString("OHLC"));
-  set->setData(_STYLE, QString("OHLC"));
-  set->setData(_MA1_PERIOD, 20);
-  set->setData(_MA1_TYPE, "EMA");
-  set->setData(_MA1_COLOR, "yellow");
-  set->setData(_MA1_LABEL, "OHLC_MA1");
-  set->setData(_MA1_STYLE, "Line");
-  set->setData(_MA1_CHECK, 1);
-  set->setData(_MA2_PERIOD, 50);
-  set->setData(_MA2_TYPE, "EMA");
-  set->setData(_MA2_COLOR, "red");
-  set->setData(_MA2_LABEL, "OHLC_MA2");
-  set->setData(_MA2_STYLE, "Line");
-  set->setData(_MA2_CHECK, 1);
-  set->setData(_MA3_PERIOD, 200);
-  set->setData(_MA3_TYPE, "EMA");
-  set->setData(_MA3_COLOR, "blue");
-  set->setData(_MA3_LABEL, "OHLC_MA3");
-  set->setData(_MA3_STYLE, "Line");
-  set->setData(_MA3_CHECK, 1);
-  set->setData(_MA1_INPUT, "Close");
-  set->setData(_MA2_INPUT, "Close");
-  set->setData(_MA3_INPUT, "Close");
+  set->setData("COLOR_UP", QString("green"));
+  set->setData("COLOR_DOWN", QString("red"));
+  set->setData("COLOR_NEUTRAL", QString("dimgray"));
+  set->setData("STYLE", QString("OHLC"));
+  set->setData("Z", 0);
 }
 
 //*************************************************************

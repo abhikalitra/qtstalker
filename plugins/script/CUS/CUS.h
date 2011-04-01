@@ -29,16 +29,10 @@ class CUS : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COMMAND = 10,
-      _SCRIPT = 20
-    };
-
     CUS ();
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

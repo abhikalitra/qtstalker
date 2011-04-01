@@ -34,11 +34,9 @@ VFI::VFI ()
   _type = _INDICATOR;
 }
 
-int VFI::calculate (BarData *bd, Indicator *i)
+int VFI::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  int period = settings->getInt(_PERIOD);
+  int period = settings->getInt("PERIOD");
 
   InputType it;
   Curve *high = it.input(bd, "High");
@@ -76,11 +74,11 @@ int VFI::calculate (BarData *bd, Indicator *i)
   delete close;
   delete vol;
   
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
   
   return 0;
 }
@@ -272,20 +270,19 @@ Curve * VFI::getVFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int 
   return vfi;
 }
 
-void VFI::dialog (QWidget *p, Indicator *i)
+QWidget * VFI::dialog (QWidget *p, Setting *set)
 {
-  VFIDialog *dialog = new VFIDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new VFIDialog(p, set);
 }
 
 void VFI::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "yellow");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Histogram Bar");
-  set->setData(_PERIOD, 10);
+  set->setData("COLOR", QString("yellow"));
+  set->setData("STYLE", QString("Histogram Bar"));
+  set->setData("PERIOD", 10);
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

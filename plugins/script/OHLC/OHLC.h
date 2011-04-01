@@ -29,42 +29,11 @@ class OHLC : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR_UP = 10,
-      _COLOR_DOWN = 20,
-      _COLOR_NEUTRAL = 30,
-      _LABEL = 40,
-      _STYLE = 50,
-      _MA1_TYPE = 60,
-      _MA1_STYLE = 70,
-      _MA1_LABEL = 80,
-      _MA1_COLOR = 90,
-      _MA1_PERIOD = 100,
-      _MA2_TYPE = 110,
-      _MA2_STYLE = 120,
-      _MA2_LABEL = 130,
-      _MA2_COLOR = 140,
-      _MA2_PERIOD = 150,
-      _MA3_TYPE = 160,
-      _MA3_STYLE = 170,
-      _MA3_LABEL = 180,
-      _MA3_COLOR = 190,
-      _MA3_PERIOD = 200,
-      _MA1_CHECK = 210,
-      _MA2_CHECK = 220,
-      _MA3_CHECK = 230,
-      _MA1_INPUT = 240,
-      _MA2_INPUT = 250,
-      _MA3_INPUT = 260
-    };
-
     OHLC ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
-    void testRuleDialog (QWidget *, Setting *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

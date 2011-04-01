@@ -3,5 +3,7 @@
 }
 
 HEADERS += SUB.h
+HEADERS += SUBDialog.h
 
 SOURCES += SUB.cpp
+SOURCES += SUBDialog.cpp

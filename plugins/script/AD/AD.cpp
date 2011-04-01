@@ -37,10 +37,8 @@ AD::AD ()
     qDebug("AD::AD: error on TA_Initialize");
 }
 
-int AD::calculate (BarData *bd, Indicator *i)
+int AD::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-  
   int size = bd->count();
 
   TA_Real out[size];
@@ -90,11 +88,11 @@ int AD::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -223,19 +221,18 @@ int AD::command (Command *command)
   return 0;
 }
 
-void AD::dialog (QWidget *p, Indicator *i)
+QWidget * AD::dialog (QWidget *p, Setting *set)
 {
-  ADDialog *dialog = new ADDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new ADDialog(p, set);
 }
 
 void AD::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, QString("red"));
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, QString("Line"));
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("OUTPUT", _plugin);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

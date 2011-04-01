@@ -24,13 +24,12 @@
 
 #include <QComboBox>
 #include <QSpinBox>
-#include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class THERMDialog : public Dialog
+class THERMDialog : public QWidget
 {
   Q_OBJECT
 
@@ -39,15 +38,14 @@ class THERMDialog : public Dialog
     void createGeneralPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     ColorButton *_color;
     QComboBox *_style;
-    QSpinBox *_smoothing;
-    QComboBox *_smoothingType;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

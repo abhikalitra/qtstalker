@@ -22,46 +22,47 @@
 #include "TRIXDialog.h"
 #include "Globals.h"
 #include "InputType.h"
-#include "TRIX.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-TRIXDialog::TRIXDialog (QWidget *p, Setting *set) : Dialog (p)
+TRIXDialog::TRIXDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "TRIXDialog_window_size";
-  _keyPos = "TRIXDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "TRIX" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-
-  loadSettings();
 }
 
 void TRIXDialog::createGeneralPage ()
 {
+  QFormLayout *form = new QFormLayout;
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+
+  // input
   InputType it;
   QStringList l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(TRIX::_INPUT), Qt::MatchExactly));
-  _form->addRow(tr("Input"), _input);
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
+  form->addRow(tr("Input"), _input);
 
   // period
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings->getInt(TRIX::_PERIOD));
-  _form->addRow(tr("Period"), _period);
+  _period->setValue(_settings->getInt("PERIOD"));
+  form->addRow(tr("Period"), _period);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(TRIX::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
-  _form->addRow(tr("Color"), _color);
+  form->addRow(tr("Color"), _color);
 
   // plot style
   Curve c;
@@ -69,21 +70,22 @@ void TRIXDialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(TRIX::_STYLE), Qt::MatchExactly));
-  _form->addRow(tr("Style"), _style);
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
+  form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void TRIXDialog::done ()
+void TRIXDialog::save ()
 {
-  _settings->setData(TRIX::_INPUT, _input->currentText());
-  _settings->setData(TRIX::_COLOR, _color->color().name());
-  _settings->setData(TRIX::_STYLE, _style->currentText());
-  _settings->setData(TRIX::_PERIOD, _period->value());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("PERIOD", _period->value());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

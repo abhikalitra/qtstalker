@@ -48,6 +48,7 @@
 #include "BarLengthButton.h"
 #include "BarSpaceButton.h"
 #include "DateRangeControl.h"
+#include "IndicatorEditDialog.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -65,7 +66,8 @@ QtstalkerApp::QtstalkerApp (QString session, QString asset)
 
   Setup setup;
   setup.setup(this, session);
-
+  g_parent = this;
+  
   createGUI();
 
   loadSettings();
@@ -125,7 +127,7 @@ void QtstalkerApp::createGUI ()
   connect(_controlPanel->recentCharts(), SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
   connect(_sidePanel, SIGNAL(signalRecentChart(BarData)), _controlPanel->recentCharts(), SLOT(addRecentChart(BarData)));
   connect(_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
-  connect(_controlPanel->configureButton(), SIGNAL(signalNewIndicator(QString)), this, SLOT(addNewPlot(QString)));
+  connect(_controlPanel->configureButton(), SIGNAL(signalNewIndicator(QString)), this, SLOT(newIndicator(QString)));
   
   dock = new DockWidget(QString(), this);
   dock->setObjectName("controlPanelDock");
@@ -346,7 +348,7 @@ void QtstalkerApp::addPlot (QString indicator)
 //  connect(this, SIGNAL(signalShutDown()), plot, SLOT(clear()));
   connect(this, SIGNAL(signalPlot()), plot->indicator(), SLOT(calculate()));
   connect(plot, SIGNAL(signalIndex(int)), _controlPanel, SLOT(setStartValue(int)));
-  connect(plot->plotMenu(), SIGNAL(signalNewIndicator(QString)), this, SLOT(addNewPlot(QString)));
+  connect(plot->plotMenu(), SIGNAL(signalNewIndicator(QString)), this, SLOT(newIndicator(QString)));
   connect(plot->plotMenu(), SIGNAL(signalDeleteIndicator(QStringList)), this, SLOT(deletePlot(QStringList)));
   
   connect(g_middleMan, SIGNAL(signalPlotBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
@@ -359,10 +361,44 @@ void QtstalkerApp::addPlot (QString indicator)
   _plots.insert(indicator, plot);
 }
 
+void QtstalkerApp::newIndicator (QString indicator)
+{
+  _newIndicator = new IndicatorSettings;
+  _newIndicator->setData("NAME", indicator);
+  
+  IndicatorEditDialog *dialog = new IndicatorEditDialog(g_parent, _newIndicator);
+  connect(dialog, SIGNAL(signalDone()), this, SLOT(newIndicator2()));
+  connect(dialog, SIGNAL(rejected()), this, SLOT(newIndicatorAbort()));
+  dialog->show();
+}
+
+void QtstalkerApp::newIndicator2 ()
+{
+  addPlot(_newIndicator->data("NAME"));
+  
+  // we need to make sure plot widget has shown before we start drawing
+  QTimer::singleShot(100, this, SLOT(newIndicator3()));
+}
+
+void QtstalkerApp::newIndicator3 ()
+{
+  Plot *p = _plots.value(_newIndicator->data("NAME"));
+  if (! p)
+    return;
+  p->indicator()->calculate();
+  p->setStartIndex(_controlPanel->getValue());
+  delete _newIndicator;
+}
+
+void QtstalkerApp::newIndicatorAbort ()
+{
+  delete _newIndicator;
+}
+
 void QtstalkerApp::addNewPlot (QString indicator)
 {
   addPlot(indicator);
-  _newIndicator = indicator;
+  _addNewPlot = indicator;
 
   // we need to make sure plot widget has shown before we start drawing
   QTimer::singleShot(100, this, SLOT(addNewPlot2()));
@@ -370,11 +406,12 @@ void QtstalkerApp::addNewPlot (QString indicator)
 
 void QtstalkerApp::addNewPlot2 ()
 {
-  Plot *p = _plots.value(_newIndicator);
+  Plot *p = _plots.value(_addNewPlot);
   if (! p)
     return;
-  p->indicator()->calculate();
-  p->setStartIndex(_controlPanel->getValue());
+//  p->indicator()->calculate();
+//  p->setStartIndex(_controlPanel->getValue());
+  p->indicator()->dialog();
 }
 
 void QtstalkerApp::deletePlot (QStringList l)

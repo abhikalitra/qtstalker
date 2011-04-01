@@ -31,7 +31,6 @@
 
 ChartObject::ChartObject ()
 {
-  _parent = 0;
   _settings = new Setting;
   _status = _None;
 
@@ -83,7 +82,7 @@ void ChartObject::dialog ()
 
 void ChartObject::deleteChartObject ()
 {
-  ConfirmDialog *dialog = new ConfirmDialog(_parent);
+  ConfirmDialog *dialog = new ConfirmDialog(g_parent);
   dialog->setMessage(tr("Confirm chart object delete"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(deleteChartObject2()));
   dialog->show();
@@ -147,9 +146,4 @@ void ChartObject::save ()
 void ChartObject::update ()
 {
   emit signalUpdate(_settings->data("ID"));
-}
-
-void ChartObject::setParent (QWidget *w)
-{
-  _parent = w;
 }

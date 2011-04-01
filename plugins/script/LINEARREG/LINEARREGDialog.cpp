@@ -26,32 +26,30 @@
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-LINEARREGDialog::LINEARREGDialog (QWidget *p, Setting *set) : Dialog (p)
+LINEARREGDialog::LINEARREGDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "LINEARREGDialog_window_size";
-  _keyPos = "LINEARREGDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "LINEARREG" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-  createBarsPage();
-
-  loadSettings();
 }
 
 void LINEARREGDialog::createGeneralPage ()
 {
+  QVBoxLayout *vbox = new QVBoxLayout;
+  setLayout(vbox);
+
   _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
+  vbox->addWidget(_tabs);
 
   QWidget *w = new QWidget;
 
   QFormLayout *form = new QFormLayout;
   w->setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
 
   // method
   LINEARREG la;
@@ -59,26 +57,28 @@ void LINEARREGDialog::createGeneralPage ()
 
   _method = new QComboBox;
   _method->addItems(l);
-  _method->setCurrentIndex(_method->findText(_settings->data(LINEARREG::_METHOD), Qt::MatchExactly));
+  _method->setCurrentIndex(_method->findText(_settings->data("METHOD"), Qt::MatchExactly));
   form->addRow(tr("Method"), _method);
 
   // input
   InputType it;
   l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(LINEARREG::_INPUT), Qt::MatchExactly));
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
   form->addRow(tr("Input"), _input);
 
   // period
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings->getInt(LINEARREG::_PERIOD));
+  _period->setValue(_settings->getInt("PERIOD"));
   form->addRow(tr("Period"), _period);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(LINEARREG::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
   form->addRow(tr("Color"), _color);
 
@@ -88,62 +88,25 @@ void LINEARREGDialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(LINEARREG::_STYLE), Qt::MatchExactly));
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
   form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 
   _tabs->addTab(w, "LINEARREG");
 }
 
-void LINEARREGDialog::createBarsPage ()
+void LINEARREGDialog::save ()
 {
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // up color
-  _upColor = new ColorButton(this, QColor(_settings->data(LINEARREG::_COLOR_BARS_UP)));
-  _upColor->setColorButton();
-  form->addRow(tr("Up Color"), _upColor);
-
-  // down color
-  _downColor = new ColorButton(this, QColor(_settings->data(LINEARREG::_COLOR_BARS_DOWN)));
-  _downColor->setColorButton();
-  form->addRow(tr("Down Color"), _downColor);
-
-  // neutral color
-  _neutralColor = new ColorButton(this, QColor(_settings->data(LINEARREG::_COLOR_BARS_NEUTRAL)));
-  _neutralColor->setColorButton();
-  form->addRow(tr("Neutral Color"), _neutralColor);
-
-  // style
-  QStringList l;
-  l << "OHLC" << "Candle";
-
-  _barsStyle = new QComboBox;
-  _barsStyle->addItems(l);
-  _barsStyle->setCurrentIndex(_barsStyle->findText(_settings->data(LINEARREG::_STYLE_BARS), Qt::MatchExactly));
-  form->addRow(tr("Style"), _barsStyle);
-
-  _tabs->addTab(w, "BARS");
-}
-
-void LINEARREGDialog::done ()
-{
-  _settings->setData(LINEARREG::_METHOD, _method->currentText());
-  _settings->setData(LINEARREG::_COLOR, _color->color().name());
-  _settings->setData(LINEARREG::_STYLE, _style->currentText());
-  _settings->setData(LINEARREG::_INPUT, _input->currentText());
-  _settings->setData(LINEARREG::_COLOR_BARS_UP, _upColor->color().name());
-  _settings->setData(LINEARREG::_COLOR_BARS_DOWN, _downColor->color().name());
-  _settings->setData(LINEARREG::_COLOR_BARS_NEUTRAL, _neutralColor->color().name());
-  _settings->setData(LINEARREG::_STYLE_BARS, _barsStyle->currentText());
-  _settings->setData(LINEARREG::_PERIOD, _period->text());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("METHOD", _method->currentText());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("PERIOD", _period->text());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

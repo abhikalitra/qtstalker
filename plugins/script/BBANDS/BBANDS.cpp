@@ -39,20 +39,29 @@ BBANDS::BBANDS ()
     qDebug("BBANDS::BBANDS: error on TA_Initialize");
 }
 
-int BBANDS::calculate (BarData *bd, Indicator *i)
+int BBANDS::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-  int period = settings->getInt(_PERIOD);
-  double udev = settings->getDouble(_DEVIATION_UP);
-  double ldev = settings->getDouble(_DEVIATION_DOWN);
+  int period = settings->getInt("PERIOD");
+  double udev = settings->getDouble("DEVIATION_UP");
+  double ldev = settings->getDouble("DEVIATION_DOWN");
   
   MAType types;
-  int type = types.fromString(settings->data(_MA_TYPE));
+  int type = types.fromString(settings->data("MA_TYPE"));
 
-  InputType itypes;
-  Curve *input = itypes.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *input = i->line(settings->data("INPUT"));
   if (! input)
-    return 1;
+  {
+    InputType it;
+    input = it.input(bd, settings->data("INPUT"));
+    if (! input)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+
+    delFlag++;
+  }
 
   int size = input->count();
   TA_Real in[size];
@@ -72,7 +81,8 @@ int BBANDS::calculate (BarData *bd, Indicator *i)
     in[loop] = (TA_Real) bar->data();
   }
 
-  delete input;
+  if (delFlag)
+    delete input;
 
   TA_RetCode rc = TA_BBANDS(0,
                             keys.count() - 1,
@@ -108,36 +118,23 @@ int BBANDS::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  // create bars
-  Curve *bars = itypes.ohlc(bd,
-			    QColor(settings->data(_COLOR_BARS_UP)),
-			    QColor(settings->data(_COLOR_BARS_DOWN)),
-			    QColor(settings->data(_COLOR_BARS_NEUTRAL)));
-  if (settings->data(_STYLE_BARS) == "OHLC")
-    bars->setType(Curve::OHLC);
-  else
-    bars->setType(Curve::Candle);
-  bars->setLabel("BARS");
-  bars->setZ(0);
-  i->setLine("BARS", bars);
+  upper->setAllColor(QColor(settings->data("COLOR_UP")));
+  upper->setLabel(settings->data("OUTPUT_UP"));
+  upper->setType((Curve::Type) upper->typeFromString(settings->data("STYLE_UP")));
+  upper->setZ(settings->getInt("Z_UP"));
+  i->setLine(settings->data("OUTPUT_UP"), upper);
   
-  upper->setAllColor(QColor(settings->data(_COLOR_UP)));
-  upper->setLabel(settings->data(_LABEL_UP));
-  upper->setType((Curve::Type) upper->typeFromString(settings->data(_STYLE_UP)));
-  upper->setZ(1);
-  i->setLine(settings->data(_LABEL_UP), upper);
+  middle->setAllColor(QColor(settings->data("COLOR_MID")));
+  middle->setLabel(settings->data("OUTPUT_MID"));
+  middle->setType((Curve::Type) middle->typeFromString(settings->data("STYLE_MID")));
+  middle->setZ(settings->getInt("Z_UP"));
+  i->setLine(settings->data("OUTPUT_MID"), middle);
   
-  middle->setAllColor(QColor(settings->data(_COLOR_MID)));
-  middle->setLabel(settings->data(_LABEL_MID));
-  middle->setType((Curve::Type) middle->typeFromString(settings->data(_STYLE_MID)));
-  middle->setZ(1);
-  i->setLine(settings->data(_LABEL_MID), middle);
-  
-  lower->setAllColor(QColor(settings->data(_COLOR_DOWN)));
-  lower->setLabel(settings->data(_LABEL_DOWN));
-  lower->setType((Curve::Type) lower->typeFromString(settings->data(_STYLE_DOWN)));
-  lower->setZ(1);
-  i->setLine(settings->data(_LABEL_DOWN), lower);
+  lower->setAllColor(QColor(settings->data("COLOR_DOWN")));
+  lower->setLabel(settings->data("OUTPUT_DOWN"));
+  lower->setType((Curve::Type) lower->typeFromString(settings->data("STYLE_DOWN")));
+  lower->setZ(settings->getInt("Z_UP"));
+  i->setLine(settings->data("OUTPUT_DOWN"), lower);
 
   return 0;
 }
@@ -290,34 +287,31 @@ int BBANDS::command (Command *command)
   return 0;
 }
 
-void BBANDS::dialog (QWidget *p, Indicator *i)
+QWidget * BBANDS::dialog (QWidget *p, Setting *set)
 {
-  BBANDSDialog *dialog = new BBANDSDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new BBANDSDialog(p, set);
 }
 
 void BBANDS::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR_UP, QString("red"));
-  set->setData(_LABEL_UP, QString("BBU"));
-  set->setData(_STYLE_UP, QString("Line"));
-  set->setData(_COLOR_MID, QString("yellow"));
-  set->setData(_LABEL_MID, QString("BBM"));
-  set->setData(_STYLE_MID, QString("Line"));
-  set->setData(_COLOR_DOWN, QString("green"));
-  set->setData(_LABEL_DOWN, QString("BBL"));
-  set->setData(_STYLE_DOWN, QString("Line"));
-  set->setData(_DEVIATION_DOWN, 2);
-  set->setData(_DEVIATION_UP, 2);
-  set->setData(_INPUT, QString("Close"));
-  set->setData(_PERIOD, 20);
-  set->setData(_MA_TYPE, QString("EMA"));
-  set->setData(_STYLE_BARS, QString("OHLC"));
-  set->setData(_COLOR_BARS_UP, QString("green"));
-  set->setData(_COLOR_BARS_DOWN, QString("red"));
-  set->setData(_COLOR_BARS_NEUTRAL, QString("dimgray"));
+  set->setData("COLOR_UP", QString("red"));
+  set->setData("OUTPUT_UP", QString("BBU"));
+  set->setData("STYLE_UP", QString("Line"));
+  set->setData("COLOR_MID", QString("yellow"));
+  set->setData("OUTPUT_MID", QString("BBM"));
+  set->setData("STYLE_MID", QString("Line"));
+  set->setData("COLOR_DOWN", QString("green"));
+  set->setData("OUTPUT_DOWN", QString("BBL"));
+  set->setData("STYLE_DOWN", QString("Line"));
+  set->setData("DEVIATION_DOWN", 2);
+  set->setData("DEVIATION_UP", 2);
+  set->setData("INPUT", QString("Close"));
+  set->setData("PERIOD", 20);
+  set->setData("MA_TYPE", QString("EMA"));
+  set->setData("Z_UP", 1);
+  set->setData("Z_MID", 1);
+  set->setData("Z_DOWN", 1);
 }
 
 //*************************************************************

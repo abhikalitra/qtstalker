@@ -25,35 +25,32 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class LINEARREGDialog : public Dialog
+class LINEARREGDialog : public QWidget
 {
   Q_OBJECT
 
   public:
     LINEARREGDialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createBarsPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
     QTabWidget *_tabs;
     QSpinBox *_period;
     ColorButton *_color;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
-    QComboBox *_barsStyle;
     QComboBox *_style;
     QComboBox *_method;
     QComboBox *_input;
+    QSpinBox *_z;
+    QLineEdit *_output;
 };
 
 #endif

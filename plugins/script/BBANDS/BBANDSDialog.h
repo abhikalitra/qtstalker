@@ -26,12 +26,12 @@
 #include <QSpinBox>
 #include <QTabWidget>
 #include <QDoubleSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class BBANDSDialog : public Dialog
+class BBANDSDialog : public QWidget
 {
   Q_OBJECT
 
@@ -41,17 +41,13 @@ class BBANDSDialog : public Dialog
     void createUpperPage ();
     void createMiddlePage ();
     void createLowerPage ();
-    void createBarsPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
     QTabWidget *_tabs;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
     ColorButton *_upperColor;
     ColorButton *_midColor;
     ColorButton *_lowerColor;
@@ -64,6 +60,12 @@ class BBANDSDialog : public Dialog
     QSpinBox *_period;
     QDoubleSpinBox *_upDev;
     QDoubleSpinBox *_lowDev;
+    QSpinBox *_zUp;
+    QSpinBox *_zMid;
+    QSpinBox *_zDown;
+    QLineEdit *_upOutput;
+    QLineEdit *_midOutput;
+    QLineEdit *_downOutput;
 };
 
 #endif

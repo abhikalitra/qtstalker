@@ -21,61 +21,52 @@
 
 #include "VIDYADialog.h"
 #include "Globals.h"
-#include "VIDYA.h"
 #include "InputType.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-VIDYADialog::VIDYADialog (QWidget *p, Setting *set) : Dialog (p)
+VIDYADialog::VIDYADialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "VIDYADialog_window_size";
-  _keyPos = "VIDYADialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "VIDYA" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-  createBarsPage();
-
-  loadSettings();
 }
 
 void VIDYADialog::createGeneralPage ()
 {
-  _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
-
-  QWidget *w = new QWidget;
-
   QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
 
   // input
   InputType it;
   QStringList l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(VIDYA::_INPUT), Qt::MatchExactly));
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
   form->addRow(tr("Input"), _input);
 
   // period
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings->getInt(VIDYA::_PERIOD));
+  _period->setValue(_settings->getInt("PERIOD"));
   form->addRow(tr("Period"), _period);
 
   // vperiod
   _vperiod = new QSpinBox;
   _vperiod->setRange(1, 100000);
-  _vperiod->setValue(_settings->getInt(VIDYA::_VPERIOD));
+  _vperiod->setValue(_settings->getInt("VPERIOD"));
   form->addRow(tr("Volume Period"), _vperiod);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(VIDYA::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
   form->addRow(tr("Color"), _color);
 
@@ -85,62 +76,23 @@ void VIDYADialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(VIDYA::_STYLE), Qt::MatchExactly));
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
   form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
-
-  _tabs->addTab(w, "VIDYA");
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void VIDYADialog::createBarsPage ()
+void VIDYADialog::save ()
 {
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // up color
-  _upColor = new ColorButton(this, QColor(_settings->data(VIDYA::_COLOR_BARS_UP)));
-  _upColor->setColorButton();
-  form->addRow(tr("Up Color"), _upColor);
-
-  // down color
-  _downColor = new ColorButton(this, QColor(_settings->data(VIDYA::_COLOR_BARS_DOWN)));
-  _downColor->setColorButton();
-  form->addRow(tr("Down Color"), _downColor);
-
-  // neutral color
-  _neutralColor = new ColorButton(this, QColor(_settings->data(VIDYA::_COLOR_BARS_NEUTRAL)));
-  _neutralColor->setColorButton();
-  form->addRow(tr("Neutral Color"), _neutralColor);
-
-  // style
-  QStringList l;
-  l << "OHLC" << "Candle";
-
-  _barsStyle = new QComboBox;
-  _barsStyle->addItems(l);
-  _barsStyle->setCurrentIndex(_barsStyle->findText(_settings->data(VIDYA::_STYLE_BARS), Qt::MatchExactly));
-  form->addRow(tr("Style"), _barsStyle);
-
-  _tabs->addTab(w, "BARS");
-}
-
-void VIDYADialog::done ()
-{
-  _settings->setData(VIDYA::_INPUT, _input->currentText());
-  _settings->setData(VIDYA::_COLOR, _color->color().name());
-  _settings->setData(VIDYA::_STYLE, _style->currentText());
-  _settings->setData(VIDYA::_PERIOD, _period->value());
-  _settings->setData(VIDYA::_VPERIOD, _vperiod->value());
-  _settings->setData(VIDYA::_COLOR_BARS_UP, _upColor->color().name());
-  _settings->setData(VIDYA::_COLOR_BARS_DOWN, _downColor->color().name());
-  _settings->setData(VIDYA::_COLOR_BARS_NEUTRAL, _neutralColor->color().name());
-  _settings->setData(VIDYA::_STYLE_BARS, _barsStyle->currentText());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("PERIOD", _period->value());
+  _settings->setData("VPERIOD", _vperiod->value());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

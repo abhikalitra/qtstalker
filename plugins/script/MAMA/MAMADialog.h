@@ -25,12 +25,13 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QTabWidget>
+#include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class MAMADialog : public Dialog
+class MAMADialog : public QWidget
 {
   Q_OBJECT
 
@@ -39,25 +40,24 @@ class MAMADialog : public Dialog
     void createGeneralPage ();
     void createMAMAPage ();
     void createFAMAPage ();
-    void createBarsPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
     QTabWidget *_tabs;
     ColorButton *_mamaColor;
     ColorButton *_famaColor;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
     QComboBox *_mamaStyle;
     QComboBox *_famaStyle;
     QComboBox *_input;
-    QComboBox *_barsStyle;
     QDoubleSpinBox *_fast;
     QDoubleSpinBox *_slow;
+    QLineEdit *_mamaOutput;
+    QLineEdit *_famaOutput;
+    QSpinBox *_zMama;
+    QSpinBox *_zFama;
 };
 
 #endif

@@ -34,7 +34,6 @@
 #include "Globals.h"
 #include "THERMDialog.h"
 #include "InputType.h"
-#include "MAType.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -45,10 +44,8 @@ THERM::THERM ()
   _type = _INDICATOR;
 }
 
-int THERM::calculate (BarData *bd, Indicator *i)
+int THERM::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
   InputType it;
   Curve *high = it.input(bd, "High");
   if (! high)
@@ -66,23 +63,11 @@ int THERM::calculate (BarData *bd, Indicator *i)
   delete high;
   delete low;
 
-  int smoothing = settings->getInt(_SMOOTHING);
-  if (smoothing > 1)
-  {
-    MAType mat;
-    Curve *ma = mat.getMA(line, smoothing, mat.fromString(settings->data(_SMOOTHING_TYPE)));
-    if (ma)
-    {
-      delete line;
-      line = ma;
-    }
-  }
-
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -175,21 +160,18 @@ Curve * THERM::getTHERM (Curve *ihigh, Curve *ilow)
   return line;
 }
 
-void THERM::dialog (QWidget *p, Indicator *i)
+QWidget * THERM::dialog (QWidget *p, Setting *set)
 {
-  THERMDialog *dialog = new THERMDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new THERMDialog(p, set);
 }
 
 void THERM::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "red");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Line");
-  set->setData(_SMOOTHING, 9);
-  set->setData(_SMOOTHING_TYPE, "EMA");
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

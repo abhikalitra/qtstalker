@@ -23,35 +23,31 @@
 #define PLUGIN_HT_DIALOG_HPP
 
 #include <QComboBox>
-#include <QTabWidget>
+#include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class HTDialog : public Dialog
+class HTDialog : public QWidget
 {
   Q_OBJECT
 
   public:
     HTDialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createBarsPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     ColorButton *_color;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
     QComboBox *_style;
-    QComboBox *_barsStyle;
     QComboBox *_input;
     QComboBox *_method;
+    QSpinBox *_z;
+    QLineEdit *_output;
 };
 
 #endif

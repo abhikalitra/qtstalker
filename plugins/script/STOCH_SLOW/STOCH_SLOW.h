@@ -29,30 +29,11 @@ class STOCH_SLOW : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR_K = 10,
-      _STYLE_K = 20,
-      _LABEL_K = 30,
-      _COLOR_D = 40,
-      _STYLE_D = 50,
-      _LABEL_D = 60,
-      _PERIOD_FASTK = 70,
-      _PERIOD_SLOWK = 80,
-      _PERIOD_SLOWD = 90,
-      _COLOR_REF1 = 100,
-      _COLOR_REF2 = 110,
-      _REF1 = 120,
-      _REF2 = 130,
-      _MA_TYPE_SLOWK = 140,
-      _MA_TYPE_SLOWD = 150
-    };
-
     STOCH_SLOW ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

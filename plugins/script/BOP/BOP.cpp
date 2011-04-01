@@ -38,10 +38,8 @@ BOP::BOP ()
     qDebug("BOP::BOP: error on TA_Initialize");
 }
 
-int BOP::calculate (BarData *bd, Indicator *i)
+int BOP::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
   int size = bd->count();
   TA_Real out[size];
   TA_Real open[size];
@@ -86,8 +84,8 @@ int BOP::calculate (BarData *bd, Indicator *i)
     line->setBar(loop, new CurveBar(out[loop]));
 
   MAType mat;
-  int period = settings->getInt(_SMOOTHING);
-  int method = mat.fromString(settings->data(_SMOOTHING_TYPE));
+  int period = settings->getInt("SMOOTHING");
+  int method = mat.fromString(settings->data("SMOOTHING_TYPE"));
   if (period > 1)
   {
     Curve *ma = mat.getMA(line, period, method);
@@ -101,11 +99,11 @@ int BOP::calculate (BarData *bd, Indicator *i)
     line = ma;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -229,21 +227,20 @@ int BOP::command (Command *command)
   return 0;
 }
 
-void BOP::dialog (QWidget *p, Indicator *i)
+QWidget * BOP::dialog (QWidget *p, Setting *set)
 {
-  BOPDialog *dialog = new BOPDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new BOPDialog(p, set);
 }
 
 void BOP::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, QString("red"));
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, QString("Histogram Bar"));
-  set->setData(_SMOOTHING, 10);
-  set->setData(_SMOOTHING_TYPE, QString("EMA"));
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Histogram Bar"));
+  set->setData("SMOOTHING", 10);
+  set->setData("SMOOTHING_TYPE", QString("EMA"));
+  set->setData("OUTPUT", _plugin);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

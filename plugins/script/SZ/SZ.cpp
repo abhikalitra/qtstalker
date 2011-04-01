@@ -36,14 +36,12 @@ SZ::SZ ()
   _type = _INDICATOR;
 }
 
-int SZ::calculate (BarData *bd, Indicator *i)
+int SZ::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  int period = settings->getInt(_PERIOD);
-  int ndp = settings->getInt(_PERIOD_NO_DECLINE);
-  double coeff = settings->getDouble(_COEFFICIENT);
-  int method = _method.indexOf(settings->data(_METHOD));
+  int period = settings->getInt("PERIOD");
+  int ndp = settings->getInt("PERIOD_NO_DECLINE");
+  double coeff = settings->getDouble("COEFFICIENT");
+  int method = _method.indexOf(settings->data("METHOD"));
 
   InputType it;
   Curve *high = it.input(bd, "High");
@@ -57,19 +55,6 @@ int SZ::calculate (BarData *bd, Indicator *i)
     return 1;
   }
 
-  // create bars
-  Curve *bars = it.ohlc(bd,
-			QColor(settings->data(_COLOR_BARS_UP)),
-			QColor(settings->data(_COLOR_BARS_DOWN)),
-			QColor(settings->data(_COLOR_BARS_NEUTRAL)));
-  if (settings->data(_STYLE_BARS) == "OHLC")
-    bars->setType(Curve::OHLC);
-  else
-    bars->setType(Curve::Candle);
-  bars->setLabel("BARS");
-  bars->setZ(0);
-  i->setLine("BARS", bars);
-
   Curve *line = getSZ(high, low, method, period, ndp, coeff);
   if (! line)
   {
@@ -81,11 +66,11 @@ int SZ::calculate (BarData *bd, Indicator *i)
   delete high;
   delete low;
   
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(1);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
   
   return 0;  
 }
@@ -317,27 +302,23 @@ Curve * SZ::getSZ (Curve *ihigh, Curve *ilow, int method, int period, int no_dec
   return pl;
 }
 
-void SZ::dialog (QWidget *p, Indicator *i)
+QWidget * SZ::dialog (QWidget *p, Setting *set)
 {
-  SZDialog *dialog = new SZDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new SZDialog(p, set);
 }
 
 void SZ::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "yellow");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Line");
-  set->setData(_PERIOD, 10);
-  set->setData(_PERIOD_NO_DECLINE, 2);
-  set->setData(_COEFFICIENT, 2);
-  set->setData(_METHOD, "LONG");
-  set->setData(_STYLE_BARS, "OHLC");
-  set->setData(_COLOR_BARS_UP, "green");
-  set->setData(_COLOR_BARS_DOWN, "red");
-  set->setData(_COLOR_BARS_NEUTRAL, "dimgray");
+  set->setData("COLOR", QString("yellow"));
+  set->setData("LABEL", _plugin);
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD", 10);
+  set->setData("PERIOD_NO_DECLINE", 2);
+  set->setData("COEFFICIENT", 2);
+  set->setData("METHOD", QString("LONG"));
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 QStringList SZ::method ()

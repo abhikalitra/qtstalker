@@ -38,26 +38,11 @@ class SZ : public Plugin
       _SHORT
     };
 
-    enum Parm
-    {
-      _COLOR = 10,
-      _STYLE = 20,
-      _LABEL = 30,
-      _PERIOD = 40,
-      _PERIOD_NO_DECLINE = 50,
-      _COEFFICIENT = 60,
-      _METHOD = 70,
-      _COLOR_BARS_UP = 80,
-      _COLOR_BARS_DOWN = 90,
-      _COLOR_BARS_NEUTRAL = 100,
-      _STYLE_BARS = 110
-    };
-
     SZ ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
     QStringList method ();
     Curve * getSZ (Curve *ihigh, Curve *ilow, int type, int period, int ndp, double coeff);
 

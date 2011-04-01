@@ -31,6 +31,9 @@ class TYPICAL_PRICE : public Plugin
   public:
     TYPICAL_PRICE ();
     int command (Command *);
+    int calculate (BarData *, Indicator *, Setting *);
+    void defaults (Setting *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

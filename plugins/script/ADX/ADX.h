@@ -29,28 +29,11 @@ class ADX : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _ADX_COLOR = 10,
-      _PDI_COLOR = 20,
-      _MDI_COLOR = 30,
-      _ADX_STYLE = 40,
-      _PDI_STYLE = 50,
-      _MDI_STYLE = 60,
-      _ADX_LABEL = 70,
-      _PDI_LABEL = 80,
-      _MDI_LABEL = 90,
-      _PERIOD = 100,
-      _ADXR_COLOR = 110,
-      _ADXR_STYLE = 120,
-      _ADXR_LABEL = 130
-    };
-
     ADX ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

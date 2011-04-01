@@ -21,6 +21,7 @@
 
 #include "GROUP_EDIT_DIALOG.h"
 #include "GroupEditDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 
@@ -44,7 +45,7 @@ int GROUP_EDIT_DIALOG::command (Command *command)
 
   _command = command;
   
-  GroupEditDialog *dialog = new GroupEditDialog(_parent, name);
+  GroupEditDialog *dialog = new GroupEditDialog(g_parent, name);
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));
   connect(dialog, SIGNAL(accepted()), this, SLOT(command2()));

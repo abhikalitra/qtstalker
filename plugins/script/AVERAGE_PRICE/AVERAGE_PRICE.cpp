@@ -22,12 +22,37 @@
 #include "AVERAGE_PRICE.h"
 #include "Curve.h"
 #include "Globals.h"
+#include "AVERAGE_PRICEDialog.h"
 
 #include <QtDebug>
 
 AVERAGE_PRICE::AVERAGE_PRICE ()
 {
   _plugin = "AVERAGE_PRICE";
+  _type = _INDICATOR;
+}
+
+int AVERAGE_PRICE::calculate (BarData *bd, Indicator *i, Setting *settings)
+{
+  Curve *line = new Curve;
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    double t = (bar->open() + bar->high() + bar->low() + bar->close()) / 4.0;
+    line->setBar(loop, new CurveBar(t));
+  }
+
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
+
+  return 0;
 }
 
 int AVERAGE_PRICE::command (Command *command)
@@ -114,6 +139,20 @@ int AVERAGE_PRICE::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+QWidget * AVERAGE_PRICE::dialog (QWidget *p, Setting *set)
+{
+  return new AVERAGE_PRICEDialog(p, set);
+}
+
+void AVERAGE_PRICE::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("OUTPUT", QString("AP"));
+  set->setData("Z", 0);
 }
 
 //*************************************************************

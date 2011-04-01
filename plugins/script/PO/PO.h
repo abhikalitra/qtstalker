@@ -35,23 +35,11 @@ class PO : public Plugin
       _PPO
     };
 
-    enum Parm
-    {
-      _COLOR = 10,
-      _STYLE = 20,
-      _LABEL = 30,
-      _PERIOD_FAST = 40,
-      _PERIOD_SLOW = 50,
-      _MA_TYPE = 60,
-      _INPUT = 70,
-      _METHOD = 80
-    };
-
     PO ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
     QStringList method ();
 
   private:

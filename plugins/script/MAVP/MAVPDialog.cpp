@@ -22,52 +22,43 @@
 #include "MAVPDialog.h"
 #include "Globals.h"
 #include "InputType.h"
-#include "MAVP.h"
 #include "MAType.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-MAVPDialog::MAVPDialog (QWidget *p, Setting *set) : Dialog (p)
+MAVPDialog::MAVPDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "MAVPDialog_window_size";
-  _keyPos = "MAVPDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "MAVP" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-  createBarsPage();
-
-  loadSettings();
 }
 
 void MAVPDialog::createGeneralPage ()
 {
-  _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
-
-  QWidget *w = new QWidget;
-
   QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
+  setLayout(form);
+
+  // name
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
 
   // input
   InputType it;
-  QStringList l;
-  l = it.list();
+  QStringList l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.append(_settings->data("INPUT2"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(MAVP::_INPUT), Qt::MatchExactly));
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
   form->addRow(tr("Input"), _input);
 
   // input2
   _input2 = new QComboBox;
   _input2->addItems(l);
-  _input2->setCurrentIndex(_input2->findText(_settings->data(MAVP::_INPUT2), Qt::MatchExactly));
+  _input2->setCurrentIndex(_input2->findText(_settings->data("INPUT2"), Qt::MatchExactly));
   form->addRow(tr("Input"), _input2);
 
   // ma type
@@ -76,23 +67,23 @@ void MAVPDialog::createGeneralPage ()
 
   _maType = new QComboBox;
   _maType->addItems(l);
-  _maType->setCurrentIndex(_maType->findText(_settings->data(MAVP::_MA_TYPE), Qt::MatchExactly));
+  _maType->setCurrentIndex(_maType->findText(_settings->data("MA_TYPE"), Qt::MatchExactly));
   form->addRow(tr("MA"), _maType);
 
   // min
   _min = new QSpinBox;
   _min->setRange(2, 100000);
-  _min->setValue(_settings->getInt(MAVP::_PERIOD_MIN));
+  _min->setValue(_settings->getInt("PERIOD_MIN"));
   form->addRow(tr("Min Period"), _min);
 
   // max
   _max = new QSpinBox;
   _max->setRange(2, 100000);
-  _max->setValue(_settings->getInt(MAVP::_PERIOD_MAX));
+  _max->setValue(_settings->getInt("PERIOD_MAX"));
   form->addRow(tr("Max Period"), _max);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(MAVP::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
   form->addRow(tr("Color"), _color);
 
@@ -102,64 +93,25 @@ void MAVPDialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(MAVP::_STYLE), Qt::MatchExactly));
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
   form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
-
-  _tabs->addTab(w, "MAVP");
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void MAVPDialog::createBarsPage ()
+void MAVPDialog::save ()
 {
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // up color
-  _upColor = new ColorButton(this, QColor(_settings->data(MAVP::_COLOR_BARS_UP)));
-  _upColor->setColorButton();
-  form->addRow(tr("Up Color"), _upColor);
-
-  // down color
-  _downColor = new ColorButton(this, QColor(_settings->data(MAVP::_COLOR_BARS_DOWN)));
-  _downColor->setColorButton();
-  form->addRow(tr("Down Color"), _downColor);
-
-  // neutral color
-  _neutralColor = new ColorButton(this, QColor(_settings->data(MAVP::_COLOR_BARS_NEUTRAL)));
-  _neutralColor->setColorButton();
-  form->addRow(tr("Neutral Color"), _neutralColor);
-
-  // style
-  QStringList l;
-  l << "OHLC" << "Candle";
-
-  _barsStyle = new QComboBox;
-  _barsStyle->addItems(l);
-  _barsStyle->setCurrentIndex(_barsStyle->findText(_settings->data(MAVP::_STYLE_BARS), Qt::MatchExactly));
-  form->addRow(tr("Style"), _barsStyle);
-
-  _tabs->addTab(w, "BARS");
-}
-
-void MAVPDialog::done ()
-{
-  _settings->setData(MAVP::_MA_TYPE, _maType->currentText());
-  _settings->setData(MAVP::_INPUT, _input->currentText());
-  _settings->setData(MAVP::_INPUT2, _input2->currentText());
-  _settings->setData(MAVP::_PERIOD_MIN, _min->value());
-  _settings->setData(MAVP::_PERIOD_MAX, _max->value());
-  _settings->setData(MAVP::_COLOR, _color->color().name());
-  _settings->setData(MAVP::_STYLE, _style->currentText());
-  _settings->setData(MAVP::_COLOR_BARS_UP, _upColor->color().name());
-  _settings->setData(MAVP::_COLOR_BARS_DOWN, _downColor->color().name());
-  _settings->setData(MAVP::_COLOR_BARS_NEUTRAL, _neutralColor->color().name());
-  _settings->setData(MAVP::_STYLE_BARS, _barsStyle->currentText());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("MA_TYPE", _maType->currentText());
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("INPUT2", _input2->currentText());
+  _settings->setData("PERIOD_MIN", _min->value());
+  _settings->setData("PERIOD_MAX", _max->value());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

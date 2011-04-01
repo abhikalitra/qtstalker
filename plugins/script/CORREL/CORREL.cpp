@@ -39,19 +39,27 @@ CORREL::CORREL ()
     qDebug("CORREL::CORREL: error on TA_Initialize");
 }
 
-int CORREL::calculate (BarData *bd, Indicator *i)
+int CORREL::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  int period = settings->getInt(_PERIOD);
+  int period = settings->getInt("PERIOD");
 
   InputType it;
-  Curve *in = it.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+
+    delFlag++;
+  }
 
   BarData tbd;
-  tbd.setKey(settings->data(_INDEX));
+  tbd.setKey(settings->data("INDEX"));
   tbd.setRange(bd->range());
   tbd.setBarLength(bd->barLength());
   tbd.setStartDate(bd->startDate());
@@ -60,20 +68,23 @@ int CORREL::calculate (BarData *bd, Indicator *i)
   QuoteDataBase db;
   if (db.getBars(&tbd))
   {
-    delete in;
+    if (delFlag)
+      delete in;
     return 1;
   }
 
   Curve *in2 = it.input(&tbd, "Close");
   if (! in2)
   {
-    delete in;
+    if (delFlag)
+      delete in;
     return 1;
   }
 
   if (in->count() < period || in2->count() < period)
   {
-    delete in;
+    if (delFlag)
+      delete in;
     delete in2;
     return 1;
   }
@@ -109,7 +120,8 @@ int CORREL::calculate (BarData *bd, Indicator *i)
     input2[loop] = (TA_Real) bar2->data();
   }
 
-  delete in;
+  if (delFlag)
+    delete in;
   delete in2;
 
   TA_RetCode rc = TA_CORREL(0,
@@ -138,11 +150,11 @@ int CORREL::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   // create ref1 line
   Setting co;
@@ -150,22 +162,22 @@ int CORREL::calculate (BarData *bd, Indicator *i)
   co.setData("Type", QString("HLine"));
   co.setData("ID", key);
   co.setData("RO", 1);
-  co.setData("Price", settings->data(_REF1));
-  co.setData("Color", settings->data(_COLOR_REF1));
+  co.setData("Price", settings->data("REF1"));
+  co.setData("Color", settings->data("COLOR_REF1"));
   i->addChartObject(co);
 
   // create ref2 line
   key = "-" + QString::number(i->chartObjectCount() + 1);
   co.setData("ID", key);
-  co.setData("Price", settings->data(_REF2));
-  co.setData("Color", settings->data(_COLOR_REF2));
+  co.setData("Price", settings->data("REF2"));
+  co.setData("Color", settings->data("COLOR_REF2"));
   i->addChartObject(co);
   
   // create ref3 line
   key = "-" + QString::number(i->chartObjectCount() + 1);
   co.setData("ID", key);
-  co.setData("Price", settings->data(_REF3));
-  co.setData("Color", settings->data(_COLOR_REF3));
+  co.setData("Price", settings->data("REF3"));
+  co.setData("Color", settings->data("COLOR_REF3"));
   i->addChartObject(co);
 
   return 0;
@@ -284,28 +296,27 @@ int CORREL::command (Command *command)
   return 0;
 }
 
-void CORREL::dialog (QWidget *p, Indicator *i)
+QWidget * CORREL::dialog (QWidget *p, Setting *set)
 {
-  CORRELDialog *dialog = new CORRELDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new CORRELDialog(p, set);
 }
 
 void CORREL::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "red");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Line");
-  set->setData(_PERIOD, 30);
-  set->setData(_INPUT, QString("Close"));
-  set->setData(_INDEX, QString("YAHOO:SPY"));
-  set->setData(_COLOR_REF1, "white");
-  set->setData(_REF1, 1);
-  set->setData(_COLOR_REF2, "white");
-  set->setData(_REF2, 0);
-  set->setData(_COLOR_REF3, "white");
-  set->setData(_REF3, -1);
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD", 30);
+  set->setData("INPUT", QString("Close"));
+  set->setData("INDEX", QString("YAHOO:SPY"));
+  set->setData("COLOR_REF1", QString("white"));
+  set->setData("REF1", 1);
+  set->setData("COLOR_REF2", QString("white"));
+  set->setData("REF2", 0);
+  set->setData("COLOR_REF3", QString("white"));
+  set->setData("REF3", -1);
+  set->setData("OUTPUT", _plugin);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

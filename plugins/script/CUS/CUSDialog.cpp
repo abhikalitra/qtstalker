@@ -20,55 +20,42 @@
  */
 
 #include "CUSDialog.h"
-#include "CUS.h"
 #include "Globals.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-CUSDialog::CUSDialog (QWidget *p, Setting *set) : Dialog (p)
+CUSDialog::CUSDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "CUSDialog_window_size";
-  _keyPos = "CUSDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "CUS" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-
-  loadSettings();
 }
 
 void CUSDialog::createGeneralPage ()
 {
+  QFormLayout *form = new QFormLayout;
+  setLayout(form);
+
   // command
-  _command = new QLineEdit(_settings->data(CUS::_COMMAND));
+  _command = new QLineEdit(_settings->data("COMMAND"));
   _command->setToolTip(tr("The interpreter command line and any switches required.\neg. perl -l -T"));
-  _form->addRow(tr("Command"), _command);
+  form->addRow(tr("Command"), _command);
 
   // file
   QStringList l;
-  l << _settings->data(CUS::_SCRIPT);
+  l << _settings->data("SCRIPT");
   _file = new FileButton(this);
   _file->setFiles(l);
   _file->setToolTip(tr("The script location"));
-  _form->addRow(tr("Script"), _file);
-  
-  // make room unused
-  _message->hide();
+  form->addRow(tr("Script"), _file);
 }
 
-void CUSDialog::done ()
+void CUSDialog::save ()
 {
   QStringList l = _file->files();
   if (l.count())
-    _settings->setData(CUS::_SCRIPT, l.at(0));
+    _settings->setData("SCRIPT", l.at(0));
   
-  _settings->setData(CUS::_COMMAND, _command->text());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("COMMAND", _command->text());
 }

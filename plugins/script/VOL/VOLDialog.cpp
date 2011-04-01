@@ -22,109 +22,47 @@
 #include "VOLDialog.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "MAType.h"
-#include "VOL.h"
 
 #include <QtDebug>
-#include <QStringList>
+#include <QFormLayout>
 
-VOLDialog::VOLDialog (QWidget *p, Setting *set) : Dialog (p)
+VOLDialog::VOLDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "VOLDialog_window_size";
-  _keyPos = "VOLDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "VOL" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-  createMAPage();
-
-  loadSettings();
 }
 
 void VOLDialog::createGeneralPage ()
 {
-  _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
-  
-  QWidget *w = new QWidget;
-
   QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
+  setLayout(form);
 
   // up color
-  _upColor = new ColorButton(this, QColor(_settings->data(VOL::_COLOR_UP)));
+  _upColor = new ColorButton(this, QColor(_settings->data("COLOR_UP")));
   _upColor->setColorButton();
   form->addRow(tr("Up Color"), _upColor);
 
   // down color
-  _downColor = new ColorButton(this, QColor(_settings->data(VOL::_COLOR_DOWN)));
+  _downColor = new ColorButton(this, QColor(_settings->data("COLOR_DOWN")));
   _downColor->setColorButton();
   form->addRow(tr("Down Color"), _downColor);
 
   // neutral color
-  _neutralColor = new ColorButton(this, QColor(_settings->data(VOL::_COLOR_NEUTRAL)));
+  _neutralColor = new ColorButton(this, QColor(_settings->data("COLOR_NEUTRAL")));
   _neutralColor->setColorButton();
   form->addRow(tr("Neutral Color"), _neutralColor);
 
-  // make room unused
-  _message->hide();
-
-  _tabs->addTab(w, tr("General"));
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void VOLDialog::createMAPage ()
+void VOLDialog::save ()
 {
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // ma type
-  MAType mat;
-  QStringList l = mat.list();
-
-  _maType = new QComboBox;
-  _maType->addItems(l);
-  _maType->setCurrentIndex(_maType->findText(_settings->data(VOL::_MA_TYPE), Qt::MatchExactly));
-  form->addRow(tr("Type"), _maType);
-
-  // period
-  _maPeriod = new QSpinBox;
-  _maPeriod->setRange(2, 100000);
-  _maPeriod->setValue(_settings->getInt(VOL::_MA_PERIOD));
-  form->addRow(tr("Period"), _maPeriod);
-
-  // color
-  _maColor = new ColorButton(this, QColor(_settings->data(VOL::_MA_COLOR)));
-  _maColor->setColorButton();
-  form->addRow(tr("Color"), _maColor);
-
-  // style
-  Curve c;
-  c.list(l, 1);
-
-  _maStyle = new QComboBox;
-  _maStyle->addItems(l);
-  _maStyle->setCurrentIndex(_maStyle->findText(_settings->data(VOL::_MA_STYLE), Qt::MatchExactly));
-  form->addRow(tr("Style"), _maStyle);
-
-  _tabs->addTab(w, tr("MA"));
-}
-
-void VOLDialog::done ()
-{
-  _settings->setData(VOL::_COLOR_UP, _upColor->color().name());
-  _settings->setData(VOL::_COLOR_DOWN, _downColor->color().name());
-  _settings->setData(VOL::_COLOR_NEUTRAL, _neutralColor->color().name());
-  _settings->setData(VOL::_MA_COLOR, _maColor->color().name());
-  _settings->setData(VOL::_MA_STYLE, _maStyle->currentText());
-  _settings->setData(VOL::_MA_PERIOD, _maPeriod->value());
-  _settings->setData(VOL::_MA_TYPE, _maType->currentText());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("COLOR_UP", _upColor->color().name());
+  _settings->setData("COLOR_DOWN", _downColor->color().name());
+  _settings->setData("COLOR_NEUTRAL", _neutralColor->color().name());
+  _settings->setData("Z", _z->text());
 }

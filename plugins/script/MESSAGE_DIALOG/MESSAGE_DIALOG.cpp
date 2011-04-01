@@ -21,6 +21,7 @@
 
 #include "MESSAGE_DIALOG.h"
 #include "MessageDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -51,7 +52,7 @@ int MESSAGE_DIALOG::command (Command *command)
     return 1;
   }
 
-  MessageDialog *dialog = new MessageDialog(_parent, command);
+  MessageDialog *dialog = new MessageDialog(g_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

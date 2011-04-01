@@ -22,36 +22,29 @@
 #ifndef PLUGIN_VOL_DIALOG_HPP
 #define PLUGIN_VOL_DIALOG_HPP
 
-#include <QComboBox>
+#include <QWidget>
 #include <QSpinBox>
-#include <QStringList>
-#include <QTabWidget>
 
 #include "ColorButton.h"
-#include "Dialog.h"
+#include "Setting.h"
 
-class VOLDialog : public Dialog
+class VOLDialog : public QWidget
 {
   Q_OBJECT
 
   public:
     VOLDialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createMAPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     ColorButton *_upColor;
     ColorButton *_downColor;
     ColorButton *_neutralColor;
-    ColorButton *_maColor;
-    QComboBox *_maType;
-    QComboBox *_maStyle;
-    QSpinBox *_maPeriod;
+    QSpinBox *_z;
 };
 
 #endif

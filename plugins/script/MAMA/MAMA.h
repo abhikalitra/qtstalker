@@ -29,28 +29,11 @@ class MAMA : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _INPUT = 10,
-      _COLOR_MAMA = 20,
-      _COLOR_FAMA = 30,
-      _STYLE_MAMA = 40,
-      _STYLE_FAMA = 50,
-      _LABEL_MAMA = 60,
-      _LABEL_FAMA = 70,
-      _LIMIT_FAST = 80,
-      _LIMIT_SLOW = 90,
-      _STYLE_BARS = 100,
-      _COLOR_BARS_UP = 110,
-      _COLOR_BARS_DOWN = 120,
-      _COLOR_BARS_NEUTRAL = 130
-    };
-
     MAMA ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

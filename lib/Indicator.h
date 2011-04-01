@@ -29,7 +29,7 @@
 
 #include "Curve.h"
 #include "Setting.h"
-//#include "IndicatorThread.h"
+#include "IndicatorSettings.h"
 
 class Indicator : public QObject
 {
@@ -48,7 +48,6 @@ class Indicator : public QObject
     bool date ();
     bool log ();
     void setLine (QString, Curve *);
-    void setLine (int, Curve *);
     Curve * line (QString);
     QHash<QString, Curve *> & curves ();
     void clearLines ();
@@ -63,8 +62,7 @@ class Indicator : public QObject
     QHash<QString, Setting> & chartObjects ();
     int chartObjectCount ();
     int lineCount ();
-    Setting * settings ();
-    void setTestFlag (int);
+    IndicatorSettings * settings ();
     void remove (QStringList);
 
   public slots:
@@ -75,18 +73,13 @@ class Indicator : public QObject
     void setDate (bool);
     void setLog (bool);
     void calculate ();
-//    void calculate2 ();
     void dialog ();
     void dialogDone ();
 
   protected:
-    int _testFlag;
     QHash<QString, Curve *> _lines;
     QHash<QString, Setting> _chartObjects;
-    Setting *_settings;
+    IndicatorSettings *_settings;
 };
-
-// this is for passing Indicator data between threads
-//Q_DECLARE_METATYPE(Indicator)
 
 #endif

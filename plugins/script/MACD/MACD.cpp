@@ -39,21 +39,19 @@ MACD::MACD ()
     qDebug("MACD::MACD: error on TA_Initialize");
 }
 
-int MACD::calculate (BarData *bd, Indicator *i)
+int MACD::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  int fperiod = settings->getInt(_PERIOD_FAST);
-  int speriod = settings->getInt(_PERIOD_SLOW);
-  int sigperiod = settings->getInt(_PERIOD_SIG);
+  int fperiod = settings->getInt("PERIOD_FAST");
+  int speriod = settings->getInt("PERIOD_SLOW");
+  int sigperiod = settings->getInt("PERIOD_SIG");
 
   MAType mat;
-  int ftype = mat.fromString(settings->data(_MA_TYPE_FAST));
-  int stype = mat.fromString(settings->data(_MA_TYPE_SLOW));
-  int sigtype = mat.fromString(settings->data(_MA_TYPE_SIG));
+  int ftype = mat.fromString(settings->data("MA_TYPE_FAST"));
+  int stype = mat.fromString(settings->data("MA_TYPE_SLOW"));
+  int sigtype = mat.fromString(settings->data("MA_TYPE_SIG"));
 
   InputType it;
-  Curve *in = it.input(bd, settings->data(_INPUT));
+  Curve *in = it.input(bd, settings->data("INPUT"));
   if (! in)
     return 1;
 
@@ -113,23 +111,23 @@ int MACD::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  macd->setAllColor(QColor(settings->data(_COLOR_MACD)));
-  macd->setLabel(settings->data(_LABEL_MACD));
-  macd->setType((Curve::Type) macd->typeFromString(settings->data(_STYLE_MACD)));
-  macd->setZ(1);
-  i->setLine(settings->data(_LABEL_MACD), macd);
+  macd->setAllColor(QColor(settings->data("COLOR_MACD")));
+  macd->setLabel(settings->data("OUTPUT_MACD"));
+  macd->setType((Curve::Type) macd->typeFromString(settings->data("STYLE_MACD")));
+  macd->setZ(settings->getInt("Z_MACD"));
+  i->setLine(settings->data("OUTPUT_MACD"), macd);
   
-  i->setLine(settings->data(_LABEL_SIG), signal);
-  signal->setAllColor(QColor(settings->data(_COLOR_SIG)));
-  signal->setLabel(settings->data(_LABEL_SIG));
-  signal->setType((Curve::Type) signal->typeFromString(settings->data(_STYLE_SIG)));
-  signal->setZ(2);
+  i->setLine(settings->data("OUTPUT_SIG"), signal);
+  signal->setAllColor(QColor(settings->data("COLOR_SIG")));
+  signal->setLabel(settings->data("OUTPUT_SIG"));
+  signal->setType((Curve::Type) signal->typeFromString(settings->data("STYLE_SIG")));
+  signal->setZ(settings->getInt("Z_SIG"));
 
-  hist->setAllColor(QColor(settings->data(_COLOR_HIST)));
-  hist->setLabel(settings->data(_LABEL_HIST));
-  hist->setType((Curve::Type) hist->typeFromString(settings->data(_STYLE_HIST)));
-  hist->setZ(0);
-  i->setLine(settings->data(_LABEL_HIST), hist);
+  hist->setAllColor(QColor(settings->data("COLOR_HIST")));
+  hist->setLabel(settings->data("OUTPUT_HIST"));
+  hist->setType((Curve::Type) hist->typeFromString(settings->data("STYLE_HIST")));
+  hist->setZ(settings->getInt("Z_HIST"));
+  i->setLine(settings->data("OUTPUT_HIST"), hist);
 
   return 0;
 }
@@ -300,32 +298,33 @@ int MACD::command (Command *command)
   return 0;
 }
 
-void MACD::dialog (QWidget *p, Indicator *i)
+QWidget * MACD::dialog (QWidget *p, Setting *set)
 {
-  MACDDialog *dialog = new MACDDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new MACDDialog(p, set);
 }
 
 void MACD::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_INPUT, "Close");
-  set->setData(_COLOR_MACD, "red");
-  set->setData(_COLOR_SIG, "yellow");
-  set->setData(_COLOR_HIST, "blue");
-  set->setData(_LABEL_MACD, "MACD");
-  set->setData(_LABEL_SIG, "MACD_SIG");
-  set->setData(_LABEL_HIST, "MACD_HIST");
-  set->setData(_STYLE_MACD, "Line");
-  set->setData(_STYLE_SIG, "Line");
-  set->setData(_STYLE_HIST, "Histogram Bar");
-  set->setData(_PERIOD_FAST, 12);
-  set->setData(_PERIOD_SLOW, 26);
-  set->setData(_PERIOD_SIG, 9);
-  set->setData(_MA_TYPE_FAST, "EMA");
-  set->setData(_MA_TYPE_SLOW, "EMA");
-  set->setData(_MA_TYPE_SIG, "EMA");
+  set->setData("INPUT", QString("Close"));
+  set->setData("COLOR_MACD", QString("red"));
+  set->setData("COLOR_SIG", QString("yellow"));
+  set->setData("COLOR_HIST", QString("blue"));
+  set->setData("OUTPUT_MACD", QString("MACD"));
+  set->setData("OUTPUT_SIG", QString("SIG"));
+  set->setData("OUTPUT_HIST", QString("HIST"));
+  set->setData("STYLE_MACD", QString("Line"));
+  set->setData("STYLE_SIG", QString("Line"));
+  set->setData("STYLE_HIST", QString("Histogram Bar"));
+  set->setData("PERIOD_FAST", 12);
+  set->setData("PERIOD_SLOW", 26);
+  set->setData("PERIOD_SIG", 9);
+  set->setData("MA_TYPE_FAST", QString("EMA"));
+  set->setData("MA_TYPE_SLOW", QString("EMA"));
+  set->setData("MA_TYPE_SIG", QString("EMA"));
+  set->setData("Z_MACD", 1);
+  set->setData("Z_SIG", 2);
+  set->setData("Z_HIST", 0);
 }
 
 //*************************************************************

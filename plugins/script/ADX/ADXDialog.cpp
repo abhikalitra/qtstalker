@@ -20,165 +20,60 @@
  */
 
 #include "ADXDialog.h"
-#include "ADX.h"
 #include "Globals.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-ADXDialog::ADXDialog (QWidget *p, Setting *set) : Dialog (p)
+ADXDialog::ADXDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "ADXDialog_window_size";
-  _keyPos = "ADXDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "ADX" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-  createMDIPage();
-  createPDIPage();
-  createADXPage();
-  createADXRPage();
-
-  loadSettings();
 }
 
 void ADXDialog::createGeneralPage ()
 {
-  _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
-  
-  QWidget *w = new QWidget;
-
   QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
+  setLayout(form);
 
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+
+  // period
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings->getInt(ADX::_PERIOD));
+  _period->setValue(_settings->getInt("PERIOD"));
   form->addRow(tr("Period"), _period);
   
-  // make room unused
-  _message->hide();
-  
-  _tabs->addTab(w, tr("General"));  
-}
-
-void ADXDialog::createMDIPage ()
-{
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
   // color
-  _mdiColor = new ColorButton(this, QColor(_settings->data(ADX::_MDI_COLOR)));
-  _mdiColor->setColorButton();
-  form->addRow(tr("Color"), _mdiColor);
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
+  _color->setColorButton();
+  form->addRow(tr("Color"), _color);
 
   // style
   Curve c;
   QStringList l;
   c.list(l, 1);
 
-  _mdiStyle = new QComboBox;
-  _mdiStyle->addItems(l);
-  _mdiStyle->setCurrentIndex(_mdiStyle->findText(_settings->data(ADX::_MDI_STYLE), Qt::MatchExactly));
-  form->addRow(tr("Style"), _mdiStyle);
+  _style = new QComboBox;
+  _style->addItems(l);
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
+  form->addRow(tr("Style"), _style);
 
-  _tabs->addTab(w, "-DI");
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void ADXDialog::createPDIPage ()
+void ADXDialog::save ()
 {
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // color
-  _pdiColor = new ColorButton(this, QColor(_settings->data(ADX::_PDI_COLOR)));
-  _pdiColor->setColorButton();
-  form->addRow(tr("Color"), _pdiColor);
-
-  // style
-  Curve c;
-  QStringList l;
-  c.list(l, 1);
-
-  _pdiStyle = new QComboBox;
-  _pdiStyle->addItems(l);
-  _pdiStyle->setCurrentIndex(_pdiStyle->findText(_settings->data(ADX::_PDI_STYLE), Qt::MatchExactly));
-  form->addRow(tr("Style"), _pdiStyle);
-
-  _tabs->addTab(w, "+DI");
-}
-
-void ADXDialog::createADXPage ()
-{
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // color
-  _adxColor = new ColorButton(this, QColor(_settings->data(ADX::_ADX_COLOR)));
-  _adxColor->setColorButton();
-  form->addRow(tr("Color"), _adxColor);
-
-  // style
-  Curve c;
-  QStringList l;
-  c.list(l, 1);
-
-  _adxStyle = new QComboBox;
-  _adxStyle->addItems(l);
-  _adxStyle->setCurrentIndex(_adxStyle->findText(_settings->data(ADX::_ADX_STYLE), Qt::MatchExactly));
-  form->addRow(tr("Style"), _adxStyle);
-
-  _tabs->addTab(w, "ADX");
-}
-
-void ADXDialog::createADXRPage ()
-{
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // color
-  _adxrColor = new ColorButton(this, QColor(_settings->data(ADX::_ADXR_COLOR)));
-  _adxrColor->setColorButton();
-  form->addRow(tr("Color"), _adxrColor);
-
-  // style
-  Curve c;
-  QStringList l;
-  c.list(l, 1);
-
-  _adxrStyle = new QComboBox;
-  _adxrStyle->addItems(l);
-  _adxrStyle->setCurrentIndex(_adxrStyle->findText(_settings->data(ADX::_ADXR_STYLE), Qt::MatchExactly));
-  form->addRow(tr("Style"), _adxrStyle);
-
-  _tabs->addTab(w, "ADXR");
-}
-
-void ADXDialog::done ()
-{
-  _settings->setData(ADX::_ADX_COLOR, _adxColor->color().name());
-  _settings->setData(ADX::_ADXR_COLOR, _adxrColor->color().name());
-  _settings->setData(ADX::_PDI_COLOR, _pdiColor->color().name());
-  _settings->setData(ADX::_MDI_COLOR, _mdiColor->color().name());
-  _settings->setData(ADX::_ADX_STYLE, _adxStyle->currentText());
-  _settings->setData(ADX::_ADXR_STYLE, _adxrStyle->currentText());
-  _settings->setData(ADX::_PDI_STYLE, _pdiStyle->currentText());
-  _settings->setData(ADX::_MDI_STYLE, _mdiStyle->currentText());
-  _settings->setData(ADX::_PERIOD, (int) _period->value());
-
-  saveSettings();
-  
-  accept();
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("PERIOD", _period->text());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

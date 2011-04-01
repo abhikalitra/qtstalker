@@ -33,14 +33,12 @@ FI::FI ()
   _type = _INDICATOR;
 }
 
-int FI::calculate (BarData *bd, Indicator *i)
+int FI::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  int period = settings->getInt(_SMOOTHING);
+  int period = settings->getInt("SMOOTHING");
 
   MAType mat;
-  int type = mat.fromString(settings->data(_SMOOTHING_TYPE));
+  int type = mat.fromString(settings->data("SMOOTHING_TYPE"));
 
   Curve *line = new Curve;
 
@@ -75,11 +73,11 @@ int FI::calculate (BarData *bd, Indicator *i)
     line = ma;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -186,21 +184,20 @@ int FI::command (Command *command)
   return 0;
 }
 
-void FI::dialog (QWidget *p, Indicator *i)
+QWidget * FI::dialog (QWidget *p, Setting *set)
 {
-  FIDialog *dialog = new FIDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new FIDialog(p, set);
 }
 
 void FI::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "yellow");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Histogram Bar");
-  set->setData(_SMOOTHING, 2);
-  set->setData(_SMOOTHING_TYPE, "EMA");
+  set->setData("COLOR", QString("yellow"));
+  set->setData("STYLE", QString("Histogram Bar"));
+  set->setData("SMOOTHING", 2);
+  set->setData("SMOOTHING_TYPE", QString("EMA"));
+  set->setData("OUTPUT", _plugin);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

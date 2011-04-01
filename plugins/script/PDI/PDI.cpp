@@ -23,16 +23,70 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
+#include "PDIDialog.h"
 
 #include <QtDebug>
 
 PDI::PDI ()
 {
   _plugin = "PDI";
+  _type = _INDICATOR;
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("PDI::PDI: error on TA_Initialize");
+}
+
+int PDI::calculate (BarData *bd, Indicator *i, Setting *settings)
+{
+  int period = settings->getInt("PERIOD");
+
+  int size = bd->count();
+  TA_Real adxOut[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    high[loop] = (TA_Real) bar->high();
+    low[loop] = (TA_Real) bar->low();
+    close[loop] = (TA_Real) bar->close();
+  }
+
+  // PDI
+  TA_RetCode rc = TA_PLUS_DI(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &adxOut[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    return 1;
+  }
+
+  Curve *line = new Curve;
+  
+  int dataLoop = size - 1;
+  int outLoop = outNb - 1;
+  while (outLoop > -1 && dataLoop > -1)
+  {
+    line->setBar(dataLoop, new CurveBar(adxOut[outLoop]));
+    dataLoop--;
+    outLoop--;
+  }
+
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
+
+  return 0;
 }
 
 int PDI::command (Command *command)
@@ -76,7 +130,7 @@ int PDI::command (Command *command)
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << _plugin << "::command: duplicate NAME" << name;
+    qDebug() << _plugin << "::command: duplicate name" << name;
     return 1;
   }
 
@@ -94,7 +148,7 @@ int PDI::command (Command *command)
   }
 
   int size = iclose->count();
-
+  
   TA_Real out[size];
   TA_Real high[size];
   TA_Real low[size];
@@ -126,14 +180,14 @@ int PDI::command (Command *command)
   }
 
   TA_RetCode rc = TA_PLUS_DI(0,
-                             size - 1,
-                             &high[0],
-                             &low[0],
-                             &close[0],
-                             period,
-                             &outBeg,
-                             &outNb,
-                             &out[0]);
+                              size - 1,
+                              &high[0],
+                              &low[0],
+                              &close[0],
+                              period,
+                              &outBeg,
+                              &outNb,
+                              &out[0]);
 
   if (rc != TA_SUCCESS)
   {
@@ -158,6 +212,21 @@ int PDI::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+QWidget * PDI::dialog (QWidget *p, Setting *set)
+{
+  return new PDIDialog(p, set);
+}
+
+void PDI::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData("COLOR", QString("blue"));
+  set->setData("OUTPUT", _plugin);
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD", 14);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

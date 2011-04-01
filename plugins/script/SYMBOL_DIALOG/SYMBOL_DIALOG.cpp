@@ -21,6 +21,7 @@
 
 #include "SYMBOL_DIALOG.h"
 #include "SymbolDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -35,7 +36,7 @@ int SYMBOL_DIALOG::command (Command *command)
 {
   _command = command;
 
-  SymbolDialog *dialog = new SymbolDialog(_parent);
+  SymbolDialog *dialog = new SymbolDialog(g_parent);
   connect(dialog, SIGNAL(signalDone(QString, QString, QStringList)), this, SLOT(dialogDone(QString, QString, QStringList)));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

@@ -24,35 +24,30 @@
 
 #include <QComboBox>
 #include <QSpinBox>
-#include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class MOMDialog : public Dialog
+class MOMDialog : public QWidget
 {
   Q_OBJECT
 
   public:
     MOMDialog (QWidget *, Setting *);
     void createGeneralPage();
-    void createMAPage();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
-    QTabWidget *_tabs;
     Setting *_settings;
-    QSpinBox *_maPeriod;
     QSpinBox *_period;
     ColorButton *_color;
-    ColorButton *_maColor;
     QComboBox *_style;
-    QComboBox *_maStyle;
-    QComboBox *_maType;
     QComboBox *_input;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

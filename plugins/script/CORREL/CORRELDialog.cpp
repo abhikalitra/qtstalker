@@ -20,63 +20,63 @@
  */
 
 #include "CORRELDialog.h"
-#include "CORREL.h"
 #include "InputType.h"
 #include "Globals.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-CORRELDialog::CORRELDialog (QWidget *p, Setting *set) : Dialog (p)
+CORRELDialog::CORRELDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "CORRELDialog_window_size";
-  _keyPos = "CORRELDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "CORREL" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-  
   createGeneralPage();
   createRefPage();
   createRef2Page();
   createRef3Page();
-  
-  loadSettings();
 }
 
 void CORRELDialog::createGeneralPage ()
 {
+  QVBoxLayout *vbox = new QVBoxLayout;
+  setLayout(vbox);
+
   _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
+  vbox->addWidget(_tabs);
 
   QWidget *w = new QWidget;
 
   QFormLayout *form = new QFormLayout;
   w->setLayout(form);
 
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+
   // index
-  _index = new QLineEdit(_settings->data(CORREL::_INDEX));
+  _index = new QLineEdit(_settings->data("INDEX"));
   _index->setToolTip(tr("Index symbol used for comparison eg. SP500"));
   form->addRow(tr("Index Symbol"), _index);
 
   // input
   InputType it;
   QStringList l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(CORREL::_INPUT), Qt::MatchExactly));
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
   form->addRow(tr("Input"), _input);
 
   // period
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings->getInt(CORREL::_PERIOD));
+  _period->setValue(_settings->getInt("PERIOD"));
   form->addRow(tr("Period"), _period);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(CORREL::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
   form->addRow(tr("Color"), _color);
 
@@ -86,11 +86,14 @@ void CORRELDialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(CORREL::_STYLE), Qt::MatchExactly));
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
   form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 
   _tabs->addTab(w, "CORREL");
 }
@@ -103,14 +106,14 @@ void CORRELDialog::createRefPage ()
   w->setLayout(form);
 
   // color
-  _refColor = new ColorButton(this, QColor(_settings->data(CORREL::_COLOR_REF1)));
+  _refColor = new ColorButton(this, QColor(_settings->data("COLOR_REF1")));
   _refColor->setColorButton();
   form->addRow(tr("Color"), _refColor);
 
   // ref
   _ref = new QDoubleSpinBox;
   _ref->setRange(-100000, 100000);
-  _ref->setValue(_settings->getDouble(CORREL::_REF1));
+  _ref->setValue(_settings->getDouble("REF1"));
   form->addRow(tr("Value"), _ref);
 
   _tabs->addTab(w, "REF 1");
@@ -124,14 +127,14 @@ void CORRELDialog::createRef2Page ()
   w->setLayout(form);
 
   // color
-  _ref2Color = new ColorButton(this, QColor(_settings->data(CORREL::_COLOR_REF2)));
+  _ref2Color = new ColorButton(this, QColor(_settings->data("COLOR_REF2")));
   _ref2Color->setColorButton();
   form->addRow(tr("Color"), _ref2Color);
 
   // ref
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(-100000, 100000);
-  _ref2->setValue(_settings->getDouble(CORREL::_REF2));
+  _ref2->setValue(_settings->getDouble("REF2"));
   form->addRow(tr("Value"), _ref2);
 
   _tabs->addTab(w, "REF 2");
@@ -145,34 +148,32 @@ void CORRELDialog::createRef3Page ()
   w->setLayout(form);
 
   // color
-  _ref3Color = new ColorButton(this, QColor(_settings->data(CORREL::_COLOR_REF3)));
+  _ref3Color = new ColorButton(this, QColor(_settings->data("COLOR_REF3")));
   _ref3Color->setColorButton();
   form->addRow(tr("Color"), _ref3Color);
 
   // ref
   _ref3 = new QDoubleSpinBox;
   _ref3->setRange(-100000, 100000);
-  _ref3->setValue(_settings->getDouble(CORREL::_REF3));
+  _ref3->setValue(_settings->getDouble("REF3"));
   form->addRow(tr("Value"), _ref3);
 
   _tabs->addTab(w, "REF 3");
 }
 
-void CORRELDialog::done ()
+void CORRELDialog::save ()
 {
-  _settings->setData(CORREL::_INDEX, _index->text());
-  _settings->setData(CORREL::_COLOR, _color->color().name());
-  _settings->setData(CORREL::_STYLE, _style->currentText());
-  _settings->setData(CORREL::_INPUT, _input->currentText());
-  _settings->setData(CORREL::_PERIOD, _period->value());
-  _settings->setData(CORREL::_REF1, _ref->value());
-  _settings->setData(CORREL::_REF2, _ref2->value());
-  _settings->setData(CORREL::_REF3, _ref3->value());
-  _settings->setData(CORREL::_COLOR_REF1, _refColor->color().name());
-  _settings->setData(CORREL::_COLOR_REF2, _ref2Color->color().name());
-  _settings->setData(CORREL::_COLOR_REF3, _ref3Color->color().name());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("INDEX", _index->text());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("PERIOD", _period->value());
+  _settings->setData("REF1", _ref->value());
+  _settings->setData("REF2", _ref2->value());
+  _settings->setData("REF3", _ref3->value());
+  _settings->setData("COLOR_REF1", _refColor->color().name());
+  _settings->setData("COLOR_REF2", _ref2Color->color().name());
+  _settings->setData("COLOR_REF3", _ref3Color->color().name());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

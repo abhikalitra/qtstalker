@@ -22,14 +22,59 @@
 #include "NORMALIZE.h"
 #include "Curve.h"
 #include "Globals.h"
+#include "InputType.h"
+#include "NORMALIZEDialog.h"
 
 #include <QtDebug>
 #include <cmath>
 
-
 NORMALIZE::NORMALIZE ()
 {
   _plugin = "NORMALIZE";
+  _type = _INDICATOR;
+}
+
+int NORMALIZE::calculate (BarData *bd, Indicator *i, Setting *settings)
+{
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
+  if (! in)
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+
+    delFlag++;
+  }
+
+  Curve *line = new Curve;
+  double max = 0;
+  double min = 0;
+  QList<int> keys;
+  in->keys(keys);
+  in->highLowRange(keys.at(0), keys.count() - 1, max, min);
+  double range = fabs(max) + fabs(min);
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    line->setBar(keys.at(loop), new CurveBar(((bar->data() - min) / range) * 100));
+  }
+
+  if (delFlag)
+    delete in;
+
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
+
+  return 0;
 }
 
 int NORMALIZE::command (Command *command)
@@ -86,6 +131,22 @@ int NORMALIZE::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+QWidget * NORMALIZE::dialog (QWidget *p, Setting *set)
+{
+  return new NORMALIZEDialog(p, set);
+}
+
+void NORMALIZE::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData("COLOR", QString("yellow"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("TYPE", QString("EMA"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

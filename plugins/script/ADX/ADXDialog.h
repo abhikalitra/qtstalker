@@ -24,39 +24,29 @@
 
 #include <QComboBox>
 #include <QSpinBox>
-#include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class ADXDialog : public Dialog
+class ADXDialog : public QWidget
 {
   Q_OBJECT
 
   public:
     ADXDialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createMDIPage ();
-    void createPDIPage ();
-    void createADXPage ();
-    void createADXRPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     QSpinBox *_period;
-    ColorButton *_mdiColor;
-    ColorButton *_pdiColor;
-    ColorButton *_adxColor;
-    ColorButton *_adxrColor;
-    QComboBox *_mdiStyle;
-    QComboBox *_pdiStyle;
-    QComboBox *_adxStyle;
-    QComboBox *_adxrStyle;
+    QSpinBox *_z;
+    ColorButton *_color;
+    QComboBox *_style;
+    QLineEdit *_output;
 };
 
 #endif

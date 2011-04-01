@@ -3,5 +3,7 @@
 } 
 
 HEADERS += ADXR.h
+HEADERS += ADXRDialog.h
 
 SOURCES += ADXR.cpp
+SOURCES += ADXRDialog.cpp

@@ -45,7 +45,7 @@ int DATA_WINDOW::command (Command *command)
   if (! g_barData->count())
     return 1;
   
-  DataWindow *dw = new DataWindow(_parent);
+  DataWindow *dw = new DataWindow(g_parent);
 
   // get the local indicators
   QSettings settings(g_localSettings);

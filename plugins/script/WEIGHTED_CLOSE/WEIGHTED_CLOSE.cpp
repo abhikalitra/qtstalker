@@ -20,14 +20,38 @@
  */
 
 #include "WEIGHTED_CLOSE.h"
-#include "Curve.h"
 #include "Globals.h"
+#include "WEIGHTED_CLOSEDialog.h"
 
 #include <QtDebug>
 
 WEIGHTED_CLOSE::WEIGHTED_CLOSE ()
 {
   _plugin = "WEIGHTED_CLOSE";
+  _type = _INDICATOR;
+}
+
+int WEIGHTED_CLOSE::calculate (BarData *bd, Indicator *i, Setting *settings)
+{
+  Curve *line = new Curve;
+  int loop = 0;
+  for (; loop < bd->count(); loop++)
+  {
+    Bar *bar = bd->bar(loop);
+    if (! bar)
+      continue;
+
+    double t = (bar->high() + bar->low() + (bar->close() * 2)) / 4.0;
+    line->setBar(loop, new CurveBar(t));
+  }
+
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
+
+  return 0;
 }
 
 int WEIGHTED_CLOSE::command (Command *command)
@@ -102,6 +126,20 @@ int WEIGHTED_CLOSE::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+QWidget * WEIGHTED_CLOSE::dialog (QWidget *p, Setting *set)
+{
+  return new WEIGHTED_CLOSEDialog(p, set);
+}
+
+void WEIGHTED_CLOSE::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("OUTPUT", QString("WC"));
+  set->setData("Z", 0);
 }
 
 //*************************************************************

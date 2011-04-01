@@ -21,6 +21,7 @@
 
 #include "INPUT_DIALOG.h"
 #include "InputDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -33,7 +34,7 @@ INPUT_DIALOG::INPUT_DIALOG ()
 
 int INPUT_DIALOG::command (Command *command)
 {
-  InputDialog *dialog = new InputDialog(_parent, command);
+  InputDialog *dialog = new InputDialog(g_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

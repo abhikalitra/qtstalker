@@ -28,9 +28,8 @@
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class BETADialog : public Dialog
+class BETADialog : public QWidget
 {
   Q_OBJECT
 
@@ -39,7 +38,7 @@ class BETADialog : public Dialog
     void createGeneralPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
@@ -48,6 +47,8 @@ class BETADialog : public Dialog
     QComboBox *_style;
     QLineEdit *_index;
     QComboBox *_input;
+    QSpinBox *_z;
+    QLineEdit *_output;
 };
 
 #endif

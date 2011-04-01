@@ -23,7 +23,8 @@
 #include "Globals.h"
 #include "Doc.h"
 #include "AboutDialog.h"
-#include "NewIndicatorDialog.h"
+#include "NewDialog.h"
+#include "DataDataBase.h"
 #include "ConfigureDialog.h"
 
 #include "../pics/about.xpm"
@@ -128,7 +129,13 @@ void ConfigureButton::configureDialog ()
 
 void ConfigureButton::newIndicator ()
 {
-  NewIndicatorDialog *dialog = new NewIndicatorDialog(this);
+  QStringList l;
+  DataDataBase db("indicators");
+  db.names(l);
+
+  NewDialog *dialog = new NewDialog(this);
+  dialog->setItems(l);
+  dialog->setTitle(tr("Enter new indicator name"));
   connect(dialog, SIGNAL(signalDone(QString)), this, SIGNAL(signalNewIndicator(QString)));
   dialog->show();
 }

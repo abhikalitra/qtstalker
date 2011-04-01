@@ -37,10 +37,9 @@ ATR::ATR ()
     qDebug("ATR::ATR: error on TA_Initialize");
 }
 
-int ATR::calculate (BarData *bd, Indicator *i)
+int ATR::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-  int period = settings->getInt(_PERIOD);
+  int period = settings->getInt("PERIOD");
   
   int size = bd->count();
   TA_Real out[size];
@@ -89,11 +88,11 @@ int ATR::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -218,20 +217,19 @@ int ATR::command (Command *command)
   return 0;
 }
 
-void ATR::dialog (QWidget *p, Indicator *i)
+QWidget * ATR::dialog (QWidget *p, Setting *set)
 {
-  ATRDialog *dialog = new ATRDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new ATRDialog(p, set);
 }
 
 void ATR::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, QString("red"));
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, QString("Line"));
-  set->setData(_PERIOD, 14);
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD", 14);
+  set->setData("OUTPUT", _plugin);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

@@ -29,20 +29,11 @@ class TRIX : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR = 10,
-      _STYLE = 20,
-      _LABEL = 30,
-      _PERIOD = 40,
-      _INPUT = 50
-    };
-
     TRIX ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

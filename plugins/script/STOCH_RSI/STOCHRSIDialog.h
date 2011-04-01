@@ -26,12 +26,12 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class STOCHRSIDialog : public Dialog
+class STOCHRSIDialog : public QWidget
 {
   Q_OBJECT
 
@@ -42,21 +42,21 @@ class STOCHRSIDialog : public Dialog
     void createRef2Page ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
     QTabWidget *_tabs;
     QSpinBox *_period;
-    QSpinBox *_smoothing;
     ColorButton *_color;
     ColorButton *_refColor;
     ColorButton *_ref2Color;
     QComboBox *_style;
-    QComboBox *_smoothingType;
     QComboBox *_input;
     QDoubleSpinBox *_ref;
     QDoubleSpinBox *_ref2;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

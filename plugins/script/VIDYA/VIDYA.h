@@ -30,25 +30,11 @@ class VIDYA : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR = 10,
-      _STYLE = 20,
-      _LABEL = 30,
-      _PERIOD = 40,
-      _VPERIOD = 50,
-      _INPUT = 60,
-      _COLOR_BARS_UP = 70,
-      _COLOR_BARS_DOWN = 80,
-      _COLOR_BARS_NEUTRAL = 90,
-      _STYLE_BARS = 100
-    };
-
     VIDYA ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
     Curve * getVIDYA (Curve *in, int period, int vperiod);
     Curve * getCMO (Curve *in, int period);
 };

@@ -29,25 +29,11 @@ class MFI : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR = 10,
-      _STYLE = 20,
-      _LABEL = 30,
-      _PERIOD = 40,
-      _SMOOTHING = 50,
-      _SMOOTHING_TYPE = 60,
-      _COLOR_REF1 = 70,
-      _COLOR_REF2 = 80,
-      _REF1 = 90,
-      _REF2 = 100
-    };
-
     MFI ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

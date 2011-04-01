@@ -21,6 +21,7 @@
 
 #include "CONFIRM_DIALOG.h"
 #include "ConfirmDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -43,7 +44,7 @@ int CONFIRM_DIALOG::command (Command *command)
     return 1;
   }
 
-  ConfirmDialog *dialog = new ConfirmDialog(_parent);
+  ConfirmDialog *dialog = new ConfirmDialog(g_parent);
   dialog->setCommand(command);
   dialog->setMessage(s);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));

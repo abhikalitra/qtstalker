@@ -29,19 +29,11 @@ class CANDLE_PATTERN : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _METHOD = 10,
-      _COLOR = 20,
-      _PEN = 30,
-      _PATTERN = 40
-    };
-
     CANDLE_PATTERN ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

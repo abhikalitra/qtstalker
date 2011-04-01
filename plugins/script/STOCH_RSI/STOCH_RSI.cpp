@@ -25,7 +25,6 @@
 #include "Globals.h"
 #include "STOCHRSIDialog.h"
 #include "InputType.h"
-#include "MAType.h"
 
 #include <QtDebug>
 
@@ -39,16 +38,24 @@ STOCH_RSI::STOCH_RSI ()
     qDebug("STOCH_RSI::STOCH_RSI: error on TA_Initialize");
 }
 
-int STOCH_RSI::calculate (BarData *bd, Indicator *i)
+int STOCH_RSI::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
+  int period = settings->getInt("PERIOD");
 
-  int period = settings->getInt(_PERIOD);
-
-  InputType it;
-  Curve *in = it.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+
+    delFlag++;
+  }
 
   QList<int> keys;
   in->keys(keys);
@@ -67,7 +74,8 @@ int STOCH_RSI::calculate (BarData *bd, Indicator *i)
     input[loop] = (TA_Real) bar->data();
   }
 
-  delete in;
+  if (delFlag)
+    delete in;
 
   TA_RetCode rc = TA_STOCHRSI(0,
                               size - 1,
@@ -98,23 +106,11 @@ int STOCH_RSI::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  int smoothing = settings->getInt(_SMOOTHING);
-  if (smoothing > 1)
-  {
-    MAType mat;
-    Curve *ma = mat.getMA(line, smoothing, mat.fromString(settings->data(_SMOOTHING_TYPE)));
-    if (ma)
-    {
-      delete line;
-      line = ma;
-    }
-  }
-
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   // create ref1 line
   Setting co;
@@ -122,15 +118,15 @@ int STOCH_RSI::calculate (BarData *bd, Indicator *i)
   co.setData("Type", QString("HLine"));
   co.setData("ID", key);
   co.setData("RO", 1);
-  co.setData("Price", settings->data(_REF1));
-  co.setData("Color", settings->data(_COLOR_REF1));
+  co.setData("Price", settings->data("REF1"));
+  co.setData("Color", settings->data("COLOR_REF1"));
   i->addChartObject(co);
 
   // create ref2 line
   key = "-" + QString::number(i->chartObjectCount() + 1);
   co.setData("ID", key);
-  co.setData("Price", settings->data(_REF2));
-  co.setData("Color", settings->data(_COLOR_REF2));
+  co.setData("Price", settings->data("REF2"));
+  co.setData("Color", settings->data("COLOR_REF2"));
   i->addChartObject(co);
 
   return 0;
@@ -230,27 +226,24 @@ int STOCH_RSI::command (Command *command)
   return 0;
 }
 
-void STOCH_RSI::dialog (QWidget *p, Indicator *i)
+QWidget * STOCH_RSI::dialog (QWidget *p, Setting *set)
 {
-  STOCHRSIDialog *dialog = new STOCHRSIDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new STOCHRSIDialog(p, set);
 }
 
 void STOCH_RSI::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "red");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Line");
-  set->setData(_INPUT, "Close");
-  set->setData(_PERIOD, 14);
-  set->setData(_COLOR_REF1, "white");
-  set->setData(_REF1, 20);
-  set->setData(_COLOR_REF2, "white");
-  set->setData(_REF2, 80);
-  set->setData(_SMOOTHING_TYPE, "EMA");
-  set->setData(_SMOOTHING, 9);
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("PERIOD", 14);
+  set->setData("COLOR_REF1", QString("white"));
+  set->setData("REF1", 20);
+  set->setData("COLOR_REF2", QString("white"));
+  set->setData("REF2", 80);
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

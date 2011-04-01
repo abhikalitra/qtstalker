@@ -37,10 +37,9 @@ AROON::AROON ()
     qDebug("AROON::AROON: error on TA_Initialize");
 }
 
-int AROON::calculate (BarData *bd, Indicator *i)
+int AROON::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-  int period = settings->getInt(_PERIOD);
+  int period = settings->getInt("PERIOD");
   
   int size = bd->count();
   TA_Real out[size];
@@ -91,17 +90,17 @@ int AROON::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  upper->setAllColor(QColor(settings->data(_COLOR_UP)));
-  upper->setLabel(settings->data(_LABEL_UP));
-  upper->setType((Curve::Type) upper->typeFromString(settings->data(_STYLE_UP)));
-  upper->setZ(0);
-  i->setLine(settings->data(_LABEL_UP), upper);
+  upper->setAllColor(QColor(settings->data("COLOR_UP")));
+  upper->setLabel(settings->data("OUTPUT_UP"));
+  upper->setType((Curve::Type) upper->typeFromString(settings->data("STYLE_UP")));
+  upper->setZ(settings->getInt("Z_UP"));
+  i->setLine(settings->data("OUTPUT_UP"), upper);
   
-  lower->setAllColor(QColor(settings->data(_COLOR_DOWN)));
-  lower->setLabel(settings->data(_LABEL_DOWN));
-  lower->setType((Curve::Type) upper->typeFromString(settings->data(_STYLE_DOWN)));
-  lower->setZ(0);
-  i->setLine(settings->data(_LABEL_DOWN), lower);
+  lower->setAllColor(QColor(settings->data("COLOR_DOWN")));
+  lower->setLabel(settings->data("OUTPUT_DOWN"));
+  lower->setType((Curve::Type) upper->typeFromString(settings->data("STYLE_DOWN")));
+  lower->setZ(settings->getInt("Z_DOWN"));
+  i->setLine(settings->data("OUTPUT_DOWN"), lower);
 
   return 0;
 }
@@ -228,23 +227,23 @@ int AROON::command (Command *command)
   return 0;
 }
 
-void AROON::dialog (QWidget *p, Indicator *i)
+QWidget * AROON::dialog (QWidget *p, Setting *set)
 {
-  AROONDialog *dialog = new AROONDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new AROONDialog(p, set);
 }
 
 void AROON::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR_UP, QString("green"));
-  set->setData(_LABEL_UP, QString("AROONU"));
-  set->setData(_STYLE_UP, QString("Line"));
-  set->setData(_COLOR_DOWN, QString("red"));
-  set->setData(_LABEL_DOWN, QString("AROOND"));
-  set->setData(_STYLE_DOWN, QString("Line"));
-  set->setData(_PERIOD, 14);
+  set->setData("COLOR_UP", QString("green"));
+  set->setData("OUTPUT_UP", QString("AROONU"));
+  set->setData("STYLE_UP", QString("Line"));
+  set->setData("COLOR_DOWN", QString("red"));
+  set->setData("OUTPUT_DOWN", QString("AROOND"));
+  set->setData("STYLE_DOWN", QString("Line"));
+  set->setData("PERIOD", 14);
+  set->setData("Z_UP", 0);
+  set->setData("Z_DOWN", 0);
 }
 
 //*************************************************************

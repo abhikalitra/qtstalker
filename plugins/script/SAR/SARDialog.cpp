@@ -21,105 +21,55 @@
 
 #include "SARDialog.h"
 #include "Globals.h"
-#include "SAR.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-SARDialog::SARDialog (QWidget *p, Setting *set) : Dialog (p)
+SARDialog::SARDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "SARDialog_window_size";
-  _keyPos = "SARDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "SAR" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-  createBarsPage();
-
-  loadSettings();
 }
 
 void SARDialog::createGeneralPage ()
 {
-  _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
-
-  QWidget *w = new QWidget;
-
   QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(SAR::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
   form->addRow(tr("Color"), _color);
 
   // initial
   _init = new QDoubleSpinBox;
   _init->setRange(0, 0.2);
-  _init->setValue(_settings->getDouble(SAR::_STEP_INITIAL));
+  _init->setValue(_settings->getDouble("STEP_INITIAL"));
   form->addRow(tr("Initial Step"), _init);
 
   // max
   _max = new QDoubleSpinBox;
   _max->setRange(0, 0.2);
-  _max->setValue(_settings->getDouble(SAR::_STEP_MAX));
+  _max->setValue(_settings->getDouble("STEP_MAX"));
   form->addRow(tr("Maximum Step"), _max);
 
-  // make room unused
-  _message->hide();
-
-  _tabs->addTab(w, "SAR");
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void SARDialog::createBarsPage ()
+void SARDialog::save ()
 {
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // up color
-  _upColor = new ColorButton(this, QColor(_settings->data(SAR::_COLOR_BARS_UP)));
-  _upColor->setColorButton();
-  form->addRow(tr("Up Color"), _upColor);
-
-  // down color
-  _downColor = new ColorButton(this, QColor(_settings->data(SAR::_COLOR_BARS_DOWN)));
-  _downColor->setColorButton();
-  form->addRow(tr("Down Color"), _downColor);
-
-  // neutral color
-  _neutralColor = new ColorButton(this, QColor(_settings->data(SAR::_COLOR_BARS_NEUTRAL)));
-  _neutralColor->setColorButton();
-  form->addRow(tr("Neutral Color"), _neutralColor);
-
-  // style
-  QStringList l;
-  l << "OHLC" << "Candle";
-
-  _barsStyle = new QComboBox;
-  _barsStyle->addItems(l);
-  _barsStyle->setCurrentIndex(_barsStyle->findText(_settings->data(SAR::_STYLE_BARS), Qt::MatchExactly));
-  form->addRow(tr("Style"), _barsStyle);
-
-  _tabs->addTab(w, "BARS");
-}
-
-void SARDialog::done ()
-{
-  _settings->setData(SAR::_COLOR, _color->color().name());
-  _settings->setData(SAR::_STEP_INITIAL, _init->value());
-  _settings->setData(SAR::_STEP_MAX, _max->value());
-  _settings->setData(SAR::_COLOR_BARS_UP, _upColor->color().name());
-  _settings->setData(SAR::_COLOR_BARS_DOWN, _downColor->color().name());
-  _settings->setData(SAR::_COLOR_BARS_NEUTRAL, _neutralColor->color().name());
-  _settings->setData(SAR::_STYLE_BARS, _barsStyle->currentText());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STEP_INITIAL", _init->value());
+  _settings->setData("STEP_MAX", _max->value());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

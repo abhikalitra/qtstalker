@@ -21,6 +21,7 @@
 
 #include "EXCHANGE_SEARCH_DIALOG.h"
 #include "ExchangeSearchDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -35,7 +36,7 @@ int EXCHANGE_SEARCH_DIALOG::command (Command *command)
 {
   // PARMS:
 
-  ExchangeSearchDialog *dialog = new ExchangeSearchDialog(_parent, command);
+  ExchangeSearchDialog *dialog = new ExchangeSearchDialog(g_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

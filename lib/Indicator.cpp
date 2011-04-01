@@ -23,23 +23,20 @@
 #include "DataDataBase.h"
 #include "Globals.h"
 #include "PluginFactory.h"
+#include "IndicatorEditDialog.h"
 
 #include <QDebug>
 #include <QSettings>
 
 Indicator::Indicator (QObject *p) : QObject (p)
 {
-//  _thread = 0;
-  _testFlag = 0;
-  _settings = new Setting;
+  _settings = new IndicatorSettings;
   init();
 }
 
 Indicator::Indicator ()
 {
-//  _thread = 0;
-  _testFlag = 0;
-  _settings = new Setting;
+  _settings = new IndicatorSettings;
   init();
 }
 
@@ -100,14 +97,11 @@ bool Indicator::log ()
 
 void Indicator::setLine (QString k, Curve *d)
 {
-  deleteLine(k);
+  Curve *line = _lines.value(k);
+  if (line)
+    delete line;
+  
   _lines.insert(k, d);
-}
-
-void Indicator::setLine (int k, Curve *d)
-{
-  QString s = QString::number(k);
-  setLine(s, d);
 }
 
 Curve * Indicator::line (QString k)
@@ -155,18 +149,18 @@ void Indicator::clearChartObjects ()
 
 void Indicator::weedPlots ()
 {
-  QList<QString> keys = _lines.keys();
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  QHashIterator<QString, Curve *> it(_lines);
+  while (it.hasNext())
   {
-    Curve *curve = _lines.value(keys.at(loop));
+    it.next();
+    Curve *curve = it.value();
     if (! curve)
       continue;
     
     if (curve->z() < 0)
     {
       delete curve;
-      _lines.remove(keys.at(loop));
+      _lines.remove(it.key());
     }
   }
 }
@@ -182,78 +176,47 @@ void Indicator::clearLines ()
 
 int Indicator::save ()
 {
-  if (_testFlag)
-    return 0;
-  
-  DataDataBase db("indicators");
-  db.transaction();
-  if (db.removeName(name()))
-  {
-    qDebug() << "Indicator::save: error removing indicator";
-    return 1;
-  }
-  
-  if (db.save(name(), settings()))
+  if (_settings->save())
   {
     qDebug() << "Indicator::save: error saving indicator";
     return 1;
   }
-
-  db.commit();
 
   return 0;
 }
 
 int Indicator::load ()
 {
-  if (_testFlag)
-    return 0;
-  
-  DataDataBase db("indicators");
-  return db.load(name(), settings());
+  return _settings->load(name());
 }
 
 void Indicator::calculate ()
 {
-//  IndicatorThread *thread = new IndicatorThread(this, g_barData, this);
-//  connect(thread, SIGNAL(finished()), this, SLOT(calculate2()), Qt::QueuedConnection);
-//  thread->start();
-  
-  PluginFactory fac;
-  Plugin *plug = fac.plugin(_settings->data("PLUGIN"));
-  if (! plug)
+  int loop = 0;
+  for (; loop < _settings->count(); loop++)
   {
-    qDebug() << "Indicator::calculate: no plugin";
-    return;
-  }
+    Setting *set = _settings->settings(loop);
+    
+    PluginFactory fac;
+    Plugin *plug = fac.plugin(set->data("PLUGIN"));
+    if (! plug)
+    {
+      qDebug() << "Indicator::calculate: no plugin";
+      continue;
+    }
 
-  if (plug->calculate(g_barData, this))
-  {
-    qDebug() << "Indicator::calculate: plugin error";
+    if (plug->calculate(g_barData, this, set))
+      qDebug() << "Indicator::calculate: plugin error";
+
     delete plug;
-    return;
   }
 
   weedPlots();
 
   loadChartObjects();
 
-  delete plug;
-  
   emit signalPlot();
 }
-
-/*
-void Indicator::calculate2 ()
-{
-//  delete _thread;
-//  _thread = 0;
-  
-  weedPlots();
-  loadChartObjects();
-  emit signalPlot();
-}
-*/
 
 void Indicator::loadChartObjects ()
 {
@@ -293,38 +256,23 @@ int Indicator::lineCount ()
   return _lines.count();
 }
 
-Setting * Indicator::settings ()
+IndicatorSettings * Indicator::settings ()
 {
   return _settings;
 }
 
 void Indicator::dialog ()
 {
-  PluginFactory fac;
-  Plugin *plug = fac.plugin(_settings->data("PLUGIN"));
-  if (! plug)
-  {
-    qDebug() << "Indicator::dialog: no plugin" << _settings->data("PLUGIN");
-    return;
-  }
-
-  plug->dialog(0, this);
-  delete plug;
+  IndicatorEditDialog *dialog = new IndicatorEditDialog(g_parent, _settings);
+  connect(dialog, SIGNAL(signalDone()), this, SLOT(dialogDone()));
+  dialog->show();
 }
 
 void Indicator::dialogDone ()
 {
-  if (_testFlag)
-    return;
-  
-  save();
+//  save();
   emit signalClear();
   calculate();
-}
-
-void Indicator::setTestFlag (int d)
-{
-  _testFlag = d;
 }
 
 void Indicator::remove (QStringList l)

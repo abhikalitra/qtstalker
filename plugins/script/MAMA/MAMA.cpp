@@ -38,30 +38,25 @@ MAMA::MAMA ()
     qDebug("MAMA::MAMA: error on TA_Initialize");
 }
 
-int MAMA::calculate (BarData *bd, Indicator *i)
+int MAMA::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
+  double fastLimit = settings->getDouble("LIMIT_FAST");
+  double slowLimit = settings->getDouble("LIMIT_SLOW");
 
-  double fastLimit = settings->getDouble(_LIMIT_FAST);
-  double slowLimit = settings->getDouble(_LIMIT_SLOW);
-
-  InputType it;
-  Curve *in = it.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
 
-  // create bars
-  Curve *bars = it.ohlc(bd,
-			QColor(settings->data(_COLOR_BARS_UP)),
-			QColor(settings->data(_COLOR_BARS_DOWN)),
-			QColor(settings->data(_COLOR_BARS_NEUTRAL)));
-  if (settings->data(_STYLE_BARS) == "OHLC")
-    bars->setType(Curve::OHLC);
-  else
-    bars->setType(Curve::Candle);
-  bars->setLabel("BARS");
-  bars->setZ(0);
-  i->setLine("BARS", bars);
+    delFlag++;
+  }
 
   int size = in->count();
   TA_Integer outBeg;
@@ -80,7 +75,8 @@ int MAMA::calculate (BarData *bd, Indicator *i)
     input[loop] = (TA_Real) bar->data();
   }
 
-  delete in;
+  if (delFlag)
+    delete in;
 
   TA_RetCode rc = TA_MAMA(0,
                           size - 1,
@@ -112,17 +108,17 @@ int MAMA::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  mama->setAllColor(QColor(settings->data(_COLOR_MAMA)));
-  mama->setLabel(settings->data(_LABEL_MAMA));
-  mama->setType((Curve::Type) mama->typeFromString(settings->data(_STYLE_MAMA)));
-  mama->setZ(1);
-  i->setLine(settings->data(_LABEL_MAMA), mama);
+  mama->setAllColor(QColor(settings->data("COLOR_MAMA")));
+  mama->setLabel(settings->data("OUTPUT_MAMA"));
+  mama->setType((Curve::Type) mama->typeFromString(settings->data("STYLE_MAMA")));
+  mama->setZ(settings->getInt("Z_MAMA"));
+  i->setLine(settings->data("OUTPUT_MAMA"), mama);
   
-  fama->setAllColor(QColor(settings->data(_COLOR_FAMA)));
-  fama->setLabel(settings->data(_LABEL_FAMA));
-  fama->setType((Curve::Type) fama->typeFromString(settings->data(_STYLE_FAMA)));
-  fama->setZ(2);
-  i->setLine(settings->data(_LABEL_FAMA), fama);
+  fama->setAllColor(QColor(settings->data("COLOR_FAMA")));
+  fama->setLabel(settings->data("OUTPUT_FAMA"));
+  fama->setType((Curve::Type) fama->typeFromString(settings->data("STYLE_FAMA")));
+  fama->setZ(settings->getInt("Z_FAMA"));
+  i->setLine(settings->data("OUTPUT_FAMA"), fama);
 
   return 0;
 }
@@ -242,29 +238,25 @@ int MAMA::command (Command *command)
   return 0;
 }
 
-void MAMA::dialog (QWidget *p, Indicator *i)
+QWidget * MAMA::dialog (QWidget *p, Setting *set)
 {
-  MAMADialog *dialog = new MAMADialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new MAMADialog(p, set);
 }
 
 void MAMA::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_INPUT, "Close");
-  set->setData(_COLOR_MAMA, "red");
-  set->setData(_COLOR_FAMA, "yellow");
-  set->setData(_LABEL_MAMA, "MAMA");
-  set->setData(_LABEL_FAMA, "FAMA");
-  set->setData(_STYLE_MAMA, "Line");
-  set->setData(_STYLE_FAMA, "Line");
-  set->setData(_LIMIT_FAST, 0.5);
-  set->setData(_LIMIT_SLOW, 0.05);
-  set->setData(_STYLE_BARS, "OHLC");
-  set->setData(_COLOR_BARS_UP, "green");
-  set->setData(_COLOR_BARS_DOWN, "red");
-  set->setData(_COLOR_BARS_NEUTRAL, "dimgray");
+  set->setData("INPUT", QString("Close"));
+  set->setData("COLOR_MAMA", QString("red"));
+  set->setData("COLOR_FAMA", QString("yellow"));
+  set->setData("STYLE_MAMA", QString("Line"));
+  set->setData("STYLE_FAMA", QString("Line"));
+  set->setData("LIMIT_FAST", 0.5);
+  set->setData("LIMIT_SLOW", 0.05);
+  set->setData("Z_MAMA", 0);
+  set->setData("OUTPUT_MAMA", _plugin);
+  set->setData("Z_FAMA", 0);
+  set->setData("OUTPUT_FAMA", QString("FAMA"));
 }
 
 //*************************************************************

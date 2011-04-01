@@ -40,22 +40,30 @@ PO::PO ()
     qDebug("PO::PO: error on TA_Initialize");
 }
 
-int PO::calculate (BarData *bd, Indicator *i)
+int PO::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  int fast = settings->getInt(_PERIOD_FAST);
-  int slow = settings->getInt(_PERIOD_SLOW);
+  int fast = settings->getInt("PERIOD_FAST");
+  int slow = settings->getInt("PERIOD_SLOW");
 
   MAType mat;
-  int type = mat.fromString(settings->data(_MA_TYPE));
+  int type = mat.fromString(settings->data("MA_TYPE"));
 
-  InputType itypes;
-  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
 
-  int method = _method.indexOf(settings->data(_METHOD));
+    delFlag++;
+  }
+
+  int method = _method.indexOf(settings->data("METHOD"));
 
   QList<int> keys;
   in->keys(keys);
@@ -73,7 +81,8 @@ int PO::calculate (BarData *bd, Indicator *i)
     input[loop] = (TA_Real) bar->data();
   }
 
-  delete in;
+  if (delFlag)
+    delete in;
   
   TA_RetCode rc = TA_SUCCESS;
   switch ((Method) method)
@@ -105,11 +114,11 @@ int PO::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -234,24 +243,23 @@ int PO::command (Command *command)
   return 0;
 }
 
-void PO::dialog (QWidget *p, Indicator *i)
+QWidget * PO::dialog (QWidget *p, Setting *set)
 {
-  PODialog *dialog = new PODialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new PODialog(p, set);
 }
 
 void PO::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "yellow");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Histogram Bar");
-  set->setData(_PERIOD_FAST, 12);
-  set->setData(_PERIOD_SLOW, 26);
-  set->setData(_MA_TYPE, "EMA");
-  set->setData(_INPUT, "Close");
-  set->setData(_METHOD, "APO");
+  set->setData("COLOR", QString("yellow"));
+  set->setData("STYLE", QString("Histogram Bar"));
+  set->setData("PERIOD_FAST", 12);
+  set->setData("PERIOD_SLOW", 26);
+  set->setData("MA_TYPE", QString("EMA"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("METHOD", QString("APO"));
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 QStringList PO::method ()

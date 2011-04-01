@@ -24,7 +24,6 @@
 #include "ta_libc.h"
 #include "Globals.h"
 #include "SARDialog.h"
-#include "InputType.h"
 
 #include <QtDebug>
 
@@ -38,26 +37,10 @@ SAR::SAR ()
     qDebug("SAR::SAR: error on TA_Initialize");
 }
 
-int SAR::calculate (BarData *bd, Indicator *i)
+int SAR::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  double init = settings->getDouble(_STEP_INITIAL);
-  double max = settings->getDouble(_STEP_MAX);
-
-  // create bars
-  InputType it;
-  Curve *bars = it.ohlc(bd,
-			QColor(settings->data(_COLOR_BARS_UP)),
-			QColor(settings->data(_COLOR_BARS_DOWN)),
-			QColor(settings->data(_COLOR_BARS_NEUTRAL)));
-  if (settings->data(_STYLE_BARS) == "OHLC")
-    bars->setType(Curve::OHLC);
-  else
-    bars->setType(Curve::Candle);
-  bars->setLabel("BARS");
-  bars->setZ(0);
-  i->setLine("BARS", bars);
+  double init = settings->getDouble("STEP_INITIAL");
+  double max = settings->getDouble("STEP_MAX");
 
   int size = bd->count();
   TA_Real out[size];
@@ -99,10 +82,10 @@ int SAR::calculate (BarData *bd, Indicator *i)
   for (; loop < outNb; loop++)
     line->setBar(loop + 1, new CurveBar(out[loop]));
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setZ(1);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -216,24 +199,19 @@ int SAR::command (Command *command)
   return 0;
 }
 
-void SAR::dialog (QWidget *p, Indicator *i)
+QWidget * SAR::dialog (QWidget *p, Setting *set)
 {
-  SARDialog *dialog = new SARDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new SARDialog(p, set);
 }
 
 void SAR::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "white");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STEP_INITIAL, 0.02);
-  set->setData(_STEP_MAX, 0.2);
-  set->setData(_STYLE_BARS, "OHLC");
-  set->setData(_COLOR_BARS_UP, "green");
-  set->setData(_COLOR_BARS_DOWN, "red");
-  set->setData(_COLOR_BARS_NEUTRAL, "dimgray");
+  set->setData("COLOR", QString("white"));
+  set->setData("STEP_INITIAL", 0.02);
+  set->setData("STEP_MAX", 0.2);
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

@@ -24,21 +24,21 @@
 
 #include <QComboBox>
 #include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class VARDialog : public Dialog
+class VARDialog : public QWidget
 {
   Q_OBJECT
 
   public:
     VARDialog (QWidget *, Setting *);
-    void createGeneralPage ();
+    void createGeneralPage();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
@@ -46,6 +46,8 @@ class VARDialog : public Dialog
     ColorButton *_color;
     QComboBox *_style;
     QComboBox *_input;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

@@ -29,22 +29,11 @@ class AROON : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR_UP = 10,
-      _COLOR_DOWN = 20,
-      _STYLE_UP = 30,
-      _STYLE_DOWN = 40,
-      _LABEL_UP = 50,
-      _LABEL_DOWN = 60,
-      _PERIOD = 70,
-    };
-
     AROON ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

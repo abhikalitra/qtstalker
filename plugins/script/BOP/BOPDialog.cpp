@@ -20,34 +20,32 @@
  */
 
 #include "BOPDialog.h"
-#include "BOP.h"
 #include "Globals.h"
 #include "MAType.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-BOPDialog::BOPDialog (QWidget *p, Setting *set) : Dialog (p)
+BOPDialog::BOPDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "BOPDialog_window_size";
-  _keyPos = "BOPDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "BOP" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-
-  loadSettings();
 }
 
 void BOPDialog::createGeneralPage ()
 {
+  QFormLayout *form = new QFormLayout;
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+
   // color
-  _color = new ColorButton(this, QColor(_settings->data(BOP::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
-  _form->addRow(tr("Color"), _color);
+  form->addRow(tr("Color"), _color);
 
   // plot style
   Curve c;
@@ -56,14 +54,14 @@ void BOPDialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(BOP::_STYLE), Qt::MatchExactly));
-  _form->addRow(tr("Style"), _style);
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
+  form->addRow(tr("Style"), _style);
 
   // smoothing
   _smoothing = new QSpinBox;
   _smoothing->setRange(1, 100000);
-  _smoothing->setValue(_settings->getInt(BOP::_SMOOTHING));
-  _form->addRow(tr("Smoothing"), _smoothing);
+  _smoothing->setValue(_settings->getInt("SMOOTHING"));
+  form->addRow(tr("Smoothing"), _smoothing);
 
   // smoothing type
   MAType mat;
@@ -71,21 +69,22 @@ void BOPDialog::createGeneralPage ()
 
   _smoothingType = new QComboBox;
   _smoothingType->addItems(l);
-  _smoothingType->setCurrentIndex(_smoothingType->findText(_settings->data(BOP::_SMOOTHING_TYPE), Qt::MatchExactly));
-  _form->addRow(tr("Smoothing Type"), _smoothingType);
-  
-  // make room unused
-  _message->hide();
+  _smoothingType->setCurrentIndex(_smoothingType->findText(_settings->data("SMOOTHING_TYPE"), Qt::MatchExactly));
+  form->addRow(tr("Smoothing Type"), _smoothingType);
+
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void BOPDialog::done ()
+void BOPDialog::save ()
 {
-  _settings->setData(BOP::_COLOR, _color->color().name());
-  _settings->setData(BOP::_STYLE, _style->currentText());
-  _settings->setData(BOP::_SMOOTHING, _smoothing->value());
-  _settings->setData(BOP::_SMOOTHING_TYPE, _smoothingType->currentText());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("SMOOTHING", _smoothing->value());
+  _settings->setData("SMOOTHING_TYPE", _smoothingType->currentText());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

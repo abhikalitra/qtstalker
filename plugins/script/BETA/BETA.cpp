@@ -39,18 +39,27 @@ BETA::BETA ()
     qDebug("BETA::BETA: error on TA_Initialize");
 }
 
-int BETA::calculate (BarData *bd, Indicator *i)
+int BETA::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-  int period = settings->getInt(_PERIOD);
+  int period = settings->getInt("PERIOD");
   
+  int delFlag = FALSE;
   InputType it;
-  Curve *in = it.input(bd, settings->data(_INPUT));
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+
+    delFlag++;
+  }
 
   BarData tbd;
-  tbd.setKey(settings->data(_INDEX));
+  tbd.setKey(settings->data("INDEX"));
   tbd.setRange(bd->range());
   tbd.setBarLength(bd->barLength());
   tbd.setStartDate(bd->startDate());
@@ -59,14 +68,16 @@ int BETA::calculate (BarData *bd, Indicator *i)
   QuoteDataBase db;
   if (db.getBars(&tbd))
   {
-    delete in;
+    if (delFlag)
+      delete in;
     return 1;
   }
   
   Curve *in2 = it.input(&tbd, "Close");
   if (! in2)
   {
-    delete in;
+    if (delFlag)
+      delete in;
     return 1;
   }
 
@@ -101,7 +112,8 @@ int BETA::calculate (BarData *bd, Indicator *i)
     input2[loop] = (TA_Real) bar2->data();
   }
 
-  delete in;
+  if (delFlag)
+    delete in;
   delete in2;
   
   TA_RetCode rc = TA_BETA(0,
@@ -130,11 +142,11 @@ int BETA::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -252,22 +264,21 @@ int BETA::command (Command *command)
   return 0;
 }
 
-void BETA::dialog (QWidget *p, Indicator *i)
+QWidget * BETA::dialog (QWidget *p, Setting *set)
 {
-  BETADialog *dialog = new BETADialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new BETADialog(p, set);
 }
 
 void BETA::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, QString("red"));
-  set->setData(_LABEL, QString("BETA"));
-  set->setData(_STYLE, QString("Histogram Bar"));
-  set->setData(_INPUT, QString("Close"));
-  set->setData(_PERIOD, 5);
-  set->setData(_INDEX, QString("YAHOO:SPY"));
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Histogram Bar"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("PERIOD", 5);
+  set->setData("INDEX", QString("YAHOO:SPY"));
+  set->setData("OUTPUT", _plugin);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

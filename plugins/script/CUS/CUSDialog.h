@@ -26,9 +26,8 @@
 
 #include "FileButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class CUSDialog : public Dialog
+class CUSDialog : public QWidget
 {
   Q_OBJECT
 
@@ -37,7 +36,7 @@ class CUSDialog : public Dialog
     void createGeneralPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;

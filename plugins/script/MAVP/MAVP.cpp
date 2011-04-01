@@ -39,40 +39,45 @@ MAVP::MAVP ()
     qDebug("MAVP::MAVP: error on TA_Initialize");
 }
 
-int MAVP::calculate (BarData *bd, Indicator *i)
+int MAVP::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  int min = settings->getInt(_PERIOD_MIN);
-  int max = settings->getInt(_PERIOD_MAX);
+  int min = settings->getInt("PERIOD_MIN");
+  int max = settings->getInt("PERIOD_MAX");
 
   MAType mat;
-  int type = mat.fromString(settings->data(_MA_TYPE));
+  int type = mat.fromString(settings->data("MA_TYPE"));
   
-  InputType it;
-  Curve *in = it.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
-
-  Curve *in2 = it.input(bd, settings->data(_INPUT2));
-  if (! in2)
   {
-    delete in;
-    return 1;
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+
+    delFlag++;
   }
 
-  // create bars
-  Curve *bars = it.ohlc(bd,
-			QColor(settings->data(_COLOR_BARS_UP)),
-			QColor(settings->data(_COLOR_BARS_DOWN)),
-			QColor(settings->data(_COLOR_BARS_NEUTRAL)));
-  if (settings->data(_STYLE_BARS) == "OHLC")
-    bars->setType(Curve::OHLC);
-  else
-    bars->setType(Curve::Candle);
-  bars->setLabel("BARS");
-  bars->setZ(0);
-  i->setLine("BARS", bars);
+  int delFlag2 = FALSE;
+  Curve *in2 = i->line(settings->data("INPUT2"));
+  if (! in2)
+  {
+    InputType it;
+    in2 = it.input(bd, settings->data("INPUT2"));
+    if (! in2)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT2");
+      if (delFlag)
+	delete in;
+      return 1;
+    }
+
+    delFlag2++;
+  }
 
   int flag = 0;
   int size = in->count();
@@ -106,8 +111,11 @@ int MAVP::calculate (BarData *bd, Indicator *i)
     loop2--;
   }
 
-  delete in;
-  delete in2;
+  if (delFlag)
+    delete in;
+  
+  if (delFlag2)
+    delete in2;
 
   TA_RetCode rc = TA_MAVP(0,
                           size - 1,
@@ -151,11 +159,11 @@ int MAVP::calculate (BarData *bd, Indicator *i)
     }
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(1);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -307,28 +315,23 @@ int MAVP::command (Command *command)
   return 0;
 }
 
-void MAVP::dialog (QWidget *p, Indicator *i)
+QWidget * MAVP::dialog (QWidget *p, Setting *set)
 {
-  MAVPDialog *dialog = new MAVPDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new MAVPDialog(p, set);
 }
 
 void MAVP::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_INPUT, "Close");
-  set->setData(_INPUT2, "Close");
-  set->setData(_COLOR, "red");
-  set->setData(_LABEL, "MAVP");
-  set->setData(_STYLE, "Line");
-  set->setData(_PERIOD_MIN, 2);
-  set->setData(_PERIOD_MAX, 30);
-  set->setData(_MA_TYPE, "EMA");
-  set->setData(_STYLE_BARS, "OHLC");
-  set->setData(_COLOR_BARS_UP, "green");
-  set->setData(_COLOR_BARS_DOWN, "red");
-  set->setData(_COLOR_BARS_NEUTRAL, "dimgray");
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT2", QString("Close"));
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD_MIN", 2);
+  set->setData("PERIOD_MAX", 30);
+  set->setData("MA_TYPE", QString("EMA"));
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

@@ -48,7 +48,7 @@ int NEW_DIALOG::command (Command *command)
   QStringList l;
   l << "QtStalker" + g_session + ":" << tr("New");
   
-  NewDialog *dialog = new NewDialog(_parent);
+  NewDialog *dialog = new NewDialog(g_parent);
   dialog->setWindowTitle(l.join(" "));
   dialog->setTitle(title);
   dialog->setItems(items);

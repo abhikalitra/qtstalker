@@ -26,12 +26,12 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class STOCH_FASTDialog : public Dialog
+class STOCH_FASTDialog : public QWidget
 {
   Q_OBJECT
 
@@ -43,7 +43,7 @@ class STOCH_FASTDialog : public Dialog
     void createRef2Page ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
@@ -59,6 +59,10 @@ class STOCH_FASTDialog : public Dialog
     QComboBox *_maType;
     QDoubleSpinBox *_ref;
     QDoubleSpinBox *_ref2;
+    QLineEdit *_koutput;
+    QSpinBox *_zk;
+    QLineEdit *_doutput;
+    QSpinBox *_zd;
 };
 
 #endif

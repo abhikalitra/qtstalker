@@ -37,13 +37,11 @@ ULTOSC::ULTOSC ()
     qDebug("ULTOSC::ULTOSC: error on TA_Initialize");
 }
 
-int ULTOSC::calculate (BarData *bd, Indicator *i)
+int ULTOSC::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  int sp = settings->getInt(_PERIOD_SHORT);
-  int mp = settings->getInt(_PERIOD_MED);
-  int lp = settings->getInt(_PERIOD_LONG);
+  int sp = settings->getInt("PERIOD_SHORT");
+  int mp = settings->getInt("PERIOD_MED");
+  int lp = settings->getInt("PERIOD_LONG");
 
   int size = bd->count();
   TA_Real out[size];
@@ -94,11 +92,11 @@ int ULTOSC::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   // create ref1 line
   Setting co;
@@ -106,22 +104,22 @@ int ULTOSC::calculate (BarData *bd, Indicator *i)
   co.setData("Type", QString("HLine"));
   co.setData("ID", key);
   co.setData("RO", 1);
-  co.setData("Price", settings->data(_REF1));
-  co.setData("Color", settings->data(_COLOR_REF1));
+  co.setData("Price", settings->data("REF1"));
+  co.setData("Color", settings->data("COLOR_REF1"));
   i->addChartObject(co);
 
   // create ref2 line
   key = "-" + QString::number(i->chartObjectCount() + 1);
   co.setData("ID", key);
-  co.setData("Price", settings->data(_REF2));
-  co.setData("Color", settings->data(_COLOR_REF2));
+  co.setData("Price", settings->data("REF2"));
+  co.setData("Color", settings->data("COLOR_REF2"));
   i->addChartObject(co);
   
   // create ref3 line
   key = "-" + QString::number(i->chartObjectCount() + 1);
   co.setData("ID", key);
-  co.setData("Price", settings->data(_REF3));
-  co.setData("Color", settings->data(_COLOR_REF3));
+  co.setData("Price", settings->data("REF3"));
+  co.setData("Color", settings->data("COLOR_REF3"));
   i->addChartObject(co);
 
   return 0;
@@ -265,28 +263,27 @@ int ULTOSC::command (Command *command)
   return 0;
 }
 
-void ULTOSC::dialog (QWidget *p, Indicator *i)
+QWidget * ULTOSC::dialog (QWidget *p, Setting *set)
 {
-  ULTOSCDialog *dialog = new ULTOSCDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new ULTOSCDialog(p, set);
 }
 
 void ULTOSC::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "red");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Line");
-  set->setData(_PERIOD_SHORT, 7);
-  set->setData(_PERIOD_MED, 14);
-  set->setData(_PERIOD_LONG, 28);
-  set->setData(_COLOR_REF1, "white");
-  set->setData(_REF1, 30);
-  set->setData(_COLOR_REF2, "white");
-  set->setData(_REF2, 50);
-  set->setData(_COLOR_REF3, "white");
-  set->setData(_REF3, 70);
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD_SHORT", 7);
+  set->setData("PERIOD_MED", 14);
+  set->setData("PERIOD_LONG", 28);
+  set->setData("COLOR_REF1", QString("white"));
+  set->setData("REF1", 30);
+  set->setData("COLOR_REF2", QString("white"));
+  set->setData("REF2", 50);
+  set->setData("COLOR_REF3", QString("white"));
+  set->setData("REF3", 70);
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

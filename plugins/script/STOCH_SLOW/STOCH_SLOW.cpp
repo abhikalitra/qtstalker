@@ -38,17 +38,15 @@ STOCH_SLOW::STOCH_SLOW ()
     qDebug("STOCH_SLOW::STOCH_SLOW: error on TA_Initialize");
 }
 
-int STOCH_SLOW::calculate (BarData *bd, Indicator *i)
+int STOCH_SLOW::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  int fkperiod = settings->getInt(_PERIOD_FASTK);
-  int skperiod = settings->getInt(_PERIOD_SLOWK);
-  int sdperiod = settings->getInt(_PERIOD_SLOWD);
+  int fkperiod = settings->getInt("PERIOD_FASTK");
+  int skperiod = settings->getInt("PERIOD_SLOWK");
+  int sdperiod = settings->getInt("PERIOD_SLOWD");
 
   MAType mat;
-  int kma = mat.fromString(settings->data(_MA_TYPE_SLOWK));
-  int dma = mat.fromString(settings->data(_MA_TYPE_SLOWD));
+  int kma = mat.fromString(settings->data("MA_TYPE_SLOWK"));
+  int dma = mat.fromString(settings->data("MA_TYPE_SLOWD"));
 
   int size = bd->count();
   TA_Integer outBeg;
@@ -106,17 +104,17 @@ int STOCH_SLOW::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  kline->setAllColor(QColor(settings->data(_COLOR_K)));
-  kline->setLabel(settings->data(_LABEL_K));
-  kline->setType((Curve::Type) kline->typeFromString(settings->data(_STYLE_K)));
-  kline->setZ(0);
-  i->setLine(settings->data(_LABEL_K), kline);
+  kline->setAllColor(QColor(settings->data("COLOR_K")));
+  kline->setLabel(settings->data("OUTPUT_K"));
+  kline->setType((Curve::Type) kline->typeFromString(settings->data("STYLE_K")));
+  kline->setZ(settings->getInt("Z_K"));
+  i->setLine(settings->data("OUTPUT_K"), kline);
 
-  dline->setAllColor(QColor(settings->data(_COLOR_D)));
-  dline->setLabel(settings->data(_LABEL_D));
-  dline->setType((Curve::Type) dline->typeFromString(settings->data(_STYLE_D)));
-  dline->setZ(1);
-  i->setLine(settings->data(_LABEL_D), dline);
+  dline->setAllColor(QColor(settings->data("COLOR_D")));
+  dline->setLabel(settings->data("OUTPUT_D"));
+  dline->setType((Curve::Type) dline->typeFromString(settings->data("STYLE_D")));
+  dline->setZ(settings->getInt("Z_D"));
+  i->setLine(settings->data("OUTPUT_D"), dline);
 
   // create ref1 line
   Setting co;
@@ -124,15 +122,15 @@ int STOCH_SLOW::calculate (BarData *bd, Indicator *i)
   co.setData("Type", QString("HLine"));
   co.setData("ID", key);
   co.setData("RO", 1);
-  co.setData("Price", settings->data(_REF1));
-  co.setData("Color", settings->data(_COLOR_REF1));
+  co.setData("Price", settings->data("REF1"));
+  co.setData("Color", settings->data("COLOR_REF1"));
   i->addChartObject(co);
 
   // create ref2 line
   key = "-" + QString::number(i->chartObjectCount() + 1);
   co.setData("ID", key);
-  co.setData("Price", settings->data(_REF2));
-  co.setData("Color", settings->data(_COLOR_REF2));
+  co.setData("Price", settings->data("REF2"));
+  co.setData("Color", settings->data("COLOR_REF2"));
   i->addChartObject(co);
 
   return 0;
@@ -311,31 +309,31 @@ int STOCH_SLOW::command (Command *command)
   return 0;
 }
 
-void STOCH_SLOW::dialog (QWidget *p, Indicator *i)
+QWidget * STOCH_SLOW::dialog (QWidget *p, Setting *set)
 {
-  STOCHSDialog *dialog = new STOCHSDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new STOCHSDialog(p, set);
 }
 
 void STOCH_SLOW::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR_K, "red");
-  set->setData(_LABEL_K, "%K");
-  set->setData(_STYLE_K, "Line");
-  set->setData(_COLOR_D, "yellow");
-  set->setData(_LABEL_D, "%D");
-  set->setData(_STYLE_D, "Line");
-  set->setData(_PERIOD_FASTK, 5);
-  set->setData(_PERIOD_SLOWK, 3);
-  set->setData(_PERIOD_SLOWD, 3);
-  set->setData(_COLOR_REF1, "white");
-  set->setData(_REF1, 20);
-  set->setData(_COLOR_REF2, "white");
-  set->setData(_REF2, 80);
-  set->setData(_MA_TYPE_SLOWK, "EMA");
-  set->setData(_MA_TYPE_SLOWD, "EMA");
+  set->setData("COLOR_K", QString("red"));
+  set->setData("STYLE_K", QString("Line"));
+  set->setData("COLOR_D", QString("yellow"));
+  set->setData("STYLE_D", QString("Line"));
+  set->setData("PERIOD_FASTK", 5);
+  set->setData("PERIOD_SLOWK", 3);
+  set->setData("PERIOD_SLOWD", 3);
+  set->setData("COLOR_REF1", QString("white"));
+  set->setData("REF1", 20);
+  set->setData("COLOR_REF2", QString("white"));
+  set->setData("REF2", 80);
+  set->setData("MA_TYPE_SLOWK", QString("EMA"));
+  set->setData("MA_TYPE_SLOWD", QString("EMA"));
+  set->setData("Z_K", 0);
+  set->setData("OUTPUT_K", QString("%K"));
+  set->setData("Z_D", 0);
+  set->setData("OUTPUT_D", QString("%D"));
 }
 
 //*************************************************************

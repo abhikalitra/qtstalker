@@ -29,27 +29,11 @@ class MAVP : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _INPUT = 10,
-      _INPUT2 = 20,
-      _COLOR = 30,
-      _STYLE = 40,
-      _LABEL = 50,
-      _MA_TYPE = 60,
-      _PERIOD_MIN = 70,
-      _PERIOD_MAX = 80,
-      _STYLE_BARS = 90,
-      _COLOR_BARS_UP = 100,
-      _COLOR_BARS_DOWN = 110,
-      _COLOR_BARS_NEUTRAL = 120
-    };
-
     MAVP ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

@@ -25,12 +25,12 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class MACDDialog : public Dialog
+class MACDDialog : public QWidget
 {
   Q_OBJECT
 
@@ -42,7 +42,7 @@ class MACDDialog : public Dialog
     void createHistPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
@@ -60,6 +60,12 @@ class MACDDialog : public Dialog
     QSpinBox *_fastPeriod;
     QSpinBox *_slowPeriod;
     QSpinBox *_signalPeriod;
+    QLineEdit *_macdOutput;
+    QLineEdit *_sigOutput;
+    QLineEdit *_histOutput;
+    QSpinBox *_macdZ;
+    QSpinBox *_sigZ;
+    QSpinBox *_histZ;
 };
 
 #endif

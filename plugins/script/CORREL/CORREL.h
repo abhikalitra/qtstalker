@@ -29,27 +29,11 @@ class CORREL : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR = 10,
-      _STYLE = 20,
-      _LABEL = 30,
-      _PERIOD = 40,
-      _COLOR_REF1 = 50,
-      _COLOR_REF2 = 60,
-      _COLOR_REF3 = 70,
-      _REF1 = 80,
-      _REF2 = 90,
-      _REF3 = 100,
-      _INDEX = 110,
-      _INPUT = 120
-    };
-
     CORREL ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

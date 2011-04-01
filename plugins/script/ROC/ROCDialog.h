@@ -24,12 +24,12 @@
 
 #include <QComboBox>
 #include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class ROCDialog : public Dialog
+class ROCDialog : public QWidget
 {
   Q_OBJECT
 
@@ -42,13 +42,13 @@ class ROCDialog : public Dialog
 
   private:
     Setting *_settings;
-    QSpinBox *_smoothing;
     QSpinBox *_period;
     ColorButton *_color;
     QComboBox *_style;
-    QComboBox *_smoothingType;
     QComboBox *_input;
     QComboBox *_method;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

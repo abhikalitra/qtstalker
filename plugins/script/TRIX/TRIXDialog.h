@@ -24,21 +24,21 @@
 
 #include <QComboBox>
 #include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class TRIXDialog : public Dialog
+class TRIXDialog : public QWidget
 {
   Q_OBJECT
 
   public:
     TRIXDialog (QWidget *, Setting *);
-    void createGeneralPage ();
+    void createGeneralPage();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
@@ -46,6 +46,8 @@ class TRIXDialog : public Dialog
     ColorButton *_color;
     QComboBox *_style;
     QComboBox *_input;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

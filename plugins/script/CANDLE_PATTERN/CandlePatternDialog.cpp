@@ -20,9 +20,9 @@
  */
 
 #include "CandlePatternDialog.h"
-#include "CANDLE_PATTERN.h"
 #include "Globals.h"
 #include "CandleType.h"
+
 #include "../../../pics/add.xpm"
 #include "../../../pics/delete.xpm"
 
@@ -31,27 +31,22 @@
 #include <QToolBar>
 #include <QToolButton>
 #include <QComboBox>
+#include <QFormLayout>
 
-CandlePatternDialog::CandlePatternDialog (QWidget *p, Setting *set) : Dialog (p)
+CandlePatternDialog::CandlePatternDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "CandlePatternDialog_window_size";
-  _keyPos = "CandlePatternDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "CANDLE_PATTERN" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
   createPatternPage();
-
-  loadSettings();
 }
 
 void CandlePatternDialog::createGeneralPage ()
 {
+  QVBoxLayout *vbox = new QVBoxLayout;
+  setLayout(vbox);
+
   _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
+  vbox->addWidget(_tabs);
 
   QWidget *w = new QWidget;
 
@@ -59,18 +54,21 @@ void CandlePatternDialog::createGeneralPage ()
   w->setLayout(form);
 
   // candle color
-  _candleColor = new ColorButton(this, QColor(_settings->data(CANDLE_PATTERN::_COLOR)));
-  _candleColor->setColorButton();
-  form->addRow(tr("Candle Color"), _candleColor);
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
+  _color->setColorButton();
+  form->addRow(tr("Color"), _color);
 
   // penetration
   _pen = new QDoubleSpinBox;
   _pen->setRange(0, 100);
-  _pen->setValue(_settings->getDouble(CANDLE_PATTERN::_PEN));
+  _pen->setValue(_settings->getDouble("PEN"));
   form->addRow(tr("Penetration"), _pen);
 
-  // make room unused
-  _message->hide();
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 
   _tabs->addTab(w, tr("General"));
 }
@@ -113,7 +111,7 @@ void CandlePatternDialog::createPatternPage ()
   _plist->setColumnWidth(1, 150);
   vbox->addWidget(_plist);
 
-  l = _settings->data(CANDLE_PATTERN::_PATTERN).split(",", QString::SkipEmptyParts);
+  l = _settings->data("PATTERN").split(",", QString::SkipEmptyParts);
   int loop = 0;
   for (; loop < l.count(); loop += 2)
     addPattern(l.at(loop), l.at(loop + 1));
@@ -155,10 +153,11 @@ void CandlePatternDialog::deletePattern ()
     delete l.at(loop);
 }
 
-void CandlePatternDialog::done ()
+void CandlePatternDialog::save ()
 {
-  _settings->setData(CANDLE_PATTERN::_PEN, _pen->value());
-  _settings->setData(CANDLE_PATTERN::_COLOR, _candleColor->color().name());
+  _settings->setData("PEN", _pen->value());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("Z", _z->text());
 
   int loop = 0;
   QStringList l;
@@ -172,9 +171,5 @@ void CandlePatternDialog::done ()
     ColorButton *c = (ColorButton *) _plist->itemWidget(item, 2);
     l << c->color().name();
   }
-  _settings->setData(CANDLE_PATTERN::_PATTERN, l.join(","));
-  
-  saveSettings();
-
-  accept();
+  _settings->setData("PATTERN", l.join(","));
 }

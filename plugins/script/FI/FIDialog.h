@@ -24,12 +24,12 @@
 
 #include <QComboBox>
 #include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class FIDialog : public Dialog
+class FIDialog : public QWidget
 {
   Q_OBJECT
 
@@ -38,7 +38,7 @@ class FIDialog : public Dialog
     void createGeneralPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
@@ -46,6 +46,8 @@ class FIDialog : public Dialog
     ColorButton *_color;
     QComboBox *_style;
     QComboBox *_maType;
+    QSpinBox *_z;
+    QLineEdit *_output;
 };
 
 #endif

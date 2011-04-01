@@ -20,40 +20,29 @@
  */
 
 #include "THERMDialog.h"
-#include "THERM.h"
 #include "Globals.h"
-#include "MAType.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-THERMDialog::THERMDialog (QWidget *p, Setting *set) : Dialog (p)
+THERMDialog::THERMDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "THERMDialog_window_size";
-  _keyPos = "THERMDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "THERM" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-
-  loadSettings();
 }
 
 void THERMDialog::createGeneralPage ()
 {
-  _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
-
-  QWidget *w = new QWidget;
-
   QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(THERM::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
   form->addRow(tr("Color"), _color);
 
@@ -64,38 +53,20 @@ void THERMDialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(THERM::_STYLE), Qt::MatchExactly));
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
   form->addRow(tr("Style"), _style);
 
-  // smoothing
-  _smoothing = new QSpinBox;
-  _smoothing->setRange(1, 100000);
-  _smoothing->setValue(_settings->getInt(THERM::_SMOOTHING));
-  _form->addRow(tr("Smoothing"), _smoothing);
-
-  // type
-  MAType mat;
-  l = mat.list();
-
-  _smoothingType = new QComboBox;
-  _smoothingType->addItems(l);
-  _smoothingType->setCurrentIndex(_smoothingType->findText(_settings->data(THERM::_SMOOTHING_TYPE), Qt::MatchExactly));
-  _form->addRow(tr("Smoothing Type"), _smoothingType);
-
-  // make room unused
-  _message->hide();
-
-  _tabs->addTab(w, "THERM");
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void THERMDialog::done ()
+void THERMDialog::save ()
 {
-  _settings->setData(THERM::_COLOR, _color->color().name());
-  _settings->setData(THERM::_STYLE, _style->currentText());
-  _settings->setData(THERM::_SMOOTHING, _smoothing->value());
-  _settings->setData(THERM::_SMOOTHING_TYPE, _smoothingType->currentText());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

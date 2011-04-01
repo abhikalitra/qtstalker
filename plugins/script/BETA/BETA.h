@@ -29,21 +29,11 @@ class BETA : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _INDEX = 10,
-      _COLOR = 20,
-      _STYLE = 30,
-      _LABEL = 40,
-      _INPUT = 50,
-      _PERIOD = 60
-    };
-
     BETA ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

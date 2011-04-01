@@ -28,19 +28,16 @@
 
 Script::Script (QWidget *p) : QObject(p)
 {
-  _parent = p;
   init();
 }
 
 Script::Script (QObject *p) : QObject(p)
 {
-  _parent = 0;
   init();
 }
 
 Script::Script () : QObject(0)
 {
-  _parent = 0;
   init();
 }
 
@@ -66,7 +63,7 @@ void Script::init ()
 
   _command = new Command;
 
-  _indicator = new Indicator(0);
+  _indicator = new Indicator;
   _indicatorFlag = 1;
 
   _proc = new QProcess(this);
@@ -194,7 +191,6 @@ void Script::readFromStdout ()
     _plugins.insert(_command->plugin(), plug);
     connect(plug, SIGNAL(signalResume()), this, SLOT(resume()));
     connect(this, SIGNAL(signalKill()), plug, SIGNAL(signalKill()));
-    plug->setParent(_parent);
   }
 
   switch ((Plugin::Type) plug->type())

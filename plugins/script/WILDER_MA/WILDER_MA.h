@@ -23,6 +23,7 @@
 #define PLUGIN_WILDER_MA_HPP
 
 #include "Plugin.h"
+#include "Curve.h"
 
 class WILDER_MA : public Plugin
 {
@@ -31,7 +32,10 @@ class WILDER_MA : public Plugin
   public:
     WILDER_MA ();
     int command (Command *);
-    Curve * calculate (Curve *, int period);
+    int calculate (BarData *, Indicator *, Setting *);
+    void defaults (Setting *);
+    QWidget * dialog (QWidget *, Setting *);
+    Curve * getMA (Curve *in, int period);
 };
 
 extern "C"

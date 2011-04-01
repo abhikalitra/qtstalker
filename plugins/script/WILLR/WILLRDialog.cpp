@@ -21,60 +21,59 @@
 
 #include "WILLRDialog.h"
 #include "Globals.h"
-#include "WILLR.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-WILLRDialog::WILLRDialog (QWidget *p, Setting *set) : Dialog (p)
+WILLRDialog::WILLRDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "WILLRDialog_window_size";
-  _keyPos = "WILLRDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "WILLR" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-
-  loadSettings();
 }
-  
+
 void WILLRDialog::createGeneralPage ()
 {
+  QFormLayout *form = new QFormLayout;
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+
   // period
   _period = new QSpinBox;
-  _period->setRange(1, 100000);
-  _period->setValue(_settings->getInt(WILLR::_PERIOD));
-  _form->addRow(tr("Period"), _period);
-
+  _period->setRange(2, 100000);
+  _period->setValue(_settings->getInt("PERIOD"));
+  form->addRow(tr("Period"), _period);
+  
   // color
-  _color = new ColorButton(this, QColor(_settings->data(WILLR::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
-  _form->addRow(tr("Color"), _color);
+  form->addRow(tr("Color"), _color);
 
-  // plot style
-  QStringList l;
+  // style
   Curve c;
+  QStringList l;
   c.list(l, 1);
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(WILLR::_STYLE), Qt::MatchExactly));
-  _form->addRow(tr("Style"), _style);
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
+  form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void WILLRDialog::done ()
+void WILLRDialog::save ()
 {
-  _settings->setData(WILLR::_COLOR, _color->color().name());
-  _settings->setData(WILLR::_STYLE, _style->currentText());
-  _settings->setData(WILLR::_PERIOD, _period->value());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("PERIOD", _period->text());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

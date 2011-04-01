@@ -23,35 +23,30 @@
 #define PLUGIN_SAR_DIALOG_HPP
 
 #include <QDoubleSpinBox>
-#include <QTabWidget>
 #include <QComboBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class SARDialog : public Dialog
+class SARDialog : public QWidget
 {
   Q_OBJECT
 
   public:
     SARDialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createBarsPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     QDoubleSpinBox *_init;
     QDoubleSpinBox *_max;
     ColorButton *_color;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
-    QComboBox *_barsStyle;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

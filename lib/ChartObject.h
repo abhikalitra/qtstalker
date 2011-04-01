@@ -68,7 +68,6 @@ class ChartObject : public QObject
     void setSettings (Setting *);
     ChartObject::Status status ();
     void load ();
-    void setParent (QWidget *);
 
   public slots:
     virtual void move (QPoint);
@@ -81,7 +80,6 @@ class ChartObject : public QObject
     void update ();
 
   protected:
-    QWidget *_parent;
     Status _status;
     Setting *_settings;
     QMenu *_menu;

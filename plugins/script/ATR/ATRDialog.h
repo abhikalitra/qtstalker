@@ -24,12 +24,12 @@
 
 #include <QComboBox>
 #include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class ATRDialog : public Dialog
+class ATRDialog : public QWidget
 {
   Q_OBJECT
 
@@ -38,14 +38,16 @@ class ATRDialog : public Dialog
     void createGeneralPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
     QSpinBox *_period;
+    QSpinBox *_z;
     ColorButton *_color;
     QComboBox *_style;
     QComboBox *_method;
+    QLineEdit *_output;
 };
 
 #endif

@@ -101,7 +101,6 @@ class Script : public QObject
     QString _lastRun;
     QHash<QString, Plugin *> _plugins;
     Command *_command;
-    QWidget *_parent;
 };
 
 #endif

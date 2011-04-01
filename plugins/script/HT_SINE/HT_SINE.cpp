@@ -38,14 +38,22 @@ HT_SINE::HT_SINE ()
     qDebug("HT_SINE::HT_SINE: error on TA_Initialize");
 }
 
-int HT_SINE::calculate (BarData *bd, Indicator *i)
+int HT_SINE::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  InputType itypes;
-  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+
+    delFlag++;
+  }
 
   int size = in->count();
   TA_Integer outBeg;
@@ -64,6 +72,9 @@ int HT_SINE::calculate (BarData *bd, Indicator *i)
     input[loop] = (TA_Real) bar->data();
   }
 
+  if (delFlag)
+    delete in;
+  
   TA_RetCode rc = TA_HT_SINE (0,
                               size - 1,
                               &input[0],
@@ -92,17 +103,17 @@ int HT_SINE::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  sline->setAllColor(QColor(settings->data(_COLOR_SINE)));
-  sline->setLabel(settings->data(_LABEL_SINE));
-  sline->setType((Curve::Type) sline->typeFromString(settings->data(_STYLE_SINE)));
-  sline->setZ(0);
-  i->setLine(settings->data(_LABEL_SINE), sline);
+  sline->setAllColor(QColor(settings->data("COLOR_SINE")));
+  sline->setLabel(settings->data("OUTPUT_SINE"));
+  sline->setType((Curve::Type) sline->typeFromString(settings->data("STYLE_SINE")));
+  sline->setZ(settings->getInt("Z_SINE"));
+  i->setLine(settings->data("OUTPUT_SINE"), sline);
   
-  lline->setAllColor(QColor(settings->data(_COLOR_LEAD)));
-  lline->setLabel(settings->data(_LABEL_LEAD));
-  lline->setType((Curve::Type) lline->typeFromString(settings->data(_STYLE_LEAD)));
-  lline->setZ(1);
-  i->setLine(settings->data(_LABEL_LEAD), lline);
+  lline->setAllColor(QColor(settings->data("COLOR_LEAD")));
+  lline->setLabel(settings->data("OUTPUT_LEAD"));
+  lline->setType((Curve::Type) lline->typeFromString(settings->data("STYLE_LEAD")));
+  lline->setZ(settings->getInt("Z_LEAD"));
+  i->setLine(settings->data("OUTPUT_LEAD"), lline);
 
   return 0;
 }
@@ -203,23 +214,23 @@ int HT_SINE::command (Command *command)
   return 0;
 }
 
-void HT_SINE::dialog (QWidget *p, Indicator *i)
+QWidget * HT_SINE::dialog (QWidget *p, Setting *set)
 {
-  HT_SINEDialog *dialog = new HT_SINEDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new HT_SINEDialog(p, set);
 }
 
 void HT_SINE::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR_SINE, "red");
-  set->setData(_COLOR_LEAD, "yellow");
-  set->setData(_STYLE_SINE, "Line");
-  set->setData(_STYLE_LEAD, "Line");
-  set->setData(_LABEL_SINE, "SINE");
-  set->setData(_LABEL_LEAD, "LEAD");
-  set->setData(_INPUT, "Close");
+  set->setData("COLOR_SINE", QString("red"));
+  set->setData("COLOR_LEAD", QString("yellow"));
+  set->setData("STYLE_SINE", QString("Line"));
+  set->setData("STYLE_LEAD", QString("Line"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("OUTPUT_SINE", _plugin);
+  set->setData("Z_SINE", 0);
+  set->setData("OUTPUT_LEAD", _plugin);
+  set->setData("Z_LEAD", 0);
 }
 
 //*************************************************************

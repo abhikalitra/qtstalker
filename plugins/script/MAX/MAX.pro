@@ -3,5 +3,7 @@
 } 
 
 HEADERS += MAX.h
+HEADERS += MAXDialog.h
 
 SOURCES += MAX.cpp
+SOURCES += MAXDialog.cpp

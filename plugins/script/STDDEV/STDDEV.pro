@@ -3,5 +3,7 @@
 } 
 
 HEADERS += STDDEV.h
+HEADERS += STDDEVDialog.h
 
 SOURCES += STDDEV.cpp
+SOURCES += STDDEVDialog.cpp

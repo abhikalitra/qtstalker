@@ -172,7 +172,7 @@ void ChartObjectVLine::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectVLineDialog(_parent, this);
+  _dialog = new ChartObjectVLineDialog(g_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();

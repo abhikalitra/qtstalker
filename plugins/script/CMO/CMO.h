@@ -29,29 +29,11 @@ class CMO : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR = 10,
-      _STYLE = 20,
-      _LABEL = 30,
-      _PERIOD = 40,
-      _COLOR_REF1 = 50,
-      _COLOR_REF2 = 60,
-      _REF1 = 70,
-      _REF2 = 80,
-      _MA_PERIOD = 90,
-      _MA_TYPE = 100,
-      _MA_COLOR = 110,
-      _MA_STYLE = 120,
-      _MA_LABEL = 130,
-      _INPUT = 140
-    };
-
     CMO ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

@@ -24,12 +24,13 @@
 
 #include <QComboBox>
 #include <QTabWidget>
+#include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class HT_PHASORDialog : public Dialog
+class HT_PHASORDialog : public QWidget
 {
   Q_OBJECT
 
@@ -40,7 +41,7 @@ class HT_PHASORDialog : public Dialog
     void createQuadPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
@@ -50,6 +51,10 @@ class HT_PHASORDialog : public Dialog
     QComboBox *_phaseStyle;
     QComboBox *_quadStyle;
     QComboBox *_input;
+    QSpinBox *_zPhase;
+    QSpinBox *_zQuad;
+    QLineEdit *_phaseOutput;
+    QLineEdit *_quadOutput;
 };
 
 #endif

@@ -34,11 +34,9 @@ CANDLE_PATTERN::CANDLE_PATTERN ()
   _type = _INDICATOR;
 }
 
-int CANDLE_PATTERN::calculate (BarData *bd, Indicator *i)
+int CANDLE_PATTERN::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  QColor c(settings->data(_COLOR));
+  QColor c(settings->data("COLOR"));
   InputType it;
   Curve *line = it.ohlc(bd, c, c, c);
   if (! line)
@@ -46,13 +44,13 @@ int CANDLE_PATTERN::calculate (BarData *bd, Indicator *i)
 
   line->setType(Curve::Candle);
   line->setLabel("CANDLES");
-  line->setZ(0);
+  line->setZ(settings->getInt("Z"));
   i->setLine("CANDLES", line);
 
-  double pen = settings->getDouble(_PEN);
+  double pen = settings->getDouble("PEN");
 
   CandleType ct;
-  QStringList l = settings->data(_PATTERN).split(",", QString::SkipEmptyParts);
+  QStringList l = settings->data("PATTERN").split(",", QString::SkipEmptyParts);
   int loop = 0;
   for (; loop < l.count(); loop += 2)
   {
@@ -204,19 +202,18 @@ int CANDLE_PATTERN::command (Command *command)
   return 0;
 }
 
-void CANDLE_PATTERN::dialog (QWidget *p, Indicator *i)
+QWidget * CANDLE_PATTERN::dialog (QWidget *p, Setting *set)
 {
-  CandlePatternDialog *dialog = new CandlePatternDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new CandlePatternDialog(p, set);
 }
 
 void CANDLE_PATTERN::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, QString("dimgray"));
-  set->setData(_METHOD, QString());
-  set->setData(_PEN, 50);
+  set->setData("COLOR", QString("dimgray"));
+  set->setData("METHOD", QString());
+  set->setData("PEN", 50);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

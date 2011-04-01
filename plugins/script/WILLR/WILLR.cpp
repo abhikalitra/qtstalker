@@ -37,14 +37,12 @@ WILLR::WILLR ()
     qDebug("WILLR::WILLR: error on TA_Initialize");
 }
 
-int WILLR::calculate (BarData *bd, Indicator *i)
+int WILLR::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  int period = settings->getInt(_PERIOD);
+  int period = settings->getInt("PERIOD");
 
   int size = bd->count();
-  TA_Real out[size];
+  TA_Real adxOut[size];
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -63,16 +61,8 @@ int WILLR::calculate (BarData *bd, Indicator *i)
     close[loop] = (TA_Real) bar->close();
   }
 
-  TA_RetCode rc = TA_WILLR(0,
-                         size - 1,
-                         &high[0],
-                         &low[0],
-                         &close[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-
+  // WILLR
+  TA_RetCode rc = TA_WILLR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &adxOut[0]);
   if (rc != TA_SUCCESS)
   {
     qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
@@ -80,21 +70,21 @@ int WILLR::calculate (BarData *bd, Indicator *i)
   }
 
   Curve *line = new Curve;
-
+  
   int dataLoop = size - 1;
   int outLoop = outNb - 1;
   while (outLoop > -1 && dataLoop > -1)
   {
-    line->setBar(dataLoop, new CurveBar(out[outLoop]));
+    line->setBar(dataLoop, new CurveBar(adxOut[outLoop]));
     dataLoop--;
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(1);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -140,20 +130,25 @@ int WILLR::command (Command *command)
   Curve *line = i->line(name);
   if (line)
   {
-    qDebug() << _plugin << "::command: duplicate NAME" << name;
+    qDebug() << _plugin << "::command: duplicate name" << name;
     return 1;
   }
 
   bool ok;
-  int period = command->parm("PERIOD").toInt(&ok);
-  if (! ok)
+  int period = 14;
+  QString s = command->parm("PERIOD");
+  if (! s.isEmpty())
   {
-    qDebug() << _plugin << "::command: invalid PERIOD" << command->parm("PERIOD");
-    return 1;
+    period = s.toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::command: invalid period" << s;
+      return 1;
+    }
   }
 
   int size = iclose->count();
-
+  
   TA_Real out[size];
   TA_Real high[size];
   TA_Real low[size];
@@ -219,20 +214,19 @@ int WILLR::command (Command *command)
   return 0;
 }
 
-void WILLR::dialog (QWidget *p, Indicator *i)
+QWidget * WILLR::dialog (QWidget *p, Setting *set)
 {
-  WILLRDialog *dialog = new WILLRDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new WILLRDialog(p, set);
 }
 
 void WILLR::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "yellow");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Line");
-  set->setData(_PERIOD, 10);
+  set->setData("COLOR", QString("blue"));
+  set->setData("OUTPUT", _plugin);
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD", 14);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

@@ -3,5 +3,7 @@
 } 
 
 HEADERS += PDI.h
+HEADERS += PDIDialog.h
 
 SOURCES += PDI.cpp
+SOURCES += PDIDialog.cpp

@@ -23,7 +23,6 @@
 #define PLUGIN_HPP
 
 #include <QObject>
-#include <QWidget>
 
 #include "Command.h"
 #include "Indicator.h"
@@ -49,18 +48,15 @@ class Plugin : public QObject
     Plugin ();
     virtual ~Plugin ();
     virtual int command (Command *);
-    virtual int calculate (BarData *, Indicator *);
+    virtual int calculate (BarData *, Indicator *, Setting *);
     virtual void defaults (Setting *);
-    virtual void dialog (QWidget *, Indicator *);
-    virtual void testRuleDialog (QWidget *, Setting *);
+    virtual QWidget * dialog (QWidget *, Setting *);
     
     int type ();
-    void setParent (QWidget *);
 
   protected:
     int _type;
     QString _plugin;
-    QWidget *_parent;
 };
 
 #endif

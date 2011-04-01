@@ -3,5 +3,7 @@
 }
 
 HEADERS += DIV.h
+HEADERS += DIVDialog.h
 
 SOURCES += DIV.cpp
+SOURCES += DIVDialog.cpp

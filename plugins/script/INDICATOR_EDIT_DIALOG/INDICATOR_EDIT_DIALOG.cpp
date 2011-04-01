@@ -21,6 +21,7 @@
 
 #include "INDICATOR_EDIT_DIALOG.h"
 #include "IndicatorEditDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -43,7 +44,7 @@ int INDICATOR_EDIT_DIALOG::command (Command *command)
     return 1;
   }
 
-  IndicatorEditDialog *dialog = new IndicatorEditDialog(_parent, command);
+  IndicatorEditDialog *dialog = new IndicatorEditDialog(g_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

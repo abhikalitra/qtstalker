@@ -24,7 +24,6 @@
 #include "ta_libc.h"
 #include "Globals.h"
 #include "CMODialog.h"
-#include "MAType.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -39,19 +38,24 @@ CMO::CMO ()
     qDebug("CMO::CMO: error on TA_Initialize");
 }
 
-int CMO::calculate (BarData *bd, Indicator *i)
+int CMO::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-  
-  int period = settings->getInt(_PERIOD);
+  int period = settings->getInt("PERIOD");
 
-  InputType itypes;
-  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
 
-  if (in->count() < period)
-    return 1;
+    delFlag++;
+  }
 
   TA_Real input[in->count()];
   TA_Real out[in->count()];
@@ -68,6 +72,9 @@ int CMO::calculate (BarData *bd, Indicator *i)
     input[loop] = (TA_Real) bar->data();
   }
 
+  if (delFlag)
+    delete in;
+  
   TA_RetCode rc = TA_CMO(0,
                          keys.count() - 1,
                          &input[0],
@@ -92,25 +99,11 @@ int CMO::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
-
-  // MA
-  MAType mat;
-  Curve *ma = mat.getMA(line,
-			settings->getInt(_MA_PERIOD),
-			mat.fromString(settings->data(_MA_TYPE)));
-  if (ma)
-  {
-    ma->setAllColor(QColor(settings->data(_MA_COLOR)));
-    ma->setLabel(settings->data(_MA_LABEL));
-    ma->setType((Curve::Type) line->typeFromString(settings->data(_MA_STYLE)));
-    ma->setZ(1);
-    i->setLine(settings->data(_MA_LABEL), ma);
-  }
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   // create ref1 line
   Setting co;
@@ -118,15 +111,15 @@ int CMO::calculate (BarData *bd, Indicator *i)
   co.setData("Type", QString("HLine"));
   co.setData("ID", key);
   co.setData("RO", 1);
-  co.setData("Price", settings->data(_REF1));
-  co.setData("Color", settings->data(_COLOR_REF1));
+  co.setData("Price", settings->data("REF1"));
+  co.setData("Color", settings->data("COLOR_REF1"));
   i->addChartObject(co);
 
   // create ref2 line
   key = "-" + QString::number(i->chartObjectCount() + 1);
   co.setData("ID", key);
-  co.setData("Price", settings->data(_REF2));
-  co.setData("Color", settings->data(_COLOR_REF2));
+  co.setData("Price", settings->data("REF2"));
+  co.setData("Color", settings->data("COLOR_REF2"));
   i->addChartObject(co);
   
   return 0;
@@ -219,30 +212,24 @@ int CMO::command (Command *command)
   return 0;
 }
 
-void CMO::dialog (QWidget *p, Indicator *i)
+QWidget * CMO::dialog (QWidget *p, Setting *set)
 {
-  CMODialog *dialog = new CMODialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new CMODialog(p, set);
 }
 
 void CMO::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "red");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Line");
-  set->setData(_PERIOD, 20);
-  set->setData(_COLOR_REF1, "white");
-  set->setData(_REF1, 50);
-  set->setData(_COLOR_REF2, "white");
-  set->setData(_REF2, -50);
-  set->setData(_MA_PERIOD, 9);
-  set->setData(_MA_TYPE, "EMA");
-  set->setData(_MA_COLOR, "yellow");
-  set->setData(_MA_LABEL, "CMO_MA");
-  set->setData(_MA_STYLE, "Line");
-  set->setData(_INPUT, "Close");
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD", 20);
+  set->setData("COLOR_REF1", QString("white"));
+  set->setData("REF1", 50);
+  set->setData("COLOR_REF2", QString("white"));
+  set->setData("REF2", -50);
+  set->setData("INPUT", QString("Close"));
+  set->setData("OUTPUT", _plugin);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

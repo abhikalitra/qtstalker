@@ -26,14 +26,13 @@
 Plugin::Plugin ()
 {
   _type = _THREAD;
-  _parent = 0;
 }
 
 Plugin::~Plugin ()
 {
 }
 
-int Plugin::calculate (BarData *, Indicator *)
+int Plugin::calculate (BarData *, Indicator *, Setting *)
 {
   return 0;
 }
@@ -47,20 +46,12 @@ int Plugin::command (Command *)
   return 0;
 }
 
-void Plugin::dialog (QWidget *, Indicator *)
+QWidget * Plugin::dialog (QWidget *, Setting *)
 {
-}
-
-void Plugin::testRuleDialog (QWidget *, Setting *)
-{
+  return 0;
 }
 
 int Plugin::type ()
 {
   return _type;
-}
-
-void Plugin::setParent (QWidget *p)
-{
-  _parent = p;
 }

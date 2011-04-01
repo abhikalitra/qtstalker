@@ -24,12 +24,13 @@
 
 #include <QComboBox>
 #include <QTabWidget>
+#include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class HT_SINEDialog : public Dialog
+class HT_SINEDialog : public QWidget
 {
   Q_OBJECT
 
@@ -40,7 +41,7 @@ class HT_SINEDialog : public Dialog
     void createLeadPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
@@ -50,6 +51,10 @@ class HT_SINEDialog : public Dialog
     QComboBox *_sineStyle;
     QComboBox *_leadStyle;
     QComboBox *_input;
+    QSpinBox *_zSine;
+    QLineEdit *_sineOutput;
+    QSpinBox *_zLead;
+    QLineEdit *_leadOutput;
 };
 
 #endif

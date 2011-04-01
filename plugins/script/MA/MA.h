@@ -31,6 +31,9 @@ class MA : public Plugin
   public:
     MA ();
     int command (Command *);
+    int calculate (BarData *, Indicator *, Setting *);
+    void defaults (Setting *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

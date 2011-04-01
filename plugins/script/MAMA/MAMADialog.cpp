@@ -21,34 +21,27 @@
 
 #include "MAMADialog.h"
 #include "Globals.h"
-#include "MAMA.h"
 #include "InputType.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-MAMADialog::MAMADialog (QWidget *p, Setting *set) : Dialog (p)
+MAMADialog::MAMADialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "MAMADialog_window_size";
-  _keyPos = "MAMADialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "MAMA" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
   createMAMAPage();
   createFAMAPage();
-  createBarsPage();
-
-  loadSettings();
 }
 
 void MAMADialog::createGeneralPage ()
 {
+  QVBoxLayout *vbox = new QVBoxLayout;
+  setLayout(vbox);
+
   _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
+  vbox->addWidget(_tabs);
 
   QWidget *w = new QWidget;
 
@@ -59,22 +52,24 @@ void MAMADialog::createGeneralPage ()
   InputType it;
   QStringList l;
   l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(MAMA::_INPUT), Qt::MatchExactly));
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
   form->addRow(tr("Input"), _input);
 
   // fast limit
   _fast = new QDoubleSpinBox;
   _fast->setRange(0, 100000);
-  _fast->setValue(_settings->getInt(MAMA::_LIMIT_FAST));
+  _fast->setValue(_settings->getInt("LIMIT_FAST"));
   form->addRow(tr("Fast Limit"), _fast);
 
   // slow limit
   _slow = new QDoubleSpinBox;
   _slow->setRange(0, 100000);
-  _slow->setValue(_settings->getInt(MAMA::_LIMIT_SLOW));
+  _slow->setValue(_settings->getInt("LIMIT_SLOW"));
   form->addRow(tr("Slow Period"), _slow);
 
   _tabs->addTab(w, tr("General"));  
@@ -87,8 +82,12 @@ void MAMADialog::createMAMAPage ()
   QFormLayout *form = new QFormLayout;
   w->setLayout(form);
 
+  // name
+  _mamaOutput = new QLineEdit(_settings->data("OUTPUT_MAMA"));
+  form->addRow(tr("Output"), _mamaOutput);
+
   // color
-  _mamaColor = new ColorButton(this, QColor(_settings->data(MAMA::_COLOR_MAMA)));
+  _mamaColor = new ColorButton(this, QColor(_settings->data("COLOR_MAMA")));
   _mamaColor->setColorButton();
   form->addRow(tr("Color"), _mamaColor);
 
@@ -99,8 +98,14 @@ void MAMADialog::createMAMAPage ()
 
   _mamaStyle = new QComboBox;
   _mamaStyle->addItems(l);
-  _mamaStyle->setCurrentIndex(_mamaStyle->findText(_settings->data(MAMA::_STYLE_MAMA), Qt::MatchExactly));
+  _mamaStyle->setCurrentIndex(_mamaStyle->findText(_settings->data("STYLE_MAMA"), Qt::MatchExactly));
   form->addRow(tr("Style"), _mamaStyle);
+
+  // z
+  _zMama = new QSpinBox;
+  _zMama->setRange(-1, 99);
+  _zMama->setValue(_settings->getInt("Z_MAMA"));
+  form->addRow(tr("Plot Order"), _zMama);
 
   _tabs->addTab(w, "MAMA");
 }
@@ -112,8 +117,12 @@ void MAMADialog::createFAMAPage ()
   QFormLayout *form = new QFormLayout;
   w->setLayout(form);
 
+  // name
+  _famaOutput = new QLineEdit(_settings->data("OUTPUT_FAMA"));
+  form->addRow(tr("Output"), _famaOutput);
+
   // color
-  _famaColor = new ColorButton(this, QColor(_settings->data(MAMA::_COLOR_FAMA)));
+  _famaColor = new ColorButton(this, QColor(_settings->data("COLOR_FAMA")));
   _famaColor->setColorButton();
   form->addRow(tr("Color"), _famaColor);
 
@@ -124,61 +133,29 @@ void MAMADialog::createFAMAPage ()
 
   _famaStyle = new QComboBox;
   _famaStyle->addItems(l);
-  _famaStyle->setCurrentIndex(_famaStyle->findText(_settings->data(MAMA::_STYLE_FAMA), Qt::MatchExactly));
+  _famaStyle->setCurrentIndex(_famaStyle->findText(_settings->data("STYLE_FAMA"), Qt::MatchExactly));
   form->addRow(tr("Style"), _famaStyle);
+
+  // z
+  _zFama = new QSpinBox;
+  _zFama->setRange(-1, 99);
+  _zFama->setValue(_settings->getInt("Z_FAMA"));
+  form->addRow(tr("Plot Order"), _zFama);
 
   _tabs->addTab(w, "FAMA");
 }
 
-void MAMADialog::createBarsPage ()
+void MAMADialog::save ()
 {
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // up color
-  _upColor = new ColorButton(this, QColor(_settings->data(MAMA::_COLOR_BARS_UP)));
-  _upColor->setColorButton();
-  form->addRow(tr("Up Color"), _upColor);
-
-  // down color
-  _downColor = new ColorButton(this, QColor(_settings->data(MAMA::_COLOR_BARS_DOWN)));
-  _downColor->setColorButton();
-  form->addRow(tr("Down Color"), _downColor);
-
-  // neutral color
-  _neutralColor = new ColorButton(this, QColor(_settings->data(MAMA::_COLOR_BARS_NEUTRAL)));
-  _neutralColor->setColorButton();
-  form->addRow(tr("Neutral Color"), _neutralColor);
-
-  // style
-  QStringList l;
-  l << "OHLC" << "Candle";
-
-  _barsStyle = new QComboBox;
-  _barsStyle->addItems(l);
-  _barsStyle->setCurrentIndex(_barsStyle->findText(_settings->data(MAMA::_STYLE_BARS), Qt::MatchExactly));
-  form->addRow(tr("Style"), _barsStyle);
-
-  _tabs->addTab(w, "BARS");
-}
-
-void MAMADialog::done ()
-{
-  _settings->setData(MAMA::_COLOR_MAMA, _mamaColor->color().name());
-  _settings->setData(MAMA::_COLOR_FAMA, _famaColor->color().name());
-  _settings->setData(MAMA::_STYLE_MAMA, _mamaStyle->currentText());
-  _settings->setData(MAMA::_STYLE_FAMA, _famaStyle->currentText());
-  _settings->setData(MAMA::_LIMIT_FAST, _fast->value());
-  _settings->setData(MAMA::_LIMIT_SLOW, _slow->value());
-  _settings->setData(MAMA::_INPUT, _input->currentText());
-  _settings->setData(MAMA::_COLOR_BARS_UP, _upColor->color().name());
-  _settings->setData(MAMA::_COLOR_BARS_DOWN, _downColor->color().name());
-  _settings->setData(MAMA::_COLOR_BARS_NEUTRAL, _neutralColor->color().name());
-  _settings->setData(MAMA::_STYLE_BARS, _barsStyle->currentText());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("COLOR_MAMA", _mamaColor->color().name());
+  _settings->setData("COLOR_FAMA", _famaColor->color().name());
+  _settings->setData("STYLE_MAMA", _mamaStyle->currentText());
+  _settings->setData("STYLE_FAMA", _famaStyle->currentText());
+  _settings->setData("LIMIT_FAST", _fast->value());
+  _settings->setData("LIMIT_SLOW", _slow->value());
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("OUTPUT_MAMA", _mamaOutput->text());
+  _settings->setData("Z_MAMA", _zMama->text());
+  _settings->setData("OUTPUT_FAMA", _famaOutput->text());
+  _settings->setData("Z_FAMA", _zFama->text());
 }

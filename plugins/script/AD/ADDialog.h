@@ -23,11 +23,13 @@
 #define PLUGIN_AD_DIALOG_HPP
 
 #include <QComboBox>
+#include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
-#include "Dialog.h"
+#include "Setting.h"
 
-class ADDialog : public Dialog
+class ADDialog : public QWidget
 {
   Q_OBJECT
 
@@ -36,12 +38,14 @@ class ADDialog : public Dialog
     void createGeneralPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
     ColorButton *_color;
     QComboBox *_style;
+    QSpinBox *_z;
+    QLineEdit *_output;
 };
 
 #endif

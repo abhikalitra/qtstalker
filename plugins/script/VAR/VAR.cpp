@@ -38,25 +38,33 @@ VAR::VAR ()
     qDebug("VAR::VAR: error on TA_Initialize");
 }
 
-int VAR::calculate (BarData *bd, Indicator *i)
+int VAR::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
+  int period = settings->getInt("PERIOD");
 
-  int period = settings->getInt(_PERIOD);
-
-  InputType it;
-  Curve *in = it.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
 
-  TA_Real input[in->count()];
-  TA_Real out[in->count()];
+    delFlag++;
+  }
+
+  int size = in->count();
+  TA_Real input[size];
+  TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
   QList<int> keys;
   in->keys(keys);
-  int size = keys.count();
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
@@ -65,7 +73,8 @@ int VAR::calculate (BarData *bd, Indicator *i)
     input[loop] = (TA_Real) bar->data();
   }
 
-  delete in;
+  if (delFlag)
+    delete in;
   
   TA_RetCode rc = TA_VAR(0,
                          size - 1,
@@ -93,11 +102,11 @@ int VAR::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -139,17 +148,17 @@ int VAR::command (Command *command)
     return 1;
   }
 
-  if (in->count() < period)
+  int size = in->count();
+  if (size < period)
     return 1;
 
-  TA_Real input[in->count()];
-  TA_Real out[in->count()];
+  TA_Real input[size];
+  TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
   QList<int> keys;
   in->keys(keys);
-  int size = keys.count();
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
@@ -192,21 +201,21 @@ int VAR::command (Command *command)
   return 0;
 }
 
-void VAR::dialog (QWidget *p, Indicator *i)
+QWidget * VAR::dialog (QWidget *p, Setting *set)
 {
-  VARDialog *dialog = new VARDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new VARDialog(p, set);
 }
 
 void VAR::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "yellow");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Line");
-  set->setData(_PERIOD, 10);
-  set->setData(_INPUT, "Close");
+  set->setData("COLOR", QString("red"));
+  set->setData("LABEL", _plugin);
+  set->setData("STYLE", QString("Histogram Bar"));
+  set->setData("PERIOD", 20);
+  set->setData("INPUT", QString("Close"));
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

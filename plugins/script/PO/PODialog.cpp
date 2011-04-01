@@ -27,41 +27,42 @@
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-PODialog::PODialog (QWidget *p, Setting *set) : Dialog (p)
+PODialog::PODialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "PODialog_window_size";
-  _keyPos = "PODialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "PO" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-
-  loadSettings();
 }
 
 void PODialog::createGeneralPage ()
 {
+  QFormLayout *form = new QFormLayout;
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+
   // method
   PO po;
   QStringList l = po.method();
   
   _method = new QComboBox;
   _method->addItems(l);
-  _method->setCurrentIndex(_method->findText(_settings->data(PO::_METHOD), Qt::MatchExactly));
-  _form->addRow(tr("Method"), _method);
+  _method->setCurrentIndex(_method->findText(_settings->data("METHOD"), Qt::MatchExactly));
+  form->addRow(tr("Method"), _method);
   
   // input
   InputType it;
   l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(PO::_INPUT), Qt::MatchExactly));
-  _form->addRow(tr("Input"), _input);
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
+  form->addRow(tr("Input"), _input);
 
   // type
   MAType mat;
@@ -69,25 +70,25 @@ void PODialog::createGeneralPage ()
 
   _maType = new QComboBox;
   _maType->addItems(l);
-  _maType->setCurrentIndex(_maType->findText(_settings->data(PO::_MA_TYPE), Qt::MatchExactly));
-  _form->addRow(tr("Type"), _maType);
+  _maType->setCurrentIndex(_maType->findText(_settings->data("MA_TYPE"), Qt::MatchExactly));
+  form->addRow(tr("Type"), _maType);
 
   // fast period
   _fast = new QSpinBox;
   _fast->setRange(1, 100000);
-  _fast->setValue(_settings->getInt(PO::_PERIOD_FAST));
-  _form->addRow(tr("Fast Period"), _fast);
+  _fast->setValue(_settings->getInt("PERIOD_FAST"));
+  form->addRow(tr("Fast Period"), _fast);
 
   // slow period
   _slow = new QSpinBox;
   _slow->setRange(1, 100000);
-  _slow->setValue(_settings->getInt(PO::_PERIOD_SLOW));
-  _form->addRow(tr("Slow Period"), _slow);
+  _slow->setValue(_settings->getInt("PERIOD_SLOW"));
+  form->addRow(tr("Slow Period"), _slow);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(PO::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
-  _form->addRow(tr("Color"), _color);
+  form->addRow(tr("Color"), _color);
 
   // plot style
   Curve c;
@@ -95,24 +96,25 @@ void PODialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(PO::_STYLE), Qt::MatchExactly));
-  _form->addRow(tr("Style"), _style);
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
+  form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void PODialog::done ()
+void PODialog::save ()
 {
-  _settings->setData(PO::_METHOD, _method->currentText());
-  _settings->setData(PO::_INPUT, _input->currentText());
-  _settings->setData(PO::_COLOR, _color->color().name());
-  _settings->setData(PO::_STYLE, _style->currentText());
-  _settings->setData(PO::_MA_TYPE, _maType->currentText());
-  _settings->setData(PO::_PERIOD_FAST, _fast->value());
-  _settings->setData(PO::_PERIOD_SLOW, _slow->value());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("METHOD", _method->currentText());
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("MA_TYPE", _maType->currentText());
+  _settings->setData("PERIOD_FAST", _fast->value());
+  _settings->setData("PERIOD_SLOW", _slow->value());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

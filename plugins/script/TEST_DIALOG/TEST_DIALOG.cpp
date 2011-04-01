@@ -21,6 +21,7 @@
 
 #include "TEST_DIALOG.h"
 #include "TestDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -33,7 +34,7 @@ TEST_DIALOG::TEST_DIALOG ()
 
 int TEST_DIALOG::command (Command *command)
 {
-  TestDialog *dialog = new TestDialog(_parent, command);
+  TestDialog *dialog = new TestDialog(g_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

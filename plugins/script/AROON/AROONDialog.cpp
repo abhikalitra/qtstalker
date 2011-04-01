@@ -20,33 +20,27 @@
  */
 
 #include "AROONDialog.h"
-#include "AROON.h"
 #include "Globals.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-AROONDialog::AROONDialog (QWidget *p, Setting *set) : Dialog (p)
+AROONDialog::AROONDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "AROONDialog_window_size";
-  _keyPos = "AROONDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "AROON" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
   createAROONUpPage();
   createAROONDownPage();
-
-  loadSettings();
 }
 
 void AROONDialog::createGeneralPage ()
 {
+  QVBoxLayout *vbox = new QVBoxLayout;
+  setLayout(vbox);
+
   _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
+  vbox->addWidget(_tabs);
 
   QWidget *w = new QWidget;
 
@@ -55,11 +49,8 @@ void AROONDialog::createGeneralPage ()
 
   _period = new QSpinBox;
   _period->setRange(2, 100000);
-  _period->setValue(_settings->getInt(AROON::_PERIOD));
+  _period->setValue(_settings->getInt("PERIOD"));
   form->addRow(tr("Period"), _period);
-
-  // make room unused
-  _message->hide();
   
   _tabs->addTab(w, tr("General"));  
 }
@@ -71,8 +62,12 @@ void AROONDialog::createAROONUpPage ()
   QFormLayout *form = new QFormLayout;
   w->setLayout(form);
 
+  // output
+  _upOutput = new QLineEdit(_settings->data("OUTPUT_UP"));
+  form->addRow(tr("Output"), _upOutput);
+
   // color
-  _upColor = new ColorButton(this, QColor(_settings->data(AROON::_COLOR_UP)));
+  _upColor = new ColorButton(this, QColor(_settings->data("COLOR_UP")));
   _upColor->setColorButton();
   form->addRow(tr("Color"), _upColor);
 
@@ -83,9 +78,15 @@ void AROONDialog::createAROONUpPage ()
 
   _upStyle = new QComboBox;
   _upStyle->addItems(l);
-  _upStyle->setCurrentIndex(_upStyle->findText(_settings->data(AROON::_STYLE_UP), Qt::MatchExactly));
+  _upStyle->setCurrentIndex(_upStyle->findText(_settings->data("STYLE_UP"), Qt::MatchExactly));
   form->addRow(tr("Style"), _upStyle);
 
+  // z
+  _zUp = new QSpinBox;
+  _zUp->setRange(-1, 99);
+  _zUp->setValue(_settings->getInt("Z_UP"));
+  form->addRow(tr("Plot Order"), _zUp);
+  
   _tabs->addTab(w, tr("Up"));
 }
 
@@ -96,8 +97,12 @@ void AROONDialog::createAROONDownPage ()
   QFormLayout *form = new QFormLayout;
   w->setLayout(form);
 
+  // output
+  _downOutput = new QLineEdit(_settings->data("OUTPUT_DOWN"));
+  form->addRow(tr("Output"), _downOutput);
+
   // color
-  _downColor = new ColorButton(this, QColor(_settings->data(AROON::_COLOR_DOWN)));
+  _downColor = new ColorButton(this, QColor(_settings->data("COLOR_DOWN")));
   _downColor->setColorButton();
   form->addRow(tr("Color"), _downColor);
 
@@ -108,22 +113,27 @@ void AROONDialog::createAROONDownPage ()
 
   _downStyle = new QComboBox;
   _downStyle->addItems(l);
-  _downStyle->setCurrentIndex(_downStyle->findText(_settings->data(AROON::_STYLE_DOWN), Qt::MatchExactly));
+  _downStyle->setCurrentIndex(_downStyle->findText(_settings->data("STYLE_DOWN"), Qt::MatchExactly));
   form->addRow(tr("Style"), _downStyle);
 
+  // z
+  _zDown = new QSpinBox;
+  _zDown->setRange(-1, 99);
+  _zDown->setValue(_settings->getInt("Z_DOWN"));
+  form->addRow(tr("Plot Order"), _zDown);
+  
   _tabs->addTab(w, tr("Down"));
 }
 
-void AROONDialog::done ()
+void AROONDialog::save ()
 {
-  _settings->setData(AROON::_COLOR_DOWN, _downColor->color().name());
-  _settings->setData(AROON::_COLOR_UP, _upColor->color().name());
-  _settings->setData(AROON::_STYLE_DOWN, _downStyle->currentText());
-  _settings->setData(AROON::_STYLE_UP, _upStyle->currentText());
-  _settings->setData(AROON::_PERIOD, _period->value());
-
-  saveSettings();
-  
-  accept();
+  _settings->setData("COLOR_DOWN", _downColor->color().name());
+  _settings->setData("COLOR_UP", _upColor->color().name());
+  _settings->setData("STYLE_DOWN", _downStyle->currentText());
+  _settings->setData("STYLE_UP", _upStyle->currentText());
+  _settings->setData("PERIOD", _period->value());
+  _settings->setData("OUTPUT_UP", _upOutput->text());
+  _settings->setData("OUTPUT_DOWN", _downOutput->text());
+  _settings->setData("Z_UP", _zUp->text());
+  _settings->setData("Z_DOWN", _zDown->text());
 }
-

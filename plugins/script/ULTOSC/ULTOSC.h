@@ -29,27 +29,11 @@ class ULTOSC : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR = 10,
-      _STYLE = 20,
-      _LABEL = 30,
-      _PERIOD_SHORT = 40,
-      _PERIOD_MED = 50,
-      _PERIOD_LONG = 60,
-      _COLOR_REF1 = 70,
-      _COLOR_REF2 = 80,
-      _COLOR_REF3 = 90,
-      _REF1 = 100,
-      _REF2 = 110,
-      _REF3 = 120
-    };
-
     ULTOSC ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

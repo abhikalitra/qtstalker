@@ -23,32 +23,16 @@
 #define PLUGIN_VOL_HPP
 
 #include "Plugin.h"
-#include "Curve.h"
 
 class VOL : public Plugin
 {
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR_UP = 10,
-      _COLOR_DOWN = 20,
-      _COLOR_NEUTRAL = 30,
-      _LABEL = 40,
-      _MA_TYPE = 50,
-      _MA_COLOR = 60,
-      _MA_LABEL = 70,
-      _MA_PERIOD = 80,
-      _MA_STYLE = 90
-    };
-
     VOL ();
-    int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
-    Curve * getMA (Curve *in, int period, int method);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

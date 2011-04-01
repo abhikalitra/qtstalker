@@ -262,7 +262,7 @@ void ChartObjectTLine::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectTLineDialog(_parent, this);
+  _dialog = new ChartObjectTLineDialog(g_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();

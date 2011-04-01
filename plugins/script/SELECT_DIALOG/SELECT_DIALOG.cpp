@@ -59,7 +59,7 @@ int SELECT_DIALOG::command (Command *command)
   QStringList l;
   l << "QtStalker" + g_session + ":" << tr("Select");
 
-  SelectDialog *dialog = new SelectDialog(_parent);
+  SelectDialog *dialog = new SelectDialog(g_parent);
   dialog->setWindowTitle(l.join(" "));
   dialog->setMode(mode);
   dialog->setTitle(title);

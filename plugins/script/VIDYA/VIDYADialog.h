@@ -24,36 +24,31 @@
 
 #include <QComboBox>
 #include <QSpinBox>
-#include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class VIDYADialog : public Dialog
+class VIDYADialog : public QWidget
 {
   Q_OBJECT
 
   public:
     VIDYADialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createBarsPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     QSpinBox *_period;
     QSpinBox *_vperiod;
     ColorButton *_color;
     QComboBox *_style;
     QComboBox *_input;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
-    QComboBox *_barsStyle;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

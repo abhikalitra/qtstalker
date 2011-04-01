@@ -21,6 +21,7 @@
 
 #include "YAHOO_DIALOG.h"
 #include "YahooDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -33,7 +34,7 @@ YAHOO_DIALOG::YAHOO_DIALOG ()
 
 int YAHOO_DIALOG::command (Command *command)
 {
-  YahooDialog *dialog = new YahooDialog(_parent, command);
+  YahooDialog *dialog = new YahooDialog(g_parent, command);
   connect(dialog, SIGNAL(finished(int)), this, SIGNAL(signalResume()));
 //  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   dialog->show();

@@ -22,12 +22,57 @@
 #include "MA.h"
 #include "Curve.h"
 #include "MAType.h"
+#include "InputType.h"
+#include "MADialog.h"
 
 #include <QtDebug>
 
 MA::MA ()
 {
   _plugin = "MA";
+  _type = _INDICATOR;
+}
+
+int MA::calculate (BarData *bd, Indicator *i, Setting *settings)
+{
+  int period = settings->getInt("PERIOD");
+
+  MAType mat;
+  int type = mat.fromString(settings->data("TYPE"));
+
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
+  if (! in)
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+    
+    delFlag++;
+  }
+  
+  Curve *ma = mat.getMA(in, period, type);
+  if (! ma)
+  {
+    if (delFlag)
+      delete in;
+    return 1;
+  }
+
+  if (delFlag)
+    delete in;
+
+  ma->setAllColor(QColor(settings->data("COLOR")));
+  ma->setLabel(settings->data("OUTPUT"));
+  ma->setType((Curve::Type) ma->typeFromString(settings->data("STYLE")));
+  ma->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), ma);
+
+  return 0;
 }
 
 int MA::command (Command *command)
@@ -86,6 +131,23 @@ int MA::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+QWidget * MA::dialog (QWidget *p, Setting *set)
+{
+  return new MADialog(p, set);
+}
+
+void MA::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData("COLOR", QString("yellow"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD", 10);
+  set->setData("TYPE", QString("EMA"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

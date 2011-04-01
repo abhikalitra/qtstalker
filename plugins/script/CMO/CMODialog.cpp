@@ -20,59 +20,57 @@
  */
 
 #include "CMODialog.h"
-#include "MAType.h"
 #include "InputType.h"
-#include "CMO.h"
 #include "Globals.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-CMODialog::CMODialog (QWidget *p, Setting *set) : Dialog (p)
+CMODialog::CMODialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "CMODialog_window_size";
-  _keyPos = "CMODialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "CMO" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-  createMAPage();
   createRefPage();
   createRef2Page();
-
-  loadSettings();
 }
 
 void CMODialog::createGeneralPage ()
 {
+  QVBoxLayout *vbox = new QVBoxLayout;
+  setLayout(vbox);
+
   _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
+  vbox->addWidget(_tabs);
 
   QWidget *w = new QWidget;
 
   QFormLayout *form = new QFormLayout;
   w->setLayout(form);
 
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+
   // input
   InputType it;
   QStringList l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(CMO::_INPUT), Qt::MatchExactly));
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
   form->addRow(tr("Input"), _input);
 
   // period
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings->getInt(CMO::_PERIOD));
+  _period->setValue(_settings->getInt("PERIOD"));
   form->addRow(tr("Period"), _period);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(CMO::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
   form->addRow(tr("Color"), _color);
 
@@ -82,52 +80,16 @@ void CMODialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(CMO::_STYLE), Qt::MatchExactly));
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
   form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 
   _tabs->addTab(w, "CMO");
-}
-
-void CMODialog::createMAPage ()
-{
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // type
-  MAType mat;
-  QStringList l = mat.list();
-
-  _maType = new QComboBox;
-  _maType->addItems(l);
-  _maType->setCurrentIndex(_maType->findText(_settings->data(CMO::_MA_TYPE), Qt::MatchExactly));
-  form->addRow(tr("Type"), _maType);
-
-  // period
-  _maPeriod = new QSpinBox;
-  _maPeriod->setRange(1, 100000);
-  _maPeriod->setValue(_settings->getInt(CMO::_MA_PERIOD));
-  form->addRow(tr("Period"), _maPeriod);
-
-  // color
-  _maColor = new ColorButton(this, QColor(_settings->data(CMO::_MA_COLOR)));
-  _maColor->setColorButton();
-  form->addRow(tr("Color"), _maColor);
-
-  // plot style
-  Curve c;
-  c.list(l, 1);
-
-  _maStyle = new QComboBox;
-  _maStyle->addItems(l);
-  _maStyle->setCurrentIndex(_maStyle->findText(_settings->data(CMO::_MA_STYLE), Qt::MatchExactly));
-  form->addRow(tr("Style"), _maStyle);
-
-  _tabs->addTab(w, "MA");
 }
 
 void CMODialog::createRefPage ()
@@ -138,14 +100,14 @@ void CMODialog::createRefPage ()
   w->setLayout(form);
 
   // color
-  _refColor = new ColorButton(this, QColor(_settings->data(CMO::_COLOR_REF1)));
+  _refColor = new ColorButton(this, QColor(_settings->data("COLOR_REF1")));
   _refColor->setColorButton();
   form->addRow(tr("Color"), _refColor);
 
   // ref
   _ref = new QDoubleSpinBox;
   _ref->setRange(-100000, 100000);
-  _ref->setValue(_settings->getDouble(CMO::_REF1));
+  _ref->setValue(_settings->getDouble("REF1"));
   form->addRow(tr("Value"), _ref);
 
   _tabs->addTab(w, "REF 1");
@@ -159,35 +121,29 @@ void CMODialog::createRef2Page ()
   w->setLayout(form);
 
   // color
-  _ref2Color = new ColorButton(this, QColor(_settings->data(CMO::_COLOR_REF2)));
+  _ref2Color = new ColorButton(this, QColor(_settings->data("COLOR_REF2")));
   _ref2Color->setColorButton();
   form->addRow(tr("Color"), _ref2Color);
 
   // ref
   _ref2 = new QDoubleSpinBox;
   _ref2->setRange(-100000, 100000);
-  _ref2->setValue(_settings->getDouble(CMO::_REF2));
+  _ref2->setValue(_settings->getDouble("REF2"));
   form->addRow(tr("Value"), _ref2);
 
   _tabs->addTab(w, "REF 2");
 }
 
-void CMODialog::done ()
+void CMODialog::save ()
 {
-  _settings->setData(CMO::_INPUT, _input->currentText());
-  _settings->setData(CMO::_PERIOD, _period->value());
-  _settings->setData(CMO::_COLOR, _color->color().name());
-  _settings->setData(CMO::_STYLE, _style->currentText());
-  _settings->setData(CMO::_MA_TYPE, _maType->currentText());
-  _settings->setData(CMO::_MA_PERIOD, _maPeriod->value());
-  _settings->setData(CMO::_MA_COLOR, _maColor->color().name());
-  _settings->setData(CMO::_MA_STYLE, _maStyle->currentText());
-  _settings->setData(CMO::_REF1, _ref->value());
-  _settings->setData(CMO::_REF2, _ref2->value());
-  _settings->setData(CMO::_COLOR_REF1, _refColor->color().name());
-  _settings->setData(CMO::_COLOR_REF2, _ref2Color->color().name());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("PERIOD", _period->value());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("REF1", _ref->value());
+  _settings->setData("REF2", _ref2->value());
+  _settings->setData("COLOR_REF1", _refColor->color().name());
+  _settings->setData("COLOR_REF2", _ref2Color->color().name());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

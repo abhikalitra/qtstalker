@@ -29,18 +29,11 @@ class AD : public Plugin
   Q_OBJECT
   
   public:
-    enum Parm
-    {
-      _COLOR = 10,
-      _LABEL = 20,
-      _STYLE = 30
-    };
-
     AD ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

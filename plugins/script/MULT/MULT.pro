@@ -3,5 +3,7 @@
 }
 
 HEADERS += MULT.h
+HEADERS += MULTDialog.h
 
 SOURCES += MULT.cpp
+SOURCES += MULTDialog.cpp

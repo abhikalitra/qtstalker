@@ -24,13 +24,13 @@
 
 #include <QComboBox>
 #include <QSpinBox>
+#include <QLineEdit>
 #include <QTabWidget>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class AROONDialog : public Dialog
+class AROONDialog : public QWidget
 {
   Q_OBJECT
 
@@ -41,16 +41,20 @@ class AROONDialog : public Dialog
     void createAROONDownPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
     QTabWidget *_tabs;
     QSpinBox *_period;
+    QSpinBox *_zUp;
+    QSpinBox *_zDown;
     ColorButton *_upColor;
     ColorButton *_downColor;
     QComboBox *_upStyle;
     QComboBox *_downStyle;
+    QLineEdit *_upOutput;
+    QLineEdit *_downOutput;
 };
 
 #endif

@@ -21,33 +21,27 @@
 
 #include "HT_SINEDialog.h"
 #include "Globals.h"
-#include "HT_SINE.h"
 #include "InputType.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-HT_SINEDialog::HT_SINEDialog (QWidget *p, Setting *set) : Dialog (p)
+HT_SINEDialog::HT_SINEDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "HT_SINEDialog_window_size";
-  _keyPos = "HT_SINEDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "HT_SINE" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
   createSinePage();
   createLeadPage();
-
-  loadSettings();
 }
 
 void HT_SINEDialog::createGeneralPage ()
 {
+  QVBoxLayout *vbox = new QVBoxLayout;
+  setLayout(vbox);
+
   _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
+  vbox->addWidget(_tabs);
 
   QWidget *w = new QWidget;
 
@@ -57,15 +51,14 @@ void HT_SINEDialog::createGeneralPage ()
   // input
   InputType it;
   QStringList l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(HT_SINE::_INPUT), Qt::MatchExactly));
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
   form->addRow(tr("Input"), _input);
 
-  // make room unused
-  _message->hide();
-  
   _tabs->addTab(w, tr("General"));  
 }
 
@@ -76,8 +69,12 @@ void HT_SINEDialog::createSinePage ()
   QFormLayout *form = new QFormLayout;
   w->setLayout(form);
 
+  // output
+  _sineOutput = new QLineEdit(_settings->data("OUTPUT_SINE"));
+  form->addRow(tr("Output"), _sineOutput);
+
   // color
-  _sineColor = new ColorButton(this, QColor(_settings->data(HT_SINE::_COLOR_SINE)));
+  _sineColor = new ColorButton(this, QColor(_settings->data("COLOR_SINE")));
   _sineColor->setColorButton();
   form->addRow(tr("Color"), _sineColor);
 
@@ -88,8 +85,14 @@ void HT_SINEDialog::createSinePage ()
 
   _sineStyle = new QComboBox;
   _sineStyle->addItems(l);
-  _sineStyle->setCurrentIndex(_sineStyle->findText(_settings->data(HT_SINE::_STYLE_SINE), Qt::MatchExactly));
+  _sineStyle->setCurrentIndex(_sineStyle->findText(_settings->data("STYLE_SINE"), Qt::MatchExactly));
   form->addRow(tr("Style"), _sineStyle);
+
+  // z
+  _zSine = new QSpinBox;
+  _zSine->setRange(-1, 99);
+  _zSine->setValue(_settings->getInt("Z_SINE"));
+  form->addRow(tr("Plot Order"), _zSine);
 
   _tabs->addTab(w, "SINE");
 }
@@ -101,8 +104,12 @@ void HT_SINEDialog::createLeadPage ()
   QFormLayout *form = new QFormLayout;
   w->setLayout(form);
 
+  // output
+  _leadOutput = new QLineEdit(_settings->data("OUTPUT_LEAD"));
+  form->addRow(tr("Output"), _leadOutput);
+
   // color
-  _leadColor = new ColorButton(this, QColor(_settings->data(HT_SINE::_COLOR_LEAD)));
+  _leadColor = new ColorButton(this, QColor(_settings->data("COLOR_LEAD")));
   _leadColor->setColorButton();
   form->addRow(tr("Color"), _leadColor);
 
@@ -113,21 +120,27 @@ void HT_SINEDialog::createLeadPage ()
 
   _leadStyle = new QComboBox;
   _leadStyle->addItems(l);
-  _leadStyle->setCurrentIndex(_leadStyle->findText(_settings->data(HT_SINE::_STYLE_LEAD), Qt::MatchExactly));
+  _leadStyle->setCurrentIndex(_leadStyle->findText(_settings->data("STYLE_LEAD"), Qt::MatchExactly));
   form->addRow(tr("Style"), _leadStyle);
+
+  // z
+  _zLead = new QSpinBox;
+  _zLead->setRange(-1, 99);
+  _zLead->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _zLead);
 
   _tabs->addTab(w, "LEAD");
 }
 
-void HT_SINEDialog::done ()
+void HT_SINEDialog::save ()
 {
-  _settings->setData(HT_SINE::_COLOR_SINE, _sineColor->color().name());
-  _settings->setData(HT_SINE::_COLOR_LEAD, _leadColor->color().name());
-  _settings->setData(HT_SINE::_STYLE_SINE, _sineStyle->currentText());
-  _settings->setData(HT_SINE::_STYLE_LEAD, _leadStyle->currentText());
-  _settings->setData(HT_SINE::_INPUT, _input->currentText());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("COLOR_SINE", _sineColor->color().name());
+  _settings->setData("COLOR_LEAD", _leadColor->color().name());
+  _settings->setData("STYLE_SINE", _sineStyle->currentText());
+  _settings->setData("STYLE_LEAD", _leadStyle->currentText());
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("OUTPUT_SINE", _sineOutput->text());
+  _settings->setData("Z_SINE", _zSine->text());
+  _settings->setData("OUTPUT_LEAD", _leadOutput->text());
+  _settings->setData("Z_LEAD", _zLead->text());
 }

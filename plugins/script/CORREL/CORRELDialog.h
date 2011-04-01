@@ -30,9 +30,8 @@
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class CORRELDialog : public Dialog
+class CORRELDialog : public QWidget
 {
   Q_OBJECT
 
@@ -44,7 +43,7 @@ class CORRELDialog : public Dialog
     void createRef3Page();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
@@ -60,6 +59,8 @@ class CORRELDialog : public Dialog
     QDoubleSpinBox *_ref;
     QDoubleSpinBox *_ref2;
     QDoubleSpinBox *_ref3;
+    QSpinBox *_z;
+    QLineEdit *_output;
 };
 
 #endif

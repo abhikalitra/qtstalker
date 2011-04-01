@@ -189,7 +189,7 @@ void ChartObjectText::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectTextDialog(_parent, this);
+  _dialog = new ChartObjectTextDialog(g_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();

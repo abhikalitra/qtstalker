@@ -22,12 +22,89 @@
 #include "SUB.h"
 #include "Curve.h"
 #include "Globals.h"
+#include "SUBDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
 SUB::SUB ()
 {
   _plugin = "SUB";
+  _type = _INDICATOR;
+}
+
+int SUB::calculate (BarData *bd, Indicator *i, Setting *settings)
+{
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
+  if (! in)
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+
+    delFlag++;
+  }
+
+  int delFlag2 = FALSE;
+  Curve *in2 = i->line(settings->data("INPUT2"));
+  if (! in2)
+  {
+    InputType it;
+    in2 = it.input(bd, settings->data("INPUT2"));
+    if (! in2)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT2");
+      if (delFlag)
+	delete in;
+      return 1;
+    }
+
+    delFlag2++;
+  }
+
+  QList<int> keys;
+  int size = in->count();
+  if (in2->count() > size)
+  {
+    size = in2->count();
+    in2->keys(keys);
+  }
+  else
+    in->keys(keys);
+
+  Curve *line = new Curve;
+  int loop = 0;
+  for (; loop < size; loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    if (! bar)
+      continue;
+
+    CurveBar *bar2 = in2->bar(keys.at(loop));
+    if (! bar2)
+      continue;
+
+    line->setBar(keys.at(loop), new CurveBar(bar->data() - bar2->data()));
+  }
+
+  if (delFlag)
+    delete in;
+  
+  if (delFlag2)
+    delete in2;
+
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
+
+  return 0;
 }
 
 int SUB::command (Command *command)
@@ -100,6 +177,22 @@ int SUB::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+QWidget * SUB::dialog (QWidget *p, Setting *set)
+{
+  return new SUBDialog(p, set);
+}
+
+void SUB::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData("COLOR", QString("red"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT2", QString("Close"));
+  set->setData("OUTPUT", _plugin);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

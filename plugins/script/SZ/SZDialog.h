@@ -25,37 +25,32 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
-#include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class SZDialog : public Dialog
+class SZDialog : public QWidget
 {
   Q_OBJECT
 
   public:
     SZDialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createBarsPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     QSpinBox *_ndperiod;
     QSpinBox *_period;
     QDoubleSpinBox *_coeff;
     ColorButton *_color;
     QComboBox *_style;
     QComboBox *_method;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
-    QComboBox *_barsStyle;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

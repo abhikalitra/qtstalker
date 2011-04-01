@@ -20,13 +20,54 @@
  */
 
 #include "WILDER_MA.h"
-#include "Curve.h"
+#include "InputType.h"
+#include "WILDER_MADialog.h"
 
 #include <QtDebug>
 
 WILDER_MA::WILDER_MA ()
 {
   _plugin = "WILDER_MA";
+  _type = _INDICATOR;
+}
+
+int WILDER_MA::calculate (BarData *bd, Indicator *i, Setting *settings)
+{
+  int period = settings->getInt("PERIOD");
+
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
+  if (! in)
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+
+    delFlag++;
+  }
+
+  Curve *ma = getMA(in, period);
+  if (! ma)
+  {
+    if (delFlag)
+      delete in;
+    return 1;
+  }
+
+  if (delFlag)
+    delete in;
+
+  ma->setAllColor(QColor(settings->data("COLOR")));
+  ma->setLabel(settings->data("OUTPUT"));
+  ma->setType((Curve::Type) ma->typeFromString(settings->data("STYLE")));
+  ma->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), ma);
+
+  return 0;
 }
 
 int WILDER_MA::command (Command *command)
@@ -66,7 +107,7 @@ int WILDER_MA::command (Command *command)
     return 1;
   }
 
-  line = calculate(in, period);
+  line = getMA(in, period);
   if (! line)
     return 1;
 
@@ -78,7 +119,7 @@ int WILDER_MA::command (Command *command)
   return 0;
 }
 
-Curve * WILDER_MA::calculate (Curve *in, int period)
+Curve * WILDER_MA::getMA (Curve *in, int period)
 {
   if (in->count() < period)
     return 0;
@@ -108,6 +149,22 @@ Curve * WILDER_MA::calculate (Curve *in, int period)
   }
 
   return line;
+}
+
+QWidget * WILDER_MA::dialog (QWidget *p, Setting *set)
+{
+  return new WILDER_MADialog(p, set);
+}
+
+void WILDER_MA::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData("COLOR", QString("yellow"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD", 10);
+  set->setData("INPUT", QString("Close"));
+  set->setData("Z", 0);
+  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

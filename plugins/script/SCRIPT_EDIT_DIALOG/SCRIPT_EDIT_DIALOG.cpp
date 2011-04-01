@@ -21,6 +21,7 @@
 
 #include "SCRIPT_EDIT_DIALOG.h"
 #include "ScriptEditDialog.h"
+#include "Globals.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -43,7 +44,7 @@ int SCRIPT_EDIT_DIALOG::command (Command *command)
     return 1;
   }
 
-  ScriptEditDialog *dialog = new ScriptEditDialog(_parent, name);
+  ScriptEditDialog *dialog = new ScriptEditDialog(g_parent, name);
   connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
   connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));
   connect(dialog, SIGNAL(accepted()), this, SLOT(command2()));

@@ -23,15 +23,15 @@
 #define PLUGIN_CCI_DIALOG_HPP
 
 #include <QComboBox>
-#include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QTabWidget>
+#include <QSpinBox>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class CCIDialog : public Dialog
+class CCIDialog : public QWidget
 {
   Q_OBJECT
 
@@ -42,20 +42,20 @@ class CCIDialog : public Dialog
     void createRef2Page ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
     QTabWidget *_tabs;
     QSpinBox *_period;
-    QSpinBox *_smoothing;
     ColorButton *_color;
     ColorButton *_refColor;
     ColorButton *_ref2Color;
     QComboBox *_style;
-    QComboBox *_smoothingType;
     QDoubleSpinBox *_ref;
     QDoubleSpinBox *_ref2;
+    QSpinBox *_z;
+    QLineEdit *_output;
 };
 
 #endif

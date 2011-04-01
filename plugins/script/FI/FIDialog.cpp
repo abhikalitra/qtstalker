@@ -22,47 +22,45 @@
 #include "FIDialog.h"
 #include "MAType.h"
 #include "Globals.h"
-#include "FI.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-FIDialog::FIDialog (QWidget *p, Setting *set) : Dialog (p)
+FIDialog::FIDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "FIDialog_window_size";
-  _keyPos = "FIDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "FI" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-
-  loadSettings();
 }
 
 void FIDialog::createGeneralPage ()
 {
+  QFormLayout *form = new QFormLayout;
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+
   // ma type
   MAType mat;
   QStringList l = mat.list();
 
   _maType = new QComboBox;
   _maType->addItems(l);
-  _maType->setCurrentIndex(_maType->findText(_settings->data(FI::_SMOOTHING_TYPE), Qt::MatchExactly));
-  _form->addRow(tr("Smoothing Type"), _maType);
+  _maType->setCurrentIndex(_maType->findText(_settings->data("SMOOTHING_TYPE"), Qt::MatchExactly));
+  form->addRow(tr("Smoothing Type"), _maType);
 
   // period
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings->getInt(FI::_SMOOTHING));
-  _form->addRow(tr("Smoothing"), _period);
+  _period->setValue(_settings->getInt("SMOOTHING"));
+  form->addRow(tr("Smoothing"), _period);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(FI::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
-  _form->addRow(tr("Color"), _color);
+  form->addRow(tr("Color"), _color);
 
   // plot style
   Curve c;
@@ -70,21 +68,22 @@ void FIDialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(FI::_STYLE), Qt::MatchExactly));
-  _form->addRow(tr("Style"), _style);
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
+  form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void FIDialog::done ()
+void FIDialog::save ()
 {
-  _settings->setData(FI::_SMOOTHING_TYPE, _maType->currentText());
-  _settings->setData(FI::_SMOOTHING, _period->value());
-  _settings->setData(FI::_COLOR, _color->color().name());
-  _settings->setData(FI::_STYLE, _style->currentText());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("SMOOTHING_TYPE", _maType->currentText());
+  _settings->setData("SMOOTHING", _period->value());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

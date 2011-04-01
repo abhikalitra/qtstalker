@@ -23,6 +23,7 @@
 #define PLUGIN_WEIGHTED_CLOSE_HPP
 
 #include "Plugin.h"
+#include "Curve.h"
 
 class WEIGHTED_CLOSE : public Plugin
 {
@@ -31,6 +32,9 @@ class WEIGHTED_CLOSE : public Plugin
   public:
     WEIGHTED_CLOSE ();
     int command (Command *);
+    int calculate (BarData *, Indicator *, Setting *);
+    void defaults (Setting *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

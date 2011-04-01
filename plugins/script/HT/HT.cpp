@@ -39,30 +39,25 @@ HT::HT ()
     qDebug("HT::HT: error on TA_Initialize");
 }
 
-int HT::calculate (BarData *bd, Indicator *i)
+int HT::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  InputType itypes;
-  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
 
-  int method = _method.indexOf(settings->data(_METHOD));
+    delFlag++;
+  }
 
-  // create bars
-  Curve *bars = itypes.ohlc(bd,
-			    QColor(settings->data(_COLOR_BARS_UP)),
-			    QColor(settings->data(_COLOR_BARS_DOWN)),
-			    QColor(settings->data(_COLOR_BARS_NEUTRAL)));
-  if (settings->data(_STYLE_BARS) == "OHLC")
-    bars->setType(Curve::OHLC);
-  else
-    bars->setType(Curve::Candle);
-  bars->setLabel("BARS");
-  bars->setZ(0);
-  i->setLine("BARS", bars);
-  
+  int method = _method.indexOf(settings->data("METHOD"));
+
   int size = in->count();
   TA_Real input[size];
   TA_Real out[size];
@@ -79,7 +74,8 @@ int HT::calculate (BarData *bd, Indicator *i)
     input[loop] = (TA_Real) bar->data();
   }
 
-  delete in;
+  if (delFlag)
+    delete in;
 
   TA_RetCode rc = TA_SUCCESS;
   switch ((Method) method)
@@ -112,11 +108,11 @@ int HT::calculate (BarData *bd, Indicator *i)
         keyLoop--;
         outLoop--;
       }
-      line->setAllColor(QColor(settings->data(_COLOR)));
-      line->setLabel(settings->data(_LABEL));
-      line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-      line->setZ(1);
-      i->setLine(settings->data(_LABEL), line);
+      line->setAllColor(QColor(settings->data("COLOR")));
+      line->setLabel(settings->data("OUTPUT"));
+      line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+      line->setZ(settings->getInt("Z"));
+      i->setLine(settings->data("OUTPUT"), line);
       return 0;
       break;
     }
@@ -141,11 +137,11 @@ int HT::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_COLOR)));
-  line->setLabel(settings->data(_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_STYLE)));
-  line->setZ(1);
-  i->setLine(settings->data(_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -272,25 +268,20 @@ int HT::command (Command *command)
   return 0;
 }
 
-void HT::dialog (QWidget *p, Indicator *i)
+QWidget * HT::dialog (QWidget *p, Setting *set)
 {
-  HTDialog *dialog = new HTDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new HTDialog(p, set);
 }
 
 void HT::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR, "yellow");
-  set->setData(_LABEL, _plugin);
-  set->setData(_STYLE, "Line");
-  set->setData(_METHOD, "TRENDLINE");
-  set->setData(_INPUT, "Close");
-  set->setData(_STYLE_BARS, QString("OHLC"));
-  set->setData(_COLOR_BARS_UP, QString("green"));
-  set->setData(_COLOR_BARS_DOWN, QString("red"));
-  set->setData(_COLOR_BARS_NEUTRAL, QString("dimgray"));
+  set->setData("COLOR", QString("yellow"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("METHOD", QString("TRENDLINE"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("OUTPUT", _plugin);
+  set->setData("Z", 0);
 }
 
 QStringList HT::method ()

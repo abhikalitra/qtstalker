@@ -33,16 +33,14 @@ CUS::CUS ()
   _type = _INDICATOR;
 }
 
-int CUS::calculate (BarData *bd, Indicator *i)
+int CUS::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
   Script *script = new Script(this);
   script->setIndicator(i);
   script->setBarData(bd);
-  script->setName(settings->data(_SCRIPT));
-  script->setFile(settings->data(_SCRIPT));
-  script->setCommand(settings->data(_COMMAND));
+  script->setName(settings->data("SCRIPT"));
+  script->setFile(settings->data("SCRIPT"));
+  script->setCommand(settings->data("COMMAND"));
   script->startScript();
 
   QEventLoop e;
@@ -54,18 +52,16 @@ int CUS::calculate (BarData *bd, Indicator *i)
   return 0;
 }
 
-void CUS::dialog (QWidget *p, Indicator *i)
+QWidget * CUS::dialog (QWidget *p, Setting *set)
 {
-  CUSDialog *dialog = new CUSDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new CUSDialog(p, set);
 }
 
 void CUS::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COMMAND, "perl");
-  set->setData(_SCRIPT, "");
+  set->setData("COMMAND", QString("perl"));
+  set->setData("SCRIPT", QString());
 }
 
 //*************************************************************

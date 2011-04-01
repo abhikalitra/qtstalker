@@ -37,16 +37,12 @@ ADX::ADX ()
     qDebug("ADX::ADX: error on TA_Initialize");
 }
 
-int ADX::calculate (BarData *bd, Indicator *i)
+int ADX::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-  int period = settings->getInt(_PERIOD);
+  int period = settings->getInt("PERIOD");
 
   int size = bd->count();
   TA_Real adxOut[size];
-  TA_Real adxrOut[size];
-  TA_Real pdiOut[size];
-  TA_Real mdiOut[size];
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -84,86 +80,11 @@ int ADX::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  line->setAllColor(QColor(settings->data(_ADX_COLOR)));
-  line->setLabel(settings->data(_ADX_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_ADX_STYLE)));
-  line->setZ(2);
-  i->setLine(settings->data(_ADX_LABEL), line);
-
-  // MDI
-  rc = TA_MINUS_DI(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &mdiOut[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
-    return 1;
-  }
-
-  line = new Curve;
-
-  dataLoop = size - 1;
-  outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    line->setBar(dataLoop, new CurveBar(mdiOut[outLoop]));
-    dataLoop--;
-    outLoop--;
-  }
-
-  line->setAllColor(QColor(settings->data(_MDI_COLOR)));
-  line->setLabel(settings->data(_MDI_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_MDI_STYLE)));
-  line->setZ(0);
-  i->setLine(settings->data(_MDI_LABEL), line);
-  
-  // PDI
-  rc = TA_PLUS_DI(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &pdiOut[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
-    return 1;
-  }
-
-  line = new Curve;
-
-  dataLoop = size - 1;
-  outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    line->setBar(dataLoop, new CurveBar(pdiOut[outLoop]));
-    dataLoop--;
-    outLoop--;
-  }
-
-  line->setAllColor(QColor(settings->data(_PDI_COLOR)));
-  line->setLabel(settings->data(_PDI_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_PDI_STYLE)));
-  line->setZ(1);
-  i->setLine(settings->data(_PDI_LABEL), line);
-
-  // ADXR
-  rc = TA_ADXR(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &adxrOut[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
-    return 1;
-  }
-
-  line = new Curve;
-
-  dataLoop = size - 1;
-  outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    line->setBar(dataLoop, new CurveBar(adxrOut[outLoop]));
-    dataLoop--;
-    outLoop--;
-  }
-
-  line->setAllColor(QColor(settings->data(_ADXR_COLOR)));
-  line->setLabel(settings->data(_ADXR_LABEL));
-  line->setType((Curve::Type) line->typeFromString(settings->data(_ADXR_STYLE)));
-  line->setZ(3);
-  i->setLine(settings->data(_ADXR_LABEL), line);
+  line->setAllColor(QColor(settings->data("COLOR")));
+  line->setLabel(settings->data("OUTPUT"));
+  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -293,29 +214,19 @@ int ADX::command (Command *command)
   return 0;
 }
 
-void ADX::dialog (QWidget *p, Indicator *i)
+QWidget * ADX::dialog (QWidget *p, Setting *set)
 {
-  ADXDialog *dialog = new ADXDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new ADXDialog(p, set);
 }
 
 void ADX::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_ADX_COLOR, QString("blue"));
-  set->setData(_ADX_LABEL, _plugin);
-  set->setData(_ADX_STYLE, QString("Line"));
-  set->setData(_ADXR_COLOR, QString("yellow"));
-  set->setData(_ADXR_LABEL, QString("ADXR"));
-  set->setData(_ADXR_STYLE, QString("Line"));
-  set->setData(_MDI_COLOR, QString("red"));
-  set->setData(_MDI_LABEL, QString("MDI"));
-  set->setData(_MDI_STYLE, QString("Line"));
-  set->setData(_PDI_COLOR, QString("green"));
-  set->setData(_PDI_LABEL, QString("PDI"));
-  set->setData(_PDI_STYLE, QString("Line"));
-  set->setData(_PERIOD, 14);
+  set->setData("COLOR", QString("blue"));
+  set->setData("OUTPUT", _plugin);
+  set->setData("STYLE", QString("Line"));
+  set->setData("PERIOD", 14);
+  set->setData("Z", 0);
 }
 
 //*************************************************************

@@ -29,19 +29,11 @@ class VFI : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR = 10,
-      _STYLE = 20,
-      _LABEL = 30,
-      _PERIOD = 40
-    };
-
     VFI ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
     Curve * getVFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int period);
 };
 

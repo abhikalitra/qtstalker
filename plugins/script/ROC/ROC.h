@@ -37,23 +37,11 @@ class ROC : public Plugin
       _ROCR100
     };
 
-    enum Parm
-    {
-      _COLOR = 10,
-      _STYLE = 20,
-      _LABEL = 30,
-      _PERIOD = 40,
-      _SMOOTHING = 50,
-      _SMOOTHING_TYPE = 60,
-      _INPUT = 70,
-      _METHOD = 80
-    };
-
     ROC ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
     QStringList method ();
 
   protected:

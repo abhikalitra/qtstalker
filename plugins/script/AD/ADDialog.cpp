@@ -21,32 +21,30 @@
 
 #include "ADDialog.h"
 #include "Globals.h"
-#include "AD.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-ADDialog::ADDialog (QWidget *p, Setting *set) : Dialog (p)
+ADDialog::ADDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "ADDialog_window_size";
-  _keyPos = "ADDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "AD" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-
-  loadSettings();
 }
 
 void ADDialog::createGeneralPage ()
 {
+  QFormLayout *form = new QFormLayout;
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+
   // color
-  _color = new ColorButton(this, QColor(_settings->data(AD::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
-  _form->addRow(tr("Color"), _color);
+  form->addRow(tr("Color"), _color);
 
   // style
   Curve c;
@@ -55,19 +53,20 @@ void ADDialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(AD::_STYLE), Qt::MatchExactly));
-  _form->addRow(tr("Style"), _style);
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
+  form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void ADDialog::done ()
+void ADDialog::save ()
 {
-  _settings->setData(AD::_COLOR, _color->color().name());
-  _settings->setData(AD::_STYLE, _style->currentText());
-
-  saveSettings();
-  
-  accept();
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

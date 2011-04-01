@@ -38,14 +38,22 @@ HT_PHASOR::HT_PHASOR ()
     qDebug("HT_PHASOR::HT_PHASOR: error on TA_Initialize");
 }
 
-int HT_PHASOR::calculate (BarData *bd, Indicator *i)
+int HT_PHASOR::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Setting *settings = i->settings();
-
-  InputType itypes;
-  Curve *in = itypes.input(bd, settings->data(_INPUT));
+  int delFlag = FALSE;
+  Curve *in = i->line(settings->data("INPUT"));
   if (! in)
-    return 1;
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+
+    delFlag++;
+  }
 
   int size = in->count();
   TA_Integer outBeg;
@@ -63,6 +71,9 @@ int HT_PHASOR::calculate (BarData *bd, Indicator *i)
     CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
+
+  if (delFlag)
+    delete in;
 
   TA_RetCode rc = TA_HT_PHASOR (0,
                                 size - 1,
@@ -92,17 +103,17 @@ int HT_PHASOR::calculate (BarData *bd, Indicator *i)
     outLoop--;
   }
 
-  pline->setAllColor(QColor(settings->data(_COLOR_PHASE)));
-  pline->setLabel(settings->data(_LABEL_PHASE));
-  pline->setType((Curve::Type) pline->typeFromString(settings->data(_STYLE_PHASE)));
-  pline->setZ(0);
-  i->setLine(settings->data(_LABEL_PHASE), pline);
+  pline->setAllColor(QColor(settings->data("COLOR_PHASE")));
+  pline->setLabel(settings->data("OUTPUT_PHASE"));
+  pline->setType((Curve::Type) pline->typeFromString(settings->data("STYLE_PHASE")));
+  pline->setZ(settings->getInt("Z_PHASE"));
+  i->setLine(settings->data("OUTPUT_PHASE"), pline);
   
-  qline->setAllColor(QColor(settings->data(_COLOR_QUAD)));
-  qline->setLabel(settings->data(_LABEL_QUAD));
-  qline->setType((Curve::Type) qline->typeFromString(settings->data(_STYLE_QUAD)));
-  qline->setZ(1);
-  i->setLine(settings->data(_LABEL_QUAD), qline);
+  qline->setAllColor(QColor(settings->data("COLOR_QUAD")));
+  qline->setLabel(settings->data("OUTPUT_QUAD"));
+  qline->setType((Curve::Type) qline->typeFromString(settings->data("STYLE_QUAD")));
+  qline->setZ(settings->getInt("Z_QUAD"));
+  i->setLine(settings->data("OUTPUT_QUAD"), qline);
 
   return 0;
 }
@@ -203,23 +214,23 @@ int HT_PHASOR::command (Command *command)
   return 0;
 }
 
-void HT_PHASOR::dialog (QWidget *p, Indicator *i)
+QWidget * HT_PHASOR::dialog (QWidget *p, Setting *set)
 {
-  HT_PHASORDialog *dialog = new HT_PHASORDialog(p, i->settings());
-  connect(dialog, SIGNAL(accepted()), i, SLOT(dialogDone()));
-  dialog->show();
+  return new HT_PHASORDialog(p, set);
 }
 
 void HT_PHASOR::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData(_COLOR_PHASE, "red");
-  set->setData(_COLOR_QUAD, "yellow");
-  set->setData(_STYLE_PHASE, "Line");
-  set->setData(_STYLE_QUAD, "Line");
-  set->setData(_LABEL_PHASE, "PHASE");
-  set->setData(_LABEL_QUAD, "QUAD");
-  set->setData(_INPUT, "Close");
+  set->setData("COLOR_PHASE", QString("red"));
+  set->setData("COLOR_QUAD", QString("yellow"));
+  set->setData("STYLE_PHASE", QString("Line"));
+  set->setData("STYLE_QUAD", QString("Line"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("OUTPUT_PHASE", _plugin);
+  set->setData("Z_PHASE", 0);
+  set->setData("OUTPUT_QUAD", _plugin);
+  set->setData("Z_QUAD", 0);
 }
 
 //*************************************************************

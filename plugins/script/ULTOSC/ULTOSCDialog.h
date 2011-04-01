@@ -26,12 +26,12 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class ULTOSCDialog : public Dialog
+class ULTOSCDialog : public QWidget
 {
   Q_OBJECT
 
@@ -43,7 +43,7 @@ class ULTOSCDialog : public Dialog
     void createRef3Page ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
@@ -59,6 +59,8 @@ class ULTOSCDialog : public Dialog
     QDoubleSpinBox *_ref;
     QDoubleSpinBox *_ref2;
     QDoubleSpinBox *_ref3;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

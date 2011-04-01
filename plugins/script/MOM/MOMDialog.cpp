@@ -22,55 +22,45 @@
 #include "MOMDialog.h"
 #include "Globals.h"
 #include "InputType.h"
-#include "MOM.h"
-#include "MAType.h"
 
 #include <QtDebug>
 #include <QStringList>
+#include <QFormLayout>
 
-MOMDialog::MOMDialog (QWidget *p, Setting *set) : Dialog (p)
+MOMDialog::MOMDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _keySize = "MOMDialog_window_size";
-  _keyPos = "MOMDialog_window_position";
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << "MOM" << tr("Indicator") << _settings->data("NAME");
-  setWindowTitle(l.join(" "));
-
   createGeneralPage();
-  createMAPage();
-
-  loadSettings();
 }
 
 void MOMDialog::createGeneralPage ()
 {
-  _tabs = new QTabWidget;
-  _vbox->insertWidget(0, _tabs);
-
-  QWidget *w = new QWidget;
-
   QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
+  setLayout(form);
+
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
 
   // input
   InputType it;
   QStringList l = it.list();
+  l.append(_settings->data("INPUT"));
+  l.removeDuplicates();
 
   _input = new QComboBox;
   _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data(MOM::_INPUT), Qt::MatchExactly));
+  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
   form->addRow(tr("Input"), _input);
 
   // period
   _period = new QSpinBox;
   _period->setRange(1, 100000);
-  _period->setValue(_settings->getInt(MOM::_PERIOD));
+  _period->setValue(_settings->getInt("PERIOD"));
   form->addRow(tr("Period"), _period);
 
   // color
-  _color = new ColorButton(this, QColor(_settings->data(MOM::_COLOR)));
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
   form->addRow(tr("Color"), _color);
 
@@ -80,66 +70,22 @@ void MOMDialog::createGeneralPage ()
 
   _style = new QComboBox;
   _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data(MOM::_STYLE), Qt::MatchExactly));
+  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
   form->addRow(tr("Style"), _style);
 
-  // make room unused
-  _message->hide();
-
-  _tabs->addTab(w, "MOM");
+  // z
+  _z = new QSpinBox;
+  _z->setRange(-1, 99);
+  _z->setValue(_settings->getInt("Z"));
+  form->addRow(tr("Plot Order"), _z);
 }
 
-void MOMDialog::createMAPage ()
+void MOMDialog::save ()
 {
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // type
-  MAType mat;
-  QStringList l = mat.list();
-
-  _maType = new QComboBox;
-  _maType->addItems(l);
-  _maType->setCurrentIndex(_maType->findText(_settings->data(MOM::_MA_TYPE), Qt::MatchExactly));
-  form->addRow(tr("Type"), _maType);
-
-  // period
-  _maPeriod = new QSpinBox;
-  _maPeriod->setRange(1, 100000);
-  _maPeriod->setValue(_settings->getInt(MOM::_MA_PERIOD));
-  form->addRow(tr("Period"), _maPeriod);
-
-  // color
-  _maColor = new ColorButton(this, QColor(_settings->data(MOM::_MA_COLOR)));
-  _maColor->setColorButton();
-  form->addRow(tr("Color"), _maColor);
-
-  // plot style
-  Curve c;
-  c.list(l, 1);
-
-  _maStyle = new QComboBox;
-  _maStyle->addItems(l);
-  _maStyle->setCurrentIndex(_maStyle->findText(_settings->data(MOM::_MA_STYLE), Qt::MatchExactly));
-  form->addRow(tr("Style"), _maStyle);
-
-  _tabs->addTab(w, "MA");
-}
-
-void MOMDialog::done ()
-{
-  _settings->setData(MOM::_INPUT, _input->currentText());
-  _settings->setData(MOM::_COLOR, _color->color().name());
-  _settings->setData(MOM::_STYLE, _style->currentText());
-  _settings->setData(MOM::_PERIOD, _period->value());
-  _settings->setData(MOM::_MA_TYPE, _maType->currentText());
-  _settings->setData(MOM::_MA_PERIOD, _maPeriod->value());
-  _settings->setData(MOM::_MA_COLOR, _maColor->color().name());
-  _settings->setData(MOM::_MA_STYLE, _maStyle->currentText());
-
-  saveSettings();
-
-  accept();
+  _settings->setData("INPUT", _input->currentText());
+  _settings->setData("COLOR", _color->color().name());
+  _settings->setData("STYLE", _style->currentText());
+  _settings->setData("PERIOD", _period->value());
+  _settings->setData("OUTPUT", _output->text());
+  _settings->setData("Z", _z->text());
 }

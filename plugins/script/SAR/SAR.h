@@ -29,23 +29,11 @@ class SAR : public Plugin
   Q_OBJECT
 
   public:
-    enum Parm
-    {
-      _COLOR = 10,
-      _LABEL = 20,
-      _STEP_INITIAL = 30,
-      _STEP_MAX = 40,
-      _COLOR_BARS_UP = 50,
-      _COLOR_BARS_DOWN = 60,
-      _COLOR_BARS_NEUTRAL = 70,
-      _STYLE_BARS = 80
-    };
-
     SAR ();
     int command (Command *);
-    int calculate (BarData *, Indicator *);
+    int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
-    void dialog (QWidget *, Indicator *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

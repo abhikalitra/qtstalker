@@ -25,36 +25,31 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
-#include <QTabWidget>
+#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
-#include "Dialog.h"
 
-class T3Dialog : public Dialog
+class T3Dialog : public QWidget
 {
   Q_OBJECT
 
   public:
     T3Dialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createBarsPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     QDoubleSpinBox *_vfactor;
     QSpinBox *_period;
     ColorButton *_color;
     QComboBox *_style;
     QComboBox *_input;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
-    QComboBox *_barsStyle;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif
