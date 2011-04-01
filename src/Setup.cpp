@@ -137,7 +137,10 @@ void Setup::setupDefaultIndicators ()
   }
   
   Indicator i;
-  plug->defaults(i.settings());
+  IndicatorSettings *is = i.settings();
+  Setting *set = new Setting;
+  plug->defaults(set);
+  is->addSettings(set);
   i.setName("Bars");
   i.setLock(TRUE);
   if (i.save())
@@ -155,10 +158,14 @@ void Setup::setupDefaultIndicators ()
     return;
   }
 
-  plug->defaults(i.settings());
-  i.setName("VOL");
-  i.setLock(TRUE);
-  if (i.save())
+  Indicator i2;
+  is = i2.settings();
+  set = new Setting;
+  plug->defaults(set);
+  is->addSettings(set);
+  i2.setName("VOL");
+  i2.setLock(TRUE);
+  if (i2.save())
   {
     qDebug() << "Setup::setupDefaultIndicators: IndicatorDataBase saveIndex error";
     delete plug;
