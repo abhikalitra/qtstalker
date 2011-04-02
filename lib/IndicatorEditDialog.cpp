@@ -23,6 +23,7 @@
 #include "Globals.h"
 #include "PluginFactory.h"
 #include "DataDataBase.h"
+#include "NewDialog.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -35,8 +36,18 @@ IndicatorEditDialog::IndicatorEditDialog (QWidget *p, IndicatorSettings *set) : 
   _keyPos = "indicator_edit_dialog_window_position";
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Indicator") << _settings->data("NAME");
+  l << "QtStalker" << g_session << ":" << tr("Indicator");
+  if (_settings != 0)
+    l << _settings->data("NAME");
   setWindowTitle(l.join(" "));
+
+  if (_settings == 0)
+  {
+    Indicator i;
+    i.settings()->copy(&_tsettings);
+  }
+  else
+    _settings->copy(&_tsettings);
 
   createGUI();
 
@@ -49,9 +60,9 @@ void IndicatorEditDialog::createGUI ()
   _vbox->insertWidget(0, _tabs);
 
   int loop = 0;
-  for (; loop < _settings->count(); loop++)
+  for (; loop < _tsettings.count(); loop++)
   {
-    Setting *set = _settings->settings(loop);
+    Setting *set = _tsettings.settings(loop);
     if (! set)
       continue;
 
@@ -69,20 +80,36 @@ void IndicatorEditDialog::createGUI ()
 
 void IndicatorEditDialog::done ()
 {
+  if (_tsettings.data("NAME").isEmpty())
+  {
+    newDialog();
+    return;
+  }
+  
   // each tab finalize their changes to _settings
   emit signalSave();
-  
-  _settings->save();
+
+  if (_settings == 0)
+    _tsettings.save();
+  else
+  {
+    _settings->clearAll();
+    _tsettings.copy(_settings);
+    _settings->save();
+  }
   
   QSettings set(g_localSettings);
   QStringList l = set.value("indicators").toStringList();
-  l.append(_settings->data("NAME"));
+  l.append(_tsettings.data("NAME"));
   l.removeDuplicates();
   set.setValue("indicators", l);
   set.sync();
 
   saveSettings();
 
+  if (_settings == 0)
+    g_middleMan->indicatorNew(_tsettings.data("NAME"));
+  
   emit signalDone();
 
   accept();
@@ -94,9 +121,13 @@ void IndicatorEditDialog::addIndicator ()
   QSettings set(g_globalSettings);
   l = set.value("indicator_plugins").toStringList();
   l.sort();
+
+  QSettings set2(g_localSettings);
+  QString s = set2.value("indicator_edit_dialog_last_indicator", 0).toString();
   
   QInputDialog *dialog = new QInputDialog(this);
   dialog->setComboBoxItems(l);
+  dialog->setTextValue(s);
   dialog->setLabelText(tr("Select indicator"));
   connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(addIndicator2(QString)));
   dialog->show();
@@ -112,11 +143,15 @@ void IndicatorEditDialog::addIndicator2 (QString d)
     return;
   }
 
+  QSettings settings(g_localSettings);
+  settings.setValue("indicator_edit_dialog_last_indicator", d);
+  settings.sync();
+
   Setting *set = new Setting;
   plug->defaults(set);
   delete plug;
 
-  _settings->addSettings(set);
+  _tsettings.addSettings(set);
 
   addTab(set);
 }
@@ -135,7 +170,7 @@ void IndicatorEditDialog::deleteIndicator ()
 
   delete w;
 
-  _settings->removeSettings(index);
+  _tsettings.removeSettings(index);
 }
 
 void IndicatorEditDialog::addTab (Setting *set)
@@ -158,5 +193,29 @@ void IndicatorEditDialog::addTab (Setting *set)
   connect(this, SIGNAL(signalSave()), w, SLOT(save()));
   _tabs->addTab(w, set->data("PLUGIN"));
 
+  _tabs->setCurrentIndex(_tabs->count() - 1);
+
   delete plug;
+}
+
+void IndicatorEditDialog::newDialog ()
+{
+  QStringList l;
+  DataDataBase db("indicators");
+  db.names(l);
+
+  NewDialog *dialog = new NewDialog(this);
+  dialog->setItems(l);
+  dialog->setTitle(tr("Enter new indicator name"));
+  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(newDialog2(QString)));
+  dialog->show();
+}
+
+void IndicatorEditDialog::newDialog2 (QString d)
+{
+  _tsettings.setData("NAME", d);
+
+  QStringList l;
+  l << "QtStalker" << g_session << ":" << tr("Indicator") << _tsettings.data("NAME");
+  setWindowTitle(l.join(" "));
 }

@@ -22,13 +22,39 @@
 #include "DOHLCVI.h"
 #include "Curve.h"
 #include "Globals.h"
+#include "DOHLCVIDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
 DOHLCVI::DOHLCVI ()
 {
   _plugin = "DOHLCVI";
+  _type = _INDICATOR;
   _methods << "D" << "O" << "H" << "L" << "C" << "V" << "I";
+}
+
+int DOHLCVI::calculate (BarData *bd, Indicator *i, Setting *settings)
+{
+  Curve *in = i->line(settings->data("INPUT"));
+  if (! in)
+  {
+    InputType it;
+    in = it.input(bd, settings->data("INPUT"));
+    if (! in)
+    {
+      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      return 1;
+    }
+  }
+
+  in->setAllColor(QColor(settings->data("COLOR")));
+  in->setLabel(settings->data("OUTPUT"));
+  in->setType((Curve::Type) in->typeFromString(settings->data("STYLE")));
+  in->setZ(settings->getInt("Z"));
+  i->setLine(settings->data("OUTPUT"), in);
+
+  return 0;
 }
 
 int DOHLCVI::command (Command *command)
@@ -107,6 +133,21 @@ int DOHLCVI::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+QWidget * DOHLCVI::dialog (QWidget *p, Setting *set)
+{
+  return new DOHLCVIDialog(p, set);
+}
+
+void DOHLCVI::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
+  set->setData("COLOR", QString("yellow"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("Z", 0);
+  set->setData("OUTPUT", QString("Close"));
 }
 
 //*************************************************************

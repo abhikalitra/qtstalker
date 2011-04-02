@@ -32,7 +32,6 @@
 #include "Command.h"
 #include "Plot.h"
 #include "ControlPanel.h"
-#include "IndicatorSettings.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -67,10 +66,6 @@ class QtstalkerApp : public QMainWindow
     void updatePlot (QString);
     void shutDown ();
     void afterStartup ();
-    void newIndicator (QString);
-    void newIndicator2 ();
-    void newIndicator3 ();
-    void newIndicatorAbort ();
 
   protected:
     QHash<QString, Plot *> _plots;
@@ -78,7 +73,6 @@ class QtstalkerApp : public QMainWindow
     QString _clAsset;
     SidePanel *_sidePanel;
     ControlPanel *_controlPanel;
-    IndicatorSettings *_newIndicator;
     QString _addNewPlot;
 };
 

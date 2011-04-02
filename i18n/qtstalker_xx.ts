@@ -2,6 +2,33 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
+    <name>ADDDialog</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ADDialog</name>
     <message>
         <source>Color</source>
@@ -173,25 +200,6 @@ Qt Assistant is licensed with GNU General Public License (GPL) version 3.</sourc
         <source>
 (C) 2001-2011 by Stefan Stratigakos
 qtstalker.sourceforge.net</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>AddIndicatorDialog</name>
-    <message>
-        <source>Add Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>already exists</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1162,6 +1170,33 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>DIVDialog</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DataWindow</name>
     <message>
         <source>Date</source>
@@ -1728,6 +1763,33 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>MAXDialog</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MDIDialog</name>
     <message>
         <source>Output</source>
@@ -1805,6 +1867,33 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>MINDialog</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MOMDialog</name>
     <message>
         <source>Input</source>
@@ -1824,6 +1913,33 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>MULTDialog</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2416,6 +2532,33 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SUBDialog</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

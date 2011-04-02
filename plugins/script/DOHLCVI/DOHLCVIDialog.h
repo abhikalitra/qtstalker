@@ -19,30 +19,35 @@
  *  USA.
  */
 
-#ifndef INDICATOR_SETTINGS_HPP
-#define INDICATOR_SETTINGS_HPP
+#ifndef PLUGIN_DOHLCVI_DIALOG_HPP
+#define PLUGIN_DOHLCVI_DIALOG_HPP
 
-#include <QStringList>
-#include <QList>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QLineEdit>
 
+#include "ColorButton.h"
 #include "Setting.h"
 
-class IndicatorSettings : public Setting
+class DOHLCVIDialog : public QWidget
 {
-  public:
-    IndicatorSettings ();
-    ~IndicatorSettings ();
-    int load (QString);
-    int save ();
-    int count ();
-    Setting * settings (int);
-    void addSettings (Setting *);
-    void removeSettings (int);
-    void copy (IndicatorSettings *);
-    void clearAll ();
+  Q_OBJECT
 
-  protected:
-    QList<Setting *> _list;
+  public:
+    DOHLCVIDialog (QWidget *, Setting *);
+    void createGeneralPage();
+
+  public slots:
+    void save ();
+
+  private:
+    Setting *_settings;
+    ColorButton *_color;
+    QComboBox *_style;
+    QComboBox *_type;
+    QComboBox *_input;
+    QLineEdit *_output;
+    QSpinBox *_z;
 };
 
 #endif

@@ -159,25 +159,25 @@ int CORREL::calculate (BarData *bd, Indicator *i, Setting *settings)
   // create ref1 line
   Setting co;
   QString key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("Type", QString("HLine"));
+  co.setData("TYPE", QString("HLine"));
   co.setData("ID", key);
   co.setData("RO", 1);
-  co.setData("Price", settings->data("REF1"));
-  co.setData("Color", settings->data("COLOR_REF1"));
+  co.setData("PRICE", settings->data("REF1"));
+  co.setData("COLOR", settings->data("COLOR_REF1"));
   i->addChartObject(co);
 
   // create ref2 line
   key = "-" + QString::number(i->chartObjectCount() + 1);
   co.setData("ID", key);
-  co.setData("Price", settings->data("REF2"));
-  co.setData("Color", settings->data("COLOR_REF2"));
+  co.setData("PRICE", settings->data("REF2"));
+  co.setData("COLOR", settings->data("COLOR_REF2"));
   i->addChartObject(co);
   
   // create ref3 line
   key = "-" + QString::number(i->chartObjectCount() + 1);
   co.setData("ID", key);
-  co.setData("Price", settings->data("REF3"));
-  co.setData("Color", settings->data("COLOR_REF3"));
+  co.setData("PRICE", settings->data("REF3"));
+  co.setData("COLOR", settings->data("COLOR_REF3"));
   i->addChartObject(co);
 
   return 0;

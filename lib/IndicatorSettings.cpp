@@ -30,13 +30,19 @@ IndicatorSettings::IndicatorSettings ()
 
 IndicatorSettings::~IndicatorSettings ()
 {
+  clearAll();
+}
+
+void IndicatorSettings::clearAll ()
+{
+  clear();
   qDeleteAll(_list);
+  _list.clear();
 }
 
 int IndicatorSettings::load (QString d)
 {
-  qDeleteAll(_list);
-  _list.clear();
+  clearAll();
   
   if (d.isEmpty())
     return 1;
@@ -151,4 +157,17 @@ void IndicatorSettings::removeSettings (int d)
   
   delete set;
   _list.removeAt(d);
+}
+
+void IndicatorSettings::copy (IndicatorSettings *d)
+{
+  Setting::copy(d);
+
+  int loop = 0;
+  for (; loop < _list.count(); loop++)
+  {
+    Setting *set = new Setting;
+    _list.at(loop)->copy(set);
+    d->addSettings(set);
+  }
 }

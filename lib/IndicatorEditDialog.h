@@ -40,16 +40,19 @@ class IndicatorEditDialog : public Dialog
     IndicatorEditDialog (QWidget *, IndicatorSettings *);
     void createGUI ();
     void addTab (Setting *);
+    void newDialog ();
 
   public slots:
     void done ();
     void addIndicator ();
     void addIndicator2 (QString);
     void deleteIndicator ();
+    void newDialog2 (QString);
 
   private:
     QTabWidget *_tabs;
     IndicatorSettings *_settings;
+    IndicatorSettings _tsettings;
 };
 
 #endif

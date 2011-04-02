@@ -23,7 +23,7 @@
 #include "Globals.h"
 #include "Doc.h"
 #include "AboutDialog.h"
-#include "NewDialog.h"
+#include "IndicatorEditDialog.h"
 #include "DataDataBase.h"
 #include "ConfigureDialog.h"
 
@@ -129,13 +129,6 @@ void ConfigureButton::configureDialog ()
 
 void ConfigureButton::newIndicator ()
 {
-  QStringList l;
-  DataDataBase db("indicators");
-  db.names(l);
-
-  NewDialog *dialog = new NewDialog(this);
-  dialog->setItems(l);
-  dialog->setTitle(tr("Enter new indicator name"));
-  connect(dialog, SIGNAL(signalDone(QString)), this, SIGNAL(signalNewIndicator(QString)));
+  IndicatorEditDialog *dialog = new IndicatorEditDialog(this, 0);
   dialog->show();
 }
