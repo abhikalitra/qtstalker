@@ -51,10 +51,10 @@ $command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$bName,STYLE=$bStyle,COLOR=$bColor,Z=
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CHART_OBJECT_HLINE,TYPE=RO,PRICE=$oneLine,COLOR=$oneLineColor";
+$command = "PLUGIN=HLINE,TYPE=RO,PRICE=$oneLine,COLOR=$oneLineColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CHART_OBJECT_HLINE,TYPE=RO,PRICE=$zeroLine,COLOR=$zeroLineColor";
+$command = "PLUGIN=HLINE,TYPE=RO,PRICE=$zeroLine,COLOR=$zeroLineColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

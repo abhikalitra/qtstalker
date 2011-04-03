@@ -36,15 +36,21 @@ ChartObjectRetracement::ChartObjectRetracement ()
   _dialog = 0;
 
   QSettings set(g_globalSettings);
-  _settings->setData("COLOR", set.value("default_chart_object_retracement_color", "red").toString());
-  _settings->setData("LINE1", set.value("default_chart_object_retracement_line1", 0.382).toDouble());
-  _settings->setData("LINE2", set.value("default_chart_object_retracement_line2", 0.5).toDouble());
-  _settings->setData("LINE3", set.value("default_chart_object_retracement_line3", 0.618).toDouble());
-  _settings->setData("LINE4", set.value("default_chart_object_retracement_line4", 0).toDouble());
-  _settings->setData("LINE5", set.value("default_chart_object_retracement_line5", 0).toDouble());
-  _settings->setData("LINE6", set.value("default_chart_object_retracement_line6", 0).toDouble());
+  _settings->setData("COLOR", set.value("default_retracement_color", "red").toString());
+  _settings->setData("LINE1", set.value("default_retracement_line1", 0.382).toDouble());
+  _settings->setData("LINE2", set.value("default_retracement_line2", 0.5).toDouble());
+  _settings->setData("LINE3", set.value("default_retracement_line3", 0.618).toDouble());
+  _settings->setData("LINE4", set.value("default_retracement_line4", 0).toDouble());
+  _settings->setData("LINE5", set.value("default_retracement_line5", 0).toDouble());
+  _settings->setData("LINE6", set.value("default_retracement_line6", 0).toDouble());
   _settings->setData("TYPE", QString("Retracement"));
   _settings->setData("EXTEND", 0);
+  _settings->setData("PLUGIN", QString("RETRACEMENT"));
+  _settings->setData("DATE", QDateTime::currentDateTime());
+  _settings->setData("DATE2", QDateTime::currentDateTime());
+  _settings->setData("Z", 99);
+  _settings->setData("HIGH", 0);
+  _settings->setData("LOW", 0);
 }
 
 ChartObjectRetracement::~ChartObjectRetracement ()
@@ -265,7 +271,7 @@ void ChartObjectRetracement::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectRetracementDialog(g_parent, this);
+  _dialog = new ChartObjectDialog(g_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();

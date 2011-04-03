@@ -1138,7 +1138,7 @@
            to script creation except no script is created. This method can cover probably 90% of indicator
            creation. For the more complicated indicators we can use scripting.
 
-           Briefly, when a new indicator is created, after giving it a name an empty dialog is displayed.
+           Briefly, when a new indicator is created, an empty dialog is displayed.
            Use the Add button to add a function tab. e.g OHLC function to draw some bars. Then after adjusting
            the settings you can add an MA. Each function tab is added to the end. You build up the indicators
            in a left to right manner. Each function using the previous tabs for input.
@@ -1152,3 +1152,12 @@
            I know being on the bleeding edge can be frustrating. Please have patience as we work out how to
            finalize all these changes. It will be worth it :-)
 
+20110402:  Renamed CHART_OBJECT_BUY plugin to BUY
+           Renamed CHART_OBJECT_HLINE plugin to HLINE
+           Renamed CHART_OBJECT_RETRACEMENT plugin to RETRACEMENT
+           Renamed CHART_OBJECT_SELL plugin to SELL
+           Renamed CHART_OBJECT_TEXT plugin to TEXT
+           Renamed CHART_OBJECT_TLINE plugin to TLINE
+           Renamed CHART_OBJECT_VLINE plugin to VLINE
+
+           

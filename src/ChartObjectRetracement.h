@@ -23,7 +23,7 @@
 #define CHART_OBJECT_RETRACEMENT_HPP
 
 #include "ChartObject.h"
-#include "ChartObjectRetracementDialog.h"
+#include "ChartObjectDialog.h"
 #include "ChartObjectRetracementDraw.h"
 
 class ChartObjectRetracement : public ChartObject
@@ -47,7 +47,7 @@ class ChartObjectRetracement : public ChartObject
     void dialogDone ();
 
   private:
-    ChartObjectRetracementDialog *_dialog;
+    ChartObjectDialog *_dialog;
     int _createFlag;
     ChartObjectRetracementDraw *_draw;
 };

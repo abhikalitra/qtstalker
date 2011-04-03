@@ -63,10 +63,10 @@ $command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$adxName,STYLE=$adxStyle,COLOR=$adxCo
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CHART_OBJECT_HLINE,TYPE=RO,PRICE=$ref,COLOR=$refColor";
+$command = "PLUGIN=HLINE,TYPE=RO,PRICE=$ref,COLOR=$refColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CHART_OBJECT_HLINE,TYPE=RO,PRICE=$ref2,COLOR=$ref2Color";
+$command = "PLUGIN=HLINE,TYPE=RO,PRICE=$ref2,COLOR=$ref2Color";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

@@ -23,7 +23,7 @@
 #define CHART_OBJECT_TEXT_HPP
 
 #include "ChartObject.h"
-#include "ChartObjectTextDialog.h"
+#include "ChartObjectDialog.h"
 #include "ChartObjectTextDraw.h"
 
 class ChartObjectText : public ChartObject
@@ -47,7 +47,7 @@ class ChartObjectText : public ChartObject
     void dialogDone ();
 
   private:
-    ChartObjectTextDialog *_dialog;
+    ChartObjectDialog *_dialog;
     ChartObjectTextDraw *_draw;
 };
 

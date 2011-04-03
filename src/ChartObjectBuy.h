@@ -27,7 +27,7 @@
 #define CHART_OBJECT_BUY_HPP
 
 #include "ChartObject.h"
-#include "ChartObjectBuyDialog.h"
+#include "ChartObjectDialog.h"
 #include "ChartObjectBuyDraw.h"
 
 class ChartObjectBuy : public ChartObject
@@ -51,7 +51,7 @@ class ChartObjectBuy : public ChartObject
     void dialogDone ();
 
   private:
-    ChartObjectBuyDialog *_dialog;
+    ChartObjectDialog *_dialog;
     ChartObjectBuyDraw *_draw;
 };
 

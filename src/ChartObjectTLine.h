@@ -23,7 +23,7 @@
 #define CHART_OBJECT_TLINE_HPP
 
 #include "ChartObject.h"
-#include "ChartObjectTLineDialog.h"
+#include "ChartObjectDialog.h"
 #include "ChartObjectTLineDraw.h"
 
 class ChartObjectTLine : public ChartObject
@@ -47,7 +47,7 @@ class ChartObjectTLine : public ChartObject
     void dialogDone ();
 
   private:
-    ChartObjectTLineDialog *_dialog;
+    ChartObjectDialog *_dialog;
     int _createFlag;
     ChartObjectTLineDraw *_draw;
 };

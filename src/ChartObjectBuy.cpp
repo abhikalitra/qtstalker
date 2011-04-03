@@ -35,8 +35,12 @@ ChartObjectBuy::ChartObjectBuy ()
   _dialog = 0;
 
   QSettings set(g_globalSettings);
-  _settings->setData("COLOR", set.value("default_chart_object_buy_color", "green").toString());
-  _settings->setData(QString("TYPE"), QString("Buy"));
+  _settings->setData("COLOR", set.value("default_buy_color", "green").toString());
+  _settings->setData("TYPE", QString("Buy"));
+  _settings->setData("PLUGIN", QString("BUY"));
+  _settings->setData("PRICE", 0);
+  _settings->setData("DATE", QDateTime::currentDateTime());
+  _settings->setData("Z", 99);
 }
 
 ChartObjectBuy::~ChartObjectBuy ()
@@ -185,7 +189,7 @@ void ChartObjectBuy::dialog ()
   if (_dialog)
     return;
   
-  _dialog = new ChartObjectBuyDialog(g_parent, this);
+  _dialog = new ChartObjectDialog(g_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();

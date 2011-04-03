@@ -35,8 +35,12 @@ ChartObjectSell::ChartObjectSell ()
   _dialog = 0;
 
   QSettings set(g_globalSettings);
-  _settings->setData("COLOR", set.value("default_chart_object_sell_color", "red").toString());
+  _settings->setData("COLOR", set.value("default_sell_color", "red").toString());
   _settings->setData("TYPE", QString("Sell"));
+  _settings->setData("PLUGIN", QString("SELL"));
+  _settings->setData("PRICE", 0);
+  _settings->setData("DATE", QDateTime::currentDateTime());
+  _settings->setData("Z", 99);
 }
 
 ChartObjectSell::~ChartObjectSell ()
@@ -185,7 +189,7 @@ void ChartObjectSell::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectSellDialog(g_parent, this);
+  _dialog = new ChartObjectDialog(g_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();

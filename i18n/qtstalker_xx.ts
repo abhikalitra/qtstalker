@@ -351,6 +351,29 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>BuyDialog</name>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CCIDialog</name>
     <message>
         <source>Color</source>
@@ -545,25 +568,9 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ChartObjectBuyDialog</name>
+    <name>ChartObjectDialog</name>
     <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Buy</source>
+        <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -583,25 +590,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Place HLine object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ChartObjectHLineDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit HLine</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -673,73 +661,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ChartObjectRetracementDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Levels</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Retracement</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ChartObjectSell</name>
     <message>
         <source>Type</source>
@@ -763,29 +684,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Place Sell object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ChartObjectSellDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Sell</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -833,41 +731,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ChartObjectTLineDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit TLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ChartObjectText</name>
     <message>
         <source>Type</source>
@@ -895,41 +758,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ChartObjectTextDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid label characters</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ChartObjectVLine</name>
     <message>
         <source>Type</source>
@@ -949,25 +777,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Place VLine object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ChartObjectVLineDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit VLine</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1076,10 +885,6 @@ eg. perl -l -T</source>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Enter new indicator name</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ConfigureDialog</name>
@@ -1181,6 +986,29 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DOHLCVIDialog</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1446,6 +1274,25 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>HLineDialog</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>HTDialog</name>
     <message>
         <source>Color</source>
@@ -1561,6 +1408,10 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Select indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter new indicator name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2214,10 +2065,6 @@ eg. perl -l -T</source>
         <source>Confirm all chart objects delete</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Enter new indicator name</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -2374,6 +2221,73 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>&amp;Refresh Rate</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RetracementDialog</name>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line 6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Levels</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2804,6 +2718,29 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>SellDialog</name>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SidePanel</name>
     <message>
         <source>Charts</source>
@@ -2938,6 +2875,41 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TLineDialog</name>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3245,6 +3217,37 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>TextDialog</name>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ULTOSCDialog</name>
     <message>
         <source>Color</source>
@@ -3353,6 +3356,25 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VLineDialog</name>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set as default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

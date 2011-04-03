@@ -14,8 +14,8 @@ To Do:
 - chart zooming
 - add a date widget to charts that mimic 'the new style' we see on yahoo and google charts.
 - add defaults to all the plugins so we can cut down on explicit parms
-- stock split script plugin e.g. QUOTE_DATABASE_SPLIT, QUOTE_DATABASE_MERGE
 - implement 0.36 crosshair behaviour
+- add a plot thickness setting
 
 
 Priority

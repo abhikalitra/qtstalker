@@ -35,9 +35,12 @@ ChartObjectHLine::ChartObjectHLine ()
   _dialog = 0;
   
   QSettings set(g_globalSettings);
-  QString s = set.value("default_chart_object_hline_color", "red").toString();
+  QString s = set.value("default_hline_color", "white").toString();
   _settings->setData("COLOR", s);
   _settings->setData("TYPE", QString("HLine"));
+  _settings->setData("PLUGIN", QString("HLINE"));
+  _settings->setData("PRICE", 0);
+  _settings->setData("Z", 99);
 }
 
 ChartObjectHLine::~ChartObjectHLine ()
@@ -167,7 +170,7 @@ void ChartObjectHLine::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectHLineDialog(g_parent, this);
+  _dialog = new ChartObjectDialog(g_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();

@@ -37,9 +37,15 @@ ChartObjectTLine::ChartObjectTLine ()
   _dialog = 0;
 
   QSettings set(g_globalSettings);
-  _settings->setData("COLOR", set.value("default_chart_object_tline_color", "red").toString());
-  _settings->setData("EXTEND", set.value("default_chart_object_tline_extend", 0).toInt());
+  _settings->setData("COLOR", set.value("default_tline_color", "red").toString());
+  _settings->setData("EXTEND", set.value("default_tline_extend", 0).toInt());
   _settings->setData("TYPE", QString("TLine"));
+  _settings->setData("PLUGIN", QString("TLINE"));
+  _settings->setData("PRICE", 0);
+  _settings->setData("PRICE2", 0);
+  _settings->setData("DATE", QDateTime::currentDateTime());
+  _settings->setData("DATE2", QDateTime::currentDateTime());
+  _settings->setData("Z", 99);
 }
 
 ChartObjectTLine::~ChartObjectTLine ()
@@ -262,7 +268,7 @@ void ChartObjectTLine::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectTLineDialog(g_parent, this);
+  _dialog = new ChartObjectDialog(g_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();

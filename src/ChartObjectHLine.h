@@ -23,7 +23,7 @@
 #define CHART_OBJECT_HLINE_HPP
 
 #include "ChartObject.h"
-#include "ChartObjectHLineDialog.h"
+#include "ChartObjectDialog.h"
 #include "ChartObjectHLineDraw.h"
 
 class ChartObjectHLine : public ChartObject
@@ -47,7 +47,7 @@ class ChartObjectHLine : public ChartObject
     void dialogDone ();
 
   private:
-    ChartObjectHLineDialog *_dialog;
+    ChartObjectDialog *_dialog;
     ChartObjectHLineDraw *_draw;
 };
 

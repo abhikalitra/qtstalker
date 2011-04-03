@@ -27,7 +27,7 @@
 #define CHART_OBJECT_SELL_HPP
 
 #include "ChartObject.h"
-#include "ChartObjectSellDialog.h"
+#include "ChartObjectDialog.h"
 #include "ChartObjectSellDraw.h"
 
 class ChartObjectSell : public ChartObject
@@ -51,7 +51,7 @@ class ChartObjectSell : public ChartObject
     void dialogDone ();
 
   private:
-    ChartObjectSellDialog *_dialog;
+    ChartObjectDialog *_dialog;
     ChartObjectSellDraw *_draw;
 };
 

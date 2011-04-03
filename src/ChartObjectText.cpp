@@ -35,10 +35,15 @@ ChartObjectText::ChartObjectText ()
   _dialog = 0;
 
   QSettings set(g_globalSettings);
-  _settings->setData("COLOR", set.value("default_chart_object_text_color", "red").toString());
-  _settings->setData("FONT", set.value("default_chart_object_text_font", "Helvetica,9,50,0").toString());
-  _settings->setData("TEXT", set.value("default_chart_object_text_text", "Text").toString());
+  _settings->setData("COLOR", set.value("default_text_color", "red").toString());
+  _settings->setData("FONT", set.value("default_text_font", "Helvetica,9,50,0").toString());
+  _settings->setData("TEXT", set.value("default_text_text", "Text").toString());
   _settings->setData("TYPE", QString("Text"));
+  _settings->setData("PRICE", 0);
+  _settings->setData("DATE", QDateTime::currentDateTime());
+  _settings->setData("PLUGIN", QString("TEXT"));
+  _settings->setData("Z", 99);
+  
 }
 
 ChartObjectText::~ChartObjectText ()
@@ -189,7 +194,7 @@ void ChartObjectText::dialog ()
   if (_dialog)
     return;
 
-  _dialog = new ChartObjectTextDialog(g_parent, this);
+  _dialog = new ChartObjectDialog(g_parent, this);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(update()));
   connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogDone()));
   _dialog->show();

@@ -190,12 +190,13 @@ void IndicatorEditDialog::addTab (Setting *set)
     return;
   }
 
+  delete plug;
+  
   connect(this, SIGNAL(signalSave()), w, SLOT(save()));
+
   _tabs->addTab(w, set->data("PLUGIN"));
 
   _tabs->setCurrentIndex(_tabs->count() - 1);
-
-  delete plug;
 }
 
 void IndicatorEditDialog::newDialog ()
