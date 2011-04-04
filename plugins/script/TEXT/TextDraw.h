@@ -19,36 +19,35 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Returns a default chart object from the given type name.
-// *************************************************************************************************
+#ifndef PLUGIN_TEXT_DRAW_HPP
+#define PLUGIN_TEXT_DRAW_HPP
 
-#ifndef CHART_OBJECT_FACTORY_HPP
-#define CHART_OBJECT_FACTORY_HPP
+#include <QList>
+#include <QRegion>
+#include <qwt_plot_item.h>
+#include <QPainter>
+#include <qwt_scale_map.h>
 
-#include "ChartObject.h"
+#include "Setting.h"
 
-#include <QString>
-
-class ChartObjectFactory
+class TextDraw : public QwtPlotItem
 {
   public:
-    enum Type
-    {
-      _BUY,
-      _HLINE,
-      _RETRACEMENT,
-      _SELL,
-      _TEXT,
-      _TLINE,
-      _VLINE
-    };
-    
-    ChartObjectFactory ();
-    ChartObject * chartObject (QString);
+    TextDraw ();
+    ~TextDraw ();
+    void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
+    int rtti () const;
+    int isSelected (QPoint);
+    int isGrabSelected (QPoint);
+    void setSelected (int);
+    Setting * settings ();
 
-  private:
-    QStringList _types;
+  protected:
+    mutable Setting *_settings;
+    int _selected;
+    int _handleWidth;
+    mutable QList<QRegion> _selectionArea;
+    mutable QList<QRegion> _grabHandles;
 };
 
 #endif

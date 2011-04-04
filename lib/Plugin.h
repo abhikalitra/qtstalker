@@ -45,12 +45,27 @@ class Plugin : public QObject
       _INDICATOR
     };
     
+    enum Request
+    {
+      _CLEAR,
+      _CREATE,
+      _ADD,
+      _DEFAULTS,
+      _INFO,
+      _HIGH_LOW,
+      _DELETE,
+      _DELETE_ALL,
+      _IS_SELECTED
+    };
+
     Plugin ();
     virtual ~Plugin ();
     virtual int command (Command *);
     virtual int calculate (BarData *, Indicator *, Setting *);
     virtual void defaults (Setting *);
     virtual QWidget * dialog (QWidget *, Setting *);
+    virtual int request (Setting *, Setting *);
+    virtual void setParent (void *);
     
     int type ();
 

@@ -1160,4 +1160,9 @@
            Renamed CHART_OBJECT_TLINE plugin to TLINE
            Renamed CHART_OBJECT_VLINE plugin to VLINE
 
+           Now able to add chart objects to indicators using the indicator editing dialog. Add them just
+           as you would indicator functions. Use them to add reference lines etc.
+
+20110404:  Moved the chart object code from /src to the plugin code.
+
            

@@ -55,7 +55,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_B));
   a->setToolTip(tr("Create Buy Arrow Chart Object"));
   a->setStatusTip(QString(tr("Create Buy Arrow Chart Object")));
-  a->setData(QVariant("Buy"));
+  a->setData(QVariant("BUY"));
   _actions.insert(_BUY_CHART_OBJECT, a);
 
   // hline
@@ -63,7 +63,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_H));
   a->setToolTip(tr("Create Horizontal Line Chart Object"));
   a->setStatusTip(QString(tr("Create Horizontal Line Chart Object")));
-  a->setData(QVariant("HLine"));
+  a->setData(QVariant("HLINE"));
   _actions.insert(_HLINE_CHART_OBJECT, a);
 
   // retracement
@@ -71,7 +71,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_R));
   a->setToolTip(tr("Create Retracement Levels Chart Object"));
   a->setStatusTip(QString(tr("Create Retracement Levels Chart Object")));
-  a->setData(QVariant("Retracement"));
+  a->setData(QVariant("RETRACEMENT"));
   _actions.insert(_RETRACEMENT_CHART_OBJECT, a);
 
   // sell
@@ -79,7 +79,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_S));
   a->setToolTip(tr("Create Sell Arrow Chart Object"));
   a->setStatusTip(QString(tr("Create Sell Arrow Chart Object")));
-  a->setData(QVariant("Sell"));
+  a->setData(QVariant("SELL"));
   _actions.insert(_SELL_CHART_OBJECT, a);
 
   // text
@@ -87,7 +87,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_T));
   a->setToolTip(tr("Create Text Chart Object"));
   a->setStatusTip(QString(tr("Create Text Chart Object")));
-  a->setData(QVariant("Text"));
+  a->setData(QVariant("TEXT"));
   _actions.insert(_TEXT_CHART_OBJECT, a);
 
   // tline
@@ -95,7 +95,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_L));
   a->setToolTip(tr("Create Trend Line Chart Object"));
   a->setStatusTip(QString(tr("Create Trend Line Chart Object")));
-  a->setData(QVariant("TLine"));
+  a->setData(QVariant("TLINE"));
   _actions.insert(_TLINE_CHART_OBJECT, a);
 
   // vline
@@ -103,7 +103,7 @@ void PlotMenu::createActions ()
 //  a->setShortcut(QKeySequence(Qt::CTRL+Qt::Key_V));
   a->setToolTip(tr("Create Vertical Line Chart Object"));
   a->setStatusTip(QString(tr("Create Vertical Line Chart Object")));
-  a->setData(QVariant("VLine"));
+  a->setData(QVariant("VLINE"));
   _actions.insert(_VLINE_CHART_OBJECT, a);
 
   // new indicator

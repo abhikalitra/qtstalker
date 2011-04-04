@@ -24,9 +24,9 @@
 #include "PlotOHLC.h"
 #include "PlotCandle.h"
 #include "Strip.h"
-#include "ChartObjectFactory.h"
 #include "Globals.h"
 #include "DataDataBase.h"
+#include "PluginFactory.h"
 
 #include <QSettings>
 #include <QtDebug>
@@ -382,19 +382,25 @@ void Plot::setHighLow ()
       _low = l;
   }
 
-  QHashIterator<QString, ChartObject *> it2(_chartObjects);
+  QHashIterator<QString, Plugin *> it2(_chartObjects);
   while (it2.hasNext())
   {
     it2.next();
-    double h, l;
-    ChartObject *co = it2.value();
-    if (! co->highLow(_startPos, _endPos, h, l))
+
+    Setting request, data;
+    request.setData("REQUEST", Plugin::_HIGH_LOW);
+    request.setData("START", _startPos);
+    request.setData("END", _endPos);
+    if (it2.value()->request(&request, &data))
       continue;
 
-    if (h > _high)
-      _high = h;
-    if (l < _low)
-      _low = l;
+    double d = data.getDouble("HIGH");
+    if (d > _high)
+      _high = d;
+    
+    d = data.getDouble("LOW");
+    if (d < _low)
+      _low = d;
   }
 
   setAxisScale(QwtPlot::yRight, _low, _high);
@@ -503,17 +509,24 @@ void Plot::mouseMove (QPoint p)
   Setting set;
   int index = (int) invTransform(QwtPlot::xBottom, p.x());
 
-  QHashIterator<QString, ChartObject *> it2(_chartObjects);
+  QHashIterator<QString, Plugin *> it2(_chartObjects);
   while (it2.hasNext())
   {
     it2.next();
-    ChartObject *co = it2.value();
-    if (co->isSelected(p))
-    {
-      co->info(set);
-      emit signalInfoMessage(set);
-      return;
-    }
+
+    Setting request, data;
+    request.setData("REQUEST", Plugin::_IS_SELECTED);
+    request.setData("X", p.x());
+    request.setData("Y", p.y());
+    if (it2.value()->request(&request, &data))
+      continue;
+    
+    request.setData("REQUEST", Plugin::_INFO);
+    if (it2.value()->request(&request, &set))
+      continue;
+      
+    emit signalInfoMessage(set);
+    return;
   }
 
   _dateScaleDraw->info(index, set);
@@ -573,152 +586,113 @@ void Plot::loadSettings ()
 
 void Plot::chartObjectNew (QString type)
 {
-  ChartObjectFactory fac;
-  ChartObject *co = fac.chartObject(type);
-  if (! co)
-    return;
+  Plugin *plug = _chartObjects.value(type);
+  if (! plug)
+  {
+    PluginFactory fac;
+    plug = fac.plugin(type);
+    if (! plug)
+    {
+      qDebug() << "Plot::chartObjectNew: no plugin";
+      return;
+    }
 
-  Setting *set = co->settings();
+    plug->setParent((void *) this);
+    connect(plug, SIGNAL(signalSelected()), this, SLOT(chartObjectSelected()));
+    connect(plug, SIGNAL(signalUnselected()), this, SLOT(chartObjectUnselected()));
+    connect(this, SIGNAL(signalClick(int, QPoint)), plug, SLOT(click(int, QPoint)));
+    connect(this, SIGNAL(signalMove(QPoint)), plug, SLOT(move(QPoint)));
+    _chartObjects.insert(type, plug);
+  }
+
+  Setting parms, data;
+  parms.setData("REQUEST", Plugin::_CREATE);
+
   QStringList l;
   l << _indicator->name() << g_barData->exchange() << g_barData->symbol();
-  set->setData("KEY", l.join("_"));
-  QString id = QUuid::createUuid().toString();
-  id = id.remove(QString("{"), Qt::CaseSensitive);
-  id = id.remove(QString("}"), Qt::CaseSensitive);
-  id = id.remove(QString("-"), Qt::CaseSensitive);
-  set->setData("ID", id);
+  parms.setData("KEY", l.join("_"));
   
-  setupChartObject(co);
-
-  _chartObjects.insert(id, co);
-  
-  co->create();
-}
-
-void Plot::deleteChartObject (QString id)
-{
-  ChartObject *co = _chartObjects.value(id);
-  if (! co)
+  if (plug->request(&parms, &data))
+  {
+    qDebug() << "Plot::chartObjectNew: request error";
     return;
-
-  delete co;
-  _chartObjects.remove(id);
-
-  DataDataBase db("chartObjects");
-  db.transaction();
-  db.removeName(id);
-  db.commit();
-
-  _selected = 0;
-  setHighLow();
-  setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
-  replot();
+  }
 }
 
 void Plot::deleteAllChartObjects ()
 {
-  DataDataBase db("chartObjects");
-  db.transaction();
+  Setting parms, data;
+  parms.setData("REQUEST", Plugin::_DELETE_ALL);
   
-  QHashIterator<QString, ChartObject *> it(_chartObjects);
+  QHashIterator<QString, Plugin *> it(_chartObjects);
   while (it.hasNext())
   {
     it.next();
-    
-    ChartObject *co = it.value();
-    delete co;
-    _chartObjects.remove(it.key());
-
-    db.removeName(it.key());
+    it.value()->request(&parms, &data);  
   }
 
-  db.commit();
-
-  _selected = 0;
   setHighLow();
   setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
   replot();
 }
 
-void Plot::updateChartObject (QString id)
+void Plot::chartObjectSelected ()
 {
-  ChartObject *co = _chartObjects.value(id);
-  if (! co)
-    return;
-
-  co->load();
-
-  setHighLow();
-  setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
-  replot();
-}
-
-void Plot::chartObjectSelected (QString id)
-{
-  ChartObject *co = _chartObjects.value(id);
-  if (! co)
-    return;
-
   _selected = 1;
 }
 
-void Plot::chartObjectUnselected (QString id)
+void Plot::chartObjectUnselected ()
 {
-  ChartObject *co = _chartObjects.value(id);
-  if (! co)
-    return;
-
   _selected = 0;
-}
-
-void Plot::chartObjectMoveStart (QString id)
-{
-  ChartObject *co = _chartObjects.value(id);
-  if (! co)
-    return;
-
-  connect(this, SIGNAL(signalMove(QPoint)), co, SLOT(move(QPoint)));
-}
-
-void Plot::chartObjectMoveEnd (QString id)
-{
-  ChartObject *co = _chartObjects.value(id);
-  if (! co)
-    return;
-
-  disconnect(this, SIGNAL(signalMove(QPoint)), co, SLOT(move(QPoint)));
-}
-
-void Plot::setupChartObject (ChartObject *co)
-{
-  co->setZ(10);
-  co->attach(this);
-  co->setParent(this);
-  
-  connect(co, SIGNAL(signalDelete(QString)), this, SLOT(deleteChartObject(QString)));
-  connect(co, SIGNAL(signalUpdate(QString)), this, SLOT(updateChartObject(QString)));
-  connect(co, SIGNAL(signalSelected(QString)), this, SLOT(chartObjectSelected(QString)));
-  connect(co, SIGNAL(signalUnselected(QString)), this, SLOT(chartObjectUnselected(QString)));
-  connect(co, SIGNAL(signalMoveStart(QString)), this, SLOT(chartObjectMoveStart(QString)));
-  connect(co, SIGNAL(signalMoveEnd(QString)), this, SLOT(chartObjectMoveEnd(QString)));
-  connect(this, SIGNAL(signalClick(int, QPoint)), co, SLOT(click(int, QPoint)));
 }
 
 void Plot::addChartObjects (QHash<QString, Setting> &l)
 {
-  ChartObjectFactory fac;
-  QHashIterator<QString, Setting> it(l);
+  // clear old objects
+  Setting parms, data;
+  parms.setData("REQUEST", Plugin::_CLEAR);
+
+  QHashIterator<QString, Plugin *> it(_chartObjects);
   while (it.hasNext())
   {
     it.next();
-    Setting set = it.value();
-    
-    ChartObject *co = fac.chartObject(set.data("TYPE"));
-    if (! co)
-      return;
-
-    co->setSettings(&set);
-    setupChartObject(co);
-    _chartObjects.insert(set.data("ID"), co);
+    it.value()->request(&parms, &data);
   }
+
+  // add the objects
+  QHashIterator<QString, Setting> it2(l);
+  while (it2.hasNext())
+  {
+    it2.next();
+    Setting set = it2.value();
+    addChartObject(&set);
+  }
+}
+
+void Plot::addChartObject (Setting *parms)
+{
+  Plugin *plug = _chartObjects.value(parms->data("PLUGIN"));
+  if (! plug)
+  {
+    PluginFactory fac;
+    plug = fac.plugin(parms->data("PLUGIN"));
+    if (! plug)
+    {
+      qDebug() << "Plot::addChartObject: no plugin" << parms->data("PLUGIN");
+      return;
+    }
+
+    plug->setParent((void *) this);
+    connect(plug, SIGNAL(signalSelected()), this, SLOT(chartObjectSelected()));
+    connect(plug, SIGNAL(signalUnselected()), this, SLOT(chartObjectUnselected()));
+    connect(this, SIGNAL(signalClick(int, QPoint)), plug, SLOT(click(int, QPoint)));
+    connect(this, SIGNAL(signalMove(QPoint)), plug, SLOT(move(QPoint)));
+    _chartObjects.insert(parms->data("PLUGIN"), plug);
+  }
+
+  Setting request;
+  request.setData("REQUEST", Plugin::_ADD);
+
+  if (plug->request(&request, parms))
+    qDebug() << "Plot::addChartObject: request error";
 }

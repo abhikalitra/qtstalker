@@ -44,6 +44,7 @@ class Dialog : public QDialog
     virtual void help ();
     virtual void loadSettings ();
     virtual void saveSettings ();
+    void setWidget (QWidget *);
 
   protected:
     QDialogButtonBox *_buttonBox;

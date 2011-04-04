@@ -20,17 +20,38 @@
  */
 
 
-#include "ChartObjectSellDraw.h"
+#include "SellDraw.h"
 #include "DateScaleDraw.h"
+#include "Globals.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
+#include <QPolygon>
+#include <QSettings>
 
-ChartObjectSellDraw::ChartObjectSellDraw ()
+SellDraw::SellDraw ()
 {
+  _settings = new Setting;
+  _selected = 0;
+  _handleWidth = 6;
+  setYAxis(QwtPlot::yRight);
+
+  QSettings set(g_globalSettings);
+  _settings->setData("PLUGIN", QString("SELL"));
+  _settings->setData("COLOR", set.value("default_sell_color", "red").toString());
+  _settings->setData("TYPE", QString("Sell"));
+  _settings->setData("PRICE", 0);
+  _settings->setData("DATE", QDateTime::currentDateTime());
+  _settings->setData("Z", 0);
 }
 
-void ChartObjectSellDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
+SellDraw::~SellDraw ()
+{
+  delete _settings;
+  detach();
+}
+
+void SellDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
   int x = xMap.transform(dsd->x(_settings->dateTime("DATE")));
@@ -45,7 +66,7 @@ void ChartObjectSellDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtS
                   x - 2, y - 11,
                   x - 2, y - 5,
                   x - 5, y - 5);
-  
+
   p->setBrush(_settings->color("COLOR"));
 
   p->drawPolygon(arrow, Qt::OddEvenFill);
@@ -71,4 +92,45 @@ void ChartObjectSellDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtS
                 _handleWidth,
                 _settings->color("COLOR"));
   }
+}
+
+int SellDraw::rtti () const
+{
+  return Rtti_PlotUserItem;
+}
+
+int SellDraw::isSelected (QPoint p)
+{
+  int loop;
+  for (loop = 0; loop < (int) _selectionArea.count(); loop++)
+  {
+    QRegion r = _selectionArea.at(loop);
+    if (r.contains(p))
+      return 1;
+  }
+
+  return 0;
+}
+
+int SellDraw::isGrabSelected (QPoint p)
+{
+  int loop;
+  for (loop = 0; loop < (int) _grabHandles.count(); loop++)
+  {
+    QRegion r = _grabHandles.at(loop);
+    if (r.contains(p))
+      return loop + 1;
+  }
+
+  return 0;
+}
+
+void SellDraw::setSelected (int d)
+{
+  _selected = d;
+}
+
+Setting * SellDraw::settings ()
+{
+  return _settings;
 }

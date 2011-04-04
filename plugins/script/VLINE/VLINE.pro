@@ -4,6 +4,8 @@
 
 HEADERS += VLINE.h
 HEADERS += VLineDialog.h
+HEADERS += VLineDraw.h
 
 SOURCES += VLINE.cpp
 SOURCES += VLineDialog.cpp
+SOURCES += VLineDraw.cpp

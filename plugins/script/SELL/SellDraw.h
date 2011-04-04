@@ -19,40 +19,35 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Buy chart object
-// *************************************************************************************************
+#ifndef PLUGIN_SELL_DRAW_HPP
+#define PLUGIN_SELL_DRAW_HPP
 
-#ifndef CHART_OBJECT_BUY_HPP
-#define CHART_OBJECT_BUY_HPP
+#include <QList>
+#include <QRegion>
+#include <qwt_plot_item.h>
+#include <QPainter>
+#include <qwt_scale_map.h>
 
-#include "ChartObject.h"
-#include "ChartObjectDialog.h"
-#include "ChartObjectBuyDraw.h"
+#include "Setting.h"
 
-class ChartObjectBuy : public ChartObject
+class SellDraw : public QwtPlotItem
 {
-  Q_OBJECT
-  
   public:
-    ChartObjectBuy ();
-    ~ChartObjectBuy ();
-    void info (Setting &);
-    int highLow (int start, int end, double &high, double &low);
-    void create ();
-    void setZ (int);
-    void attach (QwtPlot *);
+    SellDraw ();
+    ~SellDraw ();
+    void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
+    int rtti () const;
     int isSelected (QPoint);
-    
-  public slots:
-    void move (QPoint);
-    void click (int, QPoint);
-    void dialog ();
-    void dialogDone ();
+    int isGrabSelected (QPoint);
+    void setSelected (int);
+    Setting * settings ();
 
-  private:
-    ChartObjectDialog *_dialog;
-    ChartObjectBuyDraw *_draw;
+  protected:
+    mutable Setting *_settings;
+    int _selected;
+    int _handleWidth;
+    mutable QList<QRegion> _selectionArea;
+    mutable QList<QRegion> _grabHandles;
 };
 
 #endif

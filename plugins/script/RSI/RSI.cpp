@@ -108,6 +108,7 @@ int RSI::calculate (BarData *bd, Indicator *i, Setting *settings)
   // create ref1 line
   Setting co;
   QString key = "-" + QString::number(i->chartObjectCount() + 1);
+  co.setData("PLUGIN", QString("HLINE"));
   co.setData("TYPE", QString("HLine"));
   co.setData("ID", key);
   co.setData("RO", 1);

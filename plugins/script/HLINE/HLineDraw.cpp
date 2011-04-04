@@ -20,18 +20,37 @@
  */
 
 
-#include "ChartObjectHLineDraw.h"
+#include "HLineDraw.h"
 #include "DateScaleDraw.h"
+#include "Globals.h"
 
 #include <QDebug>
-#include <QPolygon>
 #include <qwt_plot.h>
+#include <QPolygon>
+#include <QSettings>
 
-ChartObjectHLineDraw::ChartObjectHLineDraw ()
+HLineDraw::HLineDraw ()
 {
+  _settings = new Setting;
+  _selected = 0;
+  _handleWidth = 6;
+  setYAxis(QwtPlot::yRight);
+
+  QSettings set(g_globalSettings);
+  _settings->setData("PLUGIN", QString("HLINE"));
+  _settings->setData("COLOR", set.value("default_hline_color", "white").toString());
+  _settings->setData("TYPE", QString("HLine"));
+  _settings->setData("PRICE", 0);
+  _settings->setData("Z", 0);
 }
 
-void ChartObjectHLineDraw::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap &yMap, const QRect &) const
+HLineDraw::~HLineDraw ()
+{
+  delete _settings;
+  detach();
+}
+
+void HLineDraw::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap &yMap, const QRect &) const
 {
   p->setPen(_settings->color("COLOR"));
 
@@ -60,13 +79,13 @@ void ChartObjectHLineDraw::draw (QPainter *p, const QwtScaleMap &, const QwtScal
                   y + 4,
                   p->window().width(),
                   y - 4);
-  
+
   _selectionArea.append(QRegion(array));
 
   if (_selected)
   {
     _grabHandles.clear();
-    
+
     int t = (int) p->window().width() / 4;
     int loop;
     for (loop = 0; loop < 5; loop++)
@@ -84,4 +103,45 @@ void ChartObjectHLineDraw::draw (QPainter *p, const QwtScaleMap &, const QwtScal
                   _settings->color("COLOR"));
     }
   }
+}
+
+int HLineDraw::rtti () const
+{
+  return Rtti_PlotUserItem;
+}
+
+int HLineDraw::isSelected (QPoint p)
+{
+  int loop;
+  for (loop = 0; loop < (int) _selectionArea.count(); loop++)
+  {
+    QRegion r = _selectionArea.at(loop);
+    if (r.contains(p))
+      return 1;
+  }
+
+  return 0;
+}
+
+int HLineDraw::isGrabSelected (QPoint p)
+{
+  int loop;
+  for (loop = 0; loop < (int) _grabHandles.count(); loop++)
+  {
+    QRegion r = _grabHandles.at(loop);
+    if (r.contains(p))
+      return loop + 1;
+  }
+
+  return 0;
+}
+
+void HLineDraw::setSelected (int d)
+{
+  _selected = d;
+}
+
+Setting * HLineDraw::settings ()
+{
+  return _settings;
 }

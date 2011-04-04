@@ -30,6 +30,7 @@ RetracementDialog::RetracementDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _co = set;
   createGUI();
+  createLinePage();
 }
 
 void RetracementDialog::createGUI ()

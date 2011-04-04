@@ -4,6 +4,8 @@
 
 HEADERS += BUY.h
 HEADERS += BuyDialog.h
+HEADERS += BuyDraw.h
 
 SOURCES += BUY.cpp
 SOURCES += BuyDialog.cpp
+SOURCES += BuyDraw.cpp

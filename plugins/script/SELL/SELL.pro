@@ -4,6 +4,8 @@
 
 HEADERS += SELL.h
 HEADERS += SellDialog.h
+HEADERS += SellDraw.h
 
 SOURCES += SELL.cpp
 SOURCES += SellDialog.cpp
+SOURCES += SellDraw.cpp

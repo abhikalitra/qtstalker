@@ -20,23 +20,350 @@
  */
 
 #include "VLINE.h"
-#include "ChartObject.h"
 #include "VLineDialog.h"
 #include "Globals.h"
+#include "DataDataBase.h"
+#include "ConfirmDialog.h"
+#include "DateScaleDraw.h"
+
+#include "../pics/delete.xpm"
+#include "../pics/edit.xpm"
 
 #include <QtDebug>
 #include <QSettings>
+#include <qwt_plot.h>
 
 VLINE::VLINE ()
 {
   _plugin = "VLINE";
   _type = _INDICATOR;
+  _status = _NONE;
+  _dialog = 0;
+  _selected = 0;
+
+  _menu = new QMenu;
+  _editAction = _menu->addAction(QPixmap(edit_xpm), tr("&Edit"), this, SLOT(dialog()), Qt::ALT+Qt::Key_E);
+  _deleteAction = _menu->addAction(QPixmap(delete_xpm), tr("&Delete"), this, SLOT(deleteChartObject()), Qt::ALT+Qt::Key_D);
+}
+
+VLINE::~VLINE ()
+{
+  delete _menu;
+  if (_dialog)
+    delete _dialog;
+  qDeleteAll(_items);
+}
+
+int VLINE::request (Setting *request, Setting *data)
+{
+  switch ((Request) request->getInt("REQUEST"))
+  {
+    case _INFO:
+      return info(data);
+      break;
+    case _HIGH_LOW:
+      return 1;
+      break;
+    case _CREATE:
+      return create(request);
+      break;
+    case _CLEAR:
+      return clear();
+      break;
+    case _ADD:
+      return addItem(data);
+      break;
+    case _DELETE_ALL:
+      return deleteAll();
+      break;
+    default:
+      return 1;
+      break;
+  }
+}
+
+void VLINE::setParent (void *p)
+{
+  _plot = (QwtPlot *) p;
+}
+
+int VLINE::clear ()
+{
+  qDeleteAll(_items);
+  _items.clear();
+  _status = _NONE;
+  return 0;
+}
+
+int VLINE::addItem (Setting *data)
+{
+  VLineDraw *co = new VLineDraw;
+  data->copy(co->settings());
+  co->attach(_plot);
+  _items.insert(co->settings()->data("ID"), co);
+  return 0;
+}
+
+int VLINE::info (Setting *info)
+{
+  VLineDraw *item = _items.value(info->data("ID"));
+  if (! item)
+    return 1;
+
+  Setting *set = item->settings();
+  if (! set)
+    return 1;
+
+  info->setData(tr("Type"), QString("VLine"));
+
+  QDateTime dt = set->dateTime("DATE");
+  info->setData("D", dt.toString("yyyy-MM-dd"));
+  info->setData("T", dt.toString("HH:mm:ss"));
+
+  return 0;
+}
+
+void VLINE::move (QPoint p)
+{
+  switch (_status)
+  {
+    case _MOVE:
+    {
+      QwtScaleMap map = _selected->plot()->canvasMap(QwtPlot::xBottom);
+      int x = map.invTransform((double) p.x());
+
+      DateScaleDraw *dsd = (DateScaleDraw *) _selected->plot()->axisScaleDraw(QwtPlot::xBottom);
+      QDateTime dt;
+      dsd->date(x, dt);
+
+      Setting *set = _selected->settings();
+      if (! set)
+	break;
+      set->setData("DATE", dt);
+
+      _plot->replot();
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void VLINE::click (int button, QPoint p)
+{
+//  if (_settings->getInt("RO"))
+//    return;
+
+  switch (_status)
+  {
+    case _SELECTED:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          if (_selected->isGrabSelected(p))
+          {
+            _status = _MOVE;
+            return;
+          }
+
+          if (! _selected->isSelected(p))
+          {
+            _status = _NONE;
+            _selected->setSelected(FALSE);
+            _plot->replot();
+            emit signalUnselected();
+            return;
+          }
+          break;
+        case Qt::RightButton:
+	  if (! _dialog)
+            _menu->exec(QCursor::pos());
+          break;
+        default:
+          break;
+      }
+
+      break;
+    }
+    case _MOVE:
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+          _status = _SELECTED;
+          save();
+          return;
+        default:
+          break;
+      }
+
+      break;
+    }
+    default: // _None
+    {
+      switch (button)
+      {
+        case Qt::LeftButton:
+	{
+          QHashIterator<QString, VLineDraw *> it(_items);
+          while (it.hasNext())
+          {
+            it.next();
+            if (it.value()->isSelected(p))
+            {
+              _status = _SELECTED;
+	      _selected = it.value();
+              it.value()->setSelected(TRUE);
+              emit signalSelected();
+              _plot->replot();
+	      return;
+	    }
+          }
+          break;
+	}
+        default:
+          break;
+      }
+
+      break;
+    }
+  }
+}
+
+int VLINE::create (Setting *parms)
+{
+  _selected = new VLineDraw;
+  Setting *set = _selected->settings();
+  set->setData("KEY", parms->data("KEY"));
+
+  QString id = QUuid::createUuid().toString();
+  id = id.remove(QString("{"), Qt::CaseSensitive);
+  id = id.remove(QString("}"), Qt::CaseSensitive);
+  id = id.remove(QString("-"), Qt::CaseSensitive);
+  set->setData("ID", id);
+
+  _selected->attach(_plot);
+  _items.insert(id, _selected);
+  _status = _MOVE;
+  _selected->setSelected(TRUE);
+  g_middleMan->statusMessage(tr("Place VLine object..."));
+
+  return 0;
+}
+
+void VLINE::dialog ()
+{
+  if (_dialog)
+    return;
+
+  _dialog = new Dialog(g_parent);
+  QWidget *w = dialog(_dialog, _selected->settings());
+  connect(_dialog, SIGNAL(accepted()), w, SLOT(save()));
+  _dialog->setWidget(w);
+  connect(_dialog, SIGNAL(accepted()), this, SLOT(dialogOK()));
+  connect(_dialog, SIGNAL(finished(int)), this, SLOT(dialogCancel()));
+  _dialog->show();
+}
+
+void VLINE::dialogCancel ()
+{
+  _dialog = 0;
+}
+
+void VLINE::dialogOK ()
+{
+  save();
+  _plot->replot();
+}
+
+void VLINE::deleteChartObject ()
+{
+  ConfirmDialog *dialog = new ConfirmDialog(g_parent);
+  dialog->setMessage(tr("Confirm chart object delete"));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteChartObject2()));
+  dialog->show();
+}
+
+void VLINE::deleteChartObject2 ()
+{
+  QString id = _selected->settings()->data("ID");
+  delete _selected;
+  _items.remove(id);
+  _status = _NONE;
+
+  DataDataBase db("chartObjects");
+  db.transaction();
+  db.removeName(id);
+  db.commit();
+
+  _plot->replot();
+}
+
+int VLINE::deleteAll ()
+{
+  DataDataBase db("chartObjects");
+  db.transaction();
+
+  QHashIterator<QString, VLineDraw *> it(_items);
+  while (it.hasNext())
+  {
+    it.next();
+    db.removeName(it.key());
+  }
+
+  db.commit();
+
+  clear();
+
+  _plot->replot();
+
+  return 0;
+}
+
+void VLINE::load ()
+{
+/*
+  if (_settings->getInt("RO"))
+    return;
+
+  DataDataBase db("chartObjects");
+  if (db.load(_settings->data("ID"), _settings))
+    qDebug() << "ChartObject::load: load error";
+*/
+}
+
+void VLINE::save ()
+{
+  Setting *set = _selected->settings();
+  if (set->getInt("RO"))
+    return;
+
+  DataDataBase db("chartObjects");
+  db.transaction();
+
+  if (db.removeName(set->data("ID")))
+  {
+    qDebug() << "ChartObject::save: remove error";
+    return;
+  }
+
+  if (db.save(set->data("ID"), set))
+    qDebug() << "ChartObject::save: save error";
+
+  db.commit();
+}
+
+void VLINE::update ()
+{
+  _plot->replot();
 }
 
 int VLINE::calculate (BarData *, Indicator *i, Setting *settings)
 {
   Setting co;
   QString key = "-" + QString::number(i->chartObjectCount() + 1);
+  co.setData("PLUGIN", _plugin);
   co.setData("TYPE", settings->data("TYPE"));
   co.setData("ID", key);
   co.setData("RO", 1);
@@ -75,7 +402,7 @@ int VLINE::command (Command *command)
 
   QStringList typeList;
   typeList << "RO" << "RW";
-  ChartObject tco;
+  VLineDraw tco;
   Setting *co = tco.settings();
   int saveFlag = 0;
   switch (typeList.indexOf(type))
@@ -83,12 +410,14 @@ int VLINE::command (Command *command)
     case 0: // RO
     {
       QString key = "-" + QString::number(i->chartObjectCount() + 1);
+      co->setData("PLUGIN", _plugin);
       co->setData("TYPE", QString("VLine"));
       co->setData("ID", key);
       co->setData("RO", 1);
       break;
     }
     case 1:
+      co->setData("PLUGIN", _plugin);
       co->setData("TYPE", QString("VLine"));
       co->setData("ID", command->parm("NAME"));
       co->setData("INDICATOR", command->parm("INDICATOR"));
@@ -121,7 +450,7 @@ int VLINE::command (Command *command)
   co->setData("COLOR", command->parm("COLOR"));
 
   if (saveFlag)
-    tco.save();
+    save();
 
   Setting set;
   co->copy(&set);
@@ -135,16 +464,6 @@ int VLINE::command (Command *command)
 QWidget * VLINE::dialog (QWidget *p, Setting *set)
 {
   return new VLineDialog(p, set);
-}
-
-void VLINE::defaults (Setting *set)
-{
-  QSettings settings(g_globalSettings);
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", settings.value("default_vline_color", "red").toString());
-  set->setData("TYPE", QString("HLine"));
-  set->setData("DATE", QDateTime::currentDateTime());
-  set->setData("Z", 99);
 }
 
 //*************************************************************

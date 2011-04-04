@@ -4,6 +4,8 @@
 
 HEADERS += TLINE.h
 HEADERS += TLineDialog.h
+HEADERS += TLineDraw.h
 
 SOURCES += TLINE.cpp
 SOURCES += TLineDialog.cpp
+SOURCES += TLineDraw.cpp

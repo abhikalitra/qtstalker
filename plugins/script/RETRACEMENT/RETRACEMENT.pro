@@ -4,6 +4,8 @@
 
 HEADERS += RETRACEMENT.h
 HEADERS += RetracementDialog.h
+HEADERS += RetracementDraw.h
 
 SOURCES += RETRACEMENT.cpp
 SOURCES += RetracementDialog.cpp
+SOURCES += RetracementDraw.cpp

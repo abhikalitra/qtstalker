@@ -4,6 +4,8 @@
 
 HEADERS += TEXT.h
 HEADERS += TextDialog.h
+HEADERS += TextDraw.h
 
 SOURCES += TEXT.cpp
 SOURCES += TextDialog.cpp
+SOURCES += TextDraw.cpp

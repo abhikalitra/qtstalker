@@ -37,10 +37,10 @@
 #include "Curve.h"
 #include "PlotPicker.h"
 #include "Setting.h"
-#include "ChartObject.h"
 #include "PlotMenu.h"
 #include "Indicator.h"
 #include "DockWidget.h"
+#include "Plugin.h"
 
 class Plot : public QwtPlot
 {
@@ -65,13 +65,13 @@ class Plot : public QwtPlot
     void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
     void addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve);
     void setHighLow ();
-    void setupChartObject (ChartObject *);
     void saveChartObjects ();
     void dates (QList<QDateTime> &);
     int index ();
     PlotMenu * plotMenu ();
     DockWidget * dockWidget ();
     void setYPoints ();
+    void addChartObject (Setting *);
 
   public slots:
     virtual void clear ();
@@ -87,14 +87,10 @@ class Plot : public QwtPlot
     void showContextMenu ();
     void mouseMove (QPoint);
     void mouseClick (int, QPoint);
-    void deleteChartObject (QString);
     void deleteAllChartObjects ();
-    void updateChartObject (QString);
     void chartObjectNew (QString);
-    void chartObjectSelected (QString);
-    void chartObjectUnselected (QString);
-    void chartObjectMoveStart (QString);
-    void chartObjectMoveEnd (QString);
+    void chartObjectSelected ();
+    void chartObjectUnselected ();
     void setCrossHairs (bool);
     void setCrossHairsColor (QColor);
     void setBarSpacing (int);
@@ -103,7 +99,7 @@ class Plot : public QwtPlot
   private:
     int _spacing;
     QHash<QString, QwtPlotCurve *> _qwtCurves;
-    QHash<QString, ChartObject *> _chartObjects;
+    QHash<QString, Plugin *> _chartObjects;
     DateScaleDraw *_dateScaleDraw;
     PlotScaleDraw *_plotScaleDraw;
     QwtPlotGrid *_grid;

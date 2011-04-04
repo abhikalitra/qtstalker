@@ -4,6 +4,8 @@
 
 HEADERS += HLINE.h
 HEADERS += HLineDialog.h
+HEADERS += HLineDraw.h
 
 SOURCES += HLINE.cpp
 SOURCES += HLineDialog.cpp
+SOURCES += HLineDraw.cpp

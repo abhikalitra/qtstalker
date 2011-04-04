@@ -20,18 +20,38 @@
  */
 
 
-#include "ChartObjectBuyDraw.h"
+#include "BuyDraw.h"
 #include "DateScaleDraw.h"
+#include "Globals.h"
 
 #include <QDebug>
-#include <QPolygon>
 #include <qwt_plot.h>
+#include <QPolygon>
+#include <QSettings>
 
-ChartObjectBuyDraw::ChartObjectBuyDraw ()
+BuyDraw::BuyDraw ()
 {
+  _settings = new Setting;
+  _selected = 0;
+  _handleWidth = 6;
+  setYAxis(QwtPlot::yRight);
+
+  QSettings set(g_globalSettings);
+  _settings->setData("PLUGIN", QString("BUY"));
+  _settings->setData("COLOR", set.value("default_buy_color", "green").toString());
+  _settings->setData("TYPE", QString("Buy"));
+  _settings->setData("PRICE", 0);
+  _settings->setData("DATE", QDateTime::currentDateTime());
+  _settings->setData("Z", 0);
 }
 
-void ChartObjectBuyDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
+BuyDraw::~BuyDraw ()
+{
+  delete _settings;
+  detach();
+}
+
+void BuyDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
   int x = xMap.transform(dsd->x(_settings->dateTime("DATE")));
@@ -48,7 +68,7 @@ void ChartObjectBuyDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtSc
                   x - 2, y + 11,
                   x - 2, y + 5,
                   x - 5, y + 5);
-  
+
   p->drawPolygon(arrow, Qt::OddEvenFill);
 
   _selectionArea.clear();
@@ -71,4 +91,45 @@ void ChartObjectBuyDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtSc
                 _handleWidth,
                 _settings->color("COLOR"));
   }
+}
+
+int BuyDraw::rtti () const
+{
+  return Rtti_PlotUserItem;
+}
+
+int BuyDraw::isSelected (QPoint p)
+{
+  int loop;
+  for (loop = 0; loop < (int) _selectionArea.count(); loop++)
+  {
+    QRegion r = _selectionArea.at(loop);
+    if (r.contains(p))
+      return 1;
+  }
+
+  return 0;
+}
+
+int BuyDraw::isGrabSelected (QPoint p)
+{
+  int loop;
+  for (loop = 0; loop < (int) _grabHandles.count(); loop++)
+  {
+    QRegion r = _grabHandles.at(loop);
+    if (r.contains(p))
+      return loop + 1;
+  }
+
+  return 0;
+}
+
+void BuyDraw::setSelected (int d)
+{
+  _selected = d;
+}
+
+Setting * BuyDraw::settings ()
+{
+  return _settings;
 }

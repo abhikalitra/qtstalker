@@ -22,18 +22,67 @@
 #ifndef PLUGIN_HLINE_HPP
 #define PLUGIN_HLINE_HPP
 
+#include <QStringList>
+#include <QPoint>
+#include <QMenu>
+#include <QHash>
+
 #include "Plugin.h"
+#include "Dialog.h"
+#include "HLineDraw.h"
 
 class HLINE : public Plugin
 {
   Q_OBJECT
 
+  signals:
+    void signalSelected ();
+    void signalUnselected ();
+
   public:
+    enum Status
+    {
+      _NONE,
+      _SELECTED,
+      _MOVE
+    };
+
     HLINE ();
+    ~HLINE ();
     int command (Command *);
     int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    int request (Setting *, Setting *);
+    void setParent (void *);
+
+    int clear ();
+    int addItem (Setting *);
+    int info (Setting *);
+    int highLow (Setting *, Setting *);
+    int create (Setting *);
+    void load ();
+    int deleteAll ();
+    void update ();
+    void save ();
+
+  public slots:
+    void move (QPoint);
+    void click (int, QPoint);
+    void dialog ();
+    void dialogCancel ();
+    void dialogOK ();
+    void deleteChartObject ();
+    void deleteChartObject2 ();
+
+  private:
+    QwtPlot *_plot;
+    Dialog *_dialog;
+    QHash<QString, HLineDraw *> _items;
+    Status _status;
+    QMenu *_menu;
+    QAction *_editAction;
+    QAction *_deleteAction;
+    HLineDraw *_selected;
 };
 
 extern "C"

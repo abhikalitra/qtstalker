@@ -32,6 +32,11 @@ Plugin::~Plugin ()
 {
 }
 
+int Plugin::type ()
+{
+  return _type;
+}
+
 int Plugin::calculate (BarData *, Indicator *, Setting *)
 {
   return 0;
@@ -51,7 +56,11 @@ QWidget * Plugin::dialog (QWidget *, Setting *)
   return 0;
 }
 
-int Plugin::type ()
+int Plugin::request (Setting *, Setting *)
 {
-  return _type;
+  return 0;
+}
+
+void Plugin::setParent (void *)
+{
 }

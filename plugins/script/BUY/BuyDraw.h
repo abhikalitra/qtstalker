@@ -19,37 +19,35 @@
  *  USA.
  */
 
-#ifndef CHART_OBJECT_TLINE_HPP
-#define CHART_OBJECT_TLINE_HPP
+#ifndef PLUGIN_BUY_DRAW_HPP
+#define PLUGIN_BUY_DRAW_HPP
 
-#include "ChartObject.h"
-#include "ChartObjectDialog.h"
-#include "ChartObjectTLineDraw.h"
+#include <QList>
+#include <QRegion>
+#include <qwt_plot_item.h>
+#include <QPainter>
+#include <qwt_scale_map.h>
 
-class ChartObjectTLine : public ChartObject
+#include "Setting.h"
+
+class BuyDraw : public QwtPlotItem
 {
-  Q_OBJECT
-
   public:
-    ChartObjectTLine ();
-    ~ChartObjectTLine ();
-    void info (Setting &);
-    int highLow (int start, int end, double &high, double &low);
-    void create ();
-    void setZ (int);
-    void attach (QwtPlot *);
+    BuyDraw ();
+    ~BuyDraw ();
+    void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
+    int rtti () const;
     int isSelected (QPoint);
+    int isGrabSelected (QPoint);
+    void setSelected (int);
+    Setting * settings ();
 
-  public slots:
-    void move (QPoint);
-    void click (int, QPoint);
-    void dialog ();
-    void dialogDone ();
-
-  private:
-    ChartObjectDialog *_dialog;
-    int _createFlag;
-    ChartObjectTLineDraw *_draw;
+  protected:
+    mutable Setting *_settings;
+    int _selected;
+    int _handleWidth;
+    mutable QList<QRegion> _selectionArea;
+    mutable QList<QRegion> _grabHandles;
 };
 
 #endif

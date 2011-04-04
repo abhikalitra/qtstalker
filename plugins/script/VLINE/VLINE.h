@@ -22,18 +22,66 @@
 #ifndef PLUGIN_VLINE_HPP
 #define PLUGIN_VLINE_HPP
 
+#include <QStringList>
+#include <QPoint>
+#include <QMenu>
+#include <QHash>
+
 #include "Plugin.h"
+#include "Dialog.h"
+#include "VLineDraw.h"
 
 class VLINE : public Plugin
 {
   Q_OBJECT
 
+  signals:
+    void signalSelected ();
+    void signalUnselected ();
+
   public:
+    enum Status
+    {
+      _NONE,
+      _SELECTED,
+      _MOVE
+    };
+
     VLINE ();
+    ~VLINE ();
     int command (Command *);
     int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    int request (Setting *, Setting *);
+    void setParent (void *);
+
+    int clear ();
+    int addItem (Setting *);
+    int info (Setting *);
+    int create (Setting *);
+    void load ();
+    int deleteAll ();
+    void update ();
+    void save ();
+
+  public slots:
+    void move (QPoint);
+    void click (int, QPoint);
+    void dialog ();
+    void dialogCancel ();
+    void dialogOK ();
+    void deleteChartObject ();
+    void deleteChartObject2 ();
+
+  private:
+    QwtPlot *_plot;
+    Dialog *_dialog;
+    QHash<QString, VLineDraw *> _items;
+    Status _status;
+    QMenu *_menu;
+    QAction *_editAction;
+    QAction *_deleteAction;
+    VLineDraw *_selected;
 };
 
 extern "C"

@@ -114,3 +114,8 @@ void Dialog::saveSettings ()
   settings.setValue(_keyPos, pos());
   settings.sync();
 }
+
+void Dialog::setWidget (QWidget *w)
+{
+  _vbox->insertWidget(0, w);
+}

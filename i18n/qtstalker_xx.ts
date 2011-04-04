@@ -317,6 +317,37 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>BUY</name>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place Buy object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm chart object delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BarLengthButton</name>
     <message>
         <source>Bar Length</source>
@@ -526,21 +557,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ChartObject</name>
-    <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ChartObjectBuy</name>
     <message>
         <source>Type</source>
@@ -564,13 +580,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Place Buy object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ChartObjectDialog</name>
-    <message>
-        <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1270,6 +1279,33 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Add To Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>HLINE</name>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place HLine object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2129,6 +2165,81 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>RETRACEMENT</name>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ST</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ED</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ET</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select lowest ending point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select highest starting point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm chart object delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ROCDialog</name>
     <message>
         <source>Method</source>
@@ -2322,6 +2433,37 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SELL</name>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place Sell object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2864,6 +3006,41 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>TEXT</name>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place Text object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm chart object delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>THERMDialog</name>
     <message>
         <source>Color</source>
@@ -2879,6 +3056,61 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TLINE</name>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ST</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ED</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>ET</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select TLine ending point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select TLine starting point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3360,6 +3592,29 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VLINE</name>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place VLine object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

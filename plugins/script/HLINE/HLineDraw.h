@@ -19,23 +19,35 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Sell chart object
-// *************************************************************************************************
+#ifndef PLUGIN_HLINE_DRAW_HPP
+#define PLUGIN_HLINE_DRAW_HPP
 
-#ifndef CHART_OBJECT_SELL_DRAW_HPP
-#define CHART_OBJECT_SELL_DRAW_HPP
-
+#include <QList>
+#include <QRegion>
+#include <qwt_plot_item.h>
 #include <QPainter>
 #include <qwt_scale_map.h>
 
-#include "ChartObjectDraw.h"
+#include "Setting.h"
 
-class ChartObjectSellDraw : public ChartObjectDraw
+class HLineDraw : public QwtPlotItem
 {
   public:
-    ChartObjectSellDraw ();
+    HLineDraw ();
+    ~HLineDraw ();
     void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
+    int rtti () const;
+    int isSelected (QPoint);
+    int isGrabSelected (QPoint);
+    void setSelected (int);
+    Setting * settings ();
+
+  protected:
+    mutable Setting *_settings;
+    int _selected;
+    int _handleWidth;
+    mutable QList<QRegion> _selectionArea;
+    mutable QList<QRegion> _grabHandles;
 };
 
 #endif
