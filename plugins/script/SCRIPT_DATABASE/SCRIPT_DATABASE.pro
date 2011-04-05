@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += SCRIPT_DATABASE_SAVE.h
+HEADERS += SCRIPT_DATABASE.h
 
-SOURCES += SCRIPT_DATABASE_SAVE.cpp
+SOURCES += SCRIPT_DATABASE.cpp

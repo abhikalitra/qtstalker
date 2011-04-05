@@ -31,7 +31,7 @@ $command = "PLUGIN=SCRIPT_NAME";
 print STDOUT $command;
 $name = <STDIN>; chomp($name); if ($name eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=SCRIPT_DATABASE_SAVE,NAME=$name,FIELD=MINUTES,DATA=0";
+$command = "PLUGIN=SCRIPT_DATABASE,METHOD=SAVE,NAME=$name,FIELD=MINUTES,DATA=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

@@ -19,18 +19,27 @@
  *  USA.
  */
 
-#ifndef PLUGIN_SCRIPT_DATABASE_DELETE_HPP
-#define PLUGIN_SCRIPT_DATABASE_DELETE_HPP
+#ifndef PLUGIN_SCRIPT_DATABASE_HPP
+#define PLUGIN_SCRIPT_DATABASE_HPP
+
+#include <QStringList>
 
 #include "Plugin.h"
 
-class SCRIPT_DATABASE_DELETE : public Plugin
+class SCRIPT_DATABASE : public Plugin
 {
   Q_OBJECT
 
   public:
-    SCRIPT_DATABASE_DELETE ();
+    SCRIPT_DATABASE ();
     int command (Command *);
+    int remove (Command *);
+    int list (Command *);
+    int load (Command *);
+    int save (Command *);
+
+  private:
+    QStringList _method;
 };
 
 extern "C"
