@@ -18,6 +18,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # update indicator with new settings
-$command = "PLUGIN=PLOT_UPDATE,NAME=$indicator";
+$command = "PLUGIN=PLOT,METHOD=UPDATE,NAME=$indicator";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

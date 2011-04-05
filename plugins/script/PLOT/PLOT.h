@@ -19,34 +19,31 @@
  *  USA.
  */
 
-#include "PLOT_NEW.h"
-#include "Globals.h"
+#ifndef PLUGIN_PLOT_HPP
+#define PLUGIN_PLOT_HPP
 
-#include <QtDebug>
+#include <QStringList>
 
-PLOT_NEW::PLOT_NEW ()
+#include "Plugin.h"
+
+class PLOT : public Plugin
 {
-  _plugin = "PLOT_NEW";
+  Q_OBJECT
+
+  public:
+    PLOT ();
+    int command (Command *);
+    int remove (Command *);
+    int create (Command *);
+    int update (Command *);
+
+  private:
+    QStringList _method;
+};
+
+extern "C"
+{
+  Plugin * createPlugin ();
 }
 
-int PLOT_NEW::command (Command *command)
-{
-  // PARMS:
-  // NAME
-
-  g_middleMan->indicatorNew(command->parm("NAME"));
-
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-//*************************************************************
-//*************************************************************
-//*************************************************************
-
-Plugin * createPlugin ()
-{
-  PLOT_NEW *o = new PLOT_NEW;
-  return ((Plugin *) o);
-}
+#endif

@@ -28,6 +28,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # delete the charts
-$command = "PLUGIN=PLOT_DELETE,NAME=$list";
+$command = "PLUGIN=PLOT,METHOD=DELETE,NAME=$list";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

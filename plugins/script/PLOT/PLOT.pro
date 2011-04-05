@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += PLOT_NEW.h
+HEADERS += PLOT.h
 
-SOURCES += PLOT_NEW.cpp
+SOURCES += PLOT.cpp

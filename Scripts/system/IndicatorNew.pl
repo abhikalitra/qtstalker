@@ -28,6 +28,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create the indicator
-$command = "PLUGIN=PLOT_NEW,NAME=$indicator";
+$command = "PLUGIN=PLOT,METHOD=NEW,NAME=$indicator";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

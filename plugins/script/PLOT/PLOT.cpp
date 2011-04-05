@@ -19,17 +19,65 @@
  *  USA.
  */
 
-#include "PLOT_UPDATE.h"
+#include "PLOT.h"
 #include "Globals.h"
 
 #include <QtDebug>
 
-PLOT_UPDATE::PLOT_UPDATE ()
+PLOT::PLOT ()
 {
-  _plugin = "PLOT_UPDATE";
+  _plugin = "PLOT";
+  _method << "DELETE" << "NEW" << "UPDATE";
 }
 
-int PLOT_UPDATE::command (Command *command)
+int PLOT::command (Command *command)
+{
+  int rc = 1;
+  switch (_method.indexOf(command->parm("METHOD")))
+  {
+    case 0:
+      rc = remove(command);
+      break;
+    case 1:
+      rc = create(command);
+      break;
+    case 2:
+      rc = update(command);
+      break;
+    default:
+      break;
+  }
+
+  return rc;
+}
+
+int PLOT::remove (Command *command)
+{
+  // PARMS:
+  // NAME - semicolon delimited string
+
+  QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
+
+  g_middleMan->indicatorDelete(l);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+int PLOT::create (Command *command)
+{
+  // PARMS:
+  // NAME
+
+  g_middleMan->indicatorNew(command->parm("NAME"));
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+int PLOT::update (Command *command)
 {
   // PARMS:
   // NAME
@@ -47,6 +95,6 @@ int PLOT_UPDATE::command (Command *command)
 
 Plugin * createPlugin ()
 {
-  PLOT_UPDATE *o = new PLOT_UPDATE;
+  PLOT *o = new PLOT;
   return ((Plugin *) o);
 }

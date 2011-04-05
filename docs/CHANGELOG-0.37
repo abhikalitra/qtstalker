@@ -1189,3 +1189,6 @@
 
            Merged all the INDICATOR_DATABASE* plugins into INDICATOR_DATABASE plugin. CVS users please update your
            personal scripts with the METHOD parm.
+
+           Merged all the PLOT_* plugins into PLOT plugin. CVS users please update your
+           personal scripts with the METHOD parm.
