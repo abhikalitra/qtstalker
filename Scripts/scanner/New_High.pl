@@ -105,7 +105,7 @@ foreach $item (@symbols)
   print STDERR "New_High $item $price $hh";
 }
 
-$command = "PLUGIN=GROUP_DATABASE_SAVE_ALL,NAME=$group,ITEMS=$result";
+$command = "PLUGIN=GROUP_DATABASE,METHOD=SAVE_ALL,NAME=$group,ITEMS=$result";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

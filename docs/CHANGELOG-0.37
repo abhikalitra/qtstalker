@@ -1173,3 +1173,5 @@
            Histogram Bar style. Just reset the line type and save the indicator and it will work again.
            Same with any scripts.
 
+           Merged all the GROUP_DATABASE* plugins into GROUP_DATABASE plugin.
+

@@ -19,18 +19,28 @@
  *  USA.
  */
 
-#ifndef PLUGIN_GROUP_DATABASE_SAVE_HPP
-#define PLUGIN_GROUP_DATABASE_SAVE_HPP
+#ifndef PLUGIN_GROUP_DATABASE_HPP
+#define PLUGIN_GROUP_DATABASE_HPP
+
+#include <QStringList>
 
 #include "Plugin.h"
 
-class GROUP_DATABASE_SAVE : public Plugin
+class GROUP_DATABASE : public Plugin
 {
   Q_OBJECT
 
   public:
-    GROUP_DATABASE_SAVE ();
+    GROUP_DATABASE ();
     int command (Command *);
+    int remove (Command *);
+    int list (Command *);
+    int load (Command *);
+    int save (Command *);
+    int saveAll (Command *);
+
+  private:
+    QStringList _method;
 };
 
 extern "C"

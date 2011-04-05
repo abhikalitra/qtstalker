@@ -60,7 +60,7 @@ foreach $item (@symbols)
   $result = $result . ";$item";
 }
 
-$command = "PLUGIN=GROUP_DATABASE_SAVE_ALL,NAME=$group,ITEMS=$result";
+$command = "PLUGIN=GROUP_DATABASE,METHOD=SAVE_ALL,NAME=$group,ITEMS=$result";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

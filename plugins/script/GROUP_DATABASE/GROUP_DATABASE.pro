@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += GROUP_DATABASE_LIST.h
+HEADERS += GROUP_DATABASE.h
 
-SOURCES += GROUP_DATABASE_LIST.cpp
+SOURCES += GROUP_DATABASE.cpp
