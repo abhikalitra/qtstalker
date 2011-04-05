@@ -131,7 +131,7 @@ foreach $input1 (@fields)
     for ($loop = $minPeriod; $loop <= $maxPeriod; $loop++)
     {
       # delete the buy ma
-      $command = "PLUGIN=INDICATOR_PLOT_DELETE,NAME=buy$loop";
+      $command = "PLUGIN=INDICATOR,METHOD=DELETE,NAME=buy$loop";
       print STDOUT $command;
       $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
 
@@ -141,7 +141,7 @@ foreach $input1 (@fields)
       $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
 
       # delete the sell ma
-      $command = "PLUGIN=INDICATOR_PLOT_DELETE,NAME=sell$loop";
+      $command = "PLUGIN=INDICATOR,METHOD=DELETE,NAME=sell$loop";
       print STDOUT $command;
       $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; next; }
 

@@ -36,6 +36,6 @@ $command = "PLUGIN=DIV,NAME=$bwName,INPUT=$subName,INPUT2=$bbMidName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$bwName,STYLE=$bwStyle,COLOR=$bwColor,Z=$bwZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$bwName,STYLE=$bwStyle,COLOR=$bwColor,Z=$bwZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

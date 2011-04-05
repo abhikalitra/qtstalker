@@ -52,37 +52,37 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot the OHLC bars
-$command = "PLUGIN=INDICATOR_PLOT,NAME=$barsName,Z=$barsZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT,NAME=$barsName,Z=$barsZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # get the index ranges for the high
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_RANGE,NAME=$highName";
+$command = "PLUGIN=INDICATOR,METHOD=INDEX_RANGE,NAME=$highName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # get the index end
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_INDEX_RANGE_END";
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_RANGE_END";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # remove the most recent bar from the high
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_DELETE,NAME=$highName,INDEX=$rc";
+$command = "PLUGIN=INDICATOR,METHOD=INDEX_DELETE,NAME=$highName,INDEX=$rc";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # get the index ranges for the low
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_RANGE,NAME=$lowName";
+$command = "PLUGIN=INDICATOR,METHOD=INDEX_RANGE,NAME=$lowName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # get the index end
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_INDEX_RANGE_END";
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_RANGE_END";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # remove the most recent bar from the low
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_DELETE,NAME=$lowName,INDEX=$rc";
+$command = "PLUGIN=INDICATOR,METHOD=INDEX_DELETE,NAME=$lowName,INDEX=$rc";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -97,22 +97,22 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # shift upper values forward 1 period
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_SHIFT,NAME=$upperName,INPUT=max,PERIOD=1";
+$command = "PLUGIN=INDICATOR,METHOD=INDEX_SHIFT,NAME=$upperName,INPUT=max,PERIOD=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # shift lower values forward 1 period
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_SHIFT,NAME=$lowerName,INPUT=min,PERIOD=1";
+$command = "PLUGIN=INDICATOR,METHOD=INDEX_SHIFT,NAME=$lowerName,INPUT=min,PERIOD=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot the upper band
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$upperName,STYLE=Line,COLOR=$upperColor,Z=$upperZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$upperName,STYLE=Line,COLOR=$upperColor,Z=$upperZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot the lower band
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$lowerName,STYLE=Line,COLOR=$lowerColor,Z=$lowerZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$lowerName,STYLE=Line,COLOR=$lowerColor,Z=$lowerZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -123,6 +123,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # plot the middle band
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$midName,STYLE=Line,COLOR=$midColor,Z=$midZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$midName,STYLE=Line,COLOR=$midColor,Z=$midZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

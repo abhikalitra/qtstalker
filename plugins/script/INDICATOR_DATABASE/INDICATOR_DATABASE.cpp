@@ -19,18 +19,37 @@
  *  USA.
  */
 
-#include "INDICATOR_DATABASE_DELETE.h"
+#include "INDICATOR_DATABASE.h"
 #include "Globals.h"
-#include "Indicator.h"
+#include "DataDataBase.h"
 
 #include <QtDebug>
 
-INDICATOR_DATABASE_DELETE::INDICATOR_DATABASE_DELETE ()
+INDICATOR_DATABASE::INDICATOR_DATABASE ()
 {
-  _plugin = "INDICATOR_DATABASE_DELETE";
+  _plugin = "INDICATOR_DATABASE";
+  _method << "DELETE" << "LIST";
 }
 
-int INDICATOR_DATABASE_DELETE::command (Command *command)
+int INDICATOR_DATABASE::command (Command *command)
+{
+  int rc = 1;
+  switch (_method.indexOf(command->parm("METHOD")))
+  {
+    case 0:
+      rc = remove(command);
+      break;
+    case 1:
+      rc = list(command);
+      break;
+    default:
+      break;
+  }
+
+  return rc;
+}
+
+int INDICATOR_DATABASE::remove (Command *command)
 {
   // PARMS:
   // NAME
@@ -45,13 +64,32 @@ int INDICATOR_DATABASE_DELETE::command (Command *command)
   return 0;
 }
 
+int INDICATOR_DATABASE::list (Command *command)
+{
+  // PARMS:
+
+  QStringList l;
+  DataDataBase db("indicators");
+  if (db.names(l))
+  {
+    qDebug() << _plugin << "::command: IndicatorDataBase error";
+    return 1;
+  }
+
+  command->setReturnData(_plugin + "_INDICATORS", l.join(";"));
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
 //*************************************************************
 //*************************************************************
 //*************************************************************
 
 Plugin * createPlugin ()
 {
-  INDICATOR_DATABASE_DELETE *o = new INDICATOR_DATABASE_DELETE;
+  INDICATOR_DATABASE *o = new INDICATOR_DATABASE;
   return ((Plugin *) o);
 }
 

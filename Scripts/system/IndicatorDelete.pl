@@ -3,12 +3,12 @@
 $|=1;
 
 # get current indicators from database
-$command = "PLUGIN=INDICATOR_DATABASE_LIST";
+$command = "PLUGIN=INDICATOR_DATABASE,METHOD=LIST";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # get the indicators string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_DATABASE_LIST_INDICATORS";
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_DATABASE_INDICATORS";
 print STDOUT $command;
 $indicators = <STDIN>; chomp($indicators); if ($indicators eq "ERROR") {print STDERR $command; exit; }
 
@@ -23,7 +23,7 @@ print STDOUT $command;
 $list = <STDIN>; chomp($list); if ($list eq "ERROR") {print STDERR $command; exit; }
 
 # delete indicators from the database
-$command = "PLUGIN=INDICATOR_DATABASE_DELETE,NAME=$list";
+$command = "PLUGIN=INDICATOR_DATABASE,METHOD=DELETE,NAME=$list";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 

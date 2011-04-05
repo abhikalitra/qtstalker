@@ -74,7 +74,7 @@ $command = "PLUGIN=CANDLES,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT,NAME=$candleName,Z=$candleZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT,NAME=$candleName,Z=$candleZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -92,7 +92,7 @@ $command = "PLUGIN=MEDIAN_PRICE,NAME=$tsName,INPUT=$tsHighName,INPUT2=$tsLowName
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$tsName,STYLE=$tsStyle,COLOR=$tsColor,Z=$tsZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$tsName,STYLE=$tsStyle,COLOR=$tsColor,Z=$tsZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -110,17 +110,17 @@ $command = "PLUGIN=MEDIAN_PRICE,NAME=$ksName,INPUT=$ksHighName,INPUT2=$ksLowName
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$ksName,STYLE=$ksStyle,COLOR=$ksColor,Z=$ksZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$ksName,STYLE=$ksStyle,COLOR=$ksColor,Z=$ksZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # CHIKOU SPAN
 
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_SHIFT,NAME=$csName,INPUT=$closeName,PERIOD=$csPeriod";
+$command = "PLUGIN=INDICATOR,METHOD=INDEX_SHIFT,NAME=$csName,INPUT=$closeName,PERIOD=$csPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$csName,STYLE=$csStyle,COLOR=$csColor,Z=$csZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$csName,STYLE=$csStyle,COLOR=$csColor,Z=$csZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -130,11 +130,11 @@ $command = "PLUGIN=MEDIAN_PRICE,NAME=tssa,INPUT=$tsName,INPUT2=$ksName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_SHIFT,NAME=$ssaName,INPUT=tssa,PERIOD=$ssaPeriod";
+$command = "PLUGIN=INDICATOR,METHOD=INDEX_SHIFT,NAME=$ssaName,INPUT=tssa,PERIOD=$ssaPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$ssaName,STYLE=$ssaStyle,COLOR=$ssaColor,Z=$ssaZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$ssaName,STYLE=$ssaStyle,COLOR=$ssaColor,Z=$ssaZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -152,10 +152,10 @@ $command = "PLUGIN=MEDIAN_PRICE,NAME=tssb,INPUT=$ssbHighName,INPUT2=$ssbLowName"
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_INDEX_SHIFT,NAME=$ssbName,INPUT=tssb,PERIOD=$ssbShift";
+$command = "PLUGIN=INDICATOR,METHOD=INDEX_SHIFT,NAME=$ssbName,INPUT=tssb,PERIOD=$ssbShift";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$ssbName,STYLE=$ssbStyle,COLOR=$ssbColor,Z=$ssbZ";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$ssbName,STYLE=$ssbStyle,COLOR=$ssbColor,Z=$ssbZ";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

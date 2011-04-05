@@ -42,7 +42,7 @@ $command = "PLUGIN=CANDLE_PATTERN,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPU
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$haramiName,STYLE=$haramiStyle,COLOR=$haramiColor,Z=0";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$haramiName,STYLE=$haramiStyle,COLOR=$haramiColor,Z=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -50,6 +50,6 @@ $command = "PLUGIN=CANDLE_PATTERN,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPU
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_ALL,NAME=$haramiCrossName,STYLE=$haramiCrossStyle,COLOR=$haramiCrossColor,Z=1";
+$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$haramiCrossName,STYLE=$haramiCrossStyle,COLOR=$haramiCrossColor,Z=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

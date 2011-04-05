@@ -47,7 +47,7 @@ my @symbols = split(';', $rc);
 foreach $item (@symbols)
 {
   # clear all arrays
-  $command = "PLUGIN=INDICATOR_CLEAR";
+  $command = "PLUGIN=INDICATOR,METHOD=CLEAR";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
@@ -60,27 +60,27 @@ foreach $item (@symbols)
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   # get the most recent close price
-  $command = "PLUGIN=INDICATOR_PLOT_VALUE_GET,NAME=symbol.0";
+  $command = "PLUGIN=INDICATOR,METHOD=VALUE_GET,NAME=symbol.0";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   # return the price string
-  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_VALUE_GET_VALUE";
+  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_GET_VALUE";
   print STDOUT $command;
   $price = <STDIN>; chomp($price); if ($price eq "ERROR") { print STDERR $command; next; }
 
   # get the index ranges for the close
-  $command = "PLUGIN=INDICATOR_PLOT_INDEX_RANGE,NAME=symbol";
+  $command = "PLUGIN=INDICATOR,METHOD=INDEX_RANGE,NAME=symbol";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   # get the index end
-  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_INDEX_RANGE_END";
+  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_RANGE_END";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   # remove the most recent bar from the close
-  $command = "PLUGIN=INDICATOR_PLOT_INDEX_DELETE,NAME=symbol,INDEX=$rc";
+  $command = "PLUGIN=INDICATOR,METHOD=INDEX_DELETE,NAME=symbol,INDEX=$rc";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
@@ -90,12 +90,12 @@ foreach $item (@symbols)
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   # get the highest high from max
-  $command = "PLUGIN=INDICATOR_PLOT_VALUE_GET,NAME=max.0";
+  $command = "PLUGIN=INDICATOR,METHOD=VALUE_GET,NAME=max.0";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   # return the highest high string
-  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_VALUE_GET_VALUE";
+  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_GET_VALUE";
   print STDOUT $command;
   $hh = <STDIN>; chomp($hh); if ($hh eq "ERROR") { print STDERR $command; next; }
 

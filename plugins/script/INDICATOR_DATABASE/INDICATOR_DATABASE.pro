@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += INDICATOR_DATABASE_DELETE.h
+HEADERS += INDICATOR_DATABASE.h
 
-SOURCES += INDICATOR_DATABASE_DELETE.cpp
+SOURCES += INDICATOR_DATABASE.cpp

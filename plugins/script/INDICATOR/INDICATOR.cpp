@@ -611,8 +611,8 @@ int INDICATOR::indexRange (Command *command)
   int end = 0;
   line->keyRange(start, end);
 
-  command->setReturnData(_plugin + "_START", QString::number(start));
-  command->setReturnData(_plugin + "_END", QString::number(end));
+  command->setReturnData(_plugin + "_RANGE_START", QString::number(start));
+  command->setReturnData(_plugin + "_RANGE_END", QString::number(end));
 
   command->setReturnCode("0");
 
@@ -830,7 +830,7 @@ int INDICATOR::valueGet (Command *command)
     strip.strip(bar->data(), 4, s);
   }
 
-  command->setReturnData(_plugin + "_VALUE", s);
+  command->setReturnData(_plugin + "_GET_VALUE", s);
 
   command->setReturnCode("0");
 

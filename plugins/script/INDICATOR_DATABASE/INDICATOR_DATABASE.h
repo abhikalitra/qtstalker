@@ -19,18 +19,25 @@
  *  USA.
  */
 
-#ifndef PLUGIN_INDICATOR_DATABASE_LIST_HPP
-#define PLUGIN_INDICATOR_DATABASE_LIST_HPP
+#ifndef PLUGIN_INDICATOR_DATABASE_HPP
+#define PLUGIN_INDICATOR_DATABASE_HPP
+
+#include <QStringList>
 
 #include "Plugin.h"
 
-class INDICATOR_DATABASE_LIST : public Plugin
+class INDICATOR_DATABASE : public Plugin
 {
   Q_OBJECT
 
   public:
-    INDICATOR_DATABASE_LIST ();
+    INDICATOR_DATABASE ();
     int command (Command *);
+    int remove (Command *);
+    int list (Command *);
+
+  private:
+    QStringList _method;
 };
 
 extern "C"

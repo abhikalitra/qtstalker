@@ -23,7 +23,7 @@ my @symbols = split(';', $rc);
 
 foreach $item (@symbols)
 {
-  $command = "PLUGIN=INDICATOR_CLEAR";
+  $command = "PLUGIN=INDICATOR,METHOD=CLEAR";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
@@ -37,21 +37,21 @@ foreach $item (@symbols)
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
-  $command = "PLUGIN=INDICATOR_PLOT_VALUE_GET,NAME=symbol.0";
+  $command = "PLUGIN=INDICATOR,METHOD=VALUE_GET,NAME=symbol.0";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   # return the price string
-  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_VALUE_GET_VALUE";
+  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_GET_VALUE";
   print STDOUT $command;
   $price = <STDIN>; chomp($price); if ($price eq "ERROR") { print STDERR $command; next; }
 
-  $command = "PLUGIN=INDICATOR_PLOT_VALUE_GET,NAME=ma.0";
+  $command = "PLUGIN=INDICATOR,METHOD=VALUE_GET,NAME=ma.0";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 
   # return the ma string
-  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_VALUE_GET_VALUE";
+  $command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_GET_VALUE";
   print STDOUT $command;
   $ma = <STDIN>; chomp($ma); if ($ma eq "ERROR") { print STDERR $command; next; }
 
