@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += INDICATOR_CLEAR.h
+HEADERS += INDICATOR.h
 
-SOURCES += INDICATOR_CLEAR.cpp
+SOURCES += INDICATOR.cpp

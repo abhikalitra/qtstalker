@@ -50,7 +50,7 @@ while (<CSV>)
       next;
     }
 
-    $command = "PLUGIN=QUOTE_DATABASE_SET,EXCHANGE=$exchange,SYMBOL=$columns[1],DATE_FORMAT=$dateFormat,DATE=$columns[0],NAME=$columns[2],OPEN=$columns[3],HIGH=$columns[4],LOW=$columns[5],CLOSE=$columns[6],VOLUME=$columns[7]";
+    $command = "PLUGIN=QUOTE_DATABASE,METHOD=SET,EXCHANGE=$exchange,SYMBOL=$columns[1],DATE_FORMAT=$dateFormat,DATE=$columns[0],NAME=$columns[2],OPEN=$columns[3],HIGH=$columns[4],LOW=$columns[5],CLOSE=$columns[6],VOLUME=$columns[7]";
     print STDOUT $command;
     $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
   }
@@ -63,7 +63,7 @@ while (<CSV>)
 close CSV;
 
 # commit quotes to disk
-$command = "PLUGIN=QUOTE_DATABASE_SET,SAVE=1";
+$command = "PLUGIN=QUOTE_DATABASE,METHOD=SET,SAVE=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

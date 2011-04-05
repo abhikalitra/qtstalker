@@ -55,7 +55,7 @@ foreach $item (@symbols)
   my @symbol = split(':', $item);
 
   # get the close bars
-  $command = "PLUGIN=QUOTE_DATABASE_GET,NAME_CLOSE=symbol,EXCHANGE=$symbol[0],SYMBOL=$symbol[1],LENGTH=$length,RANGE=$range";
+  $command = "PLUGIN=QUOTE_DATABASE,METHOD=GET,NAME_CLOSE=symbol,EXCHANGE=$symbol[0],SYMBOL=$symbol[1],LENGTH=$length,RANGE=$range";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 

@@ -19,38 +19,44 @@
  *  USA.
  */
 
-#include "INDICATOR_CLEAR.h"
-#include "Globals.h"
+#ifndef PLUGIN_INDICATOR_HPP
+#define PLUGIN_INDICATOR_HPP
 
-#include <QtDebug>
+#include <QStringList>
 
-INDICATOR_CLEAR::INDICATOR_CLEAR ()
+#include "Plugin.h"
+
+class INDICATOR : public Plugin
 {
-  _plugin = "INDICATOR_CLEAR";
+  Q_OBJECT
+
+  public:
+    INDICATOR ();
+    int command (Command *);
+    int clear (Command *);
+    int plot (Command *);
+    int plotAll (Command *);
+    int colorAll (Command *);
+    int colorCompareIndex (Command *);
+    int colorCompareValue (Command *);
+    int colorSet (Command *);
+    int remove (Command *);
+    int indexDelete (Command *);
+    int indexRange (Command *);
+    int indexShift (Command *);
+    int create (Command *);
+    int style (Command *);
+    int valueGet (Command *);
+    int valueSet (Command *);
+    int run (Command *);
+
+  private:
+    QStringList _method;
+};
+
+extern "C"
+{
+  Plugin * createPlugin ();
 }
 
-int INDICATOR_CLEAR::command (Command *command)
-{
-  Indicator *i = command->indicator();
-  if (! i)
-  {
-    qDebug() << _plugin << "::command: indicator not found";
-    return 1;
-  }
-  
-  i->clear();
-  
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-//*************************************************************
-//*************************************************************
-//*************************************************************
-
-Plugin * createPlugin ()
-{
-  INDICATOR_CLEAR *o = new INDICATOR_CLEAR;
-  return ((Plugin *) o);
-}
+#endif

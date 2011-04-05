@@ -12,16 +12,16 @@ use DateTime;
 
 $|=1;
 
-$command = "PLUGIN=QUOTE_DATABASE_GET,NAME_CLOSE=symbol,EXCHANGE=$exchange,SYMBOL=$symbol,LENGTH=$length,RANGE=$range";
+$command = "PLUGIN=QUOTE_DATABASE,METHOD=GET,NAME_CLOSE=symbol,EXCHANGE=$exchange,SYMBOL=$symbol,LENGTH=$length,RANGE=$range";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR_PLOT_VALUE_GET,NAME=symbol.0";
+$command = "PLUGIN=INDICATOR,METHOD=VALUE_GET,NAME=symbol.0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # return the price string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_PLOT_VALUE_GET_VALUE";
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=INDICATOR_GET_VALUE";
 print STDOUT $command;
 $price = <STDIN>; chomp($price); if ($price eq "ERROR") { print STDERR $command; next; }
 

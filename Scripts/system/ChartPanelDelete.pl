@@ -18,7 +18,7 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # display the symbol search dialog to return symbols
-$command = "PLUGIN=QUOTE_DATABASE_DELETE,NAME=$symbols";
+$command = "PLUGIN=QUOTE_DATABASE,METHOD=DELETE,NAME=$symbols";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 

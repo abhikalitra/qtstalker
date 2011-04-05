@@ -1181,3 +1181,9 @@
 
            Merged all the QUOTE_DATABASE* plugins into QUOTE_DATABASE plugin. CVS users please update your
            personal scripts with the METHOD parm.
+
+           Merged all the INDICATOR_PLOT* plugins into INDICATOR plugin. CVS users please update your
+           personal scripts with the METHOD parm.
+
+           Removed indicator scripts that are duplicated by the plugins.
+

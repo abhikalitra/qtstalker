@@ -35,7 +35,7 @@ foreach $item (@symbols)
 {
   my @symbol = split(':', $item);
 
-  $command = "PLUGIN=QUOTE_DATABASE_DUMP,DIRECTORY=$dir,EXCHANGE=$symbol[0],SYMBOL=$symbol[1]";
+  $command = "PLUGIN=QUOTE_DATABASE,METHOD=DUMP,DIRECTORY=$dir,EXCHANGE=$symbol[0],SYMBOL=$symbol[1]";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
 }

@@ -111,7 +111,7 @@ $volume = <STDIN>; chomp($volume); if ($volume eq "ERROR") {print STDERR $comman
 #$symbol = $parts[1];
 
 # get the symbol data
-$command = "PLUGIN=QUOTE_DATABASE_GET,NAME_DATE=$dateName,NAME_OPEN=$openName,NAME_HIGH=$highName,NAME_LOW=$lowName,NAME_CLOSE=$closeName,EXCHANGE=$exchange,SYMBOL=$symbol,LENGTH=$length,RANGE=$range";
+$command = "PLUGIN=QUOTE_DATABASE,METHOD=GET,NAME_DATE=$dateName,NAME_OPEN=$openName,NAME_HIGH=$highName,NAME_LOW=$lowName,NAME_CLOSE=$closeName,EXCHANGE=$exchange,SYMBOL=$symbol,LENGTH=$length,RANGE=$range";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 

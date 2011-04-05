@@ -43,7 +43,7 @@ foreach $file (@files)
         next;
       }
 
-      $command = "PLUGIN=QUOTE_DATABASE_SET,EXCHANGE=$columns[0],SYMBOL=$columns[1],NAME=$columns[2],DATE_FORMAT=$dateFormat,DATE=$columns[3],OPEN=$columns[4],HIGH=$columns[5],LOW=$columns[6],CLOSE=$columns[7],VOLUME=$columns[8],INTEREST=$columns[9]";
+      $command = "PLUGIN=QUOTE_DATABASE,METHOD=SET,EXCHANGE=$columns[0],SYMBOL=$columns[1],NAME=$columns[2],DATE_FORMAT=$dateFormat,DATE=$columns[3],OPEN=$columns[4],HIGH=$columns[5],LOW=$columns[6],CLOSE=$columns[7],VOLUME=$columns[8],INTEREST=$columns[9]";
       print STDOUT $command;
       $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; next; }
     }
@@ -57,7 +57,7 @@ foreach $file (@files)
   close CSV;
 
   # commit quotes to disk
-  $command = "PLUGIN=QUOTE_DATABASE_SET,SAVE=1";
+  $command = "PLUGIN=QUOTE_DATABASE,METHOD=SET,SAVE=1";
   print STDOUT $command;
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 }
