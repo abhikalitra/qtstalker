@@ -19,18 +19,50 @@
  *  USA.
  */
 
-#include "SETTINGS_SAVE.h"
+#include "SETTINGS.h"
 #include "Globals.h"
 
 #include <QtDebug>
 #include <QSettings>
 
-SETTINGS_SAVE::SETTINGS_SAVE ()
+SETTINGS::SETTINGS ()
 {
-  _plugin = "SETTINGS_SAVE";
+  _plugin = "SETTINGS";
+  _method << "LOAD" << "SAVE";
 }
 
-int SETTINGS_SAVE::command (Command *command)
+int SETTINGS::command (Command *command)
+{
+  int rc = 1;
+  switch (_method.indexOf(command->parm("METHOD")))
+  {
+    case 0:
+      rc = load(command);
+      break;
+    case 1:
+      rc = save(command);
+      break;
+    default:
+      break;
+  }
+
+  return rc;
+}
+
+int SETTINGS::load (Command *command)
+{
+  // PARMS:
+  // KEY
+
+  QSettings set(g_localSettings);
+  command->setReturnData(_plugin + "_DATA", set.value(command->parm("KEY")).toString());
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+int SETTINGS::save (Command *command)
 {
   // PARMS:
   // KEY
@@ -41,7 +73,7 @@ int SETTINGS_SAVE::command (Command *command)
   set.sync();
 
   command->setReturnCode("0");
-  
+
   return 0;
 }
 
@@ -51,6 +83,6 @@ int SETTINGS_SAVE::command (Command *command)
 
 Plugin * createPlugin ()
 {
-  SETTINGS_SAVE *o = new SETTINGS_SAVE;
+  SETTINGS *o = new SETTINGS;
   return ((Plugin *) o);
 }

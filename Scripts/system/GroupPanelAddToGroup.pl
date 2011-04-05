@@ -22,12 +22,12 @@ print STDOUT $command;
 $group = <STDIN>; chomp($group); if ($group eq "ERROR") {print STDERR $command; exit; }
 
 # get the current selected symbols from the group panel
-$command = "PLUGIN=SETTINGS_LOAD,KEY=group_panel_selected";
+$command = "PLUGIN=SETTINGS,METHOD=LOAD,KEY=group_panel_selected";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # get the selected symbols string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SETTINGS_LOAD_DATA";
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SETTINGS_DATA";
 print STDOUT $command;
 $symbols = <STDIN>; chomp($symbols); if ($symbols eq "ERROR") {print STDERR $command; exit; }
 

@@ -3,12 +3,12 @@
 $|=1;
 
 # get the current selected indicator
-$command = "PLUGIN=SETTINGS_LOAD,KEY=edit_indicator_selected";
+$command = "PLUGIN=SETTINGS,METHOD=LOAD,KEY=edit_indicator_selected";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # get the selected symbols string
-$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SETTINGS_LOAD_DATA";
+$command = "PLUGIN=SCRIPT_RETURN_DATA,KEY=SETTINGS_DATA";
 print STDOUT $command;
 $indicator = <STDIN>; chomp($indicator); if ($indicator eq "ERROR") {print STDERR $command; exit; }
 

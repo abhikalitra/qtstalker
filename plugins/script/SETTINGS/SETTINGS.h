@@ -19,18 +19,23 @@
  *  USA.
  */
 
-#ifndef PLUGIN_SETTINGS_LOAD_HPP
-#define PLUGIN_SETTINGS_LOAD_HPP
+#ifndef PLUGIN_SETTINGS_HPP
+#define PLUGIN_SETTINGS_HPP
 
 #include "Plugin.h"
 
-class SETTINGS_LOAD : public Plugin
+class SETTINGS : public Plugin
 {
   Q_OBJECT
 
   public:
-    SETTINGS_LOAD ();
+    SETTINGS ();
     int command (Command *);
+    int load (Command *);
+    int save (Command *);
+
+  private:
+    QStringList _method;
 };
 
 extern "C"
