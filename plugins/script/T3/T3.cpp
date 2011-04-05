@@ -31,7 +31,7 @@
 T3::T3 ()
 {
   _plugin = "T3";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -105,7 +105,7 @@ int T3::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
-  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setType(settings->data("STYLE"));
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
 

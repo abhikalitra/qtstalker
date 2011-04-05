@@ -1165,4 +1165,11 @@
 
 20110404:  Moved the chart object code from /src to the plugin code.
 
-           
+20110405:  Moved plot code into lib so that plugins can use it.
+
+           Moved plot style code into plugins for plot.
+
+           Histogram Bar line style was changed to HistogramBar. CVS users will have to edit any indicators using
+           Histogram Bar style. Just reset the line type and save the indicator and it will work again.
+           Same with any scripts.
+

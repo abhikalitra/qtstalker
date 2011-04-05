@@ -19,14 +19,14 @@
  *  USA.
  */
 
-#include "PlotHistogramBar.h"
+#include "HistogramBarDraw.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
 #include <qwt_painter.h>
 #include <qwt_scale_div.h>
 
-class PlotHistogramBar::PrivateData
+class HistogramBarDraw::PrivateData
 {
   public:
     int attributes;
@@ -35,26 +35,26 @@ class PlotHistogramBar::PrivateData
     double reference;
 };
 
-PlotHistogramBar::PlotHistogramBar (const QwtText &title) : QwtPlotCurve (title)
+HistogramBarDraw::HistogramBarDraw (const QwtText &title) : QwtPlotCurve (title)
 {
   init();
 }
 
-PlotHistogramBar::PlotHistogramBar (const QString &title) : QwtPlotCurve (QwtText(title))
+HistogramBarDraw::HistogramBarDraw (const QString &title) : QwtPlotCurve (QwtText(title))
 {
   init();
 }
 
-PlotHistogramBar::~PlotHistogramBar ()
+HistogramBarDraw::~HistogramBarDraw ()
 {
   delete _data;
 }
 
-void PlotHistogramBar::init ()
+void HistogramBarDraw::init ()
 {
   _data = new PrivateData();
   _data->reference = 0.0;
-  _data->attributes = PlotHistogramBar::Auto;
+  _data->attributes = HistogramBarDraw::Auto;
   _data->color = QColor(Qt::red);
 
   setItemAttribute(QwtPlotItem::AutoScale, TRUE);
@@ -63,7 +63,7 @@ void PlotHistogramBar::init ()
   setZ(20.0);
 }
 
-void PlotHistogramBar::setBaseline (double reference)
+void HistogramBarDraw::setBaseline (double reference)
 {
   if ( _data->reference != reference )
   {
@@ -72,12 +72,12 @@ void PlotHistogramBar::setBaseline (double reference)
   }
 }
 
-double PlotHistogramBar::baseline () const
+double HistogramBarDraw::baseline () const
 {
   return _data->reference;
 }
 
-void PlotHistogramBar::setData (Curve *curve)
+void HistogramBarDraw::setData (Curve *curve)
 {
   QList<int> keys;
   curve->keys(keys);
@@ -115,12 +115,12 @@ void PlotHistogramBar::setData (Curve *curve)
   itemChanged();
 }
 
-const QwtIntervalData & PlotHistogramBar::data () const
+const QwtIntervalData & HistogramBarDraw::data () const
 {
   return _data->data;
 }
 
-void PlotHistogramBar::setColor (const QColor &color)
+void HistogramBarDraw::setColor (const QColor &color)
 {
   if ( _data->color != color )
   {
@@ -129,12 +129,12 @@ void PlotHistogramBar::setColor (const QColor &color)
   }
 }
 
-QColor PlotHistogramBar::color () const
+QColor HistogramBarDraw::color () const
 {
   return _data->color;
 }
 
-QwtDoubleRect PlotHistogramBar::boundingRect () const
+QwtDoubleRect HistogramBarDraw::boundingRect () const
 {
   QwtDoubleRect rect = _data->data.boundingRect();
   if (! rect.isValid())
@@ -160,12 +160,12 @@ QwtDoubleRect PlotHistogramBar::boundingRect () const
   return rect;
 }
 
-int PlotHistogramBar::rtti () const
+int HistogramBarDraw::rtti () const
 {
   return QwtPlotItem::Rtti_PlotHistogram;
 }
 
-void PlotHistogramBar::setHistogramAttribute (HistogramAttribute attribute, bool on)
+void HistogramBarDraw::setHistogramAttribute (HistogramAttribute attribute, bool on)
 {
   if (bool(_data->attributes & attribute) == on)
     return;
@@ -178,12 +178,12 @@ void PlotHistogramBar::setHistogramAttribute (HistogramAttribute attribute, bool
   itemChanged();
 }
 
-bool PlotHistogramBar::testHistogramAttribute (HistogramAttribute attribute) const
+bool HistogramBarDraw::testHistogramAttribute (HistogramAttribute attribute) const
 {
   return _data->attributes & attribute;
 }
 
-void PlotHistogramBar::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
+void HistogramBarDraw::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   const QwtIntervalData &iData = _data->data;
 
@@ -199,7 +199,7 @@ void PlotHistogramBar::draw(QPainter *painter, const QwtScaleMap &xMap, const Qw
 //  for (int i = 0; i < (int)iData.size(); i++)
   for (; i < size; i++)
   {
-    if (_data->attributes & PlotHistogramBar::Xfy)
+    if (_data->attributes & HistogramBarDraw::Xfy)
     {
       const int x2 = xMap.transform(iData.value(i));
       if (x2 == x0)
@@ -266,7 +266,7 @@ void PlotHistogramBar::draw(QPainter *painter, const QwtScaleMap &xMap, const Qw
   }
 }
 
-void PlotHistogramBar::drawBar (QPainter *painter, Qt::Orientation, const QRect& rect) const
+void HistogramBarDraw::drawBar (QPainter *painter, Qt::Orientation, const QRect& rect) const
 {
   painter->save();
 

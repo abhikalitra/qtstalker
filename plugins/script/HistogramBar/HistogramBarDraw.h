@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef PLOT_HISTOGRAM_BAR_HPP
-#define PLOT_HISTOGRAM_BAR_HPP
+#ifndef PLUGIN_HISTOGRAM_BAR_DRAW_HPP
+#define PLUGIN_HISTOGRAM_BAR_DRAW_HPP
 
 #include <QColor>
 #include <QString>
@@ -33,7 +33,7 @@
 
 #include "Curve.h"
 
-class PlotHistogramBar : public QwtPlotCurve
+class HistogramBarDraw : public QwtPlotCurve
 {
   public:
     enum HistogramAttribute
@@ -42,9 +42,9 @@ class PlotHistogramBar : public QwtPlotCurve
       Xfy = 1
     };
 
-    explicit PlotHistogramBar (const QString &title = QString::null);
-    explicit PlotHistogramBar (const QwtText &title);
-    virtual ~PlotHistogramBar ();
+    explicit HistogramBarDraw (const QString &title = QString::null);
+    explicit HistogramBarDraw (const QwtText &title);
+    virtual ~HistogramBarDraw ();
     virtual QwtDoubleRect boundingRect () const;
     virtual int rtti () const;
     virtual void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;

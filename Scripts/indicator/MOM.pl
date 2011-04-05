@@ -2,7 +2,7 @@
 
 $input = 'c';
 $momName = 'MOM';
-$momStyle = 'Histogram Bar';
+$momStyle = 'HistogramBar';
 $momColor = 'yellow';
 $momPeriod = 10;
 $upColor = 'green';

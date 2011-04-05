@@ -30,7 +30,7 @@
 SAR::SAR ()
 {
   _plugin = "SAR";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -76,7 +76,8 @@ int SAR::calculate (BarData *bd, Indicator *i, Setting *settings)
     return 1;
   }
 
-  Curve *line = new Curve(Curve::Dot);
+  Curve *line = new Curve;
+  line->setType("Dot");
 
   loop = 0;
   for (; loop < outNb; loop++)
@@ -185,7 +186,8 @@ int SAR::command (Command *command)
     return 1;
   }
 
-  line = new Curve(Curve::Dot);
+  line = new Curve;
+  line->setType("Dot");
 
   int loop = 0;
   for (; loop < outNb; loop++)

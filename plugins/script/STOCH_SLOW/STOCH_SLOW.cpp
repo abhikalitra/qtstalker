@@ -31,7 +31,7 @@
 STOCH_SLOW::STOCH_SLOW ()
 {
   _plugin = "STOCH_SLOW";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -106,13 +106,13 @@ int STOCH_SLOW::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   kline->setAllColor(QColor(settings->data("COLOR_K")));
   kline->setLabel(settings->data("OUTPUT_K"));
-  kline->setType((Curve::Type) kline->typeFromString(settings->data("STYLE_K")));
+  kline->setType(settings->data("STYLE_K"));
   kline->setZ(settings->getInt("Z_K"));
   i->setLine(settings->data("OUTPUT_K"), kline);
 
   dline->setAllColor(QColor(settings->data("COLOR_D")));
   dline->setLabel(settings->data("OUTPUT_D"));
-  dline->setType((Curve::Type) dline->typeFromString(settings->data("STYLE_D")));
+  dline->setType(settings->data("STYLE_D"));
   dline->setZ(settings->getInt("Z_D"));
   i->setLine(settings->data("OUTPUT_D"), dline);
 

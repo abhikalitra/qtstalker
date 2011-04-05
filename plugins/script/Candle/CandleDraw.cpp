@@ -19,29 +19,29 @@
  *  USA.
  */
 
-#include "PlotCandle.h"
+#include "CandleDraw.h"
 
 #include <qwt_plot.h>
 #include <qwt_painter.h>
 #include <qwt_scale_div.h>
 #include <QDebug>
 
-PlotCandle::PlotCandle (const QwtText &title) : QwtPlotCurve (title)
+CandleDraw::CandleDraw (const QwtText &title) : QwtPlotCurve (title)
 {
   init();
 }
 
-PlotCandle::PlotCandle (const QString &title) : QwtPlotCurve (QwtText(title))
+CandleDraw::CandleDraw (const QString &title) : QwtPlotCurve (QwtText(title))
 {
   init();
 }
 
-PlotCandle::~PlotCandle ()
+CandleDraw::~CandleDraw ()
 {
   qDeleteAll(_list);
 }
 
-void PlotCandle::init ()
+void CandleDraw::init ()
 {
   _high = 0;
   _low = 0;
@@ -52,7 +52,7 @@ void PlotCandle::init ()
   setZ(0.0);
 }
 
-void PlotCandle::setData (Curve *curve)
+void CandleDraw::setData (Curve *curve)
 {
   qDeleteAll(_list);
   _list.clear();
@@ -85,7 +85,7 @@ void PlotCandle::setData (Curve *curve)
   itemChanged();
 }
 
-QwtDoubleRect PlotCandle::boundingRect () const
+QwtDoubleRect CandleDraw::boundingRect () const
 {
   QwtDoubleRect rect(0, 0, 0, 0);
   rect.setBottom(_low);
@@ -94,12 +94,12 @@ QwtDoubleRect PlotCandle::boundingRect () const
   return rect;
 }
 
-int PlotCandle::rtti () const
+int CandleDraw::rtti () const
 {
   return QwtPlotCurve::UserCurve;
 }
 
-void PlotCandle::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
+void CandleDraw::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   QwtScaleDiv *sd = plot()->axisScaleDiv(QwtPlot::xBottom); // test
 
@@ -142,12 +142,12 @@ void PlotCandle::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScale
   }
 }
 
-double PlotCandle::high ()
+double CandleDraw::high ()
 {
   return _high;
 }
 
-double PlotCandle::low ()
+double CandleDraw::low ()
 {
   return _low;
 }

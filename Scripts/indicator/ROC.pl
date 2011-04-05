@@ -2,7 +2,7 @@
 
 $input = 'c';
 $rocName = 'ROC';
-$rocStyle = 'Histogram Bar';
+$rocStyle = 'HistogramBar';
 $rocColor = 'yellow';
 $rocPeriod = 10;
 $method = 'ROC';

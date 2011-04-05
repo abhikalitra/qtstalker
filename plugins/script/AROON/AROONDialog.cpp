@@ -73,8 +73,7 @@ void AROONDialog::createAROONUpPage ()
 
   // style
   Curve c;
-  QStringList l;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _upStyle = new QComboBox;
   _upStyle->addItems(l);
@@ -108,8 +107,7 @@ void AROONDialog::createAROONDownPage ()
 
   // style
   Curve c;
-  QStringList l;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _downStyle = new QComboBox;
   _downStyle->addItems(l);

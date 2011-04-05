@@ -29,7 +29,7 @@
 INPUT_DIALOG::INPUT_DIALOG ()
 {
   _plugin = "INPUT_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int INPUT_DIALOG::command (Command *command)

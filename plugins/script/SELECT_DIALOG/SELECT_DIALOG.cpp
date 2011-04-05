@@ -29,7 +29,7 @@
 SELECT_DIALOG::SELECT_DIALOG ()
 {
   _plugin = "SELECT_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int SELECT_DIALOG::command (Command *command)

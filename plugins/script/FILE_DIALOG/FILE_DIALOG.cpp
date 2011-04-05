@@ -28,7 +28,7 @@
 FILE_DIALOG::FILE_DIALOG ()
 {
   _plugin = "FILE_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int FILE_DIALOG::command (Command *command)

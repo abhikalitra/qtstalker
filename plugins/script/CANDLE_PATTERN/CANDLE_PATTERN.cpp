@@ -31,7 +31,7 @@
 CANDLE_PATTERN::CANDLE_PATTERN ()
 {
   _plugin = "CANDLE_PATTERN";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 }
 
 int CANDLE_PATTERN::calculate (BarData *bd, Indicator *i, Setting *settings)
@@ -42,7 +42,7 @@ int CANDLE_PATTERN::calculate (BarData *bd, Indicator *i, Setting *settings)
   if (! line)
     return 1;
 
-  line->setType(Curve::Candle);
+  line->setType("Candle");
   line->setLabel("CANDLES");
   line->setZ(settings->getInt("Z"));
   i->setLine("CANDLES", line);

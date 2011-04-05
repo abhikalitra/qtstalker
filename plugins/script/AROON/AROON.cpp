@@ -30,7 +30,7 @@
 AROON::AROON ()
 {
   _plugin = "AROON";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -92,13 +92,13 @@ int AROON::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   upper->setAllColor(QColor(settings->data("COLOR_UP")));
   upper->setLabel(settings->data("OUTPUT_UP"));
-  upper->setType((Curve::Type) upper->typeFromString(settings->data("STYLE_UP")));
+  upper->setType(settings->data("STYLE_UP"));
   upper->setZ(settings->getInt("Z_UP"));
   i->setLine(settings->data("OUTPUT_UP"), upper);
   
   lower->setAllColor(QColor(settings->data("COLOR_DOWN")));
   lower->setLabel(settings->data("OUTPUT_DOWN"));
-  lower->setType((Curve::Type) upper->typeFromString(settings->data("STYLE_DOWN")));
+  lower->setType(settings->data("STYLE_DOWN"));
   lower->setZ(settings->getInt("Z_DOWN"));
   i->setLine(settings->data("OUTPUT_DOWN"), lower);
 

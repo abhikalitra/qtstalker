@@ -4,11 +4,11 @@
 # orange : Dark Cloud Cover
 
 $pName = 'Piercing Line';
-$pStyle = 'Histogram Bar';
+$pStyle = 'HistogramBar';
 $pColor = 'yellow';
 
 $dccName = 'Dark Cloud Cover';
-$dccStyle = 'Histogram Bar';
+$dccStyle = 'HistogramBar';
 $dccColor = 'orange';
 
 $penetration = '0'; # Use 50 for more reliable half-way penetration.

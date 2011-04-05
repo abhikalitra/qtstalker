@@ -32,24 +32,13 @@
 class Curve
 {
   public:
-    enum Type
-    {
-      Candle,
-      Dot,
-      Histogram,
-      HistogramBar,
-      Line,
-      OHLC
-    };
-    
     Curve ();
-    Curve (Curve::Type);
     ~Curve ();
     void init ();
     void setBar (int index, CurveBar *bar);
     CurveBar * bar (int index);
-    void setType (Curve::Type);
-    Curve::Type & type ();
+    void setType (QString);
+    QString type ();
     void setLabel (QString text);
     QString & label ();
     int count ();
@@ -60,19 +49,15 @@ class Curve
     void keyRange (int &startIndex, int &endIndex);
     void setColor (QColor);
     QColor & color ();
-    void list (QStringList &, int);
-    int typeFromString (QString);
+    QStringList list ();
     void info (int, Setting &);
     int highLowRange (int start, int end, double &h, double &l);
-    void string (QString &);
-    void parse (QString &);
     void deleteBar (int);
 
   protected:
-    QStringList _list;
     QMap<int, CurveBar *> _data;
     QString _label;
-    Curve::Type _type;
+    QString _type;
     int _z;
     QColor _color;
 };

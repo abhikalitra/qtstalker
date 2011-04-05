@@ -81,18 +81,14 @@ void DataWindow::setPlot (Indicator *i)
   {
     it.next();
     Curve *line = it.value();
-    
-    switch ((Curve::Type) line->type())
+
+    if (line->type() == "Candle" || line->type() == "Bar")
     {
-      case Curve::Candle:
-      case Curve::OHLC:
-        if (! _ohlcFlag)
-          setOHLC(line);
-        break;
-      default:
-        setLine(line);
-        break;
+      if (! _ohlcFlag)
+        setOHLC(line);
     }
+    else
+      setLine(line);
   }
 }
 

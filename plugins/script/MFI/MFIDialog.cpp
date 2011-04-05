@@ -63,9 +63,8 @@ void MFIDialog::createGeneralPage ()
   form->addRow(tr("Color"), _color);
 
   // plot style
-  QStringList l;
   Curve c;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _style = new QComboBox;
   _style->addItems(l);

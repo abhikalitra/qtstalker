@@ -28,7 +28,7 @@
 GROUP_EDIT_DIALOG::GROUP_EDIT_DIALOG ()
 {
   _plugin = "GROUP_EDIT_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int GROUP_EDIT_DIALOG::command (Command *command)

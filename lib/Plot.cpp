@@ -20,9 +20,6 @@
  */
 
 #include "Plot.h"
-#include "PlotHistogramBar.h"
-#include "PlotOHLC.h"
-#include "PlotCandle.h"
 #include "Strip.h"
 #include "Globals.h"
 #include "DataDataBase.h"
@@ -114,9 +111,9 @@ Plot::~Plot ()
 
 void Plot::clear ()
 {
-  if (_qwtCurves.count())
-    qDeleteAll(_qwtCurves);
-  _qwtCurves.clear();
+  if (_qcurves.count())
+    qDeleteAll(_qcurves);
+  _qcurves.clear();
 
   _indicator->clear();
 
@@ -161,7 +158,7 @@ Indicator * Plot::indicator ()
 void Plot::updatePlot ()
 {
   setDates();
-  addCurves(_indicator->curves());
+  addCurves();
   addChartObjects(_indicator->chartObjects());
 
   // calculate end of chart pos
@@ -173,21 +170,37 @@ void Plot::updatePlot ()
 
   setStartIndex(_startPos);
 
-//  if (isVisible())
-    emit signalIndex(_startPos);
+  emit signalIndex(_startPos);
 }
 
-void Plot::addCurves (QHash<QString, Curve *> &curves)
+void Plot::addCurves ()
 {
-  QHashIterator<QString, Curve *> it(curves);
+  QHash<QString, Curve *> l = _indicator->curves();
+  QHashIterator<QString, Curve *> it(l);
   while (it.hasNext())
   {
     it.next();
     Curve *curve = it.value();
-    addCurve(it.key(), curve);
+    Plugin *plug = _qcurves.value(curve->type());
+    if (! plug)
+    {
+      PluginFactory fac;
+      plug = fac.plugin(curve->type());
+      if (! plug)
+      {
+        qDebug() << "Plot::addCurves: no plugin" << curve->type();
+        return;
+      }
+
+      plug->setParent((void *) this);
+      _qcurves.insert(curve->type(), plug);
+    }
+
+    plug->setCurve(curve);
   }
 }
 
+/*
 void Plot::addCurve (QString id, Curve *curve)
 {
   switch ((Curve::Type) curve->type())
@@ -250,7 +263,8 @@ void Plot::addCurve (QString id, Curve *curve)
       break;
   }
 }
-
+*/
+/*
 void Plot::addCurve2 (Curve *curve, QwtPlotCurve *qcurve)
 {
   QList<int> keys;
@@ -268,7 +282,8 @@ void Plot::addCurve2 (Curve *curve, QwtPlotCurve *qcurve)
   
   qcurve->setData(x, y);
 }
-
+*/
+/*
 void Plot::addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve)
 {
   qcurve->setTitle(curve->label());
@@ -278,6 +293,7 @@ void Plot::addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve)
   qcurve->attach(this);
   _qwtCurves.insert(id, qcurve);
 }
+*/
 
 void Plot::dates (QList<QDateTime> &d)
 {
@@ -357,7 +373,7 @@ void Plot::setBarSpacing (int d)
 
 void Plot::setHighLow ()
 {
-  if (! _qwtCurves.count())
+  if (! _qcurves.count())
   {
     _high = 0;
     _low = 0;
@@ -388,7 +404,7 @@ void Plot::setHighLow ()
     it2.next();
 
     Setting request, data;
-    request.setData("REQUEST", Plugin::_HIGH_LOW);
+    request.setData("REQUEST", QString("HIGH_LOW"));
     request.setData("START", _startPos);
     request.setData("END", _endPos);
     if (it2.value()->request(&request, &data))
@@ -447,9 +463,9 @@ void Plot::setYPoints ()
     }
 
     // fix for Y AND X axis misalignment
-    if (curve->type() == Curve::HistogramBar
-        || curve->type() == Curve::Candle
-        || curve->type() == Curve::OHLC)
+    if (curve->type() == "HistogramBar"
+        || curve->type() == "Candle"
+        || curve->type() == "Bar")
     {
       if (! flag)
         index--;
@@ -461,16 +477,8 @@ void Plot::setYPoints ()
 
     QColor color = bar->color();
 
-    switch ((Curve::Type) curve->type())
-    {
-      case Curve::Dot:
-      case Curve::Histogram:
-      case Curve::Line:
-        color = curve->color();
-        break;
-      default:
-        break;
-    }
+    if (curve->type() == "Dot" || curve->type() == "Histogram" || curve->type() == "Line")
+      color = curve->color();
 
     _plotScaleDraw->addPoint(color, bar->data());
   }
@@ -481,7 +489,7 @@ void Plot::showContextMenu ()
   if (_selected)
     return;
   
-  if (_qwtCurves.count())
+  if (_qcurves.count())
     _menu->setCOMenuStatus(TRUE);
   else
     _menu->setCOMenuStatus(FALSE);
@@ -515,13 +523,13 @@ void Plot::mouseMove (QPoint p)
     it2.next();
 
     Setting request, data;
-    request.setData("REQUEST", Plugin::_IS_SELECTED);
+    request.setData("REQUEST", QString("IS_SELECTED"));
     request.setData("X", p.x());
     request.setData("Y", p.y());
     if (it2.value()->request(&request, &data))
       continue;
     
-    request.setData("REQUEST", Plugin::_INFO);
+    request.setData("REQUEST", QString("INFO"));
     if (it2.value()->request(&request, &set))
       continue;
       
@@ -606,7 +614,7 @@ void Plot::chartObjectNew (QString type)
   }
 
   Setting parms, data;
-  parms.setData("REQUEST", Plugin::_CREATE);
+  parms.setData("REQUEST", QString("CREATE"));
 
   QStringList l;
   l << _indicator->name() << g_barData->exchange() << g_barData->symbol();
@@ -622,7 +630,7 @@ void Plot::chartObjectNew (QString type)
 void Plot::deleteAllChartObjects ()
 {
   Setting parms, data;
-  parms.setData("REQUEST", Plugin::_DELETE_ALL);
+  parms.setData("REQUEST", QString("DELETE_ALL"));
   
   QHashIterator<QString, Plugin *> it(_chartObjects);
   while (it.hasNext())
@@ -650,7 +658,7 @@ void Plot::addChartObjects (QHash<QString, Setting> &l)
 {
   // clear old objects
   Setting parms, data;
-  parms.setData("REQUEST", Plugin::_CLEAR);
+  parms.setData("REQUEST", QString("CLEAR"));
 
   QHashIterator<QString, Plugin *> it(_chartObjects);
   while (it.hasNext())
@@ -691,7 +699,7 @@ void Plot::addChartObject (Setting *parms)
   }
 
   Setting request;
-  request.setData("REQUEST", Plugin::_ADD);
+  request.setData("REQUEST", QString("ADD"));
 
   if (plug->request(&request, parms))
     qDebug() << "Plot::addChartObject: request error";

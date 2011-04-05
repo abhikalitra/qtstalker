@@ -29,7 +29,7 @@
 YAHOO_DIALOG::YAHOO_DIALOG ()
 {
   _plugin = "YAHOO_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int YAHOO_DIALOG::command (Command *command)

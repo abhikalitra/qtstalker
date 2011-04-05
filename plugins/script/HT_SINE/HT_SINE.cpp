@@ -31,7 +31,7 @@
 HT_SINE::HT_SINE ()
 {
   _plugin = "HT_SINE";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -105,13 +105,13 @@ int HT_SINE::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   sline->setAllColor(QColor(settings->data("COLOR_SINE")));
   sline->setLabel(settings->data("OUTPUT_SINE"));
-  sline->setType((Curve::Type) sline->typeFromString(settings->data("STYLE_SINE")));
+  sline->setType(settings->data("STYLE_SINE"));
   sline->setZ(settings->getInt("Z_SINE"));
   i->setLine(settings->data("OUTPUT_SINE"), sline);
   
   lline->setAllColor(QColor(settings->data("COLOR_LEAD")));
   lline->setLabel(settings->data("OUTPUT_LEAD"));
-  lline->setType((Curve::Type) lline->typeFromString(settings->data("STYLE_LEAD")));
+  lline->setType(settings->data("STYLE_LEAD"));
   lline->setZ(settings->getInt("Z_LEAD"));
   i->setLine(settings->data("OUTPUT_LEAD"), lline);
 

@@ -29,7 +29,7 @@
 TEST_DIALOG::TEST_DIALOG ()
 {
   _plugin = "TEST_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int TEST_DIALOG::command (Command *command)

@@ -31,7 +31,7 @@
 MAMA::MAMA ()
 {
   _plugin = "MAMA";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -110,13 +110,13 @@ int MAMA::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   mama->setAllColor(QColor(settings->data("COLOR_MAMA")));
   mama->setLabel(settings->data("OUTPUT_MAMA"));
-  mama->setType((Curve::Type) mama->typeFromString(settings->data("STYLE_MAMA")));
+  mama->setType(settings->data("STYLE_MAMA"));
   mama->setZ(settings->getInt("Z_MAMA"));
   i->setLine(settings->data("OUTPUT_MAMA"), mama);
   
   fama->setAllColor(QColor(settings->data("COLOR_FAMA")));
   fama->setLabel(settings->data("OUTPUT_FAMA"));
-  fama->setType((Curve::Type) fama->typeFromString(settings->data("STYLE_FAMA")));
+  fama->setType(settings->data("STYLE_FAMA"));
   fama->setZ(settings->getInt("Z_FAMA"));
   i->setLine(settings->data("OUTPUT_FAMA"), fama);
 

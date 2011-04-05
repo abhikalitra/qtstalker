@@ -54,8 +54,7 @@ void ATRDialog::createGeneralPage ()
 
   // plot style
   Curve c;
-  QStringList l;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _style = new QComboBox;
   _style->addItems(l);

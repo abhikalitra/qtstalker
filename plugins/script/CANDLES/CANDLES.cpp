@@ -121,7 +121,8 @@ int CANDLES::command (Command *command)
     }
   }
 
-  line = new Curve(Curve::Candle);
+  line = new Curve;
+  line->setType("Candle");
 
   int ipos = 0;
   int end = 0;

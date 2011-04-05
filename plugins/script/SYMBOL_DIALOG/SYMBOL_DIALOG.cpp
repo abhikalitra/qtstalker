@@ -29,7 +29,7 @@
 SYMBOL_DIALOG::SYMBOL_DIALOG ()
 {
   _plugin = "SYMBOL_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int SYMBOL_DIALOG::command (Command *command)

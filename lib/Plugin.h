@@ -28,6 +28,7 @@
 #include "Indicator.h"
 #include "Setting.h"
 #include "BarData.h"
+#include "Curve.h"
 
 class Plugin : public QObject
 {
@@ -38,26 +39,6 @@ class Plugin : public QObject
     void signalKill ();
   
   public:
-    enum Type
-    {
-      _DIALOG,
-      _THREAD,
-      _INDICATOR
-    };
-    
-    enum Request
-    {
-      _CLEAR,
-      _CREATE,
-      _ADD,
-      _DEFAULTS,
-      _INFO,
-      _HIGH_LOW,
-      _DELETE,
-      _DELETE_ALL,
-      _IS_SELECTED
-    };
-
     Plugin ();
     virtual ~Plugin ();
     virtual int command (Command *);
@@ -66,11 +47,12 @@ class Plugin : public QObject
     virtual QWidget * dialog (QWidget *, Setting *);
     virtual int request (Setting *, Setting *);
     virtual void setParent (void *);
+    virtual int setCurve (Curve *);
     
-    int type ();
+    QString type ();
 
   protected:
-    int _type;
+    QString _type;
     QString _plugin;
 };
 

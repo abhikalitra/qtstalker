@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef PLOT_CANDLE_HPP
-#define PLOT_CANDLE_HPP
+#ifndef PLUGIN_BAR_DRAW_HPP
+#define PLUGIN_BAR_DRAW_HPP
 
 #include <QColor>
 #include <QString>
@@ -33,12 +33,12 @@
 
 #include "Curve.h"
 
-class PlotCandle : public QwtPlotCurve
+class BarDraw : public QwtPlotCurve
 {
   public:
-    explicit PlotCandle (const QString &title = QString::null);
-    explicit PlotCandle (const QwtText &title);
-    virtual ~PlotCandle ();
+    explicit BarDraw (const QString &title = QString::null);
+    explicit BarDraw (const QwtText &title);
+    virtual ~BarDraw ();
     virtual QwtDoubleRect boundingRect () const;
     virtual int rtti () const;
     virtual void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;

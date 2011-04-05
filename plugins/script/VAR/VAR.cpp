@@ -31,7 +31,7 @@
 VAR::VAR ()
 {
   _plugin = "VAR";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -104,7 +104,7 @@ int VAR::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
-  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setType(settings->data("STYLE"));
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
 
@@ -211,7 +211,7 @@ void VAR::defaults (Setting *set)
   set->setData("PLUGIN", _plugin);
   set->setData("COLOR", QString("red"));
   set->setData("LABEL", _plugin);
-  set->setData("STYLE", QString("Histogram Bar"));
+  set->setData("STYLE", QString("HistogramBar"));
   set->setData("PERIOD", 20);
   set->setData("INPUT", QString("Close"));
   set->setData("Z", 0);

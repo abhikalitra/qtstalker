@@ -30,7 +30,7 @@
 DOHLCVI::DOHLCVI ()
 {
   _plugin = "DOHLCVI";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
   _methods << "D" << "O" << "H" << "L" << "C" << "V" << "I";
 }
 
@@ -50,7 +50,7 @@ int DOHLCVI::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   in->setAllColor(QColor(settings->data("COLOR")));
   in->setLabel(settings->data("OUTPUT"));
-  in->setType((Curve::Type) in->typeFromString(settings->data("STYLE")));
+  in->setType(settings->data("STYLE"));
   in->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), in);
 

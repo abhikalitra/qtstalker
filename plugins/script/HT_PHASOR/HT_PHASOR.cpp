@@ -31,7 +31,7 @@
 HT_PHASOR::HT_PHASOR ()
 {
   _plugin = "HT_PHASOR";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -105,13 +105,13 @@ int HT_PHASOR::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   pline->setAllColor(QColor(settings->data("COLOR_PHASE")));
   pline->setLabel(settings->data("OUTPUT_PHASE"));
-  pline->setType((Curve::Type) pline->typeFromString(settings->data("STYLE_PHASE")));
+  pline->setType(settings->data("STYLE_PHASE"));
   pline->setZ(settings->getInt("Z_PHASE"));
   i->setLine(settings->data("OUTPUT_PHASE"), pline);
   
   qline->setAllColor(QColor(settings->data("COLOR_QUAD")));
   qline->setLabel(settings->data("OUTPUT_QUAD"));
-  qline->setType((Curve::Type) qline->typeFromString(settings->data("STYLE_QUAD")));
+  qline->setType(settings->data("STYLE_QUAD"));
   qline->setZ(settings->getInt("Z_QUAD"));
   i->setLine(settings->data("OUTPUT_QUAD"), qline);
 

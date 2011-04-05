@@ -16,7 +16,7 @@ $upColor = 'green';
 $downColor = 'red';
 
 $name = 'Disparity';
-$style = 'Histogram Bar';
+$style = 'HistogramBar';
 $color = 'yellow';
 $period = 13;
 

@@ -4,7 +4,7 @@
 $closeName = 'cl';
 
 $volName = 'VOL';
-$volStyle = 'Histogram Bar';
+$volStyle = 'HistogramBar';
 
 $maName = 'VOL_MA';
 $maStyle = 'Line';

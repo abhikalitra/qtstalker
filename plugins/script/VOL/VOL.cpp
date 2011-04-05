@@ -27,7 +27,7 @@
 
 VOL::VOL ()
 {
-  _type = _INDICATOR;
+  _type = "INDICATOR";
   _plugin = "VOL";
 }
 
@@ -37,7 +37,8 @@ int VOL::calculate (BarData *bd, Indicator *i, Setting *settings)
   QColor downColor(settings->data("COLOR_DOWN"));
   QColor neutralColor(settings->data("COLOR_NEUTRAL"));
 
-  Curve *line = new Curve(Curve::HistogramBar);
+  Curve *line = new Curve;
+  line->setType("HistogramBar");
   line->setZ(settings->getInt("Z"));
 
   int loop = 0;

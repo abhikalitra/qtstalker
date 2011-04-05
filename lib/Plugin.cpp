@@ -25,14 +25,14 @@
 
 Plugin::Plugin ()
 {
-  _type = _THREAD;
+  _type = "THREAD";
 }
 
 Plugin::~Plugin ()
 {
 }
 
-int Plugin::type ()
+QString Plugin::type ()
 {
   return _type;
 }
@@ -63,4 +63,9 @@ int Plugin::request (Setting *, Setting *)
 
 void Plugin::setParent (void *)
 {
+}
+
+int Plugin::setCurve (Curve *)
+{
+  return 0;
 }

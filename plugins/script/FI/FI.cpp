@@ -30,7 +30,7 @@
 FI::FI ()
 {
   _plugin = "FI";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 }
 
 int FI::calculate (BarData *bd, Indicator *i, Setting *settings)
@@ -75,7 +75,7 @@ int FI::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
-  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setType(settings->data("STYLE"));
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
 
@@ -193,7 +193,7 @@ void FI::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
   set->setData("COLOR", QString("yellow"));
-  set->setData("STYLE", QString("Histogram Bar"));
+  set->setData("STYLE", QString("HistogramBar"));
   set->setData("SMOOTHING", 2);
   set->setData("SMOOTHING_TYPE", QString("EMA"));
   set->setData("OUTPUT", _plugin);

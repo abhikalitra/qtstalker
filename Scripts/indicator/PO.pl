@@ -2,7 +2,7 @@
 
 $input = 'c';
 $poName = 'PO';
-$poStyle = 'Histogram Bar';
+$poStyle = 'HistogramBar';
 $poColor = 'yellow';
 $method = 'APO';
 $fastPeriod = 12;

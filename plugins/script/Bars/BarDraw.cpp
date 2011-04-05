@@ -19,29 +19,29 @@
  *  USA.
  */
 
-#include "PlotOHLC.h"
+#include "BarDraw.h"
 
 #include <qwt_plot.h>
 #include <qwt_painter.h>
 #include <qwt_scale_div.h>
 #include <QDebug>
 
-PlotOHLC::PlotOHLC (const QwtText &title) : QwtPlotCurve (title)
+BarDraw::BarDraw (const QwtText &title) : QwtPlotCurve (title)
 {
   init();
 }
 
-PlotOHLC::PlotOHLC (const QString &title) : QwtPlotCurve (QwtText(title))
+BarDraw::BarDraw (const QString &title) : QwtPlotCurve (QwtText(title))
 {
   init();
 }
 
-PlotOHLC::~PlotOHLC ()
+BarDraw::~BarDraw ()
 {
   qDeleteAll(_list);
 }
 
-void PlotOHLC::init ()
+void BarDraw::init ()
 {
   _high = 0;
   _low = 0;
@@ -49,14 +49,14 @@ void PlotOHLC::init ()
   setItemAttribute(QwtPlotItem::AutoScale, TRUE);
   setItemAttribute(QwtPlotItem::Legend, TRUE);
 
-  setZ(20.0);
+  setZ(0.0);
 }
 
-void PlotOHLC::setData (Curve *curve)
+void BarDraw::setData (Curve *curve)
 {
   qDeleteAll(_list);
   _list.clear();
-  
+
   QList<int> keys;
   curve->keys(keys);
 
@@ -85,7 +85,7 @@ void PlotOHLC::setData (Curve *curve)
   itemChanged();
 }
 
-QwtDoubleRect PlotOHLC::boundingRect () const
+QwtDoubleRect BarDraw::boundingRect () const
 {
   QwtDoubleRect rect(0, 0, 0, 0);
   rect.setBottom(_low);
@@ -94,12 +94,12 @@ QwtDoubleRect PlotOHLC::boundingRect () const
   return rect;
 }
 
-int PlotOHLC::rtti () const
+int BarDraw::rtti () const
 {
   return QwtPlotCurve::UserCurve;
 }
 
-void PlotOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
+void BarDraw::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   QwtScaleDiv *sd = plot()->axisScaleDiv(QwtPlot::xBottom);
 
@@ -131,12 +131,12 @@ void PlotOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMa
   }
 }
 
-double PlotOHLC::high ()
+double BarDraw::high ()
 {
   return _high;
 }
 
-double PlotOHLC::low ()
+double BarDraw::low ()
 {
   return _low;
 }

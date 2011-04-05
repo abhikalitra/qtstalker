@@ -32,7 +32,7 @@
 BBANDS::BBANDS ()
 {
   _plugin = "BBANDS";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -120,19 +120,19 @@ int BBANDS::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   upper->setAllColor(QColor(settings->data("COLOR_UP")));
   upper->setLabel(settings->data("OUTPUT_UP"));
-  upper->setType((Curve::Type) upper->typeFromString(settings->data("STYLE_UP")));
+  upper->setType(settings->data("STYLE_UP"));
   upper->setZ(settings->getInt("Z_UP"));
   i->setLine(settings->data("OUTPUT_UP"), upper);
   
   middle->setAllColor(QColor(settings->data("COLOR_MID")));
   middle->setLabel(settings->data("OUTPUT_MID"));
-  middle->setType((Curve::Type) middle->typeFromString(settings->data("STYLE_MID")));
+  middle->setType(settings->data("STYLE_MID"));
   middle->setZ(settings->getInt("Z_UP"));
   i->setLine(settings->data("OUTPUT_MID"), middle);
   
   lower->setAllColor(QColor(settings->data("COLOR_DOWN")));
   lower->setLabel(settings->data("OUTPUT_DOWN"));
-  lower->setType((Curve::Type) lower->typeFromString(settings->data("STYLE_DOWN")));
+  lower->setType(settings->data("STYLE_DOWN"));
   lower->setZ(settings->getInt("Z_UP"));
   i->setLine(settings->data("OUTPUT_DOWN"), lower);
 

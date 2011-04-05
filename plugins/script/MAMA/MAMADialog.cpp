@@ -92,9 +92,8 @@ void MAMADialog::createMAMAPage ()
   form->addRow(tr("Color"), _mamaColor);
 
   // plot style
-  QStringList l;
   Curve c;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _mamaStyle = new QComboBox;
   _mamaStyle->addItems(l);
@@ -127,9 +126,8 @@ void MAMADialog::createFAMAPage ()
   form->addRow(tr("Color"), _famaColor);
 
   // plot style
-  QStringList l;
   Curve c;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _famaStyle = new QComboBox;
   _famaStyle->addItems(l);

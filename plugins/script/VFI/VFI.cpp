@@ -31,7 +31,7 @@
 VFI::VFI ()
 {
   _plugin = "VFI";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 }
 
 int VFI::calculate (BarData *bd, Indicator *i, Setting *settings)
@@ -76,7 +76,7 @@ int VFI::calculate (BarData *bd, Indicator *i, Setting *settings)
   
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
-  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setType(settings->data("STYLE"));
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
   
@@ -279,7 +279,7 @@ void VFI::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
   set->setData("COLOR", QString("yellow"));
-  set->setData("STYLE", QString("Histogram Bar"));
+  set->setData("STYLE", QString("HistogramBar"));
   set->setData("PERIOD", 10);
   set->setData("Z", 0);
   set->setData("OUTPUT", _plugin);

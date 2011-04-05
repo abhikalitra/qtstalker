@@ -28,7 +28,7 @@
 NEW_DIALOG::NEW_DIALOG ()
 {
   _plugin = "NEW_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int NEW_DIALOG::command (Command *command)

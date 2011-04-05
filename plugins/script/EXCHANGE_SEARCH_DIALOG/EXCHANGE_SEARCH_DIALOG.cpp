@@ -29,7 +29,7 @@
 EXCHANGE_SEARCH_DIALOG::EXCHANGE_SEARCH_DIALOG ()
 {
   _plugin = "EXCHANGE_SEARCH_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int EXCHANGE_SEARCH_DIALOG::command (Command *command)

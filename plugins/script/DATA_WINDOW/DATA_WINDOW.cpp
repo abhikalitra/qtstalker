@@ -30,7 +30,7 @@
 DATA_WINDOW::DATA_WINDOW ()
 {
   _plugin = "DATA_WINDOW";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int DATA_WINDOW::command (Command *command)

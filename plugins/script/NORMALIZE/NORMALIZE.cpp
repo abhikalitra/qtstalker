@@ -31,7 +31,7 @@
 NORMALIZE::NORMALIZE ()
 {
   _plugin = "NORMALIZE";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 }
 
 int NORMALIZE::calculate (BarData *bd, Indicator *i, Setting *settings)
@@ -70,7 +70,7 @@ int NORMALIZE::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
-  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setType(settings->data("STYLE"));
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
 

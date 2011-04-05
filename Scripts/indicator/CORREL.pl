@@ -3,7 +3,7 @@
 $barsName = 'Bars';
 
 $correlName = 'CORREL';
-$correlStyle = 'Histogram Bar';
+$correlStyle = 'HistogramBar';
 $correlColor = 'red';
 
 $symbolName = 'symbol';

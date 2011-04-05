@@ -65,9 +65,8 @@ void STOCH_FASTDialog::createKPage ()
   form->addRow(tr("Color"), _kcolor);
 
   // plot style
-  QStringList l;
   Curve c;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _kstyle = new QComboBox;
   _kstyle->addItems(l);
@@ -116,7 +115,7 @@ void STOCH_FASTDialog::createDPage ()
 
   // plot style
   Curve c;
-  c.list(l, 1);
+  l = c.list();
 
   _dstyle = new QComboBox;
   _dstyle->addItems(l);

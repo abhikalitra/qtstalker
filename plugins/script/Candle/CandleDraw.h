@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef PLOT_OHLC_HPP
-#define PLOT_OHLC_HPP
+#ifndef PLUGIN_CANDLE_DRAW_HPP
+#define PLUGIN_CANDLE_DRAW_HPP
 
 #include <QColor>
 #include <QString>
@@ -33,12 +33,12 @@
 
 #include "Curve.h"
 
-class PlotOHLC : public QwtPlotCurve
+class CandleDraw : public QwtPlotCurve
 {
   public:
-    explicit PlotOHLC (const QString &title = QString::null);
-    explicit PlotOHLC (const QwtText &title);
-    virtual ~PlotOHLC ();
+    explicit CandleDraw (const QString &title = QString::null);
+    explicit CandleDraw (const QwtText &title);
+    virtual ~CandleDraw ();
     virtual QwtDoubleRect boundingRect () const;
     virtual int rtti () const;
     virtual void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;

@@ -72,7 +72,7 @@ void T3Dialog::createGeneralPage ()
 
   // plot style
   Curve c;
-  c.list(l, 1);
+  l = c.list();
 
   _style = new QComboBox;
   _style->addItems(l);

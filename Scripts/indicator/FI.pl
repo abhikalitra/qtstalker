@@ -1,7 +1,7 @@
 # qtstalker FI indicator
 
 $name = 'FI';
-$style = 'Histogram Bar';
+$style = 'HistogramBar';
 $color = 'yellow';
 $period = 2;
 $maType = 'EMA';

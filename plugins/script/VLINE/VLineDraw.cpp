@@ -50,7 +50,7 @@ VLineDraw::~VLineDraw ()
   detach();
 }
 
-void VLineDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
+void VLineDraw::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
   int x = xMap.transform(dsd->x(_settings->dateTime("DATE")));

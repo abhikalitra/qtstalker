@@ -30,7 +30,7 @@
 MA::MA ()
 {
   _plugin = "MA";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 }
 
 int MA::calculate (BarData *bd, Indicator *i, Setting *settings)
@@ -68,7 +68,7 @@ int MA::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   ma->setAllColor(QColor(settings->data("COLOR")));
   ma->setLabel(settings->data("OUTPUT"));
-  ma->setType((Curve::Type) ma->typeFromString(settings->data("STYLE")));
+  ma->setType(settings->data("STYLE"));
   ma->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), ma);
 

@@ -3,7 +3,7 @@
 $barsName = 'Bars';
 
 $betaName = 'BETA';
-$betaStyle = 'Histogram Bar';
+$betaStyle = 'HistogramBar';
 $betaColor = 'red';
 
 $symbolName = 'symbol';

@@ -29,7 +29,7 @@
 MESSAGE_DIALOG::MESSAGE_DIALOG ()
 {
   _plugin = "MESSAGE_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int MESSAGE_DIALOG::command (Command *command)

@@ -79,9 +79,8 @@ void HT_SINEDialog::createSinePage ()
   form->addRow(tr("Color"), _sineColor);
 
   // plot style
-  QStringList l;
   Curve c;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _sineStyle = new QComboBox;
   _sineStyle->addItems(l);
@@ -114,9 +113,8 @@ void HT_SINEDialog::createLeadPage ()
   form->addRow(tr("Color"), _leadColor);
 
   // plot style
-  QStringList l;
   Curve c;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _leadStyle = new QComboBox;
   _leadStyle->addItems(l);

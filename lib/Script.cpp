@@ -193,19 +193,14 @@ void Script::readFromStdout ()
     connect(this, SIGNAL(signalKill()), plug, SIGNAL(signalKill()));
   }
 
-  switch ((Plugin::Type) plug->type())
+  if (plug->type() == "DIALOG")
+    plug->command(_command);
+  else
   {
-    case Plugin::_DIALOG:
-      plug->command(_command);
-      break;
-    default:
-    {
-      CommandThread *ct = new CommandThread(this, plug, _command);
-      connect(ct, SIGNAL(finished()), ct, SLOT(deleteLater()));
-      connect(ct, SIGNAL(finished()), this, SLOT(resume()), Qt::QueuedConnection);
-      ct->start();
-      break;
-    }
+    CommandThread *ct = new CommandThread(this, plug, _command);
+    connect(ct, SIGNAL(finished()), ct, SLOT(deleteLater()));
+    connect(ct, SIGNAL(finished()), this, SLOT(resume()), Qt::QueuedConnection);
+    ct->start();
   }
 }
 

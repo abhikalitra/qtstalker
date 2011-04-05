@@ -29,7 +29,7 @@
 SCRIPT_EDIT_DIALOG::SCRIPT_EDIT_DIALOG ()
 {
   _plugin = "SCRIPT_EDIT_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int SCRIPT_EDIT_DIALOG::command (Command *command)

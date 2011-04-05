@@ -28,7 +28,7 @@
 
 OHLC::OHLC ()
 {
-  _type = _INDICATOR;
+  _type = "INDICATOR";
   _plugin = "OHLC";
 }
 
@@ -40,9 +40,15 @@ int OHLC::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   Curve *line;
   if (settings->data("STYLE") == "OHLC")
-    line = new Curve(Curve::OHLC);
+  {
+    line = new Curve;
+    line->setType("Bars");
+  }
   else
-    line = new Curve(Curve::Candle);
+  {
+    line = new Curve;
+    line->setType("Candle");
+  }
     
   line->setZ(settings->getInt("Z"));
 
@@ -172,7 +178,8 @@ int OHLC::command (Command *command)
     }
   }
 
-  line = new Curve(Curve::OHLC);
+  line = new Curve;
+  line->setType("Bars");
 
   int ipos = 0;
   int end = 0;
@@ -236,7 +243,7 @@ void OHLC::defaults (Setting *set)
   set->setData("COLOR_UP", QString("green"));
   set->setData("COLOR_DOWN", QString("red"));
   set->setData("COLOR_NEUTRAL", QString("dimgray"));
-  set->setData("STYLE", QString("OHLC"));
+  set->setData("STYLE", QString("Bars"));
   set->setData("Z", 0);
 }
 

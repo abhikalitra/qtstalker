@@ -110,8 +110,7 @@ void BBANDSDialog::createUpperPage ()
 
   // plot style
   Curve c;
-  QStringList l;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _upperStyle = new QComboBox;
   _upperStyle->addItems(l);
@@ -145,8 +144,7 @@ void BBANDSDialog::createMiddlePage ()
 
   // plot style
   Curve c;
-  QStringList l;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _midStyle = new QComboBox;
   _midStyle->addItems(l);
@@ -180,8 +178,7 @@ void BBANDSDialog::createLowerPage ()
 
   // plot style
   Curve c;
-  QStringList l;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _lowerStyle = new QComboBox;
   _lowerStyle->addItems(l);

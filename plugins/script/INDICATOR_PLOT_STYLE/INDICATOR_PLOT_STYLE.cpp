@@ -49,14 +49,14 @@ int INDICATOR_PLOT_STYLE::command (Command *command)
     return 1;
   }
 
-  int style = line->typeFromString(command->parm("STYLE"));
+  QStringList l = line->list();
+  int style = l.indexOf(command->parm("STYLE"));
   if (style == -1)
   {
     qDebug() << _plugin << "::command: invalid STYLE" << command->parm("STYLE");
     return 1;
   }
-
-  line->setType((Curve::Type) style);
+  line->setType(command->parm("STYLE"));
 
   command->setReturnCode("0");
 

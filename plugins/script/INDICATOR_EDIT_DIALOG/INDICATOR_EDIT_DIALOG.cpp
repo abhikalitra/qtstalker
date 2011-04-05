@@ -29,7 +29,7 @@
 INDICATOR_EDIT_DIALOG::INDICATOR_EDIT_DIALOG ()
 {
   _plugin = "INDICATOR_EDIT_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int INDICATOR_EDIT_DIALOG::command (Command *command)

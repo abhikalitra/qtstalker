@@ -110,9 +110,8 @@ void MACDDialog::createMACDPage ()
   form->addRow(tr("Color"), _macdColor);
 
   // plot style
-  QStringList l;
   Curve c;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _macdStyle = new QComboBox;
   _macdStyle->addItems(l);
@@ -161,7 +160,7 @@ void MACDDialog::createSignalPage ()
 
   // plot style
   Curve c;
-  c.list(l, 1);
+  l = c.list();
 
   _signalStyle = new QComboBox;
   _signalStyle->addItems(l);
@@ -194,9 +193,8 @@ void MACDDialog::createHistPage ()
   form->addRow(tr("Color"), _histColor);
 
   // plot style
-  QStringList l;
   Curve c;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _histStyle = new QComboBox;
   _histStyle->addItems(l);

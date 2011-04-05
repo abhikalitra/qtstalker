@@ -32,7 +32,7 @@ ROC::ROC ()
 {
   _plugin = "ROC";
   _method << "ROC" << "ROCP" << "ROCR" << "ROCR100";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -117,7 +117,7 @@ int ROC::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
-  line->setType((Curve::Type) line->typeFromString(settings->data("STYLE")));
+  line->setType(settings->data("STYLE"));
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
 
@@ -242,7 +242,7 @@ void ROC::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
   set->setData("COLOR", QString("yellow"));
-  set->setData("STYLE", QString("Histogram Bar"));
+  set->setData("STYLE", QString("HistogramBar"));
   set->setData("PERIOD", 10);
   set->setData("INPUT", QString("Close"));
   set->setData("METHOD", QString("ROC"));

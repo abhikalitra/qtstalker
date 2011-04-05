@@ -81,7 +81,7 @@ void STOCHSDialog::createKPage ()
 
   // plot style
   Curve c;
-  c.list(l, 1);
+  l = c.list();
 
   _kstyle = new QComboBox;
   _kstyle->addItems(l);
@@ -130,7 +130,7 @@ void STOCHSDialog::createDPage ()
 
   // plot style
   Curve c;
-  c.list(l, 1);
+  l = c.list();
 
   _dstyle = new QComboBox;
   _dstyle->addItems(l);

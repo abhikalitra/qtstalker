@@ -29,7 +29,7 @@
 CONFIRM_DIALOG::CONFIRM_DIALOG ()
 {
   _plugin = "CONFIRM_DIALOG";
-  _type = _DIALOG;
+  _type = "DIALOG";
 }
 
 int CONFIRM_DIALOG::command (Command *command)

@@ -32,7 +32,7 @@
 MACD::MACD ()
 {
   _plugin = "MACD";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -113,19 +113,19 @@ int MACD::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   macd->setAllColor(QColor(settings->data("COLOR_MACD")));
   macd->setLabel(settings->data("OUTPUT_MACD"));
-  macd->setType((Curve::Type) macd->typeFromString(settings->data("STYLE_MACD")));
+  macd->setType(settings->data("STYLE_MACD"));
   macd->setZ(settings->getInt("Z_MACD"));
   i->setLine(settings->data("OUTPUT_MACD"), macd);
   
   i->setLine(settings->data("OUTPUT_SIG"), signal);
   signal->setAllColor(QColor(settings->data("COLOR_SIG")));
   signal->setLabel(settings->data("OUTPUT_SIG"));
-  signal->setType((Curve::Type) signal->typeFromString(settings->data("STYLE_SIG")));
+  signal->setType(settings->data("STYLE_SIG"));
   signal->setZ(settings->getInt("Z_SIG"));
 
   hist->setAllColor(QColor(settings->data("COLOR_HIST")));
   hist->setLabel(settings->data("OUTPUT_HIST"));
-  hist->setType((Curve::Type) hist->typeFromString(settings->data("STYLE_HIST")));
+  hist->setType(settings->data("STYLE_HIST"));
   hist->setZ(settings->getInt("Z_HIST"));
   i->setLine(settings->data("OUTPUT_HIST"), hist);
 
@@ -315,7 +315,7 @@ void MACD::defaults (Setting *set)
   set->setData("OUTPUT_HIST", QString("HIST"));
   set->setData("STYLE_MACD", QString("Line"));
   set->setData("STYLE_SIG", QString("Line"));
-  set->setData("STYLE_HIST", QString("Histogram Bar"));
+  set->setData("STYLE_HIST", QString("HistogramBar"));
   set->setData("PERIOD_FAST", 12);
   set->setData("PERIOD_SLOW", 26);
   set->setData("PERIOD_SIG", 9);

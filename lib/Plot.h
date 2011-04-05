@@ -57,13 +57,13 @@ class Plot : public QwtPlot
     Plot (QString, QMainWindow *);
     ~Plot ();
     void setDates ();
-    void addCurve (QString id, Curve *);
-    void addCurves (QHash<QString, Curve *> &);
+//    void addCurve (QString id, Curve *);
+    void addCurves ();
     void addChartObjects (QHash<QString, Setting> &);
     void setIndicator ();
     Indicator * indicator ();
-    void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
-    void addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve);
+//    void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
+//    void addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve);
     void setHighLow ();
     void saveChartObjects ();
     void dates (QList<QDateTime> &);
@@ -98,7 +98,7 @@ class Plot : public QwtPlot
 
   private:
     int _spacing;
-    QHash<QString, QwtPlotCurve *> _qwtCurves;
+    QHash<QString, Plugin *> _qcurves;
     QHash<QString, Plugin *> _chartObjects;
     DateScaleDraw *_dateScaleDraw;
     PlotScaleDraw *_plotScaleDraw;

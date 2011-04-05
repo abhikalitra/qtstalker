@@ -28,7 +28,7 @@
 OHLCDialog::OHLCDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
-  _styleList << "OHLC" << "Candle";
+  _styleList << "Bars" << "Candle";
   createGeneralPage();
 }
 

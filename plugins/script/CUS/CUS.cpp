@@ -30,7 +30,7 @@
 CUS::CUS ()
 {
   _plugin = "CUS";
-  _type = _INDICATOR;
+  _type = "INDICATOR";
 }
 
 int CUS::calculate (BarData *bd, Indicator *i, Setting *settings)

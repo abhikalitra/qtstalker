@@ -6,11 +6,11 @@
 # Positive values are bullish, negative values are bearish.
 
 $haramiName = 'Harami';
-$haramiStyle = 'Histogram Bar';
+$haramiStyle = 'HistogramBar';
 $haramiColor = 'yellow';
 
 $haramiCrossName = 'Harami Cross';
-$haramiCrossStyle = 'Histogram Bar';
+$haramiCrossStyle = 'HistogramBar';
 $haramiCrossColor = 'orange';
 
 $openName = 'Open';

@@ -36,7 +36,7 @@
 VLINE::VLINE ()
 {
   _plugin = "VLINE";
-  _type = _INDICATOR;
+  _type = "CHART_OBJECT";
   _status = _NONE;
   _dialog = 0;
   _selected = 0;
@@ -56,24 +56,27 @@ VLINE::~VLINE ()
 
 int VLINE::request (Setting *request, Setting *data)
 {
-  switch ((Request) request->getInt("REQUEST"))
+  QStringList l;
+  l << "INFO" << "HIGH_LOW" << "CREATE" << "CLEAR" << "ADD" << "DELETE_ALL";
+
+  switch (l.indexOf(request->data("REQUEST")))
   {
-    case _INFO:
+    case 0:
       return info(data);
       break;
-    case _HIGH_LOW:
+    case 1:
       return 1;
       break;
-    case _CREATE:
+    case 2:
       return create(request);
       break;
-    case _CLEAR:
+    case 3:
       return clear();
       break;
-    case _ADD:
+    case 4:
       return addItem(data);
       break;
-    case _DELETE_ALL:
+    case 5:
       return deleteAll();
       break;
     default:

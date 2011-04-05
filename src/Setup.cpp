@@ -220,6 +220,8 @@ void Setup::scanPlugins ()
   PluginFactory fac;
   int loop = 0;
   QStringList il;
+  QStringList col;
+  QStringList cl;
   for (; loop < l.count(); loop++)
   {
     QString s = l.at(loop);
@@ -233,10 +235,19 @@ void Setup::scanPlugins ()
       continue;
     }
 
-    if (plug->type() == (int) Plugin::_INDICATOR)
+    if (plug->type() == "INDICATOR")
       il << s;
+    else if (plug->type() == "CHART_OBJECT")
+    {
+      il << s;
+      col << s;
+    }
+    else if (plug->type() == "CURVE")
+      cl << s;
   }
 
   settings.setValue("indicator_plugins", il);
+  settings.setValue("chart_object_plugins", col);
+  settings.setValue("curve_plugins", cl);
   settings.sync();
 }

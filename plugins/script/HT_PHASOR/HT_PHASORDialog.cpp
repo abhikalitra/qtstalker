@@ -79,9 +79,8 @@ void HT_PHASORDialog::createPhasePage ()
   form->addRow(tr("Color"), _phaseColor);
 
   // plot style
-  QStringList l;
   Curve c;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _phaseStyle = new QComboBox;
   _phaseStyle->addItems(l);
@@ -114,9 +113,8 @@ void HT_PHASORDialog::createQuadPage ()
   form->addRow(tr("Color"), _quadColor);
 
   // plot style
-  QStringList l;
   Curve c;
-  c.list(l, 1);
+  QStringList l = c.list();
 
   _quadStyle = new QComboBox;
   _quadStyle->addItems(l);
