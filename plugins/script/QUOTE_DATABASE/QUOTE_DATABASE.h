@@ -19,18 +19,35 @@
  *  USA.
  */
 
-#ifndef PLUGIN_QUOTE_DATABASE_EXCHANGE_HPP
-#define PLUGIN_QUOTE_DATABASE_EXCHANGE_HPP
+#ifndef PLUGIN_QUOTE_DATABASE_HPP
+#define PLUGIN_QUOTE_DATABASE_HPP
+
+#include <QHash>
+#include <QStringList>
 
 #include "Plugin.h"
 
-class QUOTE_DATABASE_EXCHANGE : public Plugin
+class QUOTE_DATABASE : public Plugin
 {
   Q_OBJECT
 
   public:
-    QUOTE_DATABASE_EXCHANGE ();
+    QUOTE_DATABASE ();
+    ~QUOTE_DATABASE ();
     int command (Command *);
+    int remove (Command *);
+    int dump (Command *);
+    int exchange (Command *);
+    int get (Command *);
+    int rename (Command *);
+    int search (Command *);
+    int set (Command *);
+    void clear ();
+    void save ();
+
+  private:
+    QStringList _method;
+    QHash<QString, BarData *> _symbols;
 };
 
 extern "C"

@@ -1179,3 +1179,5 @@
            Merged all the SCRIPT_DATABASE* plugins into SCRIPT_DATABASE plugin. CVS users please update your
            personal scripts with the METHOD parm.
 
+           Merged all the QUOTE_DATABASE* plugins into QUOTE_DATABASE plugin. CVS users please update your
+           personal scripts with the METHOD parm.

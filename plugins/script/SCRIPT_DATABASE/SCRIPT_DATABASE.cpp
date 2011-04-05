@@ -21,6 +21,7 @@
 
 #include "SCRIPT_DATABASE.h"
 #include "DataDataBase.h"
+#include "Script.h"
 
 #include <QtDebug>
 
