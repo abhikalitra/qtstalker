@@ -19,17 +19,17 @@
  *  USA.
  */
 
-#ifndef PLUGIN_MULT_HPP
-#define PLUGIN_MULT_HPP
+#ifndef PLUGIN_ARITHMETIC_HPP
+#define PLUGIN_ARITHMETIC_HPP
 
 #include "Plugin.h"
 
-class MULT : public Plugin
+class ARITHMETIC : public Plugin
 {
   Q_OBJECT
 
   public:
-    MULT ();
+    ARITHMETIC ();
     int command (Command *);
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);

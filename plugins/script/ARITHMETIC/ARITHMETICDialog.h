@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef PLUGIN_DIV_DIALOG_HPP
-#define PLUGIN_DIV_DIALOG_HPP
+#ifndef PLUGIN_ARITHMETIC_DIALOG_HPP
+#define PLUGIN_ARITHMETIC_DIALOG_HPP
 
 #include <QComboBox>
 #include <QSpinBox>
@@ -29,12 +29,12 @@
 #include "ColorButton.h"
 #include "Setting.h"
 
-class DIVDialog : public QWidget
+class ARITHMETICDialog : public QWidget
 {
   Q_OBJECT
 
   public:
-    DIVDialog (QWidget *, Setting *);
+    ARITHMETICDialog (QWidget *, Setting *);
     void createGeneralPage();
 
   public slots:
@@ -46,6 +46,7 @@ class DIVDialog : public QWidget
     QComboBox *_style;
     QComboBox *_input;
     QComboBox *_input2;
+    QComboBox *_method;
     QLineEdit *_output;
     QSpinBox *_z;
 };

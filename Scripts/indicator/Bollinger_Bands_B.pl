@@ -35,15 +35,15 @@ $command = "PLUGIN=BBANDS,INPUT=$closeName,NAME_UPPER=$bbUpName,NAME_MIDDLE=$bbM
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=SUB,NAME=$subName,INPUT=$closeName,INPUT2=$bbDownName";
+$command = "PLUGIN=ARITHMETIC,METHOD=SUB,NAME=$subName,INPUT=$closeName,INPUT2=$bbDownName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=SUB,NAME=$sub2Name,INPUT=$bbUpName,INPUT2=$bbDownName";
+$command = "PLUGIN=ARITHMETIC,METHOD=SUB,NAME=$sub2Name,INPUT=$bbUpName,INPUT2=$bbDownName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DIV,NAME=$bName,INPUT=$subName,INPUT2=$sub2Name";
+$command = "PLUGIN=ARITHMETIC,METHOD=DIV,NAME=$bName,INPUT=$subName,INPUT2=$sub2Name";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

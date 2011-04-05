@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "ADDDialog.h"
+#include "ARITHMETICDialog.h"
 #include "Globals.h"
 #include "InputType.h"
 
@@ -27,13 +27,13 @@
 #include <QStringList>
 #include <QFormLayout>
 
-ADDDialog::ADDDialog (QWidget *p, Setting *set) : QWidget (p)
+ARITHMETICDialog::ARITHMETICDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
   createGeneralPage();
 }
 
-void ADDDialog::createGeneralPage ()
+void ARITHMETICDialog::createGeneralPage ()
 {
   QFormLayout *form = new QFormLayout;
   setLayout(form);
@@ -42,9 +42,18 @@ void ADDDialog::createGeneralPage ()
   _output = new QLineEdit(_settings->data("OUTPUT"));
   form->addRow(tr("Output"), _output);
 
+  // method
+  QStringList l;
+  l << "ADD" << "DIV" << "MULT" << "SUB";
+
+  _method = new QComboBox;
+  _method->addItems(l);
+  _method->setCurrentIndex(_method->findText(_settings->data("METHOD"), Qt::MatchExactly));
+  form->addRow(tr("Method"), _method);
+
   // input
   InputType it;
-  QStringList l = it.list();
+  l = it.list();
   l.append(_settings->data("INPUT"));
   l.append(_settings->data("INPUT2"));
   l.removeDuplicates();
@@ -81,12 +90,13 @@ void ADDDialog::createGeneralPage ()
   form->addRow(tr("Plot Order"), _z);
 }
 
-void ADDDialog::save ()
+void ARITHMETICDialog::save ()
 {
   _settings->setData("INPUT", _input->currentText());
   _settings->setData("INPUT2", _input2->currentText());
   _settings->setData("COLOR", _color->color().name());
   _settings->setData("STYLE", _style->currentText());
   _settings->setData("OUTPUT", _output->text());
+  _settings->setData("METHOD", _method->currentText());
   _settings->setData("Z", _z->text());
 }

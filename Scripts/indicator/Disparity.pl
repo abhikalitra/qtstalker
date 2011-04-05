@@ -38,7 +38,7 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # difference of close - ma
-$command = "PLUGIN=SUB,NAME=sub,INPUT=$closeName,INPUT2=$maName";
+$command = "PLUGIN=ARITHMETIC,METHOD=SUB,NAME=sub,INPUT=$closeName,INPUT2=$maName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -48,12 +48,12 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # multiply 100 * sub
-$command = "PLUGIN=MULT,NAME=mult,INPUT=val100,INPUT2=sub";
+$command = "PLUGIN=ARITHMETIC,METHOD=MULT,NAME=mult,INPUT=val100,INPUT2=sub";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # calculate disparity (mult / close)
-$command = "PLUGIN=DIV,NAME=$name,INPUT=mult,INPUT2=$closeName";
+$command = "PLUGIN=ARITHMETIC,METHOD=DIV,NAME=$name,INPUT=mult,INPUT2=$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

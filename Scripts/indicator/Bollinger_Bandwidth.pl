@@ -28,11 +28,11 @@ $command = "PLUGIN=BBANDS,INPUT=$closeName,NAME_UPPER=$bbUpName,NAME_MIDDLE=$bbM
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=SUB,NAME=$subName,INPUT=$bbUpName,INPUT2=$bbDownName";
+$command = "PLUGIN=ARITHMETIC,METHOD=SUB,NAME=$subName,INPUT=$bbUpName,INPUT2=$bbDownName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DIV,NAME=$bwName,INPUT=$subName,INPUT2=$bbMidName";
+$command = "PLUGIN=ARITHMETIC,METHOD=DIV,NAME=$bwName,INPUT=$subName,INPUT2=$bbMidName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

@@ -19,22 +19,26 @@
  *  USA.
  */
 
-#include "DIV.h"
+#include "ARITHMETIC.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "DIVDialog.h"
+#include "ARITHMETICDialog.h"
 #include "InputType.h"
 
 #include <QtDebug>
 
-DIV::DIV ()
+ARITHMETIC::ARITHMETIC ()
 {
-  _plugin = "DIV";
+  _plugin = "ARITHMETIC";
   _type = "INDICATOR";
 }
 
-int DIV::calculate (BarData *bd, Indicator *i, Setting *settings)
+int ARITHMETIC::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  QStringList l;
+  l << "ADD" << "DIV" << "MULT" << "SUB";
+  int method = l.indexOf(settings->data("METHOD"));
+
   int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
@@ -89,7 +93,23 @@ int DIV::calculate (BarData *bd, Indicator *i, Setting *settings)
     if (! bar2)
       continue;
 
-    line->setBar(keys.at(loop), new CurveBar(bar->data() / bar2->data()));
+    switch (method)
+    {
+      case 0: // add
+        line->setBar(keys.at(loop), new CurveBar(bar->data() + bar2->data()));
+	break;
+      case 1: // div
+        line->setBar(keys.at(loop), new CurveBar(bar->data() / bar2->data()));
+	break;
+      case 2: // mult
+        line->setBar(keys.at(loop), new CurveBar(bar->data() * bar2->data()));
+	break;
+      case 3: // sub
+        line->setBar(keys.at(loop), new CurveBar(bar->data() - bar2->data()));
+	break;
+      default:
+	break;
+    }
   }
 
   if (delFlag)
@@ -107,12 +127,13 @@ int DIV::calculate (BarData *bd, Indicator *i, Setting *settings)
   return 0;
 }
 
-int DIV::command (Command *command)
+int ARITHMETIC::command (Command *command)
 {
   // PARMS:
   // NAME
   // INPUT
   // INPUT2
+  // METHOD
 
   Indicator *i = command->indicator();
   if (! i)
@@ -146,6 +167,15 @@ int DIV::command (Command *command)
     return 1;
   }
 
+  QStringList l;
+  l << "ADD" << "DIV" << "MULT" << "SUB";
+  int method = l.indexOf(command->parm("METHOD"));
+  if (method == -1)
+  {
+    qDebug() << _plugin << "::command: invalid METHOD" << command->parm("METHOD");
+    return 1;
+  }
+
   QList<int> keys;
   int size = in->count();
   if (in2->count() > size)
@@ -168,7 +198,23 @@ int DIV::command (Command *command)
     if (! bar2)
       continue;
 
-    line->setBar(keys.at(loop), new CurveBar(bar->data() / bar2->data()));
+    switch (method)
+    {
+      case 0: // add
+        line->setBar(keys.at(loop), new CurveBar(bar->data() + bar2->data()));
+	break;
+      case 1: // div
+        line->setBar(keys.at(loop), new CurveBar(bar->data() / bar2->data()));
+	break;
+      case 2: // mult
+        line->setBar(keys.at(loop), new CurveBar(bar->data() * bar2->data()));
+	break;
+      case 3: // sub
+        line->setBar(keys.at(loop), new CurveBar(bar->data() - bar2->data()));
+	break;
+      default:
+	break;
+    }
   }
 
   line->setLabel(name);
@@ -179,12 +225,12 @@ int DIV::command (Command *command)
   return 0;
 }
 
-QWidget * DIV::dialog (QWidget *p, Setting *set)
+QWidget * ARITHMETIC::dialog (QWidget *p, Setting *set)
 {
-  return new DIVDialog(p, set);
+  return new ARITHMETICDialog(p, set);
 }
 
-void DIV::defaults (Setting *set)
+void ARITHMETIC::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
   set->setData("COLOR", QString("red"));
@@ -192,6 +238,7 @@ void DIV::defaults (Setting *set)
   set->setData("INPUT", QString("Close"));
   set->setData("INPUT2", QString("Close"));
   set->setData("OUTPUT", _plugin);
+  set->setData("METHOD", QString("ADD"));
   set->setData("Z", 0);
 }
 
@@ -201,6 +248,6 @@ void DIV::defaults (Setting *set)
 
 Plugin * createPlugin ()
 {
-  DIV *o = new DIV;
+  ARITHMETIC *o = new ARITHMETIC;
   return ((Plugin *) o);
 }
