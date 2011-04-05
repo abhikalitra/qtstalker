@@ -19,18 +19,26 @@
  *  USA.
  */
 
-#ifndef PLUGIN_GROUP_PANEL_REFRESH_HPP
-#define PLUGIN_GROUP_PANEL_REFRESH_HPP
+#ifndef PLUGIN_CONTROL_PANEL_HPP
+#define PLUGIN_CONTROL_PANEL_HPP
+
+#include <QStringList>
 
 #include "Plugin.h"
 
-class GROUP_PANEL_REFRESH : public Plugin
+class CONTROL_PANEL : public Plugin
 {
   Q_OBJECT
 
   public:
-    GROUP_PANEL_REFRESH ();
+    CONTROL_PANEL ();
     int command (Command *);
+    int chartRefresh (Command *);
+    int groupRefresh (Command *);
+    int scriptRun (Command *);
+
+  private:
+    QStringList _method;
 };
 
 extern "C"

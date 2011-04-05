@@ -23,6 +23,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # refresh the chart panel
-$command = "PLUGIN=CHART_PANEL_REFRESH";
+$command = "PLUGIN=CONTROL_PANEL,METHOD=CHART_REFRESH";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

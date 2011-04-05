@@ -1195,3 +1195,6 @@
 
            Merged all the SETTINGS_* plugins into SETTINGS plugin. CVS users please update your
            personal scripts with the METHOD parm.
+
+           Merged all the CHART_PANEL_REFRESH, GROUP_PANEL_REFRESH,SCRIPT_RUN plugins into CONTROL_PANEL plugin.
+           CVS users please update your personal scripts with the METHOD parm.

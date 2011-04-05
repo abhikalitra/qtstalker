@@ -29,6 +29,6 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; print STDERR $items; exit; }
 
 # refresh the group panel list
-$command = "PLUGIN=GROUP_PANEL_REFRESH";
+$command = "PLUGIN=CONTROL_PANEL,METHOD=GROUP_REFRESH";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

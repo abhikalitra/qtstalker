@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += GROUP_PANEL_REFRESH.h
+HEADERS += CONTROL_PANEL.h
 
-SOURCES += GROUP_PANEL_REFRESH.cpp
+SOURCES += CONTROL_PANEL.cpp

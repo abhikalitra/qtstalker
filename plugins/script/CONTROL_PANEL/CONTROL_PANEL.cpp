@@ -19,23 +19,63 @@
  *  USA.
  */
 
-#include "SCRIPT_PANEL_RUN.h"
+#include "CONTROL_PANEL.h"
 #include "Globals.h"
 
 #include <QtDebug>
 
-SCRIPT_PANEL_RUN::SCRIPT_PANEL_RUN ()
+CONTROL_PANEL::CONTROL_PANEL ()
 {
-  _plugin = "SCRIPT_PANEL_RUN";
+  _plugin = "CONTROL_PANEL";
+  _method << "CHART_PANEL" << "GROUP_REFRESH" << "SCRIPT_RUN";
 }
 
-int SCRIPT_PANEL_RUN::command (Command *command)
+int CONTROL_PANEL::command (Command *command)
+{
+  int rc = 1;
+  switch (_method.indexOf(command->parm("METHOD")))
+  {
+    case 0:
+      rc = chartRefresh(command);
+      break;
+    case 1:
+      rc = groupRefresh(command);
+      break;
+    case 2:
+      rc = scriptRun(command);
+      break;
+    default:
+      break;
+  }
+
+  return rc;
+}
+
+int CONTROL_PANEL::chartRefresh (Command *command)
+{
+  g_middleMan->chartPanelRefresh();
+  
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+int CONTROL_PANEL::groupRefresh (Command *command)
+{
+  g_middleMan->groupPanelRefresh();
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+int CONTROL_PANEL::scriptRun (Command *command)
 {
   // PARMS:
   // NAME
 
   g_middleMan->scriptRun(command->parm("NAME"));
-  
+
   command->setReturnCode("0");
 
   return 0;
@@ -47,6 +87,6 @@ int SCRIPT_PANEL_RUN::command (Command *command)
 
 Plugin * createPlugin ()
 {
-  SCRIPT_PANEL_RUN *o = new SCRIPT_PANEL_RUN;
+  CONTROL_PANEL *o = new CONTROL_PANEL;
   return ((Plugin *) o);
 }
