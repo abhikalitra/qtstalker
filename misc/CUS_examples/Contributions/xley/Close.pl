@@ -13,7 +13,7 @@ $rc = <STDIN>; chomp($rc); if ($rc ne '0') { exit; }
 
 # set the plot style
 if ($DEBUG) { doDebug('Do Plot'); }
-print STDOUT 'PLUGIN=INDICATOR_PLOT_ALL,NAME=close_0,STYLE=Line,COLOR=yellow,Z=1';
+print STDOUT 'PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=close_0,STYLE=Line,COLOR=yellow,Z=1';
 $rc = <STDIN>; chomp($rc); if ($rc ne '0') { exit; }
 
 if ($DEBUG) { doDebug('End'); }
