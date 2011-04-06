@@ -61,10 +61,10 @@ $command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$name,STYLE=$style,COLOR=$colo
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=COLOR_COMPARE_VALUE,NAME=$name,OP=GT,VALUE=0,NAME2=$name,COLOR=$upColor";
+$command = "PLUGIN=COLOR,NAME=$name,OP=GT,NAME2=0,NAME3=$name,COLOR=$upColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=COLOR_COMPARE_VALUE,NAME=$name,OP=LT,VALUE=0,NAME2=$name,COLOR=$downColor";
+$command = "PLUGIN=COLOR,NAME=$name,OP=LT,NAME2=0,NAME3=$name,COLOR=$downColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

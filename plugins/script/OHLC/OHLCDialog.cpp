@@ -37,6 +37,10 @@ void OHLCDialog::createGeneralPage ()
   QFormLayout *form = new QFormLayout;
   setLayout(form);
 
+  // output
+  _output = new QLineEdit(_settings->data("OUTPUT"));
+  form->addRow(tr("Output"), _output);
+  
   // style
   _style = new QComboBox;
   _style->addItems(_styleList);
@@ -72,4 +76,5 @@ void OHLCDialog::save ()
   _settings->setData("COLOR_NEUTRAL", _neutralColor->color().name());
   _settings->setData("STYLE", _style->currentText());
   _settings->setData("Z", _z->text());
+  _settings->setData("OUTPUT", _output->text());
 }

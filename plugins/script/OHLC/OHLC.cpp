@@ -81,8 +81,8 @@ int OHLC::calculate (BarData *bd, Indicator *i, Setting *settings)
     line->setBar(loop, b);
   }
 
-  line->setLabel("OHLC");
-  i->setLine("OHLC", line);
+  line->setLabel(settings->data("OUTPUT"));
+  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -245,6 +245,7 @@ void OHLC::defaults (Setting *set)
   set->setData("COLOR_NEUTRAL", QString("dimgray"));
   set->setData("STYLE", QString("Bars"));
   set->setData("Z", 0);
+  set->setData("OUTPUT", QString("OHLC"));
 }
 
 //*************************************************************

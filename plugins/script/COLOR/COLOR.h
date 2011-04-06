@@ -19,37 +19,28 @@
  *  USA.
  */
 
-#ifndef PLUGIN_OHLC_DIALOG_HPP
-#define PLUGIN_OHLC_DIALOG_HPP
+#ifndef PLUGIN_COLOR_HPP
+#define PLUGIN_COLOR_HPP
 
-#include <QWidget>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QLineEdit>
+#include <QStringList>
 
-#include "ColorButton.h"
-#include "Setting.h"
+#include "Plugin.h"
 
-class OHLCDialog : public QWidget
+class COLOR : public Plugin
 {
   Q_OBJECT
 
   public:
-    OHLCDialog (QWidget *, Setting *);
-    void createGeneralPage ();
-
-  public slots:
-    void save ();
-
-  private:
-    QStringList _styleList;
-    Setting *_settings;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
-    QComboBox *_style;
-    QSpinBox *_z;
-    QLineEdit *_output;
+    COLOR ();
+    int command (Command *);
+    int calculate (BarData *, Indicator *, Setting *);
+    void defaults (Setting *);
+    QWidget * dialog (QWidget *, Setting *);
 };
+
+extern "C"
+{
+  Plugin * createPlugin ();
+}
 
 #endif

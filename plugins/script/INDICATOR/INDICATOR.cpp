@@ -31,8 +31,8 @@ INDICATOR::INDICATOR ()
 {
   _plugin = "INDICATOR";
   
-  _method << "CLEAR" << "PLOT" << "PLOT_ALL" << "COLOR_ALL" << "COLOR_COMPARE_INDEX";
-  _method << "COLOR_COMPARE_VALUE" << "COLOR_SET" << "DELETE" << "INDEX_DELETE";
+  _method << "CLEAR" << "PLOT" << "PLOT_ALL" << "COLOR_ALL";
+  _method << "COLOR_SET" << "DELETE" << "INDEX_DELETE";
   _method << "INDEX_RANGE" << "INDEX_SHIFT" << "NEW" << "STYLE" << "VALUE_GET";
   _method << "VALUE_SET" << "RUN";
 }
@@ -55,39 +55,33 @@ int INDICATOR::command (Command *command)
       rc = colorAll(command);
       break;
     case 4:
-      rc = colorCompareIndex(command);
-      break;
-    case 5:
-      rc = colorCompareValue(command);
-      break;
-    case 6:
       rc = colorSet(command);
       break;
-    case 7:
+    case 5:
       rc = remove(command);
       break;
-    case 8:
+    case 6:
       rc = indexDelete(command);
       break;
-    case 9:
+    case 7:
       rc = indexRange(command);
       break;
-    case 10:
+    case 8:
       rc = indexShift(command);
       break;
-    case 11:
+    case 9:
       rc = create(command);
       break;
-    case 12:
+    case 10:
       rc = style(command);
       break;
-    case 13:
+    case 11:
       rc = valueGet(command);
       break;
-    case 14:
+    case 12:
       rc = valueSet(command);
       break;
-    case 15:
+    case 13:
       rc = run(command);
       break;
     default:
@@ -249,231 +243,6 @@ int INDICATOR::colorAll (Command *command)
   }
 
   line->setAllColor(color);
-
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-int INDICATOR::colorCompareIndex (Command *command)
-{
-  // PARMS:
-  // NAME
-  // OP
-  // NAME2
-  // NAME3
-  // COLOR
-
-  Indicator *i = command->indicator();
-  if (! i)
-  {
-    qDebug() << _plugin << "::colorCompareIndex: no indicator";
-    return 1;
-  }
-
-  // verify NAME
-  int offset = 0;
-  QString name = command->parm("NAME");
-  QStringList l = name.split(".", QString::SkipEmptyParts);
-  if (l.count() == 2)
-  {
-    name = l.at(0);
-
-    bool ok;
-    offset = l.at(1).toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << _plugin << "::colorCompareIndex: invalid NAME" << name;
-      return 1;
-    }
-  }
-
-  Curve *line = i->line(name);
-  if (! line)
-  {
-    qDebug() << _plugin << "::colorCompareIndex: NAME not found" << name;
-    return 1;
-  }
-
-  // verify OP
-  Operator top;
-  Operator::Type op = top.stringToOperator(command->parm("OP"));
-  if (op == -1)
-  {
-    qDebug() << _plugin << "::colorCompareIndex: invalid OP" << command->parm("OP");
-    return 1;
-  }
-
-  // verify NAME2
-  int offset2 = 0;
-  QString name2 = command->parm("NAME2");
-  l = name2.split(".", QString::SkipEmptyParts);
-  if (l.count() == 2)
-  {
-    name2 = l.at(0);
-
-    bool ok;
-    offset2 = l.at(1).toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << _plugin << "::colorCompareIndex: invalid NAME2" << name2;
-      return 1;
-    }
-  }
-
-  Curve *line2 = i->line(name2);
-  if (! line2)
-  {
-    qDebug() << _plugin << "::colorCompareIndex: NAME2 not found" << name2;
-    return 1;
-  }
-
-  // verify NAME3
-  int offset3 = 0;
-  QString name3 = command->parm("NAME3");
-  l = name3.split(".", QString::SkipEmptyParts);
-  if (l.count() == 2)
-  {
-    name3 = l.at(0);
-
-    bool ok;
-    offset3 = l.at(1).toInt(&ok);
-    if (! ok)
-    {
-      qDebug() << _plugin << "::colorCompareIndex: invalid NAME3" << name3;
-      return 1;
-    }
-  }
-
-  Curve *line3 = i->line(name3);
-  if (! line3)
-  {
-    qDebug() << _plugin << "::colorCompareIndex: NAME3 not found" << name3;
-    return 1;
-  }
-
-  QColor color(command->parm("COLOR"));
-  if (! color.isValid())
-  {
-    qDebug() << _plugin << "::colorCompareIndex: invalid COLOR" << command->parm("COLOR");
-    return 1;
-  }
-
-  // find lowest and highest index values
-  int high = 0;
-  int low = 0;
-  line->keyRange(low, high);
-
-  int tlow = 0;
-  int thigh = 0;
-  line2->keyRange(tlow, thigh);
-  if (tlow < low)
-    low = tlow;
-  if (thigh > high)
-    high = thigh;
-
-  int loop = low;
-  for (; loop <= high; loop++)
-  {
-    CurveBar *bar = line->bar(loop - offset);
-    if (! bar)
-      continue;
-
-    CurveBar *bar2 = line2->bar(loop - offset2);
-    if (! bar2)
-      continue;
-
-    CurveBar *bar3 = line3->bar(loop - offset3);
-    if (! bar3)
-      continue;
-
-    if (top.test(bar->data(), op, bar2->data()))
-      bar3->setColor(color);
-  }
-
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-int INDICATOR::colorCompareValue (Command *command)
-{
-  // PARMS:
-  // NAME
-  // OP
-  // VALUE
-  // NAME2
-  // COLOR
-
-  Indicator *i = command->indicator();
-  if (! i)
-  {
-    qDebug() << _plugin << "::colorCompareValue: no indicator";
-    return 1;
-  }
-
-  // verify NAME
-  QString name = command->parm("NAME");
-  Curve *line = i->line(name);
-  if (! line)
-  {
-    qDebug() << _plugin << "::colorCompareValue: NAME not found" << name;
-    return 1;
-  }
-
-  // verify OP
-  Operator top;
-  Operator::Type op = top.stringToOperator(command->parm("OP"));
-  if (op == -1)
-  {
-    qDebug() << _plugin << "::colorCompareValue: invalid operator" << command->parm("OP");
-    return 1;
-  }
-
-  // verify VALUE
-  bool ok;
-  double value = command->parm("VALUE").toDouble(&ok);
-  if (! ok)
-  {
-    qDebug() << _plugin << "::colorCompareValue: invalid VALUE" << command->parm("VALUE");
-    return 1;
-  }
-
-  // verify NAME2
-  QString name2 = command->parm("NAME2");
-  Curve *line2 = i->line(name2);
-  if (! line2)
-  {
-    qDebug() << _plugin << "::colorCompareValue: NAME2 not found" << name2;
-    return 1;
-  }
-
-  QColor color(command->parm("COLOR"));
-  if (! color.isValid())
-  {
-    qDebug() << _plugin << "::colorCompareValue: invalid COLOR" << command->parm("COLOR");
-    return 1;
-  }
-
-  // find lowest and highest index values
-  int high = 0;
-  int low = 0;
-  line->keyRange(low, high);
-
-  int loop = low;
-  for (; loop <= high; loop++)
-  {
-    CurveBar *bar = line->bar(loop);
-    if (! bar)
-      continue;
-
-    CurveBar *bar2 = line2->bar(loop);
-    if (! bar2)
-      continue;
-
-    if (top.test(bar->data(), op, value))
-      bar2->setColor(color);
-  }
 
   command->setReturnCode("0");
 

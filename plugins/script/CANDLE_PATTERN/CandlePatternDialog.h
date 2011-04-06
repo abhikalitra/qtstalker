@@ -38,6 +38,7 @@ class CandlePatternDialog : public QWidget
     CandlePatternDialog (QWidget *, Setting *);
     void createGeneralPage ();
     void createPatternPage ();
+    void loadSettings ();
 
   public slots:
     void save ();

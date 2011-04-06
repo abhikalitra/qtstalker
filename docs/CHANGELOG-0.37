@@ -1201,3 +1201,5 @@
 
            Merged ADD,DIV,MULT,SUB plugins into ARITHMETIC plugin. CVS users please update your
            personal scripts with the METHOD parm.
+
+           Added COLOR plugin.

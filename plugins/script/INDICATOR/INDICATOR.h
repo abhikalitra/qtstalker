@@ -37,8 +37,6 @@ class INDICATOR : public Plugin
     int plot (Command *);
     int plotAll (Command *);
     int colorAll (Command *);
-    int colorCompareIndex (Command *);
-    int colorCompareValue (Command *);
     int colorSet (Command *);
     int remove (Command *);
     int indexDelete (Command *);

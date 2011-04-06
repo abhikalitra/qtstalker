@@ -32,12 +32,14 @@
 #include <QToolButton>
 #include <QComboBox>
 #include <QFormLayout>
+#include <QSettings>
 
 CandlePatternDialog::CandlePatternDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
   createGeneralPage();
   createPatternPage();
+  loadSettings();
 }
 
 void CandlePatternDialog::createGeneralPage ()
@@ -172,4 +174,23 @@ void CandlePatternDialog::save ()
     l << c->color().name();
   }
   _settings->setData("PATTERN", l.join(","));
+
+  QSettings set(g_globalSettings);
+  for (loop = 0; loop < _plist->columnCount(); loop++)
+  {
+    QString key = "CandlePatternDialog_rule_column_width_" + QString::number(loop);
+    set.setValue(key, _plist->columnWidth(loop));
+  }
+}
+
+void CandlePatternDialog::loadSettings ()
+{
+  QSettings set(g_globalSettings);
+
+  int loop = 0;
+  for (; loop < _plist->columnCount(); loop++)
+  {
+    QString key = "CandlePatternDialog_rule_column_width_" + QString::number(loop);
+    _plist->setColumnWidth(loop, set.value(key, 100).toInt());
+  }
 }

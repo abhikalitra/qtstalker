@@ -129,6 +129,7 @@ SUBDIRS += plugins/script/CANDLES
 SUBDIRS += plugins/script/CANDLE_PATTERN
 SUBDIRS += plugins/script/CCI
 SUBDIRS += plugins/script/CMO
+SUBDIRS += plugins/script/COLOR
 SUBDIRS += plugins/script/CONFIRM_DIALOG
 SUBDIRS += plugins/script/CONTROL_PANEL
 SUBDIRS += plugins/script/COPY_ARRAY

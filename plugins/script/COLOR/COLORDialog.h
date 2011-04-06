@@ -19,37 +19,31 @@
  *  USA.
  */
 
-#ifndef PLUGIN_OHLC_DIALOG_HPP
-#define PLUGIN_OHLC_DIALOG_HPP
+#ifndef PLUGIN_COLOR_DIALOG_HPP
+#define PLUGIN_COLOR_DIALOG_HPP
 
-#include <QWidget>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QLineEdit>
+#include <QTreeWidget>
 
-#include "ColorButton.h"
 #include "Setting.h"
 
-class OHLCDialog : public QWidget
+class COLORDialog : public QWidget
 {
   Q_OBJECT
 
   public:
-    OHLCDialog (QWidget *, Setting *);
-    void createGeneralPage ();
+    COLORDialog (QWidget *, Setting *);
+    void createGeneralPage();
+    void loadSettings ();
 
   public slots:
     void save ();
+    void addPattern ();
+    void addPattern (QString color, QString in, QString op, QString in2, QString in3);
+    void deletePattern ();
 
   private:
-    QStringList _styleList;
     Setting *_settings;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
-    QComboBox *_style;
-    QSpinBox *_z;
-    QLineEdit *_output;
+    QTreeWidget *_plist;
 };
 
 #endif
