@@ -225,8 +225,9 @@ void Setup::scanPlugins ()
   for (; loop < l.count(); loop++)
   {
     QString s = l.at(loop);
-    s = s.remove(".so");
     s = s.remove("lib");
+    s = s.remove(".so");
+    s = s.remove(".dy");
     
     Plugin *plug = fac.plugin(s);
     if (! plug)
