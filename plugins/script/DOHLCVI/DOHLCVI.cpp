@@ -22,7 +22,7 @@
 #include "DOHLCVI.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "DOHLCVIDialog.h"
+#include "RuleWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,23 +36,40 @@ DOHLCVI::DOHLCVI ()
 
 int DOHLCVI::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  int rows = settings->getInt("ROWS");
+  int loop = 0;
+  for (; loop < rows; loop++)
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
+    // output
+    int col = 0;
+    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    QString name = settings->data(key);
+    
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    Curve *in = i->line(settings->data(key));
     if (! in)
     {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
+      InputType it;
+      in = it.input(bd, settings->data(key));
+      if (! in)
+      {
+        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
+        return 1;
+      }
     }
-  }
 
-  in->setAllColor(QColor(settings->data("COLOR")));
-  in->setLabel(settings->data("OUTPUT"));
-  in->setType(settings->data("STYLE"));
-  in->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), in);
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    in->setAllColor(QColor(settings->data(key)));
+    
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    in->setType(settings->data(key));
+    
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    in->setZ(settings->getInt(key));
+    
+    in->setLabel(name);
+    i->setLine(name, in);
+  }
 
   return 0;
 }
@@ -137,17 +154,22 @@ int DOHLCVI::command (Command *command)
 
 QWidget * DOHLCVI::dialog (QWidget *p, Setting *set)
 {
-  return new DOHLCVIDialog(p, set);
+  QStringList header;
+  header << tr("Output") << tr("Input") << tr("Color") << tr("Style") << tr("Plot");
+
+  QList<int> format;
+  format << RuleWidget::_OUTPUT << RuleWidget::_INPUT << RuleWidget::_COLOR;
+  format << RuleWidget::_STYLE << RuleWidget::_PLOT;
+
+  RuleWidget *w = new RuleWidget(p, _plugin);
+  w->setRules(set, format, header);
+  w->loadSettings();
+  return w;
 }
 
 void DOHLCVI::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("yellow"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("INPUT", QString("Close"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", QString("Close"));
 }
 
 //*************************************************************

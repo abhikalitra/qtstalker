@@ -130,6 +130,7 @@ SUBDIRS += plugins/script/CANDLE_PATTERN
 SUBDIRS += plugins/script/CCI
 SUBDIRS += plugins/script/CMO
 SUBDIRS += plugins/script/COLOR
+SUBDIRS += plugins/script/COMPARE
 SUBDIRS += plugins/script/CONFIRM_DIALOG
 SUBDIRS += plugins/script/CONTROL_PANEL
 SUBDIRS += plugins/script/COPY_ARRAY
@@ -206,9 +207,7 @@ SUBDIRS += plugins/script/VAR
 SUBDIRS += plugins/script/VFI
 SUBDIRS += plugins/script/VIDYA
 SUBDIRS += plugins/script/VLINE
-SUBDIRS += plugins/script/VOL
 SUBDIRS += plugins/script/WEIGHTED_CLOSE
-SUBDIRS += plugins/script/WILDER_MA
 SUBDIRS += plugins/script/WILLR
 SUBDIRS += plugins/script/YAHOO_DIALOG
 

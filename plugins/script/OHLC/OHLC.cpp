@@ -34,9 +34,7 @@ OHLC::OHLC ()
 
 int OHLC::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  QColor upColor(settings->data("COLOR_UP"));
-  QColor downColor(settings->data("COLOR_DOWN"));
-  QColor neutralColor(settings->data("COLOR_NEUTRAL"));
+  QColor color(settings->data("COLOR"));
 
   Curve *line;
   if (settings->data("STYLE") == "OHLC")
@@ -64,20 +62,7 @@ int OHLC::calculate (BarData *bd, Indicator *i, Setting *settings)
     b->setData(1, bar->high());
     b->setData(2, bar->low());
     b->setData(3, bar->close());
-    b->setColor(neutralColor);
-
-    Bar *ybar = bd->bar(loop - 1);
-    if (ybar)
-    {
-      if (bar->close() > ybar->close())
-        b->setColor(upColor);
-      else
-      {
-        if (bar->close() < ybar->close())
-          b->setColor(downColor);
-      }
-    }
-
+    b->setColor(color);
     line->setBar(loop, b);
   }
 
@@ -95,9 +80,7 @@ int OHLC::command (Command *command)
   // INPUT_LOW
   // INPUT_CLOSE
   // NAME
-  // COLOR_UP - default green
-  // COLOR_DOWN - default red
-  // COLOR_NEUTRAL - default blue
+  // COLOR
 
   Indicator *i = command->indicator();
   if (! i)
@@ -142,38 +125,14 @@ int OHLC::command (Command *command)
     return 1;
   }
 
-  QColor upColor(Qt::green);
-  QString s = command->parm("COLOR_UP");
+  QColor color("#585858");
+  QString s = command->parm("COLOR");
   if (! s.isEmpty())
   {
-    upColor.setNamedColor(s);
-    if (! upColor.isValid())
+    color.setNamedColor(s);
+    if (! color.isValid())
     {
-      qDebug() << _plugin << "::command: invalid COLOR_UP" << command->parm("COLOR_UP");
-      return 1;
-    }
-  }
-
-  QColor downColor(Qt::red);
-  s = command->parm("COLOR_DOWN");
-  if (! s.isEmpty())
-  {
-    downColor.setNamedColor(s);
-    if (! downColor.isValid())
-    {
-      qDebug() << _plugin << "::command: invalid COLOR_DOWN" << command->parm("COLOR_DOWN");
-      return 1;
-    }
-  }
-
-  QColor neutralColor(Qt::blue);
-  s = command->parm("COLOR_NEUTRAL");
-  if (! s.isEmpty())
-  {
-    neutralColor.setNamedColor(s);
-    if (! neutralColor.isValid())
-    {
-      qDebug() << _plugin << "::command: invalid COLOR_NEUTRAL" << command->parm("COLOR_NEUTRAL");
+      qDebug() << _plugin << "::command: invalid COLOR" << command->parm("COLOR");
       return 1;
     }
   }
@@ -207,20 +166,7 @@ int OHLC::command (Command *command)
     bar->setData(1, hbar->data());
     bar->setData(2, lbar->data());
     bar->setData(3, cbar->data());
-    bar->setColor(neutralColor);
-
-    CurveBar *ycbar = iclose->bar(ipos - 1);
-    if (ycbar)
-    {
-      if (cbar->data() > ycbar->data())
-        bar->setColor(upColor);
-      else
-      {
-        if (cbar->data() < ycbar->data())
-          bar->setColor(downColor);
-      }
-    }
-
+    bar->setColor(color);
     line->setBar(ipos, bar);
   }
 
@@ -240,9 +186,7 @@ QWidget * OHLC::dialog (QWidget *p, Setting *set)
 void OHLC::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData("COLOR_UP", QString("green"));
-  set->setData("COLOR_DOWN", QString("red"));
-  set->setData("COLOR_NEUTRAL", QString("dimgray"));
+  set->setData("COLOR", QString("#585858"));
   set->setData("STYLE", QString("Bars"));
   set->setData("Z", 0);
   set->setData("OUTPUT", QString("OHLC"));

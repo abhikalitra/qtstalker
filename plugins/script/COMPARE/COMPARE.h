@@ -19,35 +19,28 @@
  *  USA.
  */
 
-#ifndef PLUGIN_MEDIAN_PRICE_DIALOG_HPP
-#define PLUGIN_MEDIAN_PRICE_DIALOG_HPP
+#ifndef PLUGIN_COMPARE_HPP
+#define PLUGIN_COMPARE_HPP
 
-#include <QComboBox>
-#include <QSpinBox>
-#include <QLineEdit>
+#include <QStringList>
 
-#include "ColorButton.h"
-#include "Setting.h"
+#include "Plugin.h"
 
-class MEDIAN_PRICEDialog : public QWidget
+class COMPARE : public Plugin
 {
   Q_OBJECT
 
   public:
-    MEDIAN_PRICEDialog (QWidget *, Setting *);
-    void createGeneralPage ();
-
-  public slots:
-    void save ();
-
-  private:
-    Setting *_settings;
-    ColorButton *_color;
-    QComboBox *_style;
-    QComboBox *_input;
-    QComboBox *_input2;
-    QSpinBox *_z;
-    QLineEdit *_output;
+    COMPARE ();
+    int command (Command *);
+    int calculate (BarData *, Indicator *, Setting *);
+    void defaults (Setting *);
+    QWidget * dialog (QWidget *, Setting *);
 };
+
+extern "C"
+{
+  Plugin * createPlugin ();
+}
 
 #endif

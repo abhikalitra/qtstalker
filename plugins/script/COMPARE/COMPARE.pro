@@ -2,6 +2,6 @@
   message( "Oops -- No custom build options specified" )
 }
 
-HEADERS += ARITHMETIC.h
+HEADERS += COMPARE.h
 
-SOURCES += ARITHMETIC.cpp
+SOURCES += COMPARE.cpp

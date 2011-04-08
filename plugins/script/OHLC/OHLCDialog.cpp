@@ -47,21 +47,11 @@ void OHLCDialog::createGeneralPage ()
   _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
   form->addRow(tr("Style"), _style);
   
-  // up color
-  _upColor = new ColorButton(this, QColor(_settings->data("COLOR_UP")));
-  _upColor->setColorButton();
-  form->addRow(tr("Up Color"), _upColor);
+  // color
+  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
+  _color->setColorButton();
+  form->addRow(tr("Color"), _color);
 
-  // down color
-  _downColor = new ColorButton(this, QColor(_settings->data("COLOR_DOWN")));
-  _downColor->setColorButton();
-  form->addRow(tr("Down Color"), _downColor);
-
-  // neutral color
-  _neutralColor = new ColorButton(this, QColor(_settings->data("COLOR_NEUTRAL")));
-  _neutralColor->setColorButton();
-  form->addRow(tr("Neutral Color"), _neutralColor);
-  
   // z
   _z = new QSpinBox;
   _z->setRange(-1, 99);
@@ -71,9 +61,7 @@ void OHLCDialog::createGeneralPage ()
 
 void OHLCDialog::save ()
 {
-  _settings->setData("COLOR_UP", _upColor->color().name());
-  _settings->setData("COLOR_DOWN", _downColor->color().name());
-  _settings->setData("COLOR_NEUTRAL", _neutralColor->color().name());
+  _settings->setData("COLOR", _color->color().name());
   _settings->setData("STYLE", _style->currentText());
   _settings->setData("Z", _z->text());
   _settings->setData("OUTPUT", _output->text());

@@ -23,7 +23,7 @@
 
 Operator::Operator ()
 {
-  _list << "LT" << "LTE" << "E" << "NE" << "GTE" << "GT";
+  _list << "LT" << "LTE" << "EQ" << "NE" << "GTE" << "GT";
 }
 
 QStringList & Operator::list ()

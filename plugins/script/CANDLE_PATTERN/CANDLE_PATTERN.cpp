@@ -22,11 +22,13 @@
 #include "CANDLE_PATTERN.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "CandlePatternDialog.h"
 #include "CandleType.h"
 #include "InputType.h"
+#include "RuleWidget.h"
 
 #include <QtDebug>
+#include <QList>
+#include <QSettings>
 
 CANDLE_PATTERN::CANDLE_PATTERN ()
 {
@@ -36,46 +38,25 @@ CANDLE_PATTERN::CANDLE_PATTERN ()
 
 int CANDLE_PATTERN::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  QColor c(settings->data("COLOR"));
-  InputType it;
-  Curve *line = it.ohlc(bd, c, c, c);
-  if (! line)
-    return 1;
-
-  line->setType("Candle");
-  line->setLabel("CANDLES");
-  line->setZ(settings->getInt("Z"));
-  i->setLine("CANDLES", line);
-
-  double pen = settings->getDouble("PEN");
-
+  int rows = settings->getInt("ROWS");
   CandleType ct;
-  QStringList l = settings->data("PATTERN").split(",", QString::SkipEmptyParts);
   int loop = 0;
-  for (; loop < l.count(); loop += 2)
+  for (; loop < rows; loop++)
   {
-    Curve *tline = ct.getPattern(bd, ct.fromString(l.at(loop)), pen);
+    int col = 0;
+    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    QString pattern = settings->data(key);
+    
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    double pen = settings->getDouble(key);
+
+    Curve *tline = ct.getPattern(bd, ct.fromString(pattern), pen);
     if (! tline)
       continue;
 
-    int loop2 = 0;
-    for (; loop2 < tline->count(); loop2++)
-    {
-      CurveBar *cb = tline->bar(loop2);
-      if (! cb)
-	continue;
-
-      if (cb->data() != 0)
-      {
-	CurveBar *cb2 = line->bar(loop2);
-	if (! cb2)
-	  continue;
-	
-	cb2->setColor(QColor(l.at(loop + 1)));
-      }
-    }
-
-    delete tline;
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    tline->setLabel(settings->data(key));
+    i->setLine(settings->data(key), tline);
   }
   
   return 0;  
@@ -202,18 +183,23 @@ int CANDLE_PATTERN::command (Command *command)
   return 0;
 }
 
-QWidget * CANDLE_PATTERN::dialog (QWidget *p, Setting *set)
+QWidget * CANDLE_PATTERN::dialog (QWidget *p, Setting *s)
 {
-  return new CandlePatternDialog(p, set);
+  QStringList header;
+  header << tr("Pattern") << tr("Penetration") << tr("Output");
+
+  QList<int> format;
+  format << RuleWidget::_CANDLE << RuleWidget::_DOUBLE << RuleWidget::_OUTPUT;
+  
+  RuleWidget *w = new RuleWidget(p, _plugin);
+  w->setRules(s, format, header);
+  w->loadSettings();
+  return w;
 }
 
 void CANDLE_PATTERN::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("dimgray"));
-  set->setData("METHOD", QString());
-  set->setData("PEN", 50);
-  set->setData("Z", 0);
 }
 
 //*************************************************************

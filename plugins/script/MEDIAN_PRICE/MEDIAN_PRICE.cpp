@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "InputType.h"
-#include "MEDIAN_PRICEDialog.h"
+#include "RuleWidget.h"
 
 #include <QtDebug>
 
@@ -35,71 +35,95 @@ MEDIAN_PRICE::MEDIAN_PRICE ()
 
 int MEDIAN_PRICE::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int delFlag = FALSE;
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  int rows = settings->getInt("ROWS");
+  int loop = 0;
+  for (; loop < rows; loop++)
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
+    int col = 0;
+    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    QString name = settings->data(key);
+    Curve *line = i->line(name);
+    if (line)
+    {
+      qDebug() << _plugin << "::calculate: duplicate output" << name;
+      return 1;
+    }
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    Curve *in = i->line(settings->data(key));
     if (! in)
     {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
+      InputType it;
+      in = it.input(bd, settings->data(key));
+      if (! in)
+      {
+        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
+        return 1;
+      }
+
+      in->setZ(-1);
+      in->setLabel(settings->data(key));
+      i->setLine(settings->data(key), in);
     }
 
-    delFlag++;
-  }
-
-  int delFlag2 = FALSE;
-  Curve *in2 = i->line(settings->data("INPUT2"));
-  if (! in2)
-  {
-    InputType it;
-    in2 = it.input(bd, settings->data("INPUT2"));
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    Curve *in2 = i->line(settings->data(key));
     if (! in2)
     {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT2");
-      if (delFlag)
-	delete in;
-      return 1;
+      InputType it;
+      in2 = it.input(bd, settings->data(key));
+      if (! in2)
+      {
+        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
+        return 1;
+      }
+
+      in2->setZ(-1);
+      in2->setLabel(settings->data(key));
+      i->setLine(settings->data(key), in2);
+    }
+  
+    int high = 0;
+    int low = 0;
+    in->keyRange(low, high);
+
+    int tlow = 0;
+    int thigh = 0;
+    in2->keyRange(tlow, thigh);
+    if (tlow < low)
+      low = tlow;
+    if (thigh > high)
+      high = thigh;
+
+    line = new Curve;
+    int loop2 = low;
+    for (; loop2 <= high; loop2++)
+    {
+      CurveBar *bar = in->bar(loop2);
+      if (! bar)
+        continue;
+
+      CurveBar *bar2 = in2->bar(loop2);
+      if (! bar2)
+        continue;
+
+      double t = (bar->data() + bar2->data()) / 2.0;
+      line->setBar(loop2, new CurveBar(t));
     }
 
-    delFlag2++;
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    line->setAllColor(QColor(settings->data(key)));
+    
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    line->setType(settings->data(key));
+    
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    line->setZ(settings->getInt(key));
+    
+    line->setLabel(name);
+    i->setLine(name, line);
   }
   
-  Curve *line = new Curve;
-  QList<int> keys;
-  int size = in->count();
-  if (in2->count() > size)
-  {
-    size = in2->count();
-    in2->keys(keys);
-  }
-  else
-    in->keys(keys);
-
-  line = new Curve;
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    if (! bar)
-      continue;
-
-    CurveBar *bar2 = in2->bar(keys.at(loop));
-    if (! bar2)
-      continue;
-
-    double t = (bar->data() + bar2->data()) / 2.0;
-    line->setBar(keys.at(loop), new CurveBar(t));
-  }
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
   return 0;
 }
 
@@ -175,18 +199,22 @@ int MEDIAN_PRICE::command (Command *command)
 
 QWidget * MEDIAN_PRICE::dialog (QWidget *p, Setting *set)
 {
-  return new MEDIAN_PRICEDialog(p, set);
+  QStringList header;
+  header << tr("Output") << tr("Input 1") << tr("Input 2") << tr("Color") << tr("Style") << tr("Plot");
+
+  QList<int> format;
+  format << RuleWidget::_OUTPUT << RuleWidget::_INPUT << RuleWidget::_INPUT;
+  format << RuleWidget::_COLOR << RuleWidget::_STYLE << RuleWidget::_PLOT;
+
+  RuleWidget *w = new RuleWidget(p, _plugin);
+  w->setRules(set, format, header);
+  w->loadSettings();
+  return w;
 }
 
 void MEDIAN_PRICE::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("red"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("INPUT", QString("High"));
-  set->setData("INPUT2", QString("Low"));
-  set->setData("OUTPUT", _plugin);
-  set->setData("Z", 0);
 }
 
 //*************************************************************

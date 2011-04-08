@@ -26,7 +26,7 @@
 
 MAType::MAType ()
 {
-  _list << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA";
+  _list << "SMA" << "EMA" << "WMA" << "DEMA" << "TEMA" << "TRIMA" << "KAMA" << "WILDER";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -47,6 +47,9 @@ Curve * MAType::getMA (Curve *in, int period, int method)
 {
   if (in->count() < period)
     return 0;
+
+  if (method == _WILDER)
+    return getWilder(in, period);
 
   QList<int> keys;
   in->keys(keys);

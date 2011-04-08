@@ -19,35 +19,53 @@
  *  USA.
  */
 
-#ifndef PLUGIN_MIN_DIALOG_HPP
-#define PLUGIN_MIN_DIALOG_HPP
+#ifndef RULE_WIDGET_HPP
+#define RULE_WIDGET_HPP
 
-#include <QComboBox>
-#include <QSpinBox>
-#include <QLineEdit>
+#include <QTreeWidget>
+#include <QList>
 
-#include "ColorButton.h"
 #include "Setting.h"
 
-class MINDialog : public QWidget
+class RuleWidget : public QWidget
 {
   Q_OBJECT
 
   public:
-    MINDialog (QWidget *, Setting *);
+    enum Type
+    {
+      _OUTPUT,
+      _INPUT,
+      _TEXT,
+      _INTEGER,
+      _DOUBLE,
+      _COLOR,
+      _OPERATOR,
+      _MA,
+      _CANDLE,
+      _STYLE,
+      _PLOT,
+      _LIST
+    };
+    
+    RuleWidget (QWidget *, QString);
     void createGeneralPage();
+    void setRules (Setting *, QList<int>, QStringList);
+    void loadSettings ();
+    void addRule (QStringList &);
+    void setList (QStringList);
 
   public slots:
     void save ();
+    void addRule ();
+    void deleteRule ();
 
   private:
     Setting *_settings;
-    QSpinBox *_period;
-    ColorButton *_color;
-    QComboBox *_style;
-    QComboBox *_input;
-    QLineEdit *_output;
-    QSpinBox *_z;
+    QTreeWidget *_plist;
+    QList<int> _format;
+    QString _saveKey;
+    QStringList _list;
 };
 
 #endif

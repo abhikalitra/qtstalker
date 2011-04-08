@@ -263,33 +263,64 @@ int INDICATOR::colorSet (Command *command)
     return 1;
   }
 
-  QString name = command->parm("NAME");
-  Curve *line = i->line(name);
-  if (! line)
+  QColor color(command->parm("COLOR"));
+  if (! color.isValid())
   {
-    qDebug() << _plugin << "::colorSet: NAME not found" << name;
+    qDebug() << _plugin << "::colorSet: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
 
-  bool ok;
-  int index = command->parm("INDEX").toInt(&ok);
-  if (! ok)
+  int index = -1;
+  Curve *line = 0;
+  QString name = command->parm("NAME");
+  QStringList tl = name.split(".", QString::SkipEmptyParts);
+  if (tl.count() == 2)
   {
-    qDebug() << _plugin << "::colorSet: invalid INDEX value" << command->parm("INDEX");
-    return 1;
+    line = i->line(tl.at(0));
+    if (! line)
+    {
+      qDebug() << _plugin << "::calculate: invalid NAME" << name;
+      return 1;
+    }
+
+    bool ok;
+    int offset = tl.at(1).toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::calculate: invalid NAME" << name;
+      return 1;
+    }
+
+    int high = 0;
+    int low = 0;
+    line->keyRange(low, high);
+    index = high - offset;
+  }
+  else
+  {
+    line = i->line(name);
+    if (! line)
+    {
+      qDebug() << _plugin << "::colorSet: NAME not found" << name;
+      return 1;
+    }
+  }
+
+  if (index == -1)
+  {
+    bool ok;
+    index = command->parm("INDEX").toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::colorSet: invalid INDEX value" << command->parm("INDEX");
+      return 1;
+    }
   }
 
   CurveBar *bar = line->bar(index);
   if (! bar)
   {
     qDebug() << _plugin << "::colorSet: bar not found at index" << index;
-    return 1;
-  }
-
-  QColor color(command->parm("COLOR"));
-  if (! color.isValid())
-  {
-    qDebug() << _plugin << "::colorSet: invalid COLOR" << command->parm("COLOR");
     return 1;
   }
 
@@ -332,21 +363,51 @@ int INDICATOR::indexDelete (Command *command)
     return 1;
   }
 
-  // verify NAME
-  Curve *line = i->line(command->parm("NAME"));
-  if (! line)
+  int index = -1;
+  Curve *line = 0;
+  QString name = command->parm("NAME");
+  QStringList tl = name.split(".", QString::SkipEmptyParts);
+  if (tl.count() == 2)
   {
-    qDebug() << _plugin << "::indexDelete: NAME not found" << command->parm("NAME");
-    return 1;
+    line = i->line(tl.at(0));
+    if (! line)
+    {
+      qDebug() << _plugin << "::calculate: invalid NAME" << name;
+      return 1;
+    }
+
+    bool ok;
+    int offset = tl.at(1).toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::calculate: invalid NAME" << name;
+      return 1;
+    }
+
+    int high = 0;
+    int low = 0;
+    line->keyRange(low, high);
+    index = high - offset;
+  }
+  else
+  {
+    line = i->line(name);
+    if (! line)
+    {
+      qDebug() << _plugin << "::colorSet: NAME not found" << name;
+      return 1;
+    }
   }
 
-  // verify INDEX
-  bool ok;
-  int index = command->parm("INDEX").toInt(&ok);
-  if (! ok)
+  if (index == -1)
   {
-    qDebug() << _plugin << "::indexDelete: invalid INDEX value" << command->parm("INDEX");
-    return 1;
+    bool ok;
+    index = command->parm("INDEX").toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::colorSet: invalid INDEX value" << command->parm("INDEX");
+      return 1;
+    }
   }
 
   line->deleteBar(index);
@@ -526,68 +587,59 @@ int INDICATOR::valueGet (Command *command)
   }
 
   // verify NAME
-  int offsetFlag = FALSE;
-  int offset = 0;
+  int index = -1;
+  Curve *line = 0;
   QString name = command->parm("NAME");
-  QStringList l = name.split(".", QString::SkipEmptyParts);
-  if (l.count() == 2)
+  QStringList tl = name.split(".", QString::SkipEmptyParts);
+  if (tl.count() == 2)
   {
-    name = l.at(0);
-
-    bool ok;
-    offset = l.at(1).toInt(&ok);
-    if (! ok)
+    line = i->line(tl.at(0));
+    if (! line)
     {
-      qDebug() << _plugin << "::valueGet: invalid NAME" << name;
+      qDebug() << _plugin << "::calculate: invalid NAME" << name;
       return 1;
     }
 
-    offsetFlag = TRUE;
-  }
+    bool ok;
+    int offset = tl.at(1).toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::calculate: invalid NAME" << name;
+      return 1;
+    }
 
-  Curve *line = i->line(name);
-  if (! line)
+    int high = 0;
+    int low = 0;
+    line->keyRange(low, high);
+    index = high - offset;
+  }
+  else
   {
-    qDebug() << _plugin << "::valueGet: NAME not found" << name;
-    return 1;
+    line = i->line(name);
+    if (! line)
+    {
+      qDebug() << _plugin << "::colorSet: NAME not found" << name;
+      return 1;
+    }
   }
 
-  // verify INDEX
-  int index = 0;
-  if (! offsetFlag)
+  if (index == -1)
   {
     bool ok;
     index = command->parm("INDEX").toInt(&ok);
     if (! ok)
     {
-      qDebug() << _plugin << "::valueGet: invalid INDEX value" << command->parm("INDEX");
+      qDebug() << _plugin << "::colorSet: invalid INDEX value" << command->parm("INDEX");
       return 1;
     }
   }
 
   // get bar
-  CurveBar *bar = 0;
-  if (offsetFlag)
+  CurveBar *bar = line->bar(index);
+  if (! bar)
   {
-    int high = 0;
-    int low = 0;
-    line->keyRange(low, high);
-
-    bar = line->bar(high - offset);
-    if (! bar)
-    {
-      qDebug() << _plugin << "::valueGet: bar not found at offset" << high - offset;
-      return 1;
-    }
-  }
-  else
-  {
-    bar = line->bar(index);
-    if (! bar)
-    {
-      qDebug() << _plugin << "::valueGet: bar not found at index" << index;
-      return 1;
-    }
+    qDebug() << _plugin << "::valueGet: bar not found at index" << index;
+    return 1;
   }
 
   QString s;
@@ -621,22 +673,7 @@ int INDICATOR::valueSet (Command *command)
     return 1;
   }
 
-  QString name = command->parm("NAME");
-  Curve *line = i->line(name);
-  if (! line)
-  {
-    qDebug() << _plugin << "::valueSet: NAME not found" << name;
-    return 1;
-  }
-
   bool ok;
-  int index = command->parm("INDEX").toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _plugin << "::valueSet: invalid INDEX value" << command->parm("INDEX");
-    return 1;
-  }
-
   double value = command->parm("VALUE").toDouble(&ok);
   if (! ok)
   {
@@ -647,6 +684,53 @@ int INDICATOR::valueSet (Command *command)
   QColor color(command->parm("COLOR"));
   if (! color.isValid())
     color = QColor(Qt::red);
+
+  int index = -1;
+  Curve *line = 0;
+  QString name = command->parm("NAME");
+  QStringList tl = name.split(".", QString::SkipEmptyParts);
+  if (tl.count() == 2)
+  {
+    line = i->line(tl.at(0));
+    if (! line)
+    {
+      qDebug() << _plugin << "::calculate: invalid NAME" << name;
+      return 1;
+    }
+
+    bool ok;
+    int offset = tl.at(1).toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::calculate: invalid NAME" << name;
+      return 1;
+    }
+
+    int high = 0;
+    int low = 0;
+    line->keyRange(low, high);
+    index = high - offset;
+  }
+  else
+  {
+    line = i->line(name);
+    if (! line)
+    {
+      qDebug() << _plugin << "::colorSet: NAME not found" << name;
+      return 1;
+    }
+  }
+
+  if (index == -1)
+  {
+    bool ok;
+    index = command->parm("INDEX").toInt(&ok);
+    if (! ok)
+    {
+      qDebug() << _plugin << "::colorSet: invalid INDEX value" << command->parm("INDEX");
+      return 1;
+    }
+  }
 
   line->setBar(index, new CurveBar(color, value));
 

@@ -1203,3 +1203,15 @@
            personal scripts with the METHOD parm.
 
            Added COLOR plugin.
+
+20110408:  Added COMPARE plugin.
+
+           Changed some of the plugin dialogs to handle multiple calculations to reduce the amount of function
+           tabs when building indicators.
+
+           Removed VOL plugin. Redundant.
+
+           Merged WILDER_MA plugin with MA plugin.
+
+           Modified certain plugins to handle the NAME.X index format.
+

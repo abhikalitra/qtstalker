@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "MINDialog.h"
+#include "RuleWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -40,70 +40,91 @@ MIN::MIN ()
 
 int MIN::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int period = settings->getInt("PERIOD");
-
-  int delFlag = FALSE;
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  int rows = settings->getInt("ROWS");
+  int loop = 0;
+  for (; loop < rows; loop++)
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
+    int col = 0;
+    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    QString name = settings->data(key);
+    Curve *line = i->line(name);
+    if (line)
     {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      qDebug() << _plugin << "::calculate: duplicate output" << name;
       return 1;
     }
 
-    delFlag++;
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    Curve *in = i->line(settings->data(key));
+    if (! in)
+    {
+      InputType it;
+      in = it.input(bd, settings->data(key));
+      if (! in)
+      {
+        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
+        return 1;
+      }
+
+      in->setZ(-1);
+      in->setLabel(settings->data(key));
+      i->setLine(settings->data(key), in);
+    }
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    int period = settings->getInt(key);
+
+    TA_Real input[in->count()];
+    TA_Real out[in->count()];
+    TA_Integer outBeg;
+    TA_Integer outNb;
+
+    QList<int> keys;
+    in->keys(keys);
+
+    int loop2 = 0;
+    for (; loop2 < keys.count(); loop2++)
+    {
+      CurveBar *bar = in->bar(keys.at(loop2));
+      input[loop2] = (TA_Real) bar->data();
+    }
+
+    TA_RetCode rc = TA_MIN(0,
+                           keys.count() - 1,
+                           &input[0],
+                           period,
+                           &outBeg,
+                           &outNb,
+                           &out[0]);
+    if (rc != TA_SUCCESS)
+    {
+      qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+      return 1;
+    }
+
+    line = new Curve;
+
+    int keyLoop = keys.count() - 1;
+    int outLoop = outNb - 1;
+    while (keyLoop > -1 && outLoop > -1)
+    {
+      line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+      keyLoop--;
+      outLoop--;
+    }
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    line->setAllColor(QColor(settings->data(key)));
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    line->setType(settings->data(key));
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    line->setZ(settings->getInt(key));
+
+    line->setLabel(name);
+    i->setLine(name, line);
   }
-
-  TA_Real input[in->count()];
-  TA_Real out[in->count()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  if (delFlag)
-    delete in;
-  
-  TA_RetCode rc = TA_MIN(0,
-                         keys.count() - 1,
-                         &input[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
-    return 1;
-  }
-
-  Curve *line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
-  }
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
 
   return 0;
 }
@@ -197,19 +218,22 @@ int MIN::command (Command *command)
 
 QWidget * MIN::dialog (QWidget *p, Setting *set)
 {
-  return new MINDialog(p, set);
+  QStringList header;
+  header << tr("Output") << tr("Input") << tr("Period") << tr("Color") << tr("Style") << tr("Plot");
+
+  QList<int> format;
+  format << RuleWidget::_OUTPUT << RuleWidget::_INPUT << RuleWidget::_INTEGER;
+  format << RuleWidget::_COLOR << RuleWidget::_STYLE << RuleWidget::_PLOT;
+
+  RuleWidget *w = new RuleWidget(p, _plugin);
+  w->setRules(set, format, header);
+  w->loadSettings();
+  return w;
 }
 
 void MIN::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("red"));
-  set->setData("LABEL", _plugin);
-  set->setData("STYLE", QString("HistogramBar"));
-  set->setData("PERIOD", 20);
-  set->setData("INPUT", QString("Close"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

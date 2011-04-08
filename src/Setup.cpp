@@ -245,6 +245,8 @@ void Setup::scanPlugins ()
     }
     else if (plug->type() == "CURVE")
       cl << s;
+
+    delete plug;
   }
 
   settings.setValue("indicator_plugins", il);

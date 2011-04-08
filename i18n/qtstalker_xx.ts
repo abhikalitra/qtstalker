@@ -2,33 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>ADDDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ADDialog</name>
     <message>
         <source>Color</source>
@@ -78,6 +51,68 @@
     </message>
     <message>
         <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ARITHMETIC</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ARITHMETICDialog</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -405,6 +440,21 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>CANDLE_PATTERN</name>
+    <message>
+        <source>Pattern</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Penetration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CCIDialog</name>
     <message>
         <source>Color</source>
@@ -463,6 +513,83 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>COLOR</name>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>COLORDialog</name>
+    <message>
+        <source>Add Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>COMPARE</name>
+    <message>
+        <source>Input 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Operator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 3</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -751,17 +878,13 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>DIVDialog</name>
+    <name>DOHLCVI</name>
     <message>
         <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -773,7 +896,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1265,6 +1388,37 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>MA</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MACDDialog</name>
     <message>
         <source>Input</source>
@@ -1575,33 +1729,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>MULTDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>NEW_DIALOG</name>
     <message>
         <source>New item name</source>
@@ -1664,23 +1791,19 @@ eg. perl -l -T</source>
 <context>
     <name>OHLCDialog</name>
     <message>
-        <source>Up Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Neutral Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Plot Order</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2170,6 +2293,17 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>RuleWidget</name>
+    <message>
+        <source>Add Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SARDialog</name>
     <message>
         <source>Color</source>
@@ -2355,33 +2489,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SUBDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

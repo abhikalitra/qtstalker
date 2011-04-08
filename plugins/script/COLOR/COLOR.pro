@@ -3,7 +3,5 @@
 }
 
 HEADERS += COLOR.h
-HEADERS += COLORDialog.h
 
 SOURCES += COLOR.cpp
-SOURCES += COLORDialog.cpp

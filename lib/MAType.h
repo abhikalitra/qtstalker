@@ -37,7 +37,8 @@ class MAType
       _DEMA,
       _TEMA,
       _TRIMA,
-      _KAMA
+      _KAMA,
+      _WILDER
     };
     
     MAType ();

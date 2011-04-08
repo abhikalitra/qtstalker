@@ -44,9 +44,7 @@ class OHLCDialog : public QWidget
   private:
     QStringList _styleList;
     Setting *_settings;
-    ColorButton *_upColor;
-    ColorButton *_downColor;
-    ColorButton *_neutralColor;
+    ColorButton *_color;
     QComboBox *_style;
     QSpinBox *_z;
     QLineEdit *_output;

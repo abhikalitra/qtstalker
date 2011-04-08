@@ -100,7 +100,7 @@ void BBANDSDialog::createUpperPage ()
   w->setLayout(form);
 
   // output
-  _upOutput = new QLineEdit(_settings->data("OUTPUT_UPPER"));
+  _upOutput = new QLineEdit(_settings->data("OUTPUT_UP"));
   form->addRow(tr("Output"), _upOutput);
 
   // color

@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "InputType.h"
-#include "NORMALIZEDialog.h"
+#include "RuleWidget.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -36,44 +36,66 @@ NORMALIZE::NORMALIZE ()
 
 int NORMALIZE::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int delFlag = FALSE;
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  int rows = settings->getInt("ROWS");
+  int loop = 0;
+  for (; loop < rows; loop++)
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
+    // output
+    int col = 0;
+    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    QString name = settings->data(key);
+
+    Curve *line = i->line(name);
+    if (line)
     {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
+      qDebug() << _plugin << "::calculate: duplicate OUTPUT" << name;
       return 1;
     }
 
-    delFlag++;
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    Curve *in = i->line(settings->data(key));
+    if (! in)
+    {
+      InputType it;
+      in = it.input(bd, settings->data(key));
+      if (! in)
+      {
+        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
+        return 1;
+      }
+
+      in->setZ(-1);
+      in->setLabel(settings->data(key));
+      i->setLine(settings->data(key), in);
+    }
+
+    line = new Curve;
+    double max = 0;
+    double min = 0;
+    QList<int> keys;
+    in->keys(keys);
+    in->highLowRange(keys.at(0), keys.count() - 1, max, min);
+    double range = fabs(max) + fabs(min);
+    int loop2 = 0;
+    for (; loop2 < keys.count(); loop2++)
+    {
+      CurveBar *bar = in->bar(keys.at(loop2));
+      line->setBar(keys.at(loop2), new CurveBar(((bar->data() - min) / range) * 100));
+    }
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    in->setAllColor(QColor(settings->data(key)));
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    in->setType(settings->data(key));
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    in->setZ(settings->getInt(key));
+
+    in->setLabel(name);
+    i->setLine(name, in);
   }
-
-  Curve *line = new Curve;
-  double max = 0;
-  double min = 0;
-  QList<int> keys;
-  in->keys(keys);
-  in->highLowRange(keys.at(0), keys.count() - 1, max, min);
-  double range = fabs(max) + fabs(min);
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    line->setBar(keys.at(loop), new CurveBar(((bar->data() - min) / range) * 100));
-  }
-
-  if (delFlag)
-    delete in;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
+  
   return 0;
 }
 
@@ -135,18 +157,22 @@ int NORMALIZE::command (Command *command)
 
 QWidget * NORMALIZE::dialog (QWidget *p, Setting *set)
 {
-  return new NORMALIZEDialog(p, set);
+  QStringList header;
+  header << tr("Output") << tr("Input") << tr("Color") << tr("Style") << tr("Plot");
+
+  QList<int> format;
+  format << RuleWidget::_OUTPUT << RuleWidget::_INPUT << RuleWidget::_COLOR;
+  format << RuleWidget::_STYLE << RuleWidget::_PLOT;
+
+  RuleWidget *w = new RuleWidget(p, _plugin);
+  w->setRules(set, format, header);
+  w->loadSettings();
+  return w;
 }
 
 void NORMALIZE::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("yellow"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("TYPE", QString("EMA"));
-  set->setData("INPUT", QString("Close"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
 }
 
 //*************************************************************

@@ -3,7 +3,5 @@
 } 
 
 HEADERS += DOHLCVI.h
-HEADERS += DOHLCVIDialog.h
 
 SOURCES += DOHLCVI.cpp
-SOURCES += DOHLCVIDialog.cpp

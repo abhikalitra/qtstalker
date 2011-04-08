@@ -3,7 +3,5 @@
 } 
 
 HEADERS += MIN.h
-HEADERS += MINDialog.h
 
 SOURCES += MIN.cpp
-SOURCES += MINDialog.cpp
