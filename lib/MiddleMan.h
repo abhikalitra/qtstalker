@@ -43,7 +43,7 @@ class MiddleMan: public QObject
     void signalCrosshairsColor (QColor);
     void signalCrosshairs (bool);
     void signalIndicatorNew (QString);
-    void signalIndicatorDelete (QStringList);
+    void signalIndicatorDelete (int, QStringList);
     void signalScriptRun (QString);
     void signalPlotTabPosition (int);
     void signalPlotUpdate (QString);
@@ -64,7 +64,7 @@ class MiddleMan: public QObject
     void crosshairsColor (QColor);
     void crosshairs (int);
     void indicatorNew (QString);
-    void indicatorDelete (QStringList);
+    void indicatorDelete (int, QStringList);
     void scriptRun (QString);
     void plotTabPosition (int);
     void plotUpdate (QString);

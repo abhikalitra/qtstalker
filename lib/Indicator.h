@@ -63,7 +63,8 @@ class Indicator : public QObject
     int chartObjectCount ();
     int lineCount ();
     IndicatorSettings * settings ();
-    void remove (QStringList);
+    void remove (int, QStringList);
+    void add (QString);
 
   public slots:
     int save ();

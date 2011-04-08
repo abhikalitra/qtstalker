@@ -33,7 +33,7 @@ INDICATOR::INDICATOR ()
   
   _method << "CLEAR" << "PLOT" << "PLOT_ALL" << "COLOR_ALL";
   _method << "COLOR_SET" << "DELETE" << "INDEX_DELETE";
-  _method << "INDEX_RANGE" << "INDEX_SHIFT" << "NEW" << "STYLE" << "VALUE_GET";
+  _method << "INDEX_RANGE" << "NEW" << "STYLE" << "VALUE_GET";
   _method << "VALUE_SET" << "RUN";
 }
 
@@ -67,21 +67,18 @@ int INDICATOR::command (Command *command)
       rc = indexRange(command);
       break;
     case 8:
-      rc = indexShift(command);
-      break;
-    case 9:
       rc = create(command);
       break;
-    case 10:
+    case 9:
       rc = style(command);
       break;
-    case 11:
+    case 10:
       rc = valueGet(command);
       break;
-    case 12:
+    case 11:
       rc = valueSet(command);
       break;
-    case 13:
+    case 12:
       rc = run(command);
       break;
     default:
@@ -443,66 +440,6 @@ int INDICATOR::indexRange (Command *command)
 
   command->setReturnData(_plugin + "_RANGE_START", QString::number(start));
   command->setReturnData(_plugin + "_RANGE_END", QString::number(end));
-
-  command->setReturnCode("0");
-
-  return 0;
-}
-
-int INDICATOR::indexShift (Command *command)
-{
-  // PARMS:
-  // NAME
-  // INPUT
-  // PERIOD
-
-  Indicator *i = command->indicator();
-  if (! i)
-  {
-    qDebug() << _plugin << "::indexShift: no indicator";
-    return 1;
-  }
-
-  QString name = command->parm("NAME");
-  Curve *line = i->line(name);
-  if (line)
-  {
-    qDebug() << _plugin << "::indexShift: duplicate name" << name;
-    return 1;
-  }
-
-  Curve *in = i->line(command->parm("INPUT"));
-  if (! in)
-  {
-    qDebug() << _plugin << "::indexShift: INPUT missing" << command->parm("INPUT");
-    return 1;
-  }
-
-  bool ok;
-  int period = command->parm("PERIOD").toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _plugin << "::indexShift: invalid PERIOD" << command->parm("PERIOD");
-    return 1;
-  }
-
-  int high = 0;
-  int low = 0;
-  in->keyRange(low, high);
-
-  line = new Curve;
-  int loop = low;
-  for (; loop <= high; loop++)
-  {
-    CurveBar *bar = in->bar(loop);
-    if (! bar)
-      continue;
-
-    line->setBar(loop + period, new CurveBar(bar->data()));
-  }
-
-  line->setLabel(name);
-  i->setLine(name, line);
 
   command->setReturnCode("0");
 

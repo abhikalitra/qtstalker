@@ -58,7 +58,7 @@ int PLOT::remove (Command *command)
 
   QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
 
-  g_middleMan->indicatorDelete(l);
+  g_middleMan->indicatorDelete(1, l);
 
   command->setReturnCode("0");
 

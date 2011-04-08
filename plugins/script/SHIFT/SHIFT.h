@@ -19,36 +19,21 @@
  *  USA.
  */
 
-#ifndef PLUGIN_INDICATOR_HPP
-#define PLUGIN_INDICATOR_HPP
-
-#include <QStringList>
+#ifndef PLUGIN_SHIFT_HPP
+#define PLUGIN_SHIFT_HPP
 
 #include "Plugin.h"
 
-class INDICATOR : public Plugin
+class SHIFT : public Plugin
 {
   Q_OBJECT
 
   public:
-    INDICATOR ();
+    SHIFT ();
     int command (Command *);
-    int clear (Command *);
-    int plot (Command *);
-    int plotAll (Command *);
-    int colorAll (Command *);
-    int colorSet (Command *);
-    int remove (Command *);
-    int indexDelete (Command *);
-    int indexRange (Command *);
-    int create (Command *);
-    int style (Command *);
-    int valueGet (Command *);
-    int valueSet (Command *);
-    int run (Command *);
-
-  private:
-    QStringList _method;
+    int calculate (BarData *, Indicator *, Setting *);
+    void defaults (Setting *);
+    QWidget * dialog (QWidget *, Setting *);
 };
 
 extern "C"

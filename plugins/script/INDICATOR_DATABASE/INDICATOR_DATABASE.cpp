@@ -57,7 +57,7 @@ int INDICATOR_DATABASE::remove (Command *command)
   QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
 
   Indicator i;
-  i.remove(l);
+  i.remove(1, l);
     
   command->setReturnCode("0");
   

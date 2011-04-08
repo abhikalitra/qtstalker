@@ -275,21 +275,36 @@ void Indicator::dialogDone ()
   calculate();
 }
 
-void Indicator::remove (QStringList l)
+void Indicator::remove (int delFlag, QStringList l)
 {
   QSettings set(g_localSettings);
   QStringList tl = set.value("indicators").toStringList();
-  
-  DataDataBase db("indicators");
-  db.transaction();
+
   int loop = 0;
   for (; loop < l.count(); loop++)
-  {
-    db.removeName(l.at(loop));
     tl.removeAll(l.at(loop));
-  }
-  db.commit();
-
   set.setValue("indicators", tl);
   set.sync();
+
+  if (delFlag)
+  {
+    DataDataBase db("indicators");
+    db.transaction();
+    loop = 0;
+    for (; loop < l.count(); loop++)
+      db.removeName(l.at(loop));
+    db.commit();
+  }
+}
+
+void Indicator::add (QString d)
+{
+  QSettings set(g_localSettings);
+  QStringList l = set.value("indicators").toStringList();
+  l.append(d);
+  l.removeDuplicates();
+  set.setValue("indicators", l);
+  set.sync();
+
+  g_middleMan->indicatorNew(d);
 }

@@ -116,7 +116,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # CHIKOU SPAN
 
-$command = "PLUGIN=INDICATOR,METHOD=INDEX_SHIFT,NAME=$csName,INPUT=$closeName,PERIOD=$csPeriod";
+$command = "PLUGIN=SHIFT,NAME=$csName,INPUT=$closeName,PERIOD=$csPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -130,7 +130,7 @@ $command = "PLUGIN=MEDIAN_PRICE,NAME=tssa,INPUT=$tsName,INPUT2=$ksName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=INDEX_SHIFT,NAME=$ssaName,INPUT=tssa,PERIOD=$ssaPeriod";
+$command = "PLUGIN=SHIFT,NAME=$ssaName,INPUT=tssa,PERIOD=$ssaPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
@@ -152,7 +152,7 @@ $command = "PLUGIN=MEDIAN_PRICE,NAME=tssb,INPUT=$ssbHighName,INPUT2=$ssbLowName"
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=INDEX_SHIFT,NAME=$ssbName,INPUT=tssb,PERIOD=$ssbShift";
+$command = "PLUGIN=SHIFT,NAME=$ssbName,INPUT=tssb,PERIOD=$ssbShift";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

@@ -1215,3 +1215,8 @@
 
            Modified certain plugins to handle the NAME.X index format.
 
+           Added add indicator and remove indicator options to the chart context menu. These allow indicators
+           to be turned on/off without removing permanantly from the database.
+
+           Added SHIFT plugin.
+

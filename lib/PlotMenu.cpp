@@ -24,6 +24,7 @@
 #include "ConfirmDialog.h"
 #include "IndicatorEditDialog.h"
 #include "DataDataBase.h"
+#include "Indicator.h"
 
 #include "../pics/loggrid.xpm"
 #include "../pics/date.xpm"
@@ -38,9 +39,11 @@
 #include "../pics/edit.xpm"
 #include "../pics/lock.xpm"
 #include "../pics/indicator.xpm"
+#include "../pics/add.xpm"
 
 #include <QtDebug>
 #include <QSettings>
+#include <QInputDialog>
 
 PlotMenu::PlotMenu (QWidget *p) : QMenu (p)
 {
@@ -125,8 +128,8 @@ void PlotMenu::createActions ()
   // delete indicator
   a = new QAction(QIcon(delete_xpm), tr("&Delete Indicator(s)") + "...", this);
   a->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
-  a->setToolTip(tr("Delete Indicator(s)") + "...");
-  a->setStatusTip(tr("Delete Indicator(s)") + "...");
+  a->setToolTip(tr("Permanantly Delete Indicator") + "...");
+  a->setStatusTip(tr("Permanantly Delete Indicator") + "...");
   _actions.insert(_DELETE_INDICATOR, a);
   connect(a, SIGNAL(triggered(bool)), this, SLOT(deleteIndicator()));
 
@@ -162,6 +165,20 @@ void PlotMenu::createActions ()
   a->setChecked(FALSE);
   _actions.insert(_LOCK, a);
   connect(a, SIGNAL(triggered(bool)), this, SIGNAL(signalLockStatus(bool)));
+
+  // add indicator
+  a = new QAction(QIcon(add_xpm), tr("&Add Indicator") + "...", this);
+  a->setToolTip(tr("Add Indicator") + "...");
+  a->setStatusTip(tr("Add Indicator") + "...");
+  _actions.insert(_ADD_INDICATOR, a);
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(addIndicator()));
+
+  // remove indicator
+  a = new QAction(QIcon(delete_xpm), tr("&Remove Indicator") + "...", this);
+  a->setToolTip(tr("Remove Indicator") + "...");
+  a->setStatusTip(tr("Remove Indicator") + "...");
+  _actions.insert(_REMOVE_INDICATOR, a);
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(removeIndicator()));
 }
 
 void PlotMenu::createMenus ()
@@ -180,7 +197,9 @@ void PlotMenu::createMenus ()
 
   // create the main menu
   addAction(_actions.value(_NEW_INDICATOR));
+  addAction(_actions.value(_ADD_INDICATOR));
   addAction(_actions.value(_EDIT_INDICATOR));
+  addAction(_actions.value(_REMOVE_INDICATOR));
   addAction(_actions.value(_DELETE_INDICATOR));
   addSeparator ();
   addMenu(_coListMenu);
@@ -201,7 +220,7 @@ void PlotMenu::deleteIndicator ()
 {
   QStringList l;
   l << _indicator;
-  emit signalDeleteIndicator(l);
+  emit signalDeleteIndicator(1, l);
 }
 
 void PlotMenu::deleteAllChartObjects ()
@@ -266,4 +285,37 @@ void PlotMenu::newIndicator ()
 {
   IndicatorEditDialog *dialog = new IndicatorEditDialog(this, 0);
   dialog->show();
+}
+
+void PlotMenu::addIndicator ()
+{
+  QSettings set(g_localSettings);
+  QStringList l = set.value("indicators").toStringList();
+
+  QStringList l2;
+  DataDataBase db("indicators");
+  db.names(l2);
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    l2.removeAll(l.at(loop));
+
+  QInputDialog *dialog = new QInputDialog(this);
+  dialog->setComboBoxItems(l2);
+  dialog->setLabelText(tr("Select indicator"));
+  connect(dialog, SIGNAL(textValueSelected(const QString &)), this, SLOT(addIndicator2(QString)));
+  dialog->show();
+}
+
+void PlotMenu::addIndicator2 (QString d)
+{
+  Indicator i;
+  i.add(d);
+}
+
+void PlotMenu::removeIndicator ()
+{
+  QStringList l;
+  l << _indicator;
+  emit signalDeleteIndicator(0, l);
 }

@@ -23,6 +23,8 @@
 #include "Globals.h"
 
 #include <QtDebug>
+#include <QFile>
+#include <QTextStream>
 
 DataDataBase::DataDataBase (QString table)
 {
@@ -253,6 +255,85 @@ int DataDataBase::search (QString key, QString data, QStringList &names)
 
   while (q.next())
     names << q.value(0).toString();
+
+  return 0;
+}
+
+int DataDataBase::dump (QString file)
+{
+  QFile f(file);
+  if (! f.open(QIODevice::WriteOnly | QIODevice::Text))
+    return 1;
+  QTextStream out(&f);
+  
+  QSqlQuery q(_db);
+  QString s = "SELECT name,key,data FROM " + _table;
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataDataBase::dump: " << q.lastError().text();
+    return 1;
+  }
+
+  while (q.next())
+    out << q.value(0).toString() << "," << q.value(1).toString() << "," << q.value(2).toString();
+
+  return 0;
+}
+
+int DataDataBase::import (QString file)
+{
+  QFile f(file);
+  if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
+    return 1;
+  QTextStream in(&f);
+
+  transaction();
+
+  QSqlQuery q(_db);
+
+  QString s = "DROP TABLE " + _table;
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataDataBase::import:" << q.lastError().text();
+    return 1;
+  }
+
+  // create the new table
+  s = "CREATE TABLE IF NOT EXISTS " + _table + " (";
+  s.append("a INT PRIMARY KEY");
+  s.append(", name TEXT");
+  s.append(", key TEXT");
+  s.append(", data TEXT");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataDataBase::import:" << q.lastError().text();
+    return 1;
+  }
+
+  // add records to the table
+  while (! in.atEnd())
+  {
+    s = in.readLine();
+    QStringList l = s.split(",", QString::SkipEmptyParts);
+    if (l.count() != 3)
+      continue;
+    
+    int pos = 0;
+    s = "INSERT OR REPLACE INTO " + _table + " VALUES (";
+    s.append("NULL"); // auto increment
+    s.append(",'" + l.at(pos++) + "'");
+    s.append(",'" + l.at(pos++) + "'");
+    s.append(",'" + l.at(pos++) + "'");
+    s.append(")");
+    if (q.lastError().isValid())
+      qDebug() << "DataDataBase::import:" << q.lastError().text();
+  }
+
+  commit();
 
   return 0;
 }

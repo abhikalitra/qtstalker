@@ -186,6 +186,7 @@ SUBDIRS += plugins/script/SCRIPT_RETURN_DATA
 SUBDIRS += plugins/script/SELECT_DIALOG
 SUBDIRS += plugins/script/SELL
 SUBDIRS += plugins/script/SETTINGS
+SUBDIRS += plugins/script/SHIFT
 SUBDIRS += plugins/script/STDDEV
 SUBDIRS += plugins/script/STOCH_FAST
 SUBDIRS += plugins/script/STOCH_RSI

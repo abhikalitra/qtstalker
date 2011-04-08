@@ -72,9 +72,9 @@ void MiddleMan::indicatorNew (QString d)
   emit signalIndicatorNew(d);
 }
 
-void MiddleMan::indicatorDelete (QStringList d)
+void MiddleMan::indicatorDelete (int flag, QStringList d)
 {
-  emit signalIndicatorDelete(d);
+  emit signalIndicatorDelete(flag, d);
 }
 
 void MiddleMan::scriptRun (QString d)

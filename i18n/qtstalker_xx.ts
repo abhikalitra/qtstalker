@@ -98,37 +98,6 @@
     </message>
 </context>
 <context>
-    <name>ARITHMETICDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>AROONDialog</name>
     <message>
         <source>Period</source>
@@ -540,37 +509,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>COLORDialog</name>
-    <message>
-        <source>Add Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Operator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>COMPARE</name>
     <message>
         <source>Input 1</source>
@@ -649,37 +587,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CandlePatternDialog</name>
-    <message>
-        <source>Penetration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -897,29 +804,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>DOHLCVIDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1571,7 +1455,7 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>MAXDialog</name>
+    <name>MAX</name>
     <message>
         <source>Output</source>
         <translation type="unfinished"></translation>
@@ -1593,7 +1477,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1621,13 +1505,13 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>MEDIAN_PRICEDialog</name>
+    <name>MEDIAN_PRICE</name>
     <message>
         <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input</source>
+        <source>Input 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1643,7 +1527,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1675,7 +1559,7 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>MINDialog</name>
+    <name>MIN</name>
     <message>
         <source>Output</source>
         <translation type="unfinished"></translation>
@@ -1697,7 +1581,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1740,7 +1624,7 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>NORMALIZEDialog</name>
+    <name>NORMALIZE</name>
     <message>
         <source>Output</source>
         <translation type="unfinished"></translation>
@@ -1758,7 +1642,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1916,10 +1800,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete Indicator(s)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Toggle Date Axis</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1989,6 +1869,30 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Confirm all chart objects delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Permanantly Delete Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Add Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Remove Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3512,55 +3416,9 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>VOLDialog</name>
-    <message>
-        <source>Up Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Neutral Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>WEIGHTED_CLOSEDialog</name>
     <message>
         <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>WILDER_MADialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

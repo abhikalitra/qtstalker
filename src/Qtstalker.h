@@ -60,7 +60,7 @@ class QtstalkerApp : public QMainWindow
     void commandLineAsset ();
     void addNewPlot (QString);
     void addNewPlot2 ();
-    void deletePlot (QStringList);
+    void deletePlot (int, QStringList);
     void setPlotTabPosition (int);
     void fixDockTabs ();
     void updatePlot (QString);

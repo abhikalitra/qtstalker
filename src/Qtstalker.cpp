@@ -95,7 +95,7 @@ void QtstalkerApp::createGUI ()
   setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::East);
   
   connect(g_middleMan, SIGNAL(signalIndicatorNew(QString)), this, SLOT(addNewPlot(QString)));
-  connect(g_middleMan, SIGNAL(signalIndicatorDelete(QStringList)), this, SLOT(deletePlot(QStringList)));
+  connect(g_middleMan, SIGNAL(signalIndicatorDelete(int, QStringList)), this, SLOT(deletePlot(int, QStringList)));
   connect(g_middleMan, SIGNAL(signalPlotTabPosition(int)), this, SLOT(setPlotTabPosition(int)));
   connect(g_middleMan, SIGNAL(signalPlotUpdate(QString)), this, SLOT(updatePlot(QString)));
   connect(g_middleMan, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
@@ -347,7 +347,7 @@ void QtstalkerApp::addPlot (QString indicator)
 //  connect(this, SIGNAL(signalShutDown()), plot, SLOT(clear()));
   connect(this, SIGNAL(signalPlot()), plot->indicator(), SLOT(calculate()));
   connect(plot, SIGNAL(signalIndex(int)), _controlPanel, SLOT(setStartValue(int)));
-  connect(plot->plotMenu(), SIGNAL(signalDeleteIndicator(QStringList)), this, SLOT(deletePlot(QStringList)));
+  connect(plot->plotMenu(), SIGNAL(signalDeleteIndicator(int, QStringList)), this, SLOT(deletePlot(int, QStringList)));
   
   connect(g_middleMan, SIGNAL(signalPlotBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
   connect(g_middleMan, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
@@ -377,10 +377,10 @@ void QtstalkerApp::addNewPlot2 ()
   p->setStartIndex(_controlPanel->getValue());
 }
 
-void QtstalkerApp::deletePlot (QStringList l)
+void QtstalkerApp::deletePlot (int flag, QStringList l)
 {
   Indicator i;
-  i.remove(l);
+  i.remove(flag, l);
   
   int loop = 0;
   for (; loop < l.count(); loop++)
