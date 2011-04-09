@@ -42,7 +42,6 @@
 #include "QuoteDataBase.h"
 #include "InfoPanel.h"
 #include "DockWidget.h"
-#include "DataDataBase.h"
 #include "RefreshButton.h"
 #include "RecentCharts.h"
 #include "BarLengthButton.h"
@@ -153,9 +152,8 @@ void QtstalkerApp::createGUI ()
 
   // we have to load the plots before app is shown otherwise
   // dock widgets do not restore properly
-  DataDataBase db("indicators");
-  QStringList l;
-  db.names(l);
+  QSettings set(g_localSettings);
+  QStringList l = set.value("indicators").toStringList();
   int loop = 0;
   for (; loop < l.count(); loop++)
     addPlot(l.at(loop));
