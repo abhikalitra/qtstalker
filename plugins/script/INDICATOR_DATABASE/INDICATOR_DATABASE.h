@@ -35,6 +35,8 @@ class INDICATOR_DATABASE : public Plugin
     int command (Command *);
     int remove (Command *);
     int list (Command *);
+    int dump (Command *);
+    int import (Command *);
 
   private:
     QStringList _method;

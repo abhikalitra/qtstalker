@@ -48,7 +48,9 @@ class DataDataBase
     int removeKey (QString, QString);
     int search (QString key, QString data, QStringList &);
     int dump (QString);
+    int dumpName (QString, QString);
     int import (QString);
+    int importName (QString, QString);
     void transaction ();
     void commit ();
 

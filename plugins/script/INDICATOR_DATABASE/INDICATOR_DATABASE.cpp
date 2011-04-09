@@ -28,7 +28,7 @@
 INDICATOR_DATABASE::INDICATOR_DATABASE ()
 {
   _plugin = "INDICATOR_DATABASE";
-  _method << "DELETE" << "LIST";
+  _method << "DELETE" << "LIST" << "DUMP" << "IMPORT";
 }
 
 int INDICATOR_DATABASE::command (Command *command)
@@ -41,6 +41,12 @@ int INDICATOR_DATABASE::command (Command *command)
       break;
     case 1:
       rc = list(command);
+      break;
+    case 2:
+      rc = dump(command);
+      break;
+    case 3:
+      rc = import(command);
       break;
     default:
       break;
@@ -72,11 +78,61 @@ int INDICATOR_DATABASE::list (Command *command)
   DataDataBase db("indicators");
   if (db.names(l))
   {
-    qDebug() << _plugin << "::command: IndicatorDataBase error";
+    qDebug() << _plugin << "::list: IndicatorDataBase error";
     return 1;
   }
 
   command->setReturnData(_plugin + "_INDICATORS", l.join(";"));
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+int INDICATOR_DATABASE::dump (Command *command)
+{
+  // PARMS:
+  // NAME - semicolon delimited string
+  // DIRECTORY - place to dump indicator files
+
+  QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
+  
+  QString path = command->parm("DIRECTORY");
+  
+  DataDataBase db("indicators");
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QString s = path + "/" + l.at(loop);
+    if (db.dumpName(l.at(loop), s))
+      qDebug() << _plugin << "::dump: IndicatorDataBase error";
+  }
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+int INDICATOR_DATABASE::import (Command *command)
+{
+  // PARMS:
+  // NAME - semicolon delimited string
+
+  QStringList l = command->parm("NAME").split(";", QString::SkipEmptyParts);
+
+  DataDataBase db("indicators");
+  db.transaction();
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QFileInfo fi(l.at(loop));
+    if (db.importName(fi.fileName(), l.at(loop)))
+      qDebug() << _plugin << "::import: IndicatorDataBase error";
+  }
+
+  db.commit();
 
   command->setReturnCode("0");
 

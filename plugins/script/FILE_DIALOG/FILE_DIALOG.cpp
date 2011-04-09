@@ -49,6 +49,21 @@ int FILE_DIALOG::command (Command *command)
   }
   
   QFileDialog *dialog = new QFileDialog(g_parent);
+  
+  switch (_mode)
+  {
+    case 1:
+      dialog->setFileMode(QFileDialog::ExistingFiles);
+      break;
+    case 2:
+      dialog->setFileMode(QFileDialog::Directory);
+      dialog->setOptions(QFileDialog::ShowDirsOnly);
+      break;
+    default:
+      dialog->setFileMode(QFileDialog::ExistingFile);
+      break;
+  }
+  
   dialog->setDirectory(command->parm("DIRECTORY"));
   dialog->setWindowTitle("QtStalker" + g_session + ": " + command->parm("TITLE"));
   connect(dialog, SIGNAL(filesSelected(const QStringList &)), this, SLOT(filesSelected(QStringList)));
@@ -62,10 +77,18 @@ int FILE_DIALOG::command (Command *command)
 
 void FILE_DIALOG::filesSelected (QStringList l)
 {
-  if (_mode)
-    _command->setReturnData(_plugin + "_FILE", l.join(";"));
-  else
-    _command->setReturnData(_plugin + "_FILE", l.at(0));
+  switch (_mode)
+  {
+    case 1:
+      _command->setReturnData(_plugin + "_FILE", l.join(";"));
+      break;
+    case 2:
+      _command->setReturnData(_plugin + "_FILE", l.at(0));
+      break;
+    default:
+      _command->setReturnData(_plugin + "_FILE", l.at(0));
+      break;
+  }
 
   _command->setReturnCode("0");
 

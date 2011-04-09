@@ -276,7 +276,29 @@ int DataDataBase::dump (QString file)
   }
 
   while (q.next())
-    out << q.value(0).toString() << "," << q.value(1).toString() << "," << q.value(2).toString();
+    out << q.value(0).toString() << ";" << q.value(1).toString() << ";" << q.value(2).toString() << "\n";
+
+  return 0;
+}
+
+int DataDataBase::dumpName (QString name, QString file)
+{
+  QFile f(file);
+  if (! f.open(QIODevice::WriteOnly | QIODevice::Text))
+    return 1;
+  QTextStream out(&f);
+
+  QSqlQuery q(_db);
+  QString s = "SELECT name,key,data FROM " + _table + " WHERE name='" + name + "'";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "DataDataBase::dump: " << q.lastError().text();
+    return 1;
+  }
+
+  while (q.next())
+    out << q.value(0).toString() << ";" << q.value(1).toString() << ";" << q.value(2).toString() << "\n";
 
   return 0;
 }
@@ -287,8 +309,6 @@ int DataDataBase::import (QString file)
   if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
     return 1;
   QTextStream in(&f);
-
-  transaction();
 
   QSqlQuery q(_db);
 
@@ -318,7 +338,7 @@ int DataDataBase::import (QString file)
   while (! in.atEnd())
   {
     s = in.readLine();
-    QStringList l = s.split(",", QString::SkipEmptyParts);
+    QStringList l = s.split(";", QString::SkipEmptyParts);
     if (l.count() != 3)
       continue;
     
@@ -329,11 +349,45 @@ int DataDataBase::import (QString file)
     s.append(",'" + l.at(pos++) + "'");
     s.append(",'" + l.at(pos++) + "'");
     s.append(")");
+    q.exec(s);
     if (q.lastError().isValid())
       qDebug() << "DataDataBase::import:" << q.lastError().text();
   }
 
-  commit();
+  return 0;
+}
+
+int DataDataBase::importName (QString name, QString file)
+{
+  QFile f(file);
+  if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
+    return 1;
+  QTextStream in(&f);
+
+  removeName(name);
+
+  QSqlQuery q(_db);
+
+  // add records to the table
+  while (! in.atEnd())
+  {
+    QString s = in.readLine();
+    s = s.trimmed();
+    QStringList l = s.split(";", QString::SkipEmptyParts);
+    if (l.count() != 3)
+      continue;
+
+    int pos = 0;
+    s = "INSERT OR REPLACE INTO " + _table + " VALUES (";
+    s.append("NULL"); // auto increment
+    s.append(",'" + l.at(pos++) + "'");
+    s.append(",'" + l.at(pos++) + "'");
+    s.append(",'" + l.at(pos++) + "'");
+    s.append(")");
+    q.exec(s);
+    if (q.lastError().isValid())
+      qDebug() << "DataDataBase::import:" << q.lastError().text();
+  }
 
   return 0;
 }
