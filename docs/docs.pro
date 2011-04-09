@@ -33,6 +33,7 @@ INSTALLS += i18n
 # install the db update files
 dbUpdate.path = "$${INSTALL_DATA_DIR}/qtstalker/db"
 dbUpdate.files = *.csv
+dbUpdate.files += default_indicators
 INSTALLS += dbUpdate
 
 # install the alert script files

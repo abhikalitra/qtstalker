@@ -3,7 +3,7 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="Content-Type">
-  <title>Qtstalker: X</title>
+  <title>Qtstalker: COMPARE</title>
   <link rel="stylesheet" type="text/css" href="qtstalker.css"
  media="screen">
   <script src="qtstalker.js" type="text/javascript"> </script>
@@ -20,7 +20,7 @@
 </div>
 </div>
 <!-- Content -->
-<h1>X<br>
+<h1>COMPARE
 </h1>
 <br>
 <table style="text-align: left; width: 1336px; height: 153px;"
@@ -28,14 +28,21 @@
   <tbody>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Compares NAME2 and NAME3 using
+OP. If the compare is TRUE, then NAME = NAME4.<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = <br>
+      <td style="vertical-align: top;">PLUGIN = COMPARE<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
+OP = &lt;OPERATOR&gt;<br>
+NAME2 = &lt;VARIABLE NAME&gt;<br>
+NAME3 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
+value<br>
+NAME4 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
+value<br>
       <br>
       </td>
     </tr>
@@ -49,7 +56,9 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=<br>
+      <td style="vertical-align: top;">PLUGIN=COMPARE, NAME=comp,
+NAME2=Close, OP=GT,
+NAME3=Open, NAME4=1<br>
       <br>
       </td>
     </tr>

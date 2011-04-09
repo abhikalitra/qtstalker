@@ -511,10 +511,6 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>COMPARE</name>
     <message>
-        <source>Input 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Operator</source>
         <translation type="unfinished"></translation>
     </message>
@@ -528,6 +524,22 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Input 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1222,6 +1234,18 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Enter new indicator name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply Changes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

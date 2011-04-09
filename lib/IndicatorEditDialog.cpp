@@ -71,47 +71,25 @@ void IndicatorEditDialog::createGUI ()
 
   // add button
   QPushButton *b = _buttonBox->addButton(QString("&Add"), QDialogButtonBox::ActionRole);
+  b->setToolTip(tr("Add Indicator"));
   connect(b, SIGNAL(clicked(bool)), this, SLOT(addIndicator()));
 
   // delete button
   b = _buttonBox->addButton(QString("&Delete"), QDialogButtonBox::ActionRole);
+  b->setToolTip(tr("Delete Indicator"));
   connect(b, SIGNAL(clicked(bool)), this, SLOT(deleteIndicator()));
+
+  // apply button
+  b = _buttonBox->addButton(QString("A&pply"), QDialogButtonBox::ActionRole);
+  b->setToolTip(tr("Apply Changes"));
+  connect(b, SIGNAL(clicked(bool)), this, SLOT(applySave()));
 }
 
 void IndicatorEditDialog::done ()
 {
-  if (_tsettings.data("NAME").isEmpty())
-  {
-    newDialog();
+  if (applySave())
     return;
-  }
-  
-  // each tab finalize their changes to _settings
-  emit signalSave();
-
-  if (_settings == 0)
-    _tsettings.save();
-  else
-  {
-    _settings->clearAll();
-    _tsettings.copy(_settings);
-    _settings->save();
-  }
-  
-  QSettings set(g_localSettings);
-  QStringList l = set.value("indicators").toStringList();
-  l.append(_tsettings.data("NAME"));
-  l.removeDuplicates();
-  set.setValue("indicators", l);
-  set.sync();
-
   saveSettings();
-
-  if (_settings == 0)
-    g_middleMan->indicatorNew(_tsettings.data("NAME"));
-  
-  emit signalDone();
-
   accept();
 }
 
@@ -219,4 +197,35 @@ void IndicatorEditDialog::newDialog2 (QString d)
   QStringList l;
   l << "QtStalker" << g_session << ":" << tr("Indicator") << _tsettings.data("NAME");
   setWindowTitle(l.join(" "));
+}
+
+int IndicatorEditDialog::applySave ()
+{
+  if (_tsettings.data("NAME").isEmpty())
+  {
+    newDialog();
+    return 1;
+  }
+
+  // each tab finalize their changes to _settings
+  emit signalSave();
+
+  if (_settings == 0)
+    _tsettings.save();
+  else
+  {
+    _settings->clearAll();
+    _tsettings.copy(_settings);
+    _settings->save();
+  }
+
+  Indicator i;
+  i.add(_tsettings.data("NAME"));
+
+  if (_settings == 0)
+    g_middleMan->indicatorNew(_tsettings.data("NAME"));
+
+  emit signalDone();
+
+  return 0;
 }

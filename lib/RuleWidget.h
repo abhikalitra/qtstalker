@@ -24,6 +24,7 @@
 
 #include <QTreeWidget>
 #include <QList>
+#include <QToolButton>
 
 #include "Setting.h"
 
@@ -59,6 +60,7 @@ class RuleWidget : public QWidget
     void save ();
     void addRule ();
     void deleteRule ();
+    void selectionChanged ();
 
   private:
     Setting *_settings;
@@ -66,6 +68,7 @@ class RuleWidget : public QWidget
     QList<int> _format;
     QString _saveKey;
     QStringList _list;
+    QToolButton *_deleteButton;
 };
 
 #endif

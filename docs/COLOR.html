@@ -3,7 +3,7 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="Content-Type">
-  <title>Qtstalker: X</title>
+  <title>Qtstalker: COLOR</title>
   <link rel="stylesheet" type="text/css" href="qtstalker.css"
  media="screen">
   <script src="qtstalker.js" type="text/javascript"> </script>
@@ -20,7 +20,7 @@
 </div>
 </div>
 <!-- Content -->
-<h1>X<br>
+<h1>COLOR
 </h1>
 <br>
 <table style="text-align: left; width: 1336px; height: 153px;"
@@ -28,14 +28,19 @@
   <tbody>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
-      <td style="vertical-align: top;"><br>
+      <td style="vertical-align: top;">Compares NAME and NAME2 using
+OP. If the compare is TRUE, then COLOR is applied to NAME3.<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = <br>
+      <td style="vertical-align: top;">PLUGIN = COLOR<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
+OP = &lt;OPERATOR&gt;<br>
+NAME2 = &lt;VARIABLE NAME&gt;<br>
+NAME3 = &lt;VARIABLE NAME&gt;<br>
+COLOR = &lt;COLOR&gt;<br>
       <br>
       </td>
     </tr>
@@ -49,7 +54,8 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=<br>
+      <td style="vertical-align: top;">PLUGIN=COLOR, NAME=close, OP=GT,
+NAME2=close, NAME3=close, COLOR=green<br>
       <br>
       </td>
     </tr>

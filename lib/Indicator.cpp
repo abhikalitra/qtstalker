@@ -305,6 +305,4 @@ void Indicator::add (QString d)
   l.removeDuplicates();
   set.setValue("indicators", l);
   set.sync();
-
-  g_middleMan->indicatorNew(d);
 }

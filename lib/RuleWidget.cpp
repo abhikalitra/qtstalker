@@ -35,7 +35,6 @@
 #include <QStringList>
 #include <QVBoxLayout>
 #include <QToolBar>
-#include <QToolButton>
 #include <QComboBox>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
@@ -64,18 +63,21 @@ void RuleWidget::createGeneralPage ()
   tb->addWidget(b);
 
   // delete button
-  b = new QToolButton;
-  b->setIcon(QIcon(delete_xpm));
-  b->setToolTip(tr("Delete Rule"));
-  connect(b, SIGNAL(clicked(bool)), this, SLOT(deleteRule()));
-  tb->addWidget(b);
+  _deleteButton = new QToolButton;
+  _deleteButton->setIcon(QIcon(delete_xpm));
+  _deleteButton->setToolTip(tr("Delete Rule"));
+  connect(_deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteRule()));
+  tb->addWidget(_deleteButton);
 
   // list
   _plist = new QTreeWidget;
   _plist->setSortingEnabled(TRUE);
   _plist->setRootIsDecorated(FALSE);
   _plist->setSelectionMode(QAbstractItemView::SingleSelection);
+  connect(_plist, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
   vbox->addWidget(_plist);
+
+  selectionChanged();
 }
 
 void RuleWidget::addRule (QStringList &l)
@@ -383,4 +385,13 @@ void RuleWidget::loadSettings ()
 void RuleWidget::setList (QStringList l)
 {
   _list = l;
+}
+
+void RuleWidget::selectionChanged ()
+{
+  bool status = TRUE;
+  QList<QTreeWidgetItem *> l = _plist->selectedItems();
+  if (! l.count())
+    status = FALSE;
+  _deleteButton->setEnabled(status);  
 }

@@ -27,7 +27,7 @@
 CONTROL_PANEL::CONTROL_PANEL ()
 {
   _plugin = "CONTROL_PANEL";
-  _method << "CHART_PANEL" << "GROUP_REFRESH" << "SCRIPT_RUN";
+  _method << "CHART_REFRESH" << "GROUP_REFRESH" << "SCRIPT_RUN";
 }
 
 int CONTROL_PANEL::command (Command *command)

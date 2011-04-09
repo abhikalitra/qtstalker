@@ -28,6 +28,7 @@
 #include "ExchangeDataBase.h"
 #include "PluginFactory.h"
 #include "Script.h"
+#include "DataDataBase.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -128,50 +129,18 @@ void Setup::setupDefaults ()
 
 void Setup::setupDefaultIndicators ()
 {
-  PluginFactory fac;
-  Plugin *plug = fac.plugin("OHLC");
-  if (! plug)
-  {
-    qDebug() << "Setup::setupDefaultIndicators: no OHLC plugin";
-    return;
-  }
-  
-  Indicator i;
-  IndicatorSettings *is = i.settings();
-  Setting *set = new Setting;
-  plug->defaults(set);
-  is->addSettings(set);
-  i.setName("Bars");
-  i.setLock(TRUE);
-  if (i.save())
-  {
-    qDebug() << "Setup::setupDefaultIndicators: IndicatorDataBase saveIndex error";
-    delete plug;
-    return;
-  }
-  delete plug;
-  
-  plug = fac.plugin("VOL");
-  if (! plug)
-  {
-    qDebug() << "Setup::setupDefaultIndicators: no VOL plugin";
-    return;
-  }
+  QSettings set(g_globalSettings);
+  QString s = set.value("db_data_directory").toString();
+  s.append("default_indicators");
 
-  Indicator i2;
-  is = i2.settings();
-  set = new Setting;
-  plug->defaults(set);
-  is->addSettings(set);
-  i2.setName("VOL");
-  i2.setLock(TRUE);
-  if (i2.save())
-  {
-    qDebug() << "Setup::setupDefaultIndicators: IndicatorDataBase saveIndex error";
-    delete plug;
-    return;
-  }
-  delete plug;
+  DataDataBase db("indicators");
+  db.transaction();
+  db.import(s);
+  db.commit();
+
+  Indicator i;
+  i.add("OHLC");
+  i.add("VOL");
 }
 
 void Setup::setupDefaultScripts ()

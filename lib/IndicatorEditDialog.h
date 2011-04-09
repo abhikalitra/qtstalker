@@ -48,6 +48,7 @@ class IndicatorEditDialog : public Dialog
     void addIndicator2 (QString);
     void deleteIndicator ();
     void newDialog2 (QString);
+    int  applySave ();
 
   private:
     QTabWidget *_tabs;
