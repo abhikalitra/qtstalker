@@ -300,6 +300,9 @@ void PlotMenu::addIndicator ()
   for (; loop < l.count(); loop++)
     l2.removeAll(l.at(loop));
 
+  if (! l2.count())
+    return;
+
   QInputDialog *dialog = new QInputDialog(this);
   dialog->setComboBoxItems(l2);
   dialog->setLabelText(tr("Select indicator"));

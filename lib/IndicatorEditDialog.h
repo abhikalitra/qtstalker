@@ -37,6 +37,13 @@ class IndicatorEditDialog : public Dialog
     void signalSave ();
 
   public:
+    enum Status
+    {
+      _NONE,
+      _DONE,
+      _APPLY
+    };
+    
     IndicatorEditDialog (QWidget *, IndicatorSettings *);
     void createGUI ();
     void addTab (Setting *);
@@ -48,12 +55,15 @@ class IndicatorEditDialog : public Dialog
     void addIndicator2 (QString);
     void deleteIndicator ();
     void newDialog2 (QString);
+    void  apply ();
     int  applySave ();
 
   private:
     QTabWidget *_tabs;
     IndicatorSettings *_settings;
     IndicatorSettings _tsettings;
+    int _status;
+    int _newFlag;
 };
 
 #endif

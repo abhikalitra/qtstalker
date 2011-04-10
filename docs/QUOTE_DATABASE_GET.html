@@ -3,7 +3,7 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="Content-Type">
-  <title>Qtstalker: QUOTE_DATABASE_GET</title>
+  <title>Qtstalker: QUOTE_DATABASE GET</title>
   <link rel="stylesheet" type="text/css" href="qtstalker.css"
  media="screen">
   <script src="qtstalker.js" type="text/javascript"> </script>
@@ -20,7 +20,7 @@
 </div>
 </div>
 <!-- Content -->
-<h1>QUOTE_DATABASE_GET
+<h1>QUOTE_DATABASE GET
 </h1>
 <br>
 <table style="text-align: left; width: 1336px; height: 153px;"
@@ -34,7 +34,8 @@
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = QUOTE_DATABASE_GET<br>
+      <td style="vertical-align: top;">PLUGIN = QUOTE_DATABASE<br>
+METHOD = GET<br>
 NAME_DATE = &lt;VARIABLE NAME&gt; - Optional use<br>
 NAME_OPEN = &lt;VARIABLE NAME&gt; - Optional use<br>
 NAME_HIGH = &lt;VARIABLE NAME&gt; - Optional use<br>
@@ -60,7 +61,9 @@ KEY = QUOTE_DATABASE_GET_NAME - returns the company name<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=QUOTE_DATABASE_GET,NAME_CLOSE=close,NAME_VOLUME=volume,EXCHANGE=XNYS,SYMBOL=GOOG,LENGTH=D,RANGE=1
+      <td style="vertical-align: top;">PLUGIN=QUOTE_DATABASE,
+METHOD=GET, NAME_CLOSE=close, NAME_VOLUME=volume, EXCHANGE=XNYS,
+SYMBOL=GOOG, LENGTH=D, RANGE=1
 Year<br>
       <br>
       </td>

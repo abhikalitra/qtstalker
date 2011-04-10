@@ -34,6 +34,8 @@ IndicatorEditDialog::IndicatorEditDialog (QWidget *p, IndicatorSettings *set) : 
   _settings = set;
   _keySize = "indicator_edit_dialog_window_size";
   _keyPos = "indicator_edit_dialog_window_position";
+  _status = _NONE;
+  _newFlag = 0;
 
   QStringList l;
   l << "QtStalker" << g_session << ":" << tr("Indicator");
@@ -82,11 +84,12 @@ void IndicatorEditDialog::createGUI ()
   // apply button
   b = _buttonBox->addButton(QString("A&pply"), QDialogButtonBox::ActionRole);
   b->setToolTip(tr("Apply Changes"));
-  connect(b, SIGNAL(clicked(bool)), this, SLOT(applySave()));
+  connect(b, SIGNAL(clicked(bool)), this, SLOT(apply()));
 }
 
 void IndicatorEditDialog::done ()
 {
+  _status = _DONE;
   if (applySave())
     return;
   saveSettings();
@@ -197,6 +200,17 @@ void IndicatorEditDialog::newDialog2 (QString d)
   QStringList l;
   l << "QtStalker" << g_session << ":" << tr("Indicator") << _tsettings.data("NAME");
   setWindowTitle(l.join(" "));
+
+  if (_status == _DONE)
+    done();
+  else if (_status == _APPLY)
+    applySave();
+}
+
+void IndicatorEditDialog::apply ()
+{
+  _status = _APPLY;
+  applySave();
 }
 
 int IndicatorEditDialog::applySave ()
@@ -222,8 +236,11 @@ int IndicatorEditDialog::applySave ()
   Indicator i;
   i.add(_tsettings.data("NAME"));
 
-  if (_settings == 0)
+  if (_settings == 0 && ! _newFlag)
+  {
+    _newFlag = 1;
     g_middleMan->indicatorNew(_tsettings.data("NAME"));
+  }
 
   emit signalDone();
 
