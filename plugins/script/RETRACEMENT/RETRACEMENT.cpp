@@ -658,9 +658,9 @@ int RETRACEMENT::command (Command *command)
   return 0;
 }
 
-QWidget * RETRACEMENT::dialog (QWidget *p, Setting *set)
+void RETRACEMENT::defaults (Setting *set)
 {
-  return new RetracementDialog(p, set);
+  set->setData("PLUGIN", _plugin);
 }
 
 //*************************************************************

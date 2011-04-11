@@ -39,6 +39,7 @@
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 #include <QSettings>
+#include <QDateTimeEdit>
 
 RuleWidget::RuleWidget (QWidget *p, QString key) : QWidget (p)
 {
@@ -118,6 +119,7 @@ void RuleWidget::addRule (QStringList &l)
     {
       QDoubleSpinBox *sb = new QDoubleSpinBox;
       sb->setRange(-99999999, 99999999);
+      sb->setDecimals(4);
       sb->setValue(data.toDouble());
       _plist->setItemWidget(item, col, sb);
       break;
@@ -179,6 +181,15 @@ void RuleWidget::addRule (QStringList &l)
       cb->addItems(_list);
       cb->setCurrentIndex(cb->findText(data, Qt::MatchExactly));
       _plist->setItemWidget(item, col, cb);
+      break;
+    }
+    case _DATE:
+    {
+      QDateTimeEdit *d = new QDateTimeEdit(QDateTime::currentDateTime());
+      d->setCalendarPopup(TRUE);
+      d->setDisplayFormat("yyyy.MM.dd HH:mm:ss");
+      d->setDateTime(QDateTime::fromString(data, Qt::ISODate));
+      _plist->setItemWidget(item, col, d);
       break;
     }
     default:
@@ -246,7 +257,7 @@ void RuleWidget::save ()
           QDoubleSpinBox *sb = (QDoubleSpinBox *) _plist->itemWidget(item, loop2 + 1);
 	  if (! sb)
 	    break;
-	  _settings->setData(key, sb->text());
+	  _settings->setData(key, sb->value());
 	  break;
 	}
 	case _COLOR:
@@ -255,6 +266,14 @@ void RuleWidget::save ()
 	  if (! c)
 	    break;
 	  _settings->setData(key, c->color().name());
+	  break;
+	}
+	case _DATE:
+	{
+          QDateTimeEdit *d = (QDateTimeEdit *) _plist->itemWidget(item, loop2 + 1);
+	  if (! d)
+	    break;
+	  _settings->setData(key, d->dateTime());
 	  break;
 	}
 	default:
@@ -362,6 +381,9 @@ void RuleWidget::addRule ()
 	break;
       case _LIST:
         l << "NONE";
+	break;
+      case _DATE:
+        l << QDateTime::currentDateTime().toString(Qt::ISODate);
 	break;
       default:
 	break;

@@ -46,7 +46,8 @@ class RuleWidget : public QWidget
       _CANDLE,
       _STYLE,
       _PLOT,
-      _LIST
+      _LIST,
+      _DATE
     };
     
     RuleWidget (QWidget *, QString);

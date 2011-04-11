@@ -51,6 +51,7 @@ class BUY : public Plugin
     ~BUY ();
     int command (Command *);
     int calculate (BarData *, Indicator *, Setting *);
+    void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
     int request (Setting *, Setting *);
     void setParent (void *);

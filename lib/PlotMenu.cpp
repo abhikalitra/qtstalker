@@ -197,8 +197,10 @@ void PlotMenu::createMenus ()
 
   // create the main menu
   addAction(_actions.value(_NEW_INDICATOR));
+  addSeparator ();
   addAction(_actions.value(_ADD_INDICATOR));
   addAction(_actions.value(_EDIT_INDICATOR));
+  addSeparator ();
   addAction(_actions.value(_REMOVE_INDICATOR));
   addAction(_actions.value(_DELETE_INDICATOR));
   addSeparator ();

@@ -37,7 +37,7 @@ int OHLC::calculate (BarData *bd, Indicator *i, Setting *settings)
   QColor color(settings->data("COLOR"));
 
   Curve *line;
-  if (settings->data("STYLE") == "OHLC")
+  if (settings->data("STYLE") == "Bars")
   {
     line = new Curve;
     line->setType("Bars");
@@ -125,7 +125,7 @@ int OHLC::command (Command *command)
     return 1;
   }
 
-  QColor color("#585858");
+  QColor color("#A0A0A0");
   QString s = command->parm("COLOR");
   if (! s.isEmpty())
   {
@@ -186,7 +186,7 @@ QWidget * OHLC::dialog (QWidget *p, Setting *set)
 void OHLC::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("#585858"));
+  set->setData("COLOR", QString("#A0A0A0"));
   set->setData("STYLE", QString("Bars"));
   set->setData("Z", 0);
   set->setData("OUTPUT", QString("OHLC"));

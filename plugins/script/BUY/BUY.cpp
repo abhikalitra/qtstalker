@@ -25,6 +25,7 @@
 #include "DataDataBase.h"
 #include "ConfirmDialog.h"
 #include "DateScaleDraw.h"
+#include "RuleWidget.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
@@ -421,16 +422,37 @@ void BUY::update ()
 
 int BUY::calculate (BarData *, Indicator *i, Setting *settings)
 {
-  Setting co;
-  QString key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("PLUGIN", _plugin);
-  co.setData("TYPE", settings->data("TYPE"));
-  co.setData("ID", key);
-  co.setData("RO", 1);
-  co.setData("PRICE", settings->data("PRICE"));
-  co.setData("COLOR", settings->data("COLOR"));
-  co.setData("DATE", settings->data("DATE"));
-  i->addChartObject(co);
+  int rows = settings->getInt("ROWS");
+  int loop = 0;
+  for (; loop < rows; loop++)
+  {
+    // output
+    int col = 0;
+
+    Setting co;
+    QString key = "-" + QString::number(i->chartObjectCount() + 1);
+    co.setData("ID", key);
+
+    co.setData("PLUGIN", _plugin);
+    co.setData("TYPE", settings->data("TYPE"));
+    co.setData("RO", 1);
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    co.setData("DATE", settings->data(key));
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    co.setData("PRICE", settings->data(key));
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    co.setData("COLOR", settings->data(key));
+
+    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
+    co.setData("Z", settings->data(key));
+    if (settings->getInt(key) < 0)
+      continue;
+
+    i->addChartObject(co);
+  }
 
   return 0;
 }
@@ -535,7 +557,21 @@ int BUY::command (Command *command)
 
 QWidget * BUY::dialog (QWidget *p, Setting *set)
 {
-  return new BuyDialog(p, set);
+  QStringList header;
+  header << tr("Date") << tr("Value") << tr("Color") << tr("Plot");
+
+  QList<int> format;
+  format << RuleWidget::_DATE << RuleWidget::_DOUBLE << RuleWidget::_COLOR << RuleWidget::_PLOT;
+
+  RuleWidget *w = new RuleWidget(p, _plugin);
+  w->setRules(set, format, header);
+  w->loadSettings();
+  return w;
+}
+
+void BUY::defaults (Setting *set)
+{
+  set->setData("PLUGIN", _plugin);
 }
 
 //*************************************************************
