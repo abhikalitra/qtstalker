@@ -391,7 +391,7 @@ void RETRACEMENT::dialog ()
     return;
 
   _dialog = new Dialog(g_parent);
-  QWidget *w = dialog(_dialog, _selected->settings());
+  QWidget *w = new RetracementDialog(_dialog, _selected->settings());
   connect(_dialog, SIGNAL(accepted()), w, SLOT(save()));
   _dialog->setWidget(w);
   connect(_dialog, SIGNAL(accepted()), this, SLOT(dialogOK()));
