@@ -24,6 +24,7 @@
 #include "ta_libc.h"
 #include "Globals.h"
 #include "AROONDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -39,68 +40,72 @@ AROON::AROON ()
 
 int AROON::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int period = settings->getInt("PERIOD");
-  
-  int size = bd->count();
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
+  Curve *upper = i->line(settings->data("OUTPUT_UP"));
+  if (upper)
   {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
-
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-  }
-
-  TA_RetCode rc = TA_AROON(0,
-                           size - 1,
-                           &high[0],
-                           &low[0],
-                           period,
-                           &outBeg,
-                           &outNb,
-                           &out[0],
-                           &out2[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_UP" << settings->data("OUTPUT_UP");
     return 1;
   }
 
-  Curve *upper = new Curve;
-  Curve *lower = new Curve;
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  Curve *lower = i->line(settings->data("OUTPUT_DOWN"));
+  if (lower)
   {
-    upper->setBar(dataLoop, new CurveBar(out[outLoop]));
-    lower->setBar(dataLoop, new CurveBar(out2[outLoop]));
-
-    dataLoop--;
-    outLoop--;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_DOWN" << settings->data("OUTPUT_DOWN");
+    return 1;
   }
 
+  int period = settings->getInt("PERIOD");
+  
+  Curve *ihigh = i->line("High");
+  if (! ihigh)
+  {
+    InputType it;
+    ihigh = it.input(bd, "High");
+    if (! ihigh)
+    {
+      qDebug() << _plugin << "::calculate: no High";
+      return 1;
+    }
+
+    ihigh->setLabel("High");
+    i->setLine("High", ihigh);
+  }
+
+  Curve *ilow = i->line("Low");
+  if (! ilow)
+  {
+    InputType it;
+    ilow = it.input(bd, "Low");
+    if (! ilow)
+    {
+      qDebug() << _plugin << "::calculate: no Low";
+      return 1;
+    }
+
+    ilow->setLabel("Low");
+    i->setLine("Low", ilow);
+  }
+
+  QList<Curve *> lines = getAROON(ihigh, ilow, period);
+  if (! lines.count())
+    return 1;
+
+  upper = lines.at(0);
   upper->setAllColor(QColor(settings->data("COLOR_UP")));
   upper->setLabel(settings->data("OUTPUT_UP"));
   upper->setType(settings->data("STYLE_UP"));
   upper->setZ(settings->getInt("Z_UP"));
   i->setLine(settings->data("OUTPUT_UP"), upper);
   
-  lower->setAllColor(QColor(settings->data("COLOR_DOWN")));
-  lower->setLabel(settings->data("OUTPUT_DOWN"));
-  lower->setType(settings->data("STYLE_DOWN"));
-  lower->setZ(settings->getInt("Z_DOWN"));
-  i->setLine(settings->data("OUTPUT_DOWN"), lower);
+  if (lines.count() == 2)
+  {
+    lower = lines.at(1);
+    lower->setAllColor(QColor(settings->data("COLOR_DOWN")));
+    lower->setLabel(settings->data("OUTPUT_DOWN"));
+    lower->setType(settings->data("STYLE_DOWN"));
+    lower->setZ(settings->getInt("Z_DOWN"));
+    i->setLine(settings->data("OUTPUT_DOWN"), lower);
+  }
 
   return 0;
 }
@@ -159,26 +164,54 @@ int AROON::command (Command *command)
     return 1;
   }
 
-  int size = ihigh->count();
+  QList<Curve *> lines = getAROON(ihigh, ilow, period);
+  if (! lines.count())
+    return 1;
 
-  TA_Real out[size];
-  TA_Real out2[size];
+  Curve *upper = lines.at(0);
+  upper->setLabel(uname);
+  i->setLine(uname, upper);
+
+  if (lines.count() == 2)
+  {
+    Curve *lower = lines.at(1);
+    lower->setLabel(lname);
+    i->setLine(lname, lower);
+  }
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+QList<Curve *> AROON::getAROON (Curve *ihigh, Curve *ilow, int period)
+{
+  QList<int> keys;
+  int size = ihigh->count();
+  ihigh->keys(keys);
+
+  if (ilow->count() < size)
+  {
+    size = ilow->count();
+    ilow->keys(keys);
+  }
+
   TA_Real high[size];
   TA_Real low[size];
+  TA_Real out[size];
+  TA_Real out2[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
   int ipos = 0;
   int opos = 0;
-  int end = 0;
-  ihigh->keyRange(ipos, end);
-  for (; ipos <= end; ipos++, opos++)
+  for (; ipos < keys.count(); ipos++, opos++)
   {
-    CurveBar *hbar = ihigh->bar(ipos);
+    CurveBar *hbar = ihigh->bar(keys.at(ipos));
     if (! hbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(ipos);
+    CurveBar *lbar = ilow->bar(keys.at(ipos));
     if (! lbar)
       continue;
 
@@ -187,44 +220,38 @@ int AROON::command (Command *command)
   }
 
   TA_RetCode rc = TA_AROON(0,
-                         size - 1,
-                         &high[0],
-                         &low[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0],
-                         &out2[0]);
+                           size - 1,
+                           &high[0],
+                           &low[0],
+                           period,
+                           &outBeg,
+                           &outNb,
+                           &out[0],
+                           &out2[0]);
 
+  QList<Curve *> lines;
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getAROON: TA-Lib error" << rc;
+    return lines;
   }
 
   Curve *upper = new Curve;
   Curve *lower = new Curve;
-
-  int dataLoop = size - 1;
+  int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  while (keyLoop > -1 && outLoop > -1)
   {
-    upper->setBar(dataLoop, new CurveBar(out[outLoop]));
-    lower->setBar(dataLoop, new CurveBar(out2[outLoop]));
-
-    dataLoop--;
+    upper->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    lower->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
+    keyLoop--;
     outLoop--;
   }
 
-  upper->setLabel(uname);
-  lower->setLabel(lname);
+  lines.append(upper);
+  lines.append(lower);
 
-  i->setLine(uname, upper);
-  i->setLine(lname, lower);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return lines;
 }
 
 QWidget * AROON::dialog (QWidget *p, Setting *set)

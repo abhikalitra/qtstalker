@@ -42,7 +42,6 @@ int TRIX::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
   int period = settings->getInt("PERIOD");
 
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -54,7 +53,8 @@ int TRIX::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
   TA_Real input[in->count()];
@@ -72,9 +72,6 @@ int TRIX::calculate (BarData *bd, Indicator *i, Setting *settings)
     input[loop] = (TA_Real) bar->data();
   }
 
-  if (delFlag)
-    delete in;
-  
   TA_RetCode rc = TA_TRIX(0,
                          keys.count() - 1,
                          &input[0],

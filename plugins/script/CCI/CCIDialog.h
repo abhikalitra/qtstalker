@@ -23,8 +23,6 @@
 #define PLUGIN_CCI_DIALOG_HPP
 
 #include <QComboBox>
-#include <QDoubleSpinBox>
-#include <QTabWidget>
 #include <QSpinBox>
 #include <QLineEdit>
 
@@ -38,22 +36,15 @@ class CCIDialog : public QWidget
   public:
     CCIDialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createRefPage ();
-    void createRef2Page ();
 
   public slots:
     void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     QSpinBox *_period;
     ColorButton *_color;
-    ColorButton *_refColor;
-    ColorButton *_ref2Color;
     QComboBox *_style;
-    QDoubleSpinBox *_ref;
-    QDoubleSpinBox *_ref2;
     QSpinBox *_z;
     QLineEdit *_output;
 };

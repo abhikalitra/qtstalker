@@ -40,9 +40,15 @@ CMO::CMO ()
 
 int CMO::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
+  }
+  
   int period = settings->getInt("PERIOD");
 
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -54,9 +60,15 @@ int CMO::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
+  line = getCMO(in, period);
+  if (! line)
+    return 1;
+
+/*  
   TA_Real input[in->count()];
   TA_Real out[in->count()];
   TA_Integer outBeg;
@@ -72,9 +84,6 @@ int CMO::calculate (BarData *bd, Indicator *i, Setting *settings)
     input[loop] = (TA_Real) bar->data();
   }
 
-  if (delFlag)
-    delete in;
-  
   TA_RetCode rc = TA_CMO(0,
                          keys.count() - 1,
                          &input[0],
@@ -98,6 +107,7 @@ int CMO::calculate (BarData *bd, Indicator *i, Setting *settings)
     keyLoop--;
     outLoop--;
   }
+*/
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -105,23 +115,6 @@ int CMO::calculate (BarData *bd, Indicator *i, Setting *settings)
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
 
-  // create ref1 line
-  Setting co;
-  QString key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("TYPE", QString("HLine"));
-  co.setData("ID", key);
-  co.setData("RO", 1);
-  co.setData("PRICE", settings->data("REF1"));
-  co.setData("COLOR", settings->data("COLOR_REF1"));
-  i->addChartObject(co);
-
-  // create ref2 line
-  key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("ID", key);
-  co.setData("PRICE", settings->data("REF2"));
-  co.setData("COLOR", settings->data("COLOR_REF2"));
-  i->addChartObject(co);
-  
   return 0;
 }
 
@@ -162,6 +155,7 @@ int CMO::command (Command *command)
     return 1;
   }
 
+/*
   if (in->count() < period)
     return 1;
 
@@ -203,13 +197,62 @@ int CMO::command (Command *command)
     keyLoop--;
     outLoop--;
   }
+*/
 
+  line = getCMO(in, period);
+  if (! line)
+    return 1;
+  
   line->setLabel(name);
   i->setLine(name, line);
 
   command->setReturnCode("0");
 
   return 0;
+}
+
+Curve * CMO::getCMO (Curve *in, int period)
+{
+  int size = in->count();
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  QList<int> keys;
+  in->keys(keys);
+
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    input[loop] = (TA_Real) bar->data();
+  }
+
+  TA_RetCode rc = TA_CMO(0,
+                         size - 1,
+                         &input[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::getCMO: TA-Lib error" << rc;
+    return 0;
+  }
+
+  Curve *line = new Curve;
+  int keyLoop = keys.count() - 1;
+  int outLoop = outNb - 1;
+  while (keyLoop > -1 && outLoop > -1)
+  {
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
+    outLoop--;
+  }
+
+  return line;
 }
 
 QWidget * CMO::dialog (QWidget *p, Setting *set)
@@ -223,10 +266,6 @@ void CMO::defaults (Setting *set)
   set->setData("COLOR", QString("red"));
   set->setData("STYLE", QString("Line"));
   set->setData("PERIOD", 20);
-  set->setData("COLOR_REF1", QString("white"));
-  set->setData("REF1", 50);
-  set->setData("COLOR_REF2", QString("white"));
-  set->setData("REF2", -50);
   set->setData("INPUT", QString("Close"));
   set->setData("OUTPUT", _plugin);
   set->setData("Z", 0);

@@ -42,6 +42,7 @@ class SymbolListWidget : public QListWidget
     void deleteSymbol ();
     QHash<QString, BarData> & symbols ();
     BarData symbol (QString);
+    void setBusyFlag (int);
 
   public slots:
     void itemClicked (QListWidgetItem *);
@@ -52,6 +53,7 @@ class SymbolListWidget : public QListWidget
 
   private:
     QHash<QString, BarData> _symbols;
+    int _busyFlag;
 };
 
 #endif

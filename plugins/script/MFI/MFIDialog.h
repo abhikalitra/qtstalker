@@ -24,8 +24,6 @@
 
 #include <QComboBox>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QTabWidget>
 #include <QLineEdit>
 
 #include "ColorButton.h"
@@ -38,22 +36,15 @@ class MFIDialog : public QWidget
   public:
     MFIDialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createRefPage ();
-    void createRef2Page ();
 
   public slots:
     void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     QSpinBox *_period;
     ColorButton *_color;
-    ColorButton *_refColor;
-    ColorButton *_ref2Color;
     QComboBox *_style;
-    QDoubleSpinBox *_ref;
-    QDoubleSpinBox *_ref2;
     QLineEdit *_output;
     QSpinBox *_z;
 };

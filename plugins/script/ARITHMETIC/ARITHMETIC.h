@@ -34,6 +34,7 @@ class ARITHMETIC : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getARITHMETIC (Curve *in, Curve *in2, int method);
 };
 
 extern "C"

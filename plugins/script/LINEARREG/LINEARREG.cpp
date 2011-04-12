@@ -42,10 +42,8 @@ LINEARREG::LINEARREG ()
 int LINEARREG::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
   int period = settings->getInt("PERIOD");
-
   int method = _method.indexOf(settings->data("METHOD"));
 
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -57,7 +55,8 @@ int LINEARREG::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
   
   int size = in->count();
@@ -75,9 +74,6 @@ int LINEARREG::calculate (BarData *bd, Indicator *i, Setting *settings)
     CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
-
-  if (delFlag)
-    delete in;
 
   TA_RetCode rc = TA_SUCCESS;
   switch ((Method) method)

@@ -57,6 +57,7 @@ class GroupPage : public QWidget
     void createActions ();
     void createButtonMenu ();
     SymbolListWidget * list ();
+    void setBusyFlag (int);
 
   public slots:
     void updateList ();

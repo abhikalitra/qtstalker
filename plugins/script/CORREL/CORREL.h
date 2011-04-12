@@ -34,6 +34,7 @@ class CORREL : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getCORREL (Curve *in, Curve *in2, int period);
 };
 
 extern "C"

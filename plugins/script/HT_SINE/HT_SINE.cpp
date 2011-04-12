@@ -40,7 +40,6 @@ HT_SINE::HT_SINE ()
 
 int HT_SINE::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -52,7 +51,8 @@ int HT_SINE::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
   int size = in->count();
@@ -72,9 +72,6 @@ int HT_SINE::calculate (BarData *bd, Indicator *i, Setting *settings)
     input[loop] = (TA_Real) bar->data();
   }
 
-  if (delFlag)
-    delete in;
-  
   TA_RetCode rc = TA_HT_SINE (0,
                               size - 1,
                               &input[0],

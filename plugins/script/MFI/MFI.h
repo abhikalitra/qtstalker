@@ -34,6 +34,7 @@ class MFI : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getMFI (Curve *, Curve *, Curve *, Curve *, int);
 };
 
 extern "C"

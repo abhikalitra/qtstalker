@@ -43,7 +43,6 @@ int T3::calculate (BarData *bd, Indicator *i, Setting *settings)
   int period = settings->getInt("PERIOD");
   double vfactor = settings->getDouble("VFACTOR");
 
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -55,7 +54,8 @@ int T3::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
   QList<int> keys;
@@ -74,9 +74,6 @@ int T3::calculate (BarData *bd, Indicator *i, Setting *settings)
     input[loop] = (TA_Real) bar->data();
   }
 
-  if (delFlag)
-    delete in;
-  
   TA_RetCode rc = TA_T3(0,
                         size - 1,
                         &input[0],

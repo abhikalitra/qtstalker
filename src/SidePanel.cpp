@@ -125,3 +125,9 @@ void SidePanel::setScriptPanelFocus ()
   setCurrentIndex(2);
   _scriptPage->list()->setFocus();
 }
+
+void SidePanel::setBusyFlag (int d)
+{
+  _chartPage->setBusyFlag(d);
+  _groupPage->setBusyFlag(d);
+}

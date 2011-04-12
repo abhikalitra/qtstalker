@@ -34,6 +34,7 @@ class STOCH_RSI : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getSTOCHRSI (Curve *, int);
 };
 
 extern "C"

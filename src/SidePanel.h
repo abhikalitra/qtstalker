@@ -44,6 +44,7 @@ class SidePanel : public QTabWidget
   public:
     SidePanel (QMainWindow *);
     void createTabs ();
+    void setBusyFlag (int);
 
   public slots:
     void setLockStatus (bool);

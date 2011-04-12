@@ -48,7 +48,6 @@ int PO::calculate (BarData *bd, Indicator *i, Setting *settings)
   MAType mat;
   int type = mat.fromString(settings->data("MA_TYPE"));
 
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -60,7 +59,8 @@ int PO::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
   int method = _method.indexOf(settings->data("METHOD"));
@@ -81,9 +81,6 @@ int PO::calculate (BarData *bd, Indicator *i, Setting *settings)
     input[loop] = (TA_Real) bar->data();
   }
 
-  if (delFlag)
-    delete in;
-  
   TA_RetCode rc = TA_SUCCESS;
   switch ((Method) method)
   {

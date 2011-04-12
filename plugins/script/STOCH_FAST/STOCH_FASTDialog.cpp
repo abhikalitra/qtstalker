@@ -32,8 +32,6 @@ STOCH_FASTDialog::STOCH_FASTDialog (QWidget *p, Setting *set) : QWidget (p)
   _settings = set;
   createKPage();
   createDPage();
-  createRefPage();
-  createRef2Page();
 }
 
 void STOCH_FASTDialog::createKPage ()
@@ -77,7 +75,7 @@ void STOCH_FASTDialog::createKPage ()
   _zk = new QSpinBox;
   _zk->setRange(-1, 99);
   _zk->setValue(_settings->getInt("Z_K"));
-  form->addRow(tr("Plot Order"), _zk);
+  form->addRow(tr("Plot"), _zk);
 
   _tabs->addTab(w, "%K");
 }
@@ -126,51 +124,9 @@ void STOCH_FASTDialog::createDPage ()
   _zd = new QSpinBox;
   _zd->setRange(-1, 99);
   _zd->setValue(_settings->getInt("Z_D"));
-  form->addRow(tr("Plot Order"), _zd);
+  form->addRow(tr("Plot"), _zd);
   
   _tabs->addTab(w, "%D");
-}
-
-void STOCH_FASTDialog::createRefPage ()
-{
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // color
-  _refColor = new ColorButton(this, QColor(_settings->data("COLOR_REF1")));
-  _refColor->setColorButton();
-  form->addRow(tr("Color"), _refColor);
-
-  // ref
-  _ref = new QDoubleSpinBox;
-  _ref->setRange(-100000, 100000);
-  _ref->setValue(_settings->getDouble("_REF1"));
-  form->addRow(tr("Value"), _ref);
-
-  _tabs->addTab(w, "REF 1");
-}
-
-void STOCH_FASTDialog::createRef2Page ()
-{
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // color
-  _ref2Color = new ColorButton(this, QColor(_settings->data("COLOR_REF2")));
-  _ref2Color->setColorButton();
-  form->addRow(tr("Color"), _ref2Color);
-
-  // ref
-  _ref2 = new QDoubleSpinBox;
-  _ref2->setRange(-100000, 100000);
-  _ref2->setValue(_settings->getDouble("REF2"));
-  form->addRow(tr("Value"), _ref2);
-
-  _tabs->addTab(w, "REF 2");
 }
 
 void STOCH_FASTDialog::save ()
@@ -182,10 +138,6 @@ void STOCH_FASTDialog::save ()
   _settings->setData("PERIOD_FASTD", _dperiod->value());
   _settings->setData("PERIOD_FASTK", _kperiod->value());
   _settings->setData("MA_TYPE_FASTD", _maType->currentText());
-  _settings->setData("REF1", _ref->value());
-  _settings->setData("REF2", _ref2->value());
-  _settings->setData("COLOR_REF1", _refColor->color().name());
-  _settings->setData("COLOR_REF2", _ref2Color->color().name());
   _settings->setData("OUTPUT_K", _koutput->text());
   _settings->setData("Z_K", _zk->text());
   _settings->setData("OUTPUT_D", _doutput->text());

@@ -42,7 +42,6 @@ int VAR::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
   int period = settings->getInt("PERIOD");
 
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -54,7 +53,8 @@ int VAR::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
   int size = in->count();
@@ -73,9 +73,6 @@ int VAR::calculate (BarData *bd, Indicator *i, Setting *settings)
     input[loop] = (TA_Real) bar->data();
   }
 
-  if (delFlag)
-    delete in;
-  
   TA_RetCode rc = TA_VAR(0,
                          size - 1,
                          &input[0],

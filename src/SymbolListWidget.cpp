@@ -25,6 +25,7 @@
 
 SymbolListWidget::SymbolListWidget ()
 {
+  _busyFlag = FALSE;
   setFocusPolicy(Qt::StrongFocus);
   setContextMenuPolicy(Qt::CustomContextMenu);
   setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -82,6 +83,10 @@ void SymbolListWidget::itemClicked (QListWidgetItem *item)
   if (! item)
     return;
 
+  if (_busyFlag)
+    return;
+  
+  _busyFlag = TRUE;
   emit signalSymbolSelected(_symbols.value(item->text()));
 }
 
@@ -99,3 +104,7 @@ void SymbolListWidget::keyPressEvent (QKeyEvent *e)
   }
 }
 
+void SymbolListWidget::setBusyFlag (int d)
+{
+  _busyFlag = d;
+}

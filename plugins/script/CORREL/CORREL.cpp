@@ -41,10 +41,16 @@ CORREL::CORREL ()
 
 int CORREL::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
+  }
+
   int period = settings->getInt("PERIOD");
 
   InputType it;
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -55,7 +61,8 @@ int CORREL::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
   BarData tbd;
@@ -67,87 +74,23 @@ int CORREL::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   QuoteDataBase db;
   if (db.getBars(&tbd))
-  {
-    if (delFlag)
-      delete in;
     return 1;
-  }
 
   Curve *in2 = it.input(&tbd, "Close");
   if (! in2)
-  {
-    if (delFlag)
-      delete in;
     return 1;
-  }
 
   if (in->count() < period || in2->count() < period)
   {
-    if (delFlag)
-      delete in;
     delete in2;
     return 1;
   }
 
-  QList<int> keys;
-  int size = in->count();
-  if (in2->count() < size)
+  line = getCORREL(in, in2, period);
+  if (! line)
   {
-    size = in2->count();
-    in2->keys(keys);
-  }
-  else
-    in->keys(keys);
-
-  TA_Real input[size];
-  TA_Real input2[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    if (! bar)
-      continue;
-
-    CurveBar *bar2 = in2->bar(keys.at(loop));
-    if (! bar2)
-      continue;
-
-    input[loop] = (TA_Real) bar->data();
-    input2[loop] = (TA_Real) bar2->data();
-  }
-
-  if (delFlag)
-    delete in;
-  delete in2;
-
-  TA_RetCode rc = TA_CORREL(0,
-                            size - 1,
-                            &input[0],
-                            &input2[0],
-                            period,
-                            &outBeg,
-                            &outNb,
-                            &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    delete in2;
     return 1;
-  }
-
-  Curve *line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
   }
 
   line->setAllColor(QColor(settings->data("COLOR")));
@@ -155,30 +98,6 @@ int CORREL::calculate (BarData *bd, Indicator *i, Setting *settings)
   line->setType(settings->data("STYLE"));
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
-
-  // create ref1 line
-  Setting co;
-  QString key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("TYPE", QString("HLine"));
-  co.setData("ID", key);
-  co.setData("RO", 1);
-  co.setData("PRICE", settings->data("REF1"));
-  co.setData("COLOR", settings->data("COLOR_REF1"));
-  i->addChartObject(co);
-
-  // create ref2 line
-  key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("ID", key);
-  co.setData("PRICE", settings->data("REF2"));
-  co.setData("COLOR", settings->data("COLOR_REF2"));
-  i->addChartObject(co);
-  
-  // create ref3 line
-  key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("ID", key);
-  co.setData("PRICE", settings->data("REF3"));
-  co.setData("COLOR", settings->data("COLOR_REF3"));
-  i->addChartObject(co);
 
   return 0;
 }
@@ -228,9 +147,20 @@ int CORREL::command (Command *command)
     return 1;
   }
 
-  if (in->count() < period || in2->count() < period)
+  line = getCORREL(in, in2, period);
+  if (! line)
     return 1;
 
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * CORREL::getCORREL (Curve *in, Curve *in2, int period)
+{
   QList<int> keys;
   int size = in->count();
   if (in2->count() < size)
@@ -273,12 +203,11 @@ int CORREL::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getCORREL: TA-Lib error" << rc;
+    return 0;
   }
 
-  line = new Curve;
-
+  Curve *line = new Curve;
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
@@ -288,12 +217,7 @@ int CORREL::command (Command *command)
     outLoop--;
   }
 
-  line->setLabel(name);
-  i->setLine(name, line);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return line;
 }
 
 QWidget * CORREL::dialog (QWidget *p, Setting *set)
@@ -309,12 +233,6 @@ void CORREL::defaults (Setting *set)
   set->setData("PERIOD", 30);
   set->setData("INPUT", QString("Close"));
   set->setData("INDEX", QString("YAHOO:SPY"));
-  set->setData("COLOR_REF1", QString("white"));
-  set->setData("REF1", 1);
-  set->setData("COLOR_REF2", QString("white"));
-  set->setData("REF2", 0);
-  set->setData("COLOR_REF3", QString("white"));
-  set->setData("REF3", -1);
   set->setData("OUTPUT", _plugin);
   set->setData("Z", 0);
 }

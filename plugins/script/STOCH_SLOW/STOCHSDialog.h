@@ -24,7 +24,6 @@
 
 #include <QComboBox>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
 #include <QTabWidget>
 #include <QLineEdit>
 
@@ -39,8 +38,6 @@ class STOCHSDialog : public QWidget
     STOCHSDialog (QWidget *, Setting *);
     void createKPage ();
     void createDPage ();
-    void createRefPage ();
-    void createRef2Page ();
 
   public slots:
     void save ();
@@ -53,14 +50,10 @@ class STOCHSDialog : public QWidget
     QSpinBox *_dperiod;
     ColorButton *_kcolor;
     ColorButton *_dcolor;
-    ColorButton *_refColor;
-    ColorButton *_ref2Color;
     QComboBox *_kstyle;
     QComboBox *_dstyle;
     QComboBox *_kmaType;
     QComboBox *_dmaType;
-    QDoubleSpinBox *_ref;
-    QDoubleSpinBox *_ref2;
     QLineEdit *_koutput;
     QSpinBox *_zk;
     QLineEdit *_doutput;

@@ -319,3 +319,8 @@ void GroupPage::selectionChanged ()
   _actions.value(_EDIT_GROUP)->setEnabled(status);
   _actions.value(_DELETE_GROUP)->setEnabled(status);
 }
+
+void GroupPage::setBusyFlag (int d)
+{
+  _nav->setBusyFlag(d);
+}

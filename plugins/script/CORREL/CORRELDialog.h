@@ -25,8 +25,6 @@
 #include <QComboBox>
 #include <QLineEdit>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QTabWidget>
 
 #include "ColorButton.h"
 #include "Setting.h"
@@ -38,27 +36,17 @@ class CORRELDialog : public QWidget
   public:
     CORRELDialog (QWidget *, Setting *);
     void createGeneralPage();
-    void createRefPage();
-    void createRef2Page();
-    void createRef3Page();
 
   public slots:
     void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     QSpinBox *_period;
     ColorButton *_color;
-    ColorButton *_refColor;
-    ColorButton *_ref2Color;
-    ColorButton *_ref3Color;
     QComboBox *_style;
     QComboBox *_input;
     QLineEdit *_index;
-    QDoubleSpinBox *_ref;
-    QDoubleSpinBox *_ref2;
-    QDoubleSpinBox *_ref3;
     QSpinBox *_z;
     QLineEdit *_output;
 };

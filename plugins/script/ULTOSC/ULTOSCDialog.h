@@ -24,8 +24,6 @@
 
 #include <QComboBox>
 #include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QTabWidget>
 #include <QLineEdit>
 
 #include "ColorButton.h"
@@ -38,27 +36,17 @@ class ULTOSCDialog : public QWidget
   public:
     ULTOSCDialog (QWidget *, Setting *);
     void createGeneralPage ();
-    void createRefPage ();
-    void createRef2Page ();
-    void createRef3Page ();
 
   public slots:
     void save ();
 
   private:
     Setting *_settings;
-    QTabWidget *_tabs;
     QSpinBox *_speriod;
     QSpinBox *_mperiod;
     QSpinBox *_lperiod;
     ColorButton *_color;
-    ColorButton *_refColor;
-    ColorButton *_ref2Color;
-    ColorButton *_ref3Color;
     QComboBox *_style;
-    QDoubleSpinBox *_ref;
-    QDoubleSpinBox *_ref2;
-    QDoubleSpinBox *_ref3;
     QLineEdit *_output;
     QSpinBox *_z;
 };

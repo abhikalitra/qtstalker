@@ -59,6 +59,7 @@ class ChartPage : public QWidget
     void createMenu ();
     void selected (QStringList &);
     SymbolListWidget * list ();
+    void setBusyFlag (int);
 
   public slots:
     void rightClick (const QPoint &);

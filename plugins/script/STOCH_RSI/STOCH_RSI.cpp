@@ -40,9 +40,15 @@ STOCH_RSI::STOCH_RSI ()
 
 int STOCH_RSI::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
+  }
+
   int period = settings->getInt("PERIOD");
 
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -54,80 +60,19 @@ int STOCH_RSI::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
-  QList<int> keys;
-  in->keys(keys);
-  int size = keys.count();
-
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  if (delFlag)
-    delete in;
-
-  TA_RetCode rc = TA_STOCHRSI(0,
-                              size - 1,
-                              &input[0],
-                              period,
-                              period,
-                              1,
-                              (TA_MAType) 0,
-                              &outBeg,
-                              &outNb,
-                              &out[0],
-                              &out2[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+  line = getSTOCHRSI(in, period);
+  if (! line)
     return 1;
-  }
-
-  Curve *line = new Curve;
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    line->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dataLoop--;
-    outLoop--;
-  }
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
   line->setType(settings->data("STYLE"));
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
-
-  // create ref1 line
-  Setting co;
-  QString key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("TYPE", QString("HLine"));
-  co.setData("ID", key);
-  co.setData("RO", 1);
-  co.setData("PRICE", settings->data("REF1"));
-  co.setData("COLOR", settings->data("COLOR_REF1"));
-  i->addChartObject(co);
-
-  // create ref2 line
-  key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("ID", key);
-  co.setData("PRICE", settings->data("REF2"));
-  co.setData("COLOR", settings->data("COLOR_REF2"));
-  i->addChartObject(co);
 
   return 0;
 }
@@ -169,9 +114,20 @@ int STOCH_RSI::command (Command *command)
     return 1;
   }
 
-  if (in->count() < period)
+  line = getSTOCHRSI(in, period);
+  if (! line)
     return 1;
 
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * STOCH_RSI::getSTOCHRSI (Curve *in, int period)
+{
   QList<int> keys;
   in->keys(keys);
   int size = keys.count();
@@ -203,27 +159,21 @@ int STOCH_RSI::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getSTOCHRSI: TA-Lib error" << rc;
+    return 0;
   }
 
-  line = new Curve;
-
-  int dataLoop = size - 1;
+  Curve *line = new Curve;
+  int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  while (keyLoop > -1 && outLoop > -1)
   {
-    line->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dataLoop--;
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
     outLoop--;
   }
 
-  line->setLabel(name);
-  i->setLine(name, line);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return line;
 }
 
 QWidget * STOCH_RSI::dialog (QWidget *p, Setting *set)
@@ -238,10 +188,6 @@ void STOCH_RSI::defaults (Setting *set)
   set->setData("STYLE", QString("Line"));
   set->setData("INPUT", QString("Close"));
   set->setData("PERIOD", 14);
-  set->setData("COLOR_REF1", QString("white"));
-  set->setData("REF1", 20);
-  set->setData("COLOR_REF2", QString("white"));
-  set->setData("REF2", 80);
   set->setData("Z", 0);
   set->setData("OUTPUT", _plugin);
 }

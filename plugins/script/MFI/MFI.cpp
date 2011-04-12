@@ -24,6 +24,7 @@
 #include "ta_libc.h"
 #include "Globals.h"
 #include "MFIDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -39,80 +40,84 @@ MFI::MFI ()
 
 int MFI::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int period = settings->getInt("PERIOD");
-
-  int size = bd->count();
-  TA_Real out[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real volume[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
   {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
-
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-    close[loop] = (TA_Real) bar->close();
-    volume[loop] = (TA_Real) bar->volume();
-  }
-
-  TA_RetCode rc = TA_MFI(0,
-                         size - 1,
-                         &high[0],
-                         &low[0],
-                         &close[0],
-                         &volume[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
     return 1;
   }
 
-  Curve *line = new Curve;
+  int period = settings->getInt("PERIOD");
 
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  Curve *high = i->line("High");
+  if (! high)
   {
-    line->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dataLoop--;
-    outLoop--;
+    InputType it;
+    high = it.input(bd, "High");
+    if (! high)
+    {
+      qDebug() << _plugin << "::calculate: no High";
+      return 1;
+    }
+
+    high->setLabel("High");
+    i->setLine("High", high);
   }
+
+  Curve *low = i->line("Low");
+  if (! low)
+  {
+    InputType it;
+    low = it.input(bd, "Low");
+    if (! low)
+    {
+      qDebug() << _plugin << "::calculate: no Low";
+      return 1;
+    }
+
+    low->setLabel("Low");
+    i->setLine("Low", low);
+  }
+
+  Curve *close = i->line("Close");
+  if (! close)
+  {
+    InputType it;
+    close = it.input(bd, "Close");
+    if (! close)
+    {
+      qDebug() << _plugin << "::calculate: no Close";
+      return 1;
+    }
+
+    close->setLabel("Close");
+    i->setLine("Close", close);
+  }
+
+  Curve *vol = i->line("Volume");
+  if (! vol)
+  {
+    InputType it;
+    vol = it.input(bd, "Volume");
+    if (! vol)
+    {
+      qDebug() << _plugin << "::calculate: no Volume";
+      return 1;
+    }
+
+    vol->setLabel("Volume");
+    i->setLine("Volume", vol);
+  }
+
+  line = getMFI(high, low, close, vol, period);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
   line->setType(settings->data("STYLE"));
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
-
-  // create ref1 line
-  Setting co;
-  QString key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("TYPE", QString("HLine"));
-  co.setData("ID", key);
-  co.setData("RO", 1);
-  co.setData("PRICE", settings->data("REF1"));
-  co.setData("COLOR", settings->data("COLOR_REF1"));
-  i->addChartObject(co);
-
-  // create ref2 line
-  key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("ID", key);
-  co.setData("PRICE", settings->data("REF2"));
-  co.setData("COLOR", settings->data("COLOR_REF2"));
-  i->addChartObject(co);
 
   return 0;
 }
@@ -178,7 +183,41 @@ int MFI::command (Command *command)
     return 1;
   }
 
-  int size = iclose->count();
+  line = getMFI(ihigh, ilow, iclose, ivol, period);
+  if (! line)
+    return 1;
+
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * MFI::getMFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int period)
+{
+  QList<int> keys;
+  int size = ihigh->count();
+  ihigh->keys(keys);
+
+  if (ilow->count() < size)
+  {
+    size = ilow->count();
+    ilow->keys(keys);
+  }
+
+  if (iclose->count() < size)
+  {
+    size = iclose->count();
+    iclose->keys(keys);
+  }
+
+  if (ivol->count() < size)
+  {
+    size = ivol->count();
+    ivol->keys(keys);
+  }
 
   TA_Real out[size];
   TA_Real high[size];
@@ -188,32 +227,29 @@ int MFI::command (Command *command)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int ipos = 0;
-  int opos = 0;
-  int end = 0;
-  iclose->keyRange(ipos, end);
-  for (; ipos <= end; ipos++, opos++)
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    CurveBar *hbar = ihigh->bar(ipos);
+    CurveBar *hbar = ihigh->bar(keys.at(loop));
     if (! hbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(ipos);
+    CurveBar *lbar = ilow->bar(keys.at(loop));
     if (! lbar)
       continue;
 
-    CurveBar *cbar = iclose->bar(ipos);
+    CurveBar *cbar = iclose->bar(keys.at(loop));
     if (! cbar)
       continue;
 
-    CurveBar *vbar = ivol->bar(ipos);
+    CurveBar *vbar = ivol->bar(keys.at(loop));
     if (! vbar)
       continue;
 
-    high[opos] = (TA_Real) hbar->data();
-    low[opos] = (TA_Real) lbar->data();
-    close[opos] = (TA_Real) cbar->data();
-    volume[opos] = (TA_Real) vbar->data();
+    high[loop] = (TA_Real) hbar->data();
+    low[loop] = (TA_Real) lbar->data();
+    close[loop] = (TA_Real) cbar->data();
+    volume[loop] = (TA_Real) vbar->data();
   }
 
   TA_RetCode rc = TA_MFI(0,
@@ -229,27 +265,21 @@ int MFI::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getMFI: TA-Lib error" << rc;
+    return 0;
   }
 
-  line = new Curve;
-
-  int dataLoop = size - 1;
+  Curve *line = new Curve;
+  int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  while (keyLoop > -1 && outLoop > -1)
   {
-    line->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dataLoop--;
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
     outLoop--;
   }
 
-  line->setLabel(name);
-  i->setLine(name, line);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return line;
 }
 
 QWidget * MFI::dialog (QWidget *p, Setting *set)
@@ -263,10 +293,6 @@ void MFI::defaults (Setting *set)
   set->setData("COLOR", QString("red"));
   set->setData("STYLE", QString("Line"));
   set->setData("PERIOD", 9);
-  set->setData("COLOR_REF1", QString("white"));
-  set->setData("REF1", 20);
-  set->setData("COLOR_REF2", QString("white"));
-  set->setData("REF2", 80);
   set->setData("Z", 0);
   set->setData("OUTPUT", _plugin);
 }

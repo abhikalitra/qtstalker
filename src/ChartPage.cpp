@@ -289,3 +289,8 @@ void ChartPage::deleteSymbol2 ()
 
   updateList();
 }
+
+void ChartPage::setBusyFlag (int d)
+{
+  _nav->setBusyFlag(d);
+}

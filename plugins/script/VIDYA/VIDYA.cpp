@@ -46,7 +46,6 @@ int VIDYA::calculate (BarData *bd, Indicator *i, Setting *settings)
   int period = settings->getInt("PERIOD");
   int vperiod = settings->getInt("VPERIOD");
 
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -58,19 +57,13 @@ int VIDYA::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
   Curve *line = getVIDYA(in, period, vperiod);
   if (! line)
-  {
-    if (delFlag)
-      delete in;
     return 1;
-  }
-
-  if (delFlag)
-    delete in;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));

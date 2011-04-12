@@ -25,6 +25,7 @@
 #include "Globals.h"
 #include "MAType.h"
 #include "STOCH_FASTDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -40,94 +41,91 @@ STOCH_FAST::STOCH_FAST ()
 
 int STOCH_FAST::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *kline = i->line(settings->data("OUTPUT_K"));
+  if (kline)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_K" << settings->data("OUTPUT_K");
+    return 1;
+  }
+
+  Curve *dline = i->line(settings->data("OUTPUT_D"));
+  if (dline)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_D" << settings->data("OUTPUT_D");
+    return 1;
+  }
+
   int kperiod = settings->getInt("PERIOD_FASTK");
   int dperiod = settings->getInt("PERIOD_FASTD");
 
   MAType mat;
   int type = mat.fromString(settings->data("MA_TYPE_FASTD"));
-  
-  int size = bd->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  TA_Real out2[size];
 
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
+  Curve *ihigh = i->line("High");
+  if (! ihigh)
   {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
+    InputType it;
+    ihigh = it.input(bd, "High");
+    if (! ihigh)
+    {
+      qDebug() << _plugin << "::calculate: no High";
+      return 1;
+    }
 
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-    close[loop] = (TA_Real) bar->close();
+    ihigh->setLabel("High");
+    i->setLine("High", ihigh);
   }
 
-  TA_RetCode rc = TA_STOCHF(0,
-                            size - 1,
-                            &high[0],
-                            &low[0],
-                            &close[0],
-                            kperiod,
-                            dperiod,
-                            (TA_MAType) type,
-                            &outBeg,
-                            &outNb,
-                            &out[0],
-                            &out2[0]);
-
-  if (rc != TA_SUCCESS)
+  Curve *ilow = i->line("Low");
+  if (! ilow)
   {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    InputType it;
+    ilow = it.input(bd, "Low");
+    if (! ilow)
+    {
+      qDebug() << _plugin << "::calculate: no Low";
+      return 1;
+    }
+
+    ilow->setLabel("Low");
+    i->setLine("Low", ilow);
+  }
+
+  Curve *iclose = i->line("Close");
+  if (! iclose)
+  {
+    InputType it;
+    iclose = it.input(bd, "Close");
+    if (! iclose)
+    {
+      qDebug() << _plugin << "::calculate: no Close";
+      return 1;
+    }
+
+    iclose->setLabel("Close");
+    i->setLine("Close", iclose);
+  }
+
+  QList<Curve *> lines = getSTOCHF(ihigh, ilow, iclose, kperiod, dperiod, type);
+  if (! lines.count())
     return 1;
-  }
 
-  Curve *kline = new Curve;
-  Curve *dline = new Curve;
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    kline->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dline->setBar(dataLoop, new CurveBar(out2[outLoop]));
-
-    dataLoop--;
-    outLoop--;
-  }
-
+  kline = lines.at(0);
   kline->setAllColor(QColor(settings->data("COLOR_K")));
   kline->setLabel(settings->data("OUTPUT_K"));
   kline->setType(settings->data("STYLE_K"));
   kline->setZ(settings->getInt("Z_K"));
   i->setLine(settings->data("OUTPUT_K"), kline);
-  
-  dline->setAllColor(QColor(settings->data("COLOR_D")));
-  dline->setLabel(settings->data("OUTPUT_D"));
-  dline->setType(settings->data("STYLE_D"));
-  dline->setZ(settings->getInt("Z_D"));
-  i->setLine(settings->data("OUTPUT_D"), dline);
 
-  // create ref1 line
-  Setting co;
-  QString key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("TYPE", QString("HLine"));
-  co.setData("ID", key);
-  co.setData("RO", 1);
-  co.setData("PRICE", settings->data("REF1"));
-  co.setData("COLOR", settings->data("COLOR_REF1"));
-  i->addChartObject(co);
-
-  // create ref2 line
-  key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("ID", key);
-  co.setData("PRICE", settings->data("REF2"));
-  co.setData("COLOR", settings->data("COLOR_REF2"));
-  i->addChartObject(co);
+  if (lines.count() == 2)
+  {
+    dline = lines.at(1);
+    dline->setAllColor(QColor(settings->data("COLOR_D")));
+    dline->setLabel(settings->data("OUTPUT_D"));
+    dline->setType(settings->data("STYLE_D"));
+    dline->setZ(settings->getInt("Z_D"));
+    i->setLine(settings->data("OUTPUT_D"), dline);
+  }
 
   return 0;
 }
@@ -211,31 +209,65 @@ int STOCH_FAST::command (Command *command)
     return 1;
   }
   
-  int size = iclose->count();
+  QList<Curve *> lines = getSTOCHF(ihigh, ilow, iclose, kperiod, dperiod, type);
+  if (! lines.count())
+    return 1;
 
-  TA_Integer outBeg;
-  TA_Integer outNb;
+  Curve *kline = lines.at(0);
+  kline->setLabel(kname);
+  i->setLine(kname, kline);
+
+  if (lines.count() == 2)
+  {
+    Curve *dline = lines.at(1);
+    dline->setLabel(dname);
+    i->setLine(dname, dline);
+  }
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+QList<Curve *> STOCH_FAST::getSTOCHF (Curve *ihigh, Curve *ilow, Curve *iclose, int kperiod, int dperiod, int type)
+{
+  QList<int> keys;
+  int size = ihigh->count();
+  ihigh->keys(keys);
+
+  if (ilow->count() < size)
+  {
+    size = ilow->count();
+    ilow->keys(keys);
+  }
+
+  if (iclose->count() < size)
+  {
+    size = iclose->count();
+    iclose->keys(keys);
+  }
+
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
   TA_Real out[size];
   TA_Real out2[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
 
   int ipos = 0;
   int opos = 0;
-  int end = 0;
-  iclose->keyRange(ipos, end);
-  for (; ipos <= end; ipos++, opos++)
+  for (; ipos < keys.count(); ipos++, opos++)
   {
-    CurveBar *hbar = ihigh->bar(ipos);
+    CurveBar *hbar = ihigh->bar(keys.at(ipos));
     if (! hbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(ipos);
+    CurveBar *lbar = ilow->bar(keys.at(ipos));
     if (! lbar)
       continue;
 
-    CurveBar *cbar = iclose->bar(ipos);
+    CurveBar *cbar = iclose->bar(keys.at(ipos));
     if (! cbar)
       continue;
 
@@ -257,35 +289,29 @@ int STOCH_FAST::command (Command *command)
                             &out[0],
                             &out2[0]);
 
+  QList<Curve *> lines;
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getSTOCHF: TA-Lib error" << rc;
+    return lines;
   }
 
   Curve *kline = new Curve;
   Curve *dline = new Curve;
-
-  int dataLoop = size - 1;
+  int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  while (keyLoop > -1 && outLoop > -1)
   {
-    kline->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dline->setBar(dataLoop, new CurveBar(out2[outLoop]));
-
-    dataLoop--;
+    kline->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    dline->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
+    keyLoop--;
     outLoop--;
   }
 
-  kline->setLabel(kname);
-  dline->setLabel(dname);
-
-  i->setLine(kname, kline);
-  i->setLine(dname, dline);
-
-  command->setReturnCode("0");
-
-  return 0;
+  lines.append(kline);
+  lines.append(dline);
+  
+  return lines;
 }
 
 QWidget * STOCH_FAST::dialog (QWidget *p, Setting *set)
@@ -302,10 +328,6 @@ void STOCH_FAST::defaults (Setting *set)
   set->setData("STYLE_D", QString("Line"));
   set->setData("PERIOD_FASTK", 5);
   set->setData("PERIOD_FASTD", 3);
-  set->setData("COLOR_REF1", QString("white"));
-  set->setData("REF1", 20);
-  set->setData("COLOR_REF2", QString("white"));
-  set->setData("REF2", 80);
   set->setData("MA_TYPE_FASTD", QString("EMA"));
   set->setData("Z_K", 0);
   set->setData("OUTPUT_K", QString("%K"));

@@ -24,6 +24,7 @@
 #include "ta_libc.h"
 #include "Globals.h"
 #include "ADXDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -39,46 +40,63 @@ ADX::ADX ()
 
 int ADX::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int period = settings->getInt("PERIOD");
-
-  int size = bd->count();
-  TA_Real adxOut[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
   {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
-
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-    close[loop] = (TA_Real) bar->close();
-  }
-
-  // ADX
-  TA_RetCode rc = TA_ADX(0, size - 1, &high[0], &low[0], &close[0], period, &outBeg, &outNb, &adxOut[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
     return 1;
   }
 
-  Curve *line = new Curve;
-  
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  int period = settings->getInt("PERIOD");
+
+  Curve *ihigh = i->line("High");
+  if (! ihigh)
   {
-    line->setBar(dataLoop, new CurveBar(adxOut[outLoop]));
-    dataLoop--;
-    outLoop--;
+    InputType it;
+    ihigh = it.input(bd, "High");
+    if (! ihigh)
+    {
+      qDebug() << _plugin << "::calculate: no High";
+      return 1;
+    }
+
+    ihigh->setLabel("High");
+    i->setLine("High", ihigh);
   }
+
+  Curve *ilow = i->line("Low");
+  if (! ilow)
+  {
+    InputType it;
+    ilow = it.input(bd, "Low");
+    if (! ilow)
+    {
+      qDebug() << _plugin << "::calculate: no Low";
+      return 1;
+    }
+
+    ilow->setLabel("Low");
+    i->setLine("Low", ilow);
+  }
+
+  Curve *iclose = i->line("Close");
+  if (! iclose)
+  {
+    InputType it;
+    iclose = it.input(bd, "Close");
+    if (! iclose)
+    {
+      qDebug() << _plugin << "::calculate: no Close";
+      return 1;
+    }
+
+    iclose->setLabel("Close");
+    i->setLine("Close", iclose);
+  }
+
+  line = getADX(ihigh, ilow, iclose, period);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -147,8 +165,36 @@ int ADX::command (Command *command)
     }
   }
 
-  int size = iclose->count();
-  
+  line = getADX(ihigh, ilow, iclose, period);
+  if (! line)
+    return 1;
+
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * ADX::getADX (Curve *ihigh, Curve *ilow, Curve *iclose, int period)
+{
+  QList<int> keys;
+  int size = ihigh->count();
+  ihigh->keys(keys);
+
+  if (ilow->count() < size)
+  {
+    size = ilow->count();
+    ilow->keys(keys);
+  }
+
+  if (iclose->count() < size)
+  {
+    size = iclose->count();
+    iclose->keys(keys);
+  }
+
   TA_Real out[size];
   TA_Real high[size];
   TA_Real low[size];
@@ -158,19 +204,17 @@ int ADX::command (Command *command)
 
   int ipos = 0;
   int opos = 0;
-  int end = 0;
-  iclose->keyRange(ipos, end);
-  for (; ipos <= end; ipos++, opos++)
+  for (; ipos < keys.count(); ipos++, opos++)
   {
-    CurveBar *hbar = ihigh->bar(ipos);
+    CurveBar *hbar = ihigh->bar(keys.at(ipos));
     if (! hbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(ipos);
+    CurveBar *lbar = ilow->bar(keys.at(ipos));
     if (! lbar)
       continue;
 
-    CurveBar *cbar = iclose->bar(ipos);
+    CurveBar *cbar = iclose->bar(keys.at(ipos));
     if (! cbar)
       continue;
 
@@ -191,27 +235,21 @@ int ADX::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getADX: TA-Lib error" << rc;
+    return 0;
   }
 
-  line = new Curve;
-
-  int dataLoop = size - 1;
+  Curve *line = new Curve;
+  int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  while (keyLoop > -1 && outLoop > -1)
   {
-    line->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dataLoop--;
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
     outLoop--;
   }
 
-  line->setLabel(name);
-  i->setLine(name, line);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return line;
 }
 
 QWidget * ADX::dialog (QWidget *p, Setting *set)

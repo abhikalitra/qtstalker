@@ -24,6 +24,7 @@
 #include "ta_libc.h"
 #include "Globals.h"
 #include "ULTOSCDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -39,88 +40,71 @@ ULTOSC::ULTOSC ()
 
 int ULTOSC::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
+  }
+
   int sp = settings->getInt("PERIOD_SHORT");
   int mp = settings->getInt("PERIOD_MED");
   int lp = settings->getInt("PERIOD_LONG");
 
-  int size = bd->count();
-  TA_Real out[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
+  Curve *ihigh = i->line("High");
+  if (! ihigh)
   {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
+    InputType it;
+    ihigh = it.input(bd, "High");
+    if (! ihigh)
+    {
+      qDebug() << _plugin << "::calculate: no High";
+      return 1;
+    }
 
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-    close[loop] = (TA_Real) bar->close();
+    ihigh->setLabel("High");
+    i->setLine("High", ihigh);
   }
 
-  TA_RetCode rc = TA_ULTOSC(0,
-                            size - 1,
-                            &high[0],
-                            &low[0],
-                            &close[0],
-                            sp,
-                            mp,
-                            lp,
-                            &outBeg,
-                            &outNb,
-                            &out[0]);
-
-  if (rc != TA_SUCCESS)
+  Curve *ilow = i->line("Low");
+  if (! ilow)
   {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    InputType it;
+    ilow = it.input(bd, "Low");
+    if (! ilow)
+    {
+      qDebug() << _plugin << "::calculate: no Low";
+      return 1;
+    }
+
+    ilow->setLabel("Low");
+    i->setLine("Low", ilow);
+  }
+
+  Curve *iclose = i->line("Close");
+  if (! iclose)
+  {
+    InputType it;
+    iclose = it.input(bd, "Close");
+    if (! iclose)
+    {
+      qDebug() << _plugin << "::calculate: no Close";
+      return 1;
+    }
+
+    iclose->setLabel("Close");
+    i->setLine("Close", iclose);
+  }
+
+  line = getULTOSC(ihigh, ilow, iclose, sp, mp, lp);
+  if (! line)
     return 1;
-  }
-
-  Curve *line = new Curve;
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
-  {
-    line->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dataLoop--;
-    outLoop--;
-  }
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
   line->setType(settings->data("STYLE"));
   line->setZ(settings->getInt("Z"));
   i->setLine(settings->data("OUTPUT"), line);
-
-  // create ref1 line
-  Setting co;
-  QString key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("TYPE", QString("HLine"));
-  co.setData("ID", key);
-  co.setData("RO", 1);
-  co.setData("PRICE", settings->data("REF1"));
-  co.setData("COLOR", settings->data("COLOR_REF1"));
-  i->addChartObject(co);
-
-  // create ref2 line
-  key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("ID", key);
-  co.setData("PRICE", settings->data("REF2"));
-  co.setData("COLOR", settings->data("COLOR_REF2"));
-  i->addChartObject(co);
-  
-  // create ref3 line
-  key = "-" + QString::number(i->chartObjectCount() + 1);
-  co.setData("ID", key);
-  co.setData("PRICE", settings->data("REF3"));
-  co.setData("COLOR", settings->data("COLOR_REF3"));
-  i->addChartObject(co);
 
   return 0;
 }
@@ -194,7 +178,35 @@ int ULTOSC::command (Command *command)
     return 1;
   }
 
-  int size = iclose->count();
+  line = getULTOSC(ihigh, ilow, iclose, sp, mp, lp);
+  if (! line)
+    return 1;
+
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * ULTOSC::getULTOSC (Curve *ihigh, Curve *ilow, Curve *iclose, int sp, int mp, int lp)
+{
+  QList<int> keys;
+  int size = ihigh->count();
+  ihigh->keys(keys);
+
+  if (ilow->count() < size)
+  {
+    size = ilow->count();
+    ilow->keys(keys);
+  }
+
+  if (iclose->count() < size)
+  {
+    size = iclose->count();
+    iclose->keys(keys);
+  }
 
   TA_Real out[size];
   TA_Real high[size];
@@ -205,19 +217,17 @@ int ULTOSC::command (Command *command)
 
   int ipos = 0;
   int opos = 0;
-  int end = 0;
-  iclose->keyRange(ipos, end);
-  for (; ipos <= end; ipos++, opos++)
+  for (; ipos < keys.count(); ipos++, opos++)
   {
-    CurveBar *hbar = ihigh->bar(ipos);
+    CurveBar *hbar = ihigh->bar(keys.at(ipos));
     if (! hbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(ipos);
+    CurveBar *lbar = ilow->bar(keys.at(ipos));
     if (! lbar)
       continue;
 
-    CurveBar *cbar = iclose->bar(ipos);
+    CurveBar *cbar = iclose->bar(keys.at(ipos));
     if (! cbar)
       continue;
 
@@ -240,27 +250,21 @@ int ULTOSC::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getULTOSC: TA-Lib error" << rc;
+    return 0;
   }
 
-  line = new Curve;
-
-  int dataLoop = size - 1;
+  Curve *line = new Curve;
+  int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  while (keyLoop > -1 && outLoop > -1)
   {
-    line->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dataLoop--;
+    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    keyLoop--;
     outLoop--;
   }
 
-  line->setLabel(name);
-  i->setLine(name, line);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return line;
 }
 
 QWidget * ULTOSC::dialog (QWidget *p, Setting *set)
@@ -276,12 +280,6 @@ void ULTOSC::defaults (Setting *set)
   set->setData("PERIOD_SHORT", 7);
   set->setData("PERIOD_MED", 14);
   set->setData("PERIOD_LONG", 28);
-  set->setData("COLOR_REF1", QString("white"));
-  set->setData("REF1", 30);
-  set->setData("COLOR_REF2", QString("white"));
-  set->setData("REF2", 50);
-  set->setData("COLOR_REF3", QString("white"));
-  set->setData("REF3", 70);
   set->setData("Z", 0);
   set->setData("OUTPUT", _plugin);
 }

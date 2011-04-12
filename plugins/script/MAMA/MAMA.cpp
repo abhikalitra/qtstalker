@@ -43,7 +43,6 @@ int MAMA::calculate (BarData *bd, Indicator *i, Setting *settings)
   double fastLimit = settings->getDouble("LIMIT_FAST");
   double slowLimit = settings->getDouble("LIMIT_SLOW");
 
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -55,7 +54,8 @@ int MAMA::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
   int size = in->count();
@@ -74,9 +74,6 @@ int MAMA::calculate (BarData *bd, Indicator *i, Setting *settings)
     CurveBar *bar = in->bar(keys.at(loop));
     input[loop] = (TA_Real) bar->data();
   }
-
-  if (delFlag)
-    delete in;
 
   TA_RetCode rc = TA_MAMA(0,
                           size - 1,

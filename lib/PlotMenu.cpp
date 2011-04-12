@@ -316,6 +316,7 @@ void PlotMenu::addIndicator2 (QString d)
 {
   Indicator i;
   i.add(d);
+  g_middleMan->indicatorNew(d);
 }
 
 void PlotMenu::removeIndicator ()

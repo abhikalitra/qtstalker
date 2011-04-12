@@ -47,7 +47,6 @@ int MAVP::calculate (BarData *bd, Indicator *i, Setting *settings)
   MAType mat;
   int type = mat.fromString(settings->data("MA_TYPE"));
   
-  int delFlag = FALSE;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
   {
@@ -59,10 +58,10 @@ int MAVP::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
-  int delFlag2 = FALSE;
   Curve *in2 = i->line(settings->data("INPUT2"));
   if (! in2)
   {
@@ -71,12 +70,11 @@ int MAVP::calculate (BarData *bd, Indicator *i, Setting *settings)
     if (! in2)
     {
       qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT2");
-      if (delFlag)
-	delete in;
       return 1;
     }
 
-    delFlag2++;
+    in2->setZ(-1);
+    i->setLine(settings->data("INPUT2"), in2);
   }
 
   int flag = 0;
@@ -110,12 +108,6 @@ int MAVP::calculate (BarData *bd, Indicator *i, Setting *settings)
     loop--;
     loop2--;
   }
-
-  if (delFlag)
-    delete in;
-  
-  if (delFlag2)
-    delete in2;
 
   TA_RetCode rc = TA_MAVP(0,
                           size - 1,

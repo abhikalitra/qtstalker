@@ -34,6 +34,7 @@ class RSI : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getRSI (Curve *, int);
 };
 
 extern "C"

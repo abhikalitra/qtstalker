@@ -30,22 +30,12 @@ MFIDialog::MFIDialog (QWidget *p, Setting *set) : QWidget (p)
 {
   _settings = set;
   createGeneralPage();
-  createRefPage();
-  createRef2Page();
 }
 
 void MFIDialog::createGeneralPage ()
 {
-  QVBoxLayout *vbox = new QVBoxLayout;
-  setLayout(vbox);
-
-  _tabs = new QTabWidget;
-  vbox->addWidget(_tabs);
-
-  QWidget *w = new QWidget;
-
   QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
+  setLayout(form);
 
   // output
   _output = new QLineEdit(_settings->data("OUTPUT"));
@@ -75,51 +65,7 @@ void MFIDialog::createGeneralPage ()
   _z = new QSpinBox;
   _z->setRange(-1, 99);
   _z->setValue(_settings->getInt("Z"));
-  form->addRow(tr("Plot Order"), _z);
-
-  _tabs->addTab(w, "MFI");
-}
-
-void MFIDialog::createRefPage ()
-{
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // color
-  _refColor = new ColorButton(this, QColor(_settings->data("COLOR_REF1")));
-  _refColor->setColorButton();
-  form->addRow(tr("Color"), _refColor);
-
-  // ref
-  _ref = new QDoubleSpinBox;
-  _ref->setRange(-100000, 100000);
-  _ref->setValue(_settings->getDouble("REF1"));
-  form->addRow(tr("Value"), _ref);
-
-  _tabs->addTab(w, "REF 1");
-}
-
-void MFIDialog::createRef2Page ()
-{
-  QWidget *w = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  w->setLayout(form);
-
-  // color
-  _ref2Color = new ColorButton(this, QColor(_settings->data("COLOR_REF2")));
-  _ref2Color->setColorButton();
-  form->addRow(tr("Color"), _ref2Color);
-
-  // ref
-  _ref2 = new QDoubleSpinBox;
-  _ref2->setRange(-100000, 100000);
-  _ref2->setValue(_settings->getDouble("REF2"));
-  form->addRow(tr("Value"), _ref2);
-
-  _tabs->addTab(w, "REF 2");
+  form->addRow(tr("Plot"), _z);
 }
 
 void MFIDialog::save ()
@@ -127,10 +73,6 @@ void MFIDialog::save ()
   _settings->setData("COLOR", _color->color().name());
   _settings->setData("STYLE", _style->currentText());
   _settings->setData("PERIOD", _period->value());
-  _settings->setData("REF1", _ref->value());
-  _settings->setData("REF2", _ref2->value());
-  _settings->setData("COLOR_REF1", _refColor->color().name());
-  _settings->setData("COLOR_REF2", _ref2Color->color().name());
   _settings->setData("OUTPUT", _output->text());
   _settings->setData("Z", _z->text());
 }

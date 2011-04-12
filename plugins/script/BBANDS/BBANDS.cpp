@@ -48,7 +48,6 @@ int BBANDS::calculate (BarData *bd, Indicator *i, Setting *settings)
   MAType types;
   int type = types.fromString(settings->data("MA_TYPE"));
 
-  int delFlag = FALSE;
   Curve *input = i->line(settings->data("INPUT"));
   if (! input)
   {
@@ -60,7 +59,8 @@ int BBANDS::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    input->setZ(-1);
+    i->setLine(settings->data("INPUT"), input);
   }
 
   int size = input->count();
@@ -80,9 +80,6 @@ int BBANDS::calculate (BarData *bd, Indicator *i, Setting *settings)
     CurveBar *bar = input->bar(keys.at(loop));
     in[loop] = (TA_Real) bar->data();
   }
-
-  if (delFlag)
-    delete input;
 
   TA_RetCode rc = TA_BBANDS(0,
                             keys.count() - 1,

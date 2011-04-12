@@ -43,7 +43,6 @@ int BETA::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
   int period = settings->getInt("PERIOD");
   
-  int delFlag = FALSE;
   InputType it;
   Curve *in = i->line(settings->data("INPUT"));
   if (! in)
@@ -55,7 +54,8 @@ int BETA::calculate (BarData *bd, Indicator *i, Setting *settings)
       return 1;
     }
 
-    delFlag++;
+    in->setZ(-1);
+    i->setLine(settings->data("INPUT"), in);
   }
 
   BarData tbd;
@@ -67,19 +67,11 @@ int BETA::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   QuoteDataBase db;
   if (db.getBars(&tbd))
-  {
-    if (delFlag)
-      delete in;
     return 1;
-  }
   
   Curve *in2 = it.input(&tbd, "Close");
   if (! in2)
-  {
-    if (delFlag)
-      delete in;
     return 1;
-  }
 
   QList<int> keys;
   int size = in->count();
@@ -112,8 +104,6 @@ int BETA::calculate (BarData *bd, Indicator *i, Setting *settings)
     input2[loop] = (TA_Real) bar2->data();
   }
 
-  if (delFlag)
-    delete in;
   delete in2;
   
   TA_RetCode rc = TA_BETA(0,

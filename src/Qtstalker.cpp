@@ -240,6 +240,8 @@ void QtstalkerApp::loadChart (BarData symbol)
   setWindowTitle(getWindowCaption());
   statusMessage(QString());
   emit signalPlot();
+
+  _sidePanel->setBusyFlag(0);
 }
 
 QString QtstalkerApp::getWindowCaption ()
