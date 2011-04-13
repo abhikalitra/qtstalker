@@ -56,37 +56,17 @@ int AROON::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   int period = settings->getInt("PERIOD");
   
-  Curve *ihigh = i->line("High");
-  if (! ihigh)
+  InputType it;
+  QStringList order;
+  order << "High" << "Low";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    InputType it;
-    ihigh = it.input(bd, "High");
-    if (! ihigh)
-    {
-      qDebug() << _plugin << "::calculate: no High";
-      return 1;
-    }
-
-    ihigh->setLabel("High");
-    i->setLine("High", ihigh);
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
 
-  Curve *ilow = i->line("Low");
-  if (! ilow)
-  {
-    InputType it;
-    ilow = it.input(bd, "Low");
-    if (! ilow)
-    {
-      qDebug() << _plugin << "::calculate: no Low";
-      return 1;
-    }
-
-    ilow->setLabel("Low");
-    i->setLine("Low", ilow);
-  }
-
-  QList<Curve *> lines = getAROON(ihigh, ilow, period);
+  QList<Curve *> lines = getAROON(list, period);
   if (! lines.count())
     return 1;
 
@@ -164,7 +144,9 @@ int AROON::command (Command *command)
     return 1;
   }
 
-  QList<Curve *> lines = getAROON(ihigh, ilow, period);
+  QList<Curve *> list;
+  list << ihigh << ilow;
+  QList<Curve *> lines = getAROON(list, period);
   if (! lines.count())
     return 1;
 
@@ -184,18 +166,15 @@ int AROON::command (Command *command)
   return 0;
 }
 
-QList<Curve *> AROON::getAROON (Curve *ihigh, Curve *ilow, int period)
+QList<Curve *> AROON::getAROON (QList<Curve *> &list, int period)
 {
+  QList<Curve *> lines;
+  InputType it;
   QList<int> keys;
-  int size = ihigh->count();
-  ihigh->keys(keys);
+  if (it.keys(list, keys))
+    return lines;
 
-  if (ilow->count() < size)
-  {
-    size = ilow->count();
-    ilow->keys(keys);
-  }
-
+  int size = keys.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real out[size];
@@ -203,21 +182,9 @@ QList<Curve *> AROON::getAROON (Curve *ihigh, Curve *ilow, int period)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int ipos = 0;
-  int opos = 0;
-  for (; ipos < keys.count(); ipos++, opos++)
-  {
-    CurveBar *hbar = ihigh->bar(keys.at(ipos));
-    if (! hbar)
-      continue;
-
-    CurveBar *lbar = ilow->bar(keys.at(ipos));
-    if (! lbar)
-      continue;
-
-    high[opos] = (TA_Real) hbar->data();
-    low[opos] = (TA_Real) lbar->data();
-  }
+  size = it.fill(list, keys, &high[0], &low[0], &low[0], &low[0]);
+  if (! size)
+    return lines;
 
   TA_RetCode rc = TA_AROON(0,
                            size - 1,
@@ -229,27 +196,22 @@ QList<Curve *> AROON::getAROON (Curve *ihigh, Curve *ilow, int period)
                            &out[0],
                            &out2[0]);
 
-  QList<Curve *> lines;
   if (rc != TA_SUCCESS)
   {
     qDebug() << _plugin << "::getAROON: TA-Lib error" << rc;
     return lines;
   }
 
-  Curve *upper = new Curve;
-  Curve *lower = new Curve;
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  Curve *c = new Curve;
+  lines.append(c);
+  c = new Curve;
+  lines.append(c);
+  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
   {
-    upper->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    lower->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
-    keyLoop--;
-    outLoop--;
+    qDeleteAll(lines);
+    lines.clear();
+    return lines;
   }
-
-  lines.append(upper);
-  lines.append(lower);
 
   return lines;
 }

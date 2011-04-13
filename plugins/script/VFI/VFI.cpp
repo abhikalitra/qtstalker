@@ -36,43 +36,28 @@ VFI::VFI ()
 
 int VFI::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
+  }
+
   int period = settings->getInt("PERIOD");
 
   InputType it;
-  Curve *high = it.input(bd, "High");
-  if (! high)
-    return 1;
-
-  Curve *low = it.input(bd, "Low");
-  if (! low)
+  QStringList order;
+  order << "High" << "Low" << "Close" << "Volume";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    delete high;
-    return 1;
-  }
-  
-  Curve *close = it.input(bd, "Close");
-  if (! close)
-  {
-    delete high;
-    delete low;
+    qDebug() << _plugin << "::calculate: input missing";
     return 1;
   }
 
-  Curve *vol = it.input(bd, "Volume");
-  if (! vol)
-  {
-    delete high;
-    delete low;
-    delete close;
+  line = getVFI(list, period);
+  if (! line)
     return 1;
-  }
-
-  Curve *line = getVFI(high, low, close, vol, period);
-
-  delete high;
-  delete low;
-  delete close;
-  delete vol;
   
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -144,7 +129,11 @@ int VFI::command (Command *command)
     return 1;
   }
 
-  line = getVFI(ihigh, ilow, iclose, ivol, period);
+  QList<Curve *> list;
+  list << ihigh << ilow << iclose << ivol;
+  line = getVFI(list, period);
+  if (! line)
+    return 1;
 
   line->setLabel(name);
   i->setLine(name, line);
@@ -154,25 +143,33 @@ int VFI::command (Command *command)
   return 0;
 }
 
-Curve * VFI::getVFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int period)
+Curve * VFI::getVFI (QList<Curve *> &list, int period)
 {
-  Curve *vfi = new Curve;
+  if (list.count() != 4)
+    return 0;
 
-  int ipos = 0;
-  int end = 0;
-  iclose->keyRange(ipos, end);
-  ipos += period;
-  for (; ipos <= end; ipos++)
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+  
+  Curve *vfi = new Curve;
+  Curve *ihigh = list.at(0);
+  Curve *ilow = list.at(1);
+  Curve *iclose = list.at(2);
+  Curve *ivol = list.at(3);
+  int loop = period;
+  for (; loop < keys.count(); loop++)
   {
-    CurveBar *hbar = ihigh->bar(ipos - period);
+    CurveBar *hbar = ihigh->bar(keys.at(loop - period));
     if (! hbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(ipos - period);
+    CurveBar *lbar = ilow->bar(keys.at(loop - period));
     if (! lbar)
       continue;
 
-    CurveBar *cbar = iclose->bar(ipos - period);
+    CurveBar *cbar = iclose->bar(keys.at(loop - period));
     if (! cbar)
       continue;
 
@@ -183,21 +180,21 @@ Curve * VFI::getVFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int 
     double high = hbar->data();
     double low = lbar->data();
     double typical = (high + low + close) / 3.0;
-    for (i = ipos - period + 1; i <= ipos; i++)
+    for (i = loop - period + 1; i <= loop; i++)
     {
-      hbar = ihigh->bar(i);
+      hbar = ihigh->bar(keys.at(i));
       if (! hbar)
         continue;
 
-      lbar = ilow->bar(i);
+      lbar = ilow->bar(keys.at(i));
       if (! lbar)
         continue;
 
-      cbar = iclose->bar(i);
+      cbar = iclose->bar(keys.at(i));
       if (! cbar)
         continue;
 
-      CurveBar *vbar = ivol->bar(i);
+      CurveBar *vbar = ivol->bar(keys.at(i));
       if (! vbar)
         continue;
 
@@ -213,15 +210,15 @@ Curve * VFI::getVFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int 
     inter = 0.2 * sqrt(inter / (double) period) * typical;
     sma_vol /= (double) period;
 
-    hbar = ihigh->bar(ipos - period);
+    hbar = ihigh->bar(keys.at(loop - period));
     if (! hbar)
       continue;
 
-    lbar = ilow->bar(ipos - period);
+    lbar = ilow->bar(keys.at(loop - period));
     if (! lbar)
       continue;
 
-    cbar = iclose->bar(ipos - period);
+    cbar = iclose->bar(keys.at(loop - period));
     if (! cbar)
       continue;
 
@@ -230,21 +227,21 @@ Curve * VFI::getVFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int 
     low = lbar->data();
     typical = (high + low + close) / 3.0;
     double t = 0;
-    for (i = ipos - period + 1; i <= ipos; i++)
+    for (i = loop - period + 1; i <= loop; i++)
     {
-      hbar = ihigh->bar(i);
+      hbar = ihigh->bar(keys.at(i));
       if (! hbar)
         continue;
 
-      lbar = ilow->bar(i);
+      lbar = ilow->bar(keys.at(i));
       if (! lbar)
         continue;
 
-      cbar = iclose->bar(i);
+      cbar = iclose->bar(keys.at(i));
       if (! cbar)
         continue;
 
-      CurveBar *vbar = ivol->bar(i);
+      CurveBar *vbar = ivol->bar(keys.at(i));
       if (! vbar)
         continue;
 
@@ -264,7 +261,7 @@ Curve * VFI::getVFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int 
       }
     }
 
-    vfi->setBar(ipos, new CurveBar(t));
+    vfi->setBar(keys.at(loop), new CurveBar(t));
   }
 
   return vfi;

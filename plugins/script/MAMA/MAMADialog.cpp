@@ -63,13 +63,15 @@ void MAMADialog::createGeneralPage ()
   // fast limit
   _fast = new QDoubleSpinBox;
   _fast->setRange(0, 100000);
-  _fast->setValue(_settings->getInt("LIMIT_FAST"));
+  _fast->setDecimals(4);
+  _fast->setValue(_settings->getDouble("LIMIT_FAST"));
   form->addRow(tr("Fast Limit"), _fast);
 
   // slow limit
   _slow = new QDoubleSpinBox;
   _slow->setRange(0, 100000);
-  _slow->setValue(_settings->getInt("LIMIT_SLOW"));
+  _slow->setDecimals(4);
+  _slow->setValue(_settings->getDouble("LIMIT_SLOW"));
   form->addRow(tr("Slow Period"), _slow);
 
   _tabs->addTab(w, tr("General"));  
@@ -104,7 +106,7 @@ void MAMADialog::createMAMAPage ()
   _zMama = new QSpinBox;
   _zMama->setRange(-1, 99);
   _zMama->setValue(_settings->getInt("Z_MAMA"));
-  form->addRow(tr("Plot Order"), _zMama);
+  form->addRow(tr("Plot"), _zMama);
 
   _tabs->addTab(w, "MAMA");
 }
@@ -138,7 +140,7 @@ void MAMADialog::createFAMAPage ()
   _zFama = new QSpinBox;
   _zFama->setRange(-1, 99);
   _zFama->setValue(_settings->getInt("Z_FAMA"));
-  form->addRow(tr("Plot Order"), _zFama);
+  form->addRow(tr("Plot"), _zFama);
 
   _tabs->addTab(w, "FAMA");
 }

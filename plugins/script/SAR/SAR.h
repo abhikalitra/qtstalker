@@ -34,6 +34,7 @@ class SAR : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getSAR (QList<Curve *> &, double, double);
 };
 
 extern "C"

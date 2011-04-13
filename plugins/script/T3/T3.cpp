@@ -40,65 +40,29 @@ T3::T3 ()
 
 int T3::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int period = settings->getInt("PERIOD");
-  double vfactor = settings->getDouble("VFACTOR");
-
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
-  }
-
-  QList<int> keys;
-  in->keys(keys);
-  int size = keys.count();
-
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_T3(0,
-                        size - 1,
-                        &input[0],
-                        period,
-                        vfactor,
-                        &outBeg,
-                        &outNb,
-                        &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
     return 1;
   }
 
-  Curve *line = new Curve;
+  int period = settings->getInt("PERIOD");
+  double vfactor = settings->getDouble("VFACTOR");
 
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
+
+  line = getT3(list, period, vfactor);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -154,50 +118,11 @@ int T3::command (Command *command)
     return 1;
   }
 
-  if (in->count() < period)
+  QList<Curve *> list;
+  list << in;
+  line = getT3(list, period, vfactor);
+  if (! line)
     return 1;
-
-  QList<int> keys;
-  in->keys(keys);
-  int size = keys.count();
-
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_T3(0,
-                        size - 1,
-                        &input[0],
-                        period,
-                        vfactor,
-                        &outBeg,
-                        &outNb,
-                        &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
-  }
-
-  line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
-  }
 
   line->setLabel(name);
   i->setLine(name, line);
@@ -205,6 +130,53 @@ int T3::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+Curve * T3::getT3 (QList<Curve *> &list, int period, double vfactor)
+{
+  if (! list.count())
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  int size = keys.count();
+  TA_Real out[size];
+  TA_Real in[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  if (! size)
+    return 0;
+
+  TA_RetCode rc = TA_T3(0,
+                        size - 1,
+                        &in[0],
+			period,
+			vfactor,
+                        &outBeg,
+                        &outNb,
+                        &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::getT3: TA-Lib error" << rc;
+    return 0;
+  }
+
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+  {
+    delete c;
+    return 0;
+  }
+
+  return c;
 }
 
 QWidget * T3::dialog (QWidget *p, Setting *set)

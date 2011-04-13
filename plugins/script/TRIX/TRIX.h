@@ -34,6 +34,7 @@ class TRIX : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getTRIX (QList<Curve *> &, int);
 };
 
 extern "C"

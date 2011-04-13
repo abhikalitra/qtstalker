@@ -43,23 +43,27 @@ int MA::calculate (BarData *bd, Indicator *i, Setting *settings)
     int col = 0;
     QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
     QString name = settings->data(key);
+    Curve *line = i->line(name);
+    if (line)
+    {
+      qDebug() << _plugin << "::calculate: duplicate OUTPUT" << name;
+      return 1;
+    }
 
     // input
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in = i->line(settings->data(key));
-    if (! in)
+    InputType it;
+    QStringList order;
+    order << settings->data(key);
+    QList<Curve *> list;
+    if (it.inputs(list, order, i, bd))
     {
-      InputType it;
-      in = it.input(bd, settings->data(key));
-      if (! in)
-      {
-        qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-        return 1;
-      }
-
-      in->setLabel(settings->data(key));
-      i->setLine(settings->data(key), in);
+      qDebug() << _plugin << "::calculate: input missing";
+      return 1;
     }
+    if (! list.count())
+      return 1;
+    Curve *in = list.at(0);
 
     // type
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";

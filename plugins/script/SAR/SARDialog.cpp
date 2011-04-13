@@ -49,12 +49,14 @@ void SARDialog::createGeneralPage ()
   // initial
   _init = new QDoubleSpinBox;
   _init->setRange(0, 0.2);
+  _init->setDecimals(4);
   _init->setValue(_settings->getDouble("STEP_INITIAL"));
   form->addRow(tr("Initial Step"), _init);
 
   // max
   _max = new QDoubleSpinBox;
   _max->setRange(0, 0.2);
+  _max->setDecimals(4);
   _max->setValue(_settings->getDouble("STEP_MAX"));
   form->addRow(tr("Maximum Step"), _max);
 

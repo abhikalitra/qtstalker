@@ -300,14 +300,6 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Smoothing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Smoothing Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
@@ -316,7 +308,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -450,14 +442,6 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
@@ -466,7 +450,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -489,15 +473,11 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -582,10 +562,6 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
@@ -594,7 +570,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1594,10 +1570,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1606,7 +1578,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2131,10 +2103,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2143,7 +2111,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2413,10 +2381,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2425,7 +2389,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2433,10 +2397,6 @@ eg. perl -l -T</source>
     <name>STOCHSDialog</name>
     <message>
         <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2460,7 +2420,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2483,15 +2443,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3411,10 +3367,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3423,7 +3375,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

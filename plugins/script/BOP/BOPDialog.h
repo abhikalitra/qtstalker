@@ -42,10 +42,8 @@ class BOPDialog : public QWidget
 
   private:
     Setting *_settings;
-    QSpinBox *_smoothing;
     ColorButton *_color;
     QComboBox *_style;
-    QComboBox *_smoothingType;
     QSpinBox *_z;
     QLineEdit *_output;
 };

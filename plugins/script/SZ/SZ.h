@@ -44,7 +44,7 @@ class SZ : public Plugin
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
     QStringList method ();
-    Curve * getSZ (Curve *ihigh, Curve *ilow, int type, int period, int ndp, double coeff);
+    Curve * getSZ (QList<Curve *> &, int type, int period, int ndp, double coeff);
 
   private:
     QStringList _method;

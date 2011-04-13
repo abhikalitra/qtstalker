@@ -40,77 +40,48 @@ MAMA::MAMA ()
 
 int MAMA::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  double fastLimit = settings->getDouble("LIMIT_FAST");
-  double slowLimit = settings->getDouble("LIMIT_SLOW");
-
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  Curve *mama = i->line(settings->data("OUTPUT_MAMA"));
+  if (mama)
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
-  }
-
-  int size = in->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_MAMA(0,
-                          size - 1,
-                          &input[0],
-                          fastLimit,
-                          slowLimit,
-                          &outBeg,
-                          &outNb,
-                          &out[0],
-                          &out2[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_MAMA" << settings->data("OUTPUT_MAMA");
     return 1;
   }
 
-  Curve *mama = new Curve;
-  Curve *fama = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  Curve *fama = i->line(settings->data("OUTPUT_FAMA"));
+  if (fama)
   {
-    mama->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    fama->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
-
-    keyLoop--;
-    outLoop--;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_FAMA" << settings->data("OUTPUT_FAMA");
+    return 1;
   }
 
+  double fastLimit = settings->getDouble("LIMIT_FAST");
+  double slowLimit = settings->getDouble("LIMIT_SLOW");
+
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
+  {
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
+  }
+
+  QList<Curve *> lines = getMAMA(list, fastLimit, slowLimit);
+  if (lines.count() != 2)
+  {
+    qDeleteAll(lines);
+    return 1;
+  }
+
+  mama = lines.at(0);
   mama->setAllColor(QColor(settings->data("COLOR_MAMA")));
   mama->setLabel(settings->data("OUTPUT_MAMA"));
   mama->setType(settings->data("STYLE_MAMA"));
   mama->setZ(settings->getInt("Z_MAMA"));
   i->setLine(settings->data("OUTPUT_MAMA"), mama);
   
+  fama = lines.at(1);
   fama->setAllColor(QColor(settings->data("COLOR_FAMA")));
   fama->setLabel(settings->data("OUTPUT_FAMA"));
   fama->setType(settings->data("STYLE_FAMA"));
@@ -174,29 +145,53 @@ int MAMA::command (Command *command)
     return 1;
   }
 
-  if (in->count() < flimit || in->count() < slimit)
+  QList<Curve *> list;
+  list << in;
+  QList<Curve *> lines = getMAMA(list, flimit, slimit);
+  if (lines.count() != 2)
+  {
+    qDeleteAll(lines);
     return 1;
+  }
 
-  int size = in->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[size];
+  Curve *mama = lines.at(0);
+  mama->setLabel(mname);
+  i->setLine(mname, mama);
+
+  Curve *fama = lines.at(1);
+  fama->setLabel(fname);
+  i->setLine(fname, fama);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+QList<Curve *> MAMA::getMAMA (QList<Curve *> &list, double flimit, double slimit)
+{
+  QList<Curve *> lines;
+  if (! list.count())
+    return lines;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return lines;
+
+  int size = keys.count();
+  TA_Real in[size];
   TA_Real out[size];
   TA_Real out2[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
 
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
+  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  if (! size)
+    return lines;
 
   TA_RetCode rc = TA_MAMA(0,
                           size - 1,
-                          &input[0],
+                          &in[0],
                           flimit,
                           slimit,
                           &outBeg,
@@ -206,33 +201,22 @@ int MAMA::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getMAMA: TA-Lib error" << rc;
+    return lines;
   }
 
-  Curve *mama = new Curve;
-  Curve *fama = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  Curve *c = new Curve;
+  lines.append(c);
+  c = new Curve;
+  lines.append(c);
+  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
   {
-    mama->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    fama->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
-
-    keyLoop--;
-    outLoop--;
+    qDeleteAll(lines);
+    lines.clear();
+    return lines;
   }
 
-  mama->setLabel(mname);
-  fama->setLabel(fname);
-
-  i->setLine(mname, mama);
-  i->setLine(fname, fama);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return lines;
 }
 
 QWidget * MAMA::dialog (QWidget *p, Setting *set)

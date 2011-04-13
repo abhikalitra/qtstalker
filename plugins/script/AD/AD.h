@@ -34,7 +34,7 @@ class AD : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
-    Curve * getAD (Curve *, Curve *, Curve *, Curve *);
+    Curve * getAD (QList<Curve *> &);
 };
 
 extern "C"

@@ -38,7 +38,7 @@ class ROCDialog : public QWidget
     void createGeneralPage ();
 
   public slots:
-    void done ();
+    void save ();
 
   private:
     Setting *_settings;

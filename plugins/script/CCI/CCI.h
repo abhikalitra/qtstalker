@@ -34,7 +34,7 @@ class CCI : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
-    Curve * getCCI (Curve *high, Curve *low, Curve *close, int period);
+    Curve * getCCI (QList<Curve *> &, int period);
 };
 
 extern "C"

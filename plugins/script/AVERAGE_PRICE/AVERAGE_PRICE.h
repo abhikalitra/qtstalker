@@ -34,6 +34,7 @@ class AVERAGE_PRICE : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getAP (QList<Curve *> &);
 };
 
 extern "C"

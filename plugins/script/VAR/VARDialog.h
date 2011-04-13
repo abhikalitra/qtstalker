@@ -24,6 +24,7 @@
 
 #include <QComboBox>
 #include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QLineEdit>
 
 #include "ColorButton.h"
@@ -48,6 +49,7 @@ class VARDialog : public QWidget
     QComboBox *_input;
     QLineEdit *_output;
     QSpinBox *_z;
+    QDoubleSpinBox *_dev;
 };
 
 #endif

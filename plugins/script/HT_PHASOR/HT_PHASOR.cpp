@@ -40,72 +40,45 @@ HT_PHASOR::HT_PHASOR ()
 
 int HT_PHASOR::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  Curve *pline = i->line(settings->data("OUTPUT_PHASE"));
+  if (pline)
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
-  }
-
-  int size = in->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_HT_PHASOR (0,
-                                size - 1,
-                                &input[0],
-                                &outBeg,
-                                &outNb,
-                                &out[0],
-                                &out2[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_PHASE" << settings->data("OUTPUT_PHASE");
     return 1;
   }
 
-  Curve *pline = new Curve;
-  Curve *qline = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  Curve *qline = i->line(settings->data("OUTPUT_QUAD"));
+  if (qline)
   {
-    pline->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    qline->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
-
-    keyLoop--;
-    outLoop--;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_QUAD" << settings->data("OUTPUT_QUAD");
+    return 1;
   }
 
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
+  {
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
+  }
+
+  QList<Curve *> lines = getPHASOR(list);
+  if (lines.count() != 2)
+  {
+    qDeleteAll(lines);
+    return 1;
+  }
+
+  pline = lines.at(0);
   pline->setAllColor(QColor(settings->data("COLOR_PHASE")));
   pline->setLabel(settings->data("OUTPUT_PHASE"));
   pline->setType(settings->data("STYLE_PHASE"));
   pline->setZ(settings->getInt("Z_PHASE"));
   i->setLine(settings->data("OUTPUT_PHASE"), pline);
   
+  qline = lines.at(1);
   qline->setAllColor(QColor(settings->data("COLOR_QUAD")));
   qline->setLabel(settings->data("OUTPUT_QUAD"));
   qline->setType(settings->data("STYLE_QUAD"));
@@ -152,25 +125,49 @@ int HT_PHASOR::command (Command *command)
     return 1;
   }
 
-  if (in->count() < 1)
+  QList<Curve *> list;
+  list << in;
+  QList<Curve *> lines = getPHASOR(list);
+  if (lines.count() != 2)
+  {
+    qDeleteAll(lines);
     return 1;
+  }
 
-  int size = in->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
+  Curve *pline = lines.at(0);
+  pline->setLabel(pname);
+  i->setLine(pname, pline);
+  
+  Curve *qline = lines.at(1);
+  qline->setLabel(qname);
+  i->setLine(qname, qline);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+QList<Curve *> HT_PHASOR::getPHASOR (QList<Curve *> &list)
+{
+  QList<Curve *> lines;
+  if (! list.count())
+    return lines;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return lines;
+
+  int size = keys.count();
   TA_Real input[size];
   TA_Real out[size];
   TA_Real out2[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
 
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
+  size = it.fill(list, keys, &input[0], &input[0], &input[0], &input[0]);
+  if (! size)
+    return lines;
 
   TA_RetCode rc = TA_HT_PHASOR (0,
                                 size - 1,
@@ -182,33 +179,22 @@ int HT_PHASOR::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getPHASOR: TA-Lib error" << rc;
+    return lines;
   }
 
-  Curve *pline = new Curve;
-  Curve *qline = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  Curve *c = new Curve;
+  lines.append(c);
+  c = new Curve;
+  lines.append(c);
+  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
   {
-    pline->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    qline->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
-
-    keyLoop--;
-    outLoop--;
+    qDeleteAll(lines);
+    lines.clear();
+    return lines;
   }
 
-  pline->setLabel(pname);
-  qline->setLabel(qname);
-
-  i->setLine(pname, pline);
-  i->setLine(qname, qline);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return lines;
 }
 
 QWidget * HT_PHASOR::dialog (QWidget *p, Setting *set)
@@ -224,9 +210,9 @@ void HT_PHASOR::defaults (Setting *set)
   set->setData("STYLE_PHASE", QString("Line"));
   set->setData("STYLE_QUAD", QString("Line"));
   set->setData("INPUT", QString("Close"));
-  set->setData("OUTPUT_PHASE", _plugin);
+  set->setData("OUTPUT_PHASE", QString("PHASE"));
   set->setData("Z_PHASE", 0);
-  set->setData("OUTPUT_QUAD", _plugin);
+  set->setData("OUTPUT_QUAD", QString("QUAD"));
   set->setData("Z_QUAD", 0);
 }
 

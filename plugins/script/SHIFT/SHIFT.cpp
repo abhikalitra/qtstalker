@@ -51,39 +51,22 @@ int SHIFT::calculate (BarData *bd, Indicator *i, Setting *settings)
     }
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in = i->line(settings->data(key));
-    if (! in)
+    InputType it;
+    QStringList order;
+    order << settings->data(key);
+    QList<Curve *> list;
+    if (it.inputs(list, order, i, bd))
     {
-      InputType it;
-      in = it.input(bd, settings->data(key));
-      if (! in)
-      {
-        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
-        return 1;
-      }
-
-      in->setZ(-1);
-      in->setLabel(settings->data(key));
-      i->setLine(settings->data(key), in);
+      qDebug() << _plugin << "::calculate: input missing";
+      return 1;
     }
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
     int period = settings->getInt(key);
   
-    int high = 0;
-    int low = 0;
-    in->keyRange(low, high);
-
-    line = new Curve;
-    int loop2 = low;
-    for (; loop2 <= high; loop2++)
-    {
-      CurveBar *bar = in->bar(loop2);
-      if (! bar)
-        continue;
-
-      line->setBar(loop2 + period, new CurveBar(bar->data()));
-    }
+    line = getSHIFT(list, period);
+    if (! line)
+      return 1;
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
     line->setAllColor(QColor(settings->data(key)));
@@ -138,20 +121,11 @@ int SHIFT::command (Command *command)
     return 1;
   }
 
-  int high = 0;
-  int low = 0;
-  in->keyRange(low, high);
-
-  line = new Curve;
-  int loop = low;
-  for (; loop <= high; loop++)
-  {
-    CurveBar *bar = in->bar(loop);
-    if (! bar)
-      continue;
-
-    line->setBar(loop + period, new CurveBar(bar->data()));
-  }
+  QList<Curve *> list;
+  list << in;
+  line = getSHIFT(list, period);
+  if (! line)
+    return 1;
 
   line->setLabel(name);
   i->setLine(name, line);
@@ -159,6 +133,31 @@ int SHIFT::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+Curve * SHIFT::getSHIFT (QList<Curve *> &list, int period)
+{
+  if (! list.count())
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  Curve *line = new Curve;
+  Curve *in = list.at(0);
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    if (! bar)
+      continue;
+
+    line->setBar(keys.at(loop) + period, new CurveBar(bar->data()));
+  }
+    
+  return line;
 }
 
 QWidget * SHIFT::dialog (QWidget *p, Setting *set)

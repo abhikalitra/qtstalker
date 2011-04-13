@@ -34,7 +34,7 @@ class THERM : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
-    Curve * getTHERM (Curve *, Curve *);
+    Curve * getTHERM (QList<Curve *> &);
 };
 
 extern "C"

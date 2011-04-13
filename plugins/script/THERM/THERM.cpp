@@ -46,22 +46,26 @@ THERM::THERM ()
 
 int THERM::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  InputType it;
-  Curve *high = it.input(bd, "High");
-  if (! high)
-    return 1;
-
-  Curve *low = it.input(bd, "Low");
-  if (! low)
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
   {
-    delete high;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
     return 1;
   }
 
-  Curve *line = getTHERM(high, low);
+  InputType it;
+  QStringList order;
+  order << "High" << "Low";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
+  {
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
+  }
 
-  delete high;
-  delete low;
+  line = getTHERM(list);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -108,7 +112,11 @@ int THERM::command (Command *command)
     return 1;
   }
 
-  line = getTHERM(ihigh, ilow);
+  QList<Curve *> list;
+  list << ihigh << ilow;
+  line = getTHERM(list);
+  if (! line)
+    return 1;
 
   line->setLabel(name);
   i->setLine(name, line);
@@ -118,31 +126,36 @@ int THERM::command (Command *command)
   return 0;
 }
 
-Curve * THERM::getTHERM (Curve *ihigh, Curve *ilow)
+Curve * THERM::getTHERM (QList<Curve *> &list)
 {
-  Curve *line = new Curve;
+  if (list.count() != 2)
+    return 0;
 
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  Curve *line = new Curve;
+  Curve *ihigh = list.at(0);
+  Curve *ilow = list.at(1);
   double thermometer = 0;
-  int ipos = 0;
-  int opos = 0;
-  int end = 0;
-  ihigh->keyRange(ipos, end);
-  ipos++;
-  for (; ipos <= end; ipos++, opos++)
+  int loop = 1;
+  for (; loop < keys.count(); loop++)
   {
-    CurveBar *hbar = ihigh->bar(ipos);
+    CurveBar *hbar = ihigh->bar(keys.at(loop));
     if (! hbar)
       continue;
 
-    CurveBar *phbar = ihigh->bar(ipos - 1);
+    CurveBar *phbar = ihigh->bar(keys.at(loop - 1));
     if (! phbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(ipos);
+    CurveBar *lbar = ilow->bar(keys.at(loop));
     if (! lbar)
       continue;
 
-    CurveBar *plbar = ilow->bar(ipos - 1);
+    CurveBar *plbar = ilow->bar(keys.at(loop - 1));
     if (! plbar)
       continue;
 
@@ -154,7 +167,7 @@ Curve * THERM::getTHERM (Curve *ihigh, Curve *ilow)
     else
       thermometer = lo;
 
-    line->setBar(ipos, new CurveBar(thermometer));
+    line->setBar(keys.at(loop), new CurveBar(thermometer));
   }
 
   return line;

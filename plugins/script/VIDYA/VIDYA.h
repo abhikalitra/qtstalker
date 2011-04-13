@@ -35,8 +35,8 @@ class VIDYA : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
-    Curve * getVIDYA (Curve *in, int period, int vperiod);
-    Curve * getCMO (Curve *in, int period);
+    Curve * getVIDYA (QList<Curve *> &, int period, int vperiod);
+    Curve * getCMO (QList<Curve *> &, int period);
 };
 
 extern "C"

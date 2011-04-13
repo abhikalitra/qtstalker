@@ -41,6 +41,27 @@ MACD::MACD ()
 
 int MACD::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *macd = i->line(settings->data("OUTPUT_MACD"));
+  if (macd)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_MACD" << settings->data("OUTPUT_MACD");
+    return 1;
+  }
+
+  Curve *signal = i->line(settings->data("OUTPUT_SIG"));
+  if (signal)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_SIG" << settings->data("OUTPUT_SIG");
+    return 1;
+  }
+
+  Curve *hist = i->line(settings->data("OUTPUT_HIST"));
+  if (hist)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_HIST" << settings->data("OUTPUT_HIST");
+    return 1;
+  }
+
   int fperiod = settings->getInt("PERIOD_FAST");
   int speriod = settings->getInt("PERIOD_SLOW");
   int sigperiod = settings->getInt("PERIOD_SIG");
@@ -51,78 +72,37 @@ int MACD::calculate (BarData *bd, Indicator *i, Setting *settings)
   int sigtype = mat.fromString(settings->data("MA_TYPE_SIG"));
 
   InputType it;
-  Curve *in = it.input(bd, settings->data("INPUT"));
-  if (! in)
-    return 1;
-
-  int size = in->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Real out3[size];
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  delete in;
-
-  TA_RetCode rc = TA_MACDEXT(0,
-                             size - 1,
-                             &input[0],
-                             fperiod,
-                             (TA_MAType) ftype,
-                             speriod,
-                             (TA_MAType) stype,
-                             sigperiod,
-                             (TA_MAType) sigtype,
-                             &outBeg,
-                             &outNb,
-                             &out[0],
-                             &out2[0],
-                             &out3[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: input missing";
     return 1;
   }
 
-  Curve *macd = new Curve;
-  Curve *signal = new Curve;
-  Curve *hist = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  QList<Curve *> lines = getMACD(list, fperiod, speriod, sigperiod, ftype, stype, sigtype);
+  if (lines.count() != 3)
   {
-    macd->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    signal->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
-    hist->setBar(keys.at(keyLoop), new CurveBar(out3[outLoop]));
-
-    keyLoop--;
-    outLoop--;
+    qDeleteAll(lines);
+    return 1;
   }
 
+  macd = lines.at(0);
   macd->setAllColor(QColor(settings->data("COLOR_MACD")));
   macd->setLabel(settings->data("OUTPUT_MACD"));
   macd->setType(settings->data("STYLE_MACD"));
   macd->setZ(settings->getInt("Z_MACD"));
   i->setLine(settings->data("OUTPUT_MACD"), macd);
   
-  i->setLine(settings->data("OUTPUT_SIG"), signal);
+  signal = lines.at(1);
   signal->setAllColor(QColor(settings->data("COLOR_SIG")));
   signal->setLabel(settings->data("OUTPUT_SIG"));
   signal->setType(settings->data("STYLE_SIG"));
   signal->setZ(settings->getInt("Z_SIG"));
+  i->setLine(settings->data("OUTPUT_SIG"), signal);
 
+  hist = lines.at(2);
   hist->setAllColor(QColor(settings->data("COLOR_HIST")));
   hist->setLabel(settings->data("OUTPUT_HIST"));
   hist->setType(settings->data("STYLE_HIST"));
@@ -228,74 +208,90 @@ int MACD::command (Command *command)
     return 1;
   }
 
-  if (in->count() < fperiod || in->count() < speriod || in->count() < sigperiod)
-    return 1;
-
-  int size = in->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Real out3[size];
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  QList<Curve *> list;
+  list << in;
+  QList<Curve *> lines = getMACD(list, fperiod, speriod, sigperiod, ftype, stype, sigtype);
+  if (lines.count() != 3)
   {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_MACDEXT(0,
-                             size - 1,
-                             &input[0],
-                             fperiod,
-                             (TA_MAType) ftype,
-                             speriod,
-                             (TA_MAType) stype,
-                             sigperiod,
-                             (TA_MAType) sigtype,
-                             &outBeg,
-                             &outNb,
-                             &out[0],
-                             &out2[0],
-                             &out3[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
+    qDeleteAll(lines);
     return 1;
   }
 
-  Curve *macd = new Curve;
-  Curve *signal = new Curve;
-  Curve *hist = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    macd->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    signal->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
-    hist->setBar(keys.at(keyLoop), new CurveBar(out3[outLoop]));
-
-    keyLoop--;
-    outLoop--;
-  }
-
+  Curve *macd = lines.at(0);
   macd->setLabel(mname);
-  signal->setLabel(sname);
-  hist->setLabel(hname);
-
   i->setLine(mname, macd);
+  
+  Curve *signal = lines.at(1);
+  signal->setLabel(sname);
   i->setLine(sname, signal);
+
+  Curve *hist = lines.at(2);
+  hist->setLabel(hname);
   i->setLine(hname, hist);
 
   command->setReturnCode("0");
 
   return 0;
+}
+
+QList<Curve *> MACD::getMACD (QList<Curve *> &list, int fp, int sp, int sigp, int fma, int sma, int sigma)
+{
+  QList<Curve *> lines;
+  if (! list.count())
+    return lines;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return lines;
+
+  int size = keys.count();
+  TA_Real in[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Real out3[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  if (! size)
+    return lines;
+
+  TA_RetCode rc = TA_MACDEXT(0,
+                             size - 1,
+                             &in[0],
+                             fp,
+                             (TA_MAType) fma,
+                             sp,
+                             (TA_MAType) sma,
+                             sigp,
+                             (TA_MAType) sigma,
+                             &outBeg,
+                             &outNb,
+                             &out[0],
+                             &out2[0],
+                             &out3[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::getBBANDS: TA-Lib error" << rc;
+    return lines;
+  }
+
+  Curve *c = new Curve;
+  lines.append(c);
+  c = new Curve;
+  lines.append(c);
+  c = new Curve;
+  lines.append(c);
+  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
+  {
+    qDeleteAll(lines);
+    lines.clear();
+    return lines;
+  }
+
+  return lines;
 }
 
 QWidget * MACD::dialog (QWidget *p, Setting *set)

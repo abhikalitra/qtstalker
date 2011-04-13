@@ -23,6 +23,7 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "AVERAGE_PRICEDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -34,17 +35,26 @@ AVERAGE_PRICE::AVERAGE_PRICE ()
 
 int AVERAGE_PRICE::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Curve *line = new Curve;
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
   {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
-
-    double t = (bar->open() + bar->high() + bar->low() + bar->close()) / 4.0;
-    line->setBar(loop, new CurveBar(t));
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
   }
+
+  InputType it;
+  QStringList order;
+  order << "Open" << "High" << "Low" << "Close";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
+  {
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
+  }
+
+  line = getAP(list);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -107,31 +117,11 @@ int AVERAGE_PRICE::command (Command *command)
     return 1;
   }
 
-  line = new Curve;
-  int ipos = 0;
-  int end = 0;
-  iclose->keyRange(ipos, end);
-  for (; ipos <= end; ipos++)
-  {
-    CurveBar *obar = iopen->bar(ipos);
-    if (! obar)
-      continue;
-
-    CurveBar *hbar = ihigh->bar(ipos);
-    if (! hbar)
-      continue;
-
-    CurveBar *lbar = ilow->bar(ipos);
-    if (! lbar)
-      continue;
-
-    CurveBar *cbar = iclose->bar(ipos);
-    if (! cbar)
-      continue;
-
-    double t = (obar->data() + hbar->data() + lbar->data() + cbar->data()) / 4.0;
-    line->setBar(ipos, new CurveBar(t));
-  }
+  QList<Curve *> list;
+  list << iopen << ihigh << ilow << iclose;
+  line = getAP(list);
+  if (! line)
+    return 1;
 
   line->setLabel(name);
   i->setLine(name, line);
@@ -139,6 +129,47 @@ int AVERAGE_PRICE::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+Curve * AVERAGE_PRICE::getAP (QList<Curve *> &list)
+{
+  if (list.count() != 4)
+    return 0;
+  
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  Curve *line = new Curve;
+  int loop = 0;
+  Curve *iopen = list.at(loop++);
+  Curve *ihigh = list.at(loop++);
+  Curve *ilow = list.at(loop++);
+  Curve *iclose = list.at(loop++);
+  for (loop = 0; loop < keys.count(); loop++)
+  {
+    CurveBar *obar = iopen->bar(keys.at(loop));
+    if (! obar)
+      continue;
+
+    CurveBar *hbar = ihigh->bar(keys.at(loop));
+    if (! hbar)
+      continue;
+
+    CurveBar *lbar = ilow->bar(keys.at(loop));
+    if (! lbar)
+      continue;
+
+    CurveBar *cbar = iclose->bar(keys.at(loop));
+    if (! cbar)
+      continue;
+    
+    double t = (obar->data() + hbar->data() + lbar->data() + cbar->data()) / 4.0;
+    line->setBar(keys.at(loop), new CurveBar(t));
+  }
+
+  return line;
 }
 
 QWidget * AVERAGE_PRICE::dialog (QWidget *p, Setting *set)

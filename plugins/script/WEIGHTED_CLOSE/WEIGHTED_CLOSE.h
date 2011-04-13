@@ -35,6 +35,7 @@ class WEIGHTED_CLOSE : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getWC (QList<Curve *> &);
 };
 
 extern "C"

@@ -20,7 +20,6 @@
  */
 
 #include "FIDialog.h"
-#include "MAType.h"
 #include "Globals.h"
 
 #include <QtDebug>
@@ -42,21 +41,6 @@ void FIDialog::createGeneralPage ()
   _output = new QLineEdit(_settings->data("OUTPUT"));
   form->addRow(tr("Output"), _output);
 
-  // ma type
-  MAType mat;
-  QStringList l = mat.list();
-
-  _maType = new QComboBox;
-  _maType->addItems(l);
-  _maType->setCurrentIndex(_maType->findText(_settings->data("SMOOTHING_TYPE"), Qt::MatchExactly));
-  form->addRow(tr("Smoothing Type"), _maType);
-
-  // period
-  _period = new QSpinBox;
-  _period->setRange(1, 100000);
-  _period->setValue(_settings->getInt("SMOOTHING"));
-  form->addRow(tr("Smoothing"), _period);
-
   // color
   _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
@@ -64,7 +48,7 @@ void FIDialog::createGeneralPage ()
 
   // plot style
   Curve c;
-  l = c.list();
+  QStringList l = c.list();
 
   _style = new QComboBox;
   _style->addItems(l);
@@ -75,13 +59,11 @@ void FIDialog::createGeneralPage ()
   _z = new QSpinBox;
   _z->setRange(-1, 99);
   _z->setValue(_settings->getInt("Z"));
-  form->addRow(tr("Plot Order"), _z);
+  form->addRow(tr("Plot"), _z);
 }
 
 void FIDialog::save ()
 {
-  _settings->setData("SMOOTHING_TYPE", _maType->currentText());
-  _settings->setData("SMOOTHING", _period->value());
   _settings->setData("COLOR", _color->color().name());
   _settings->setData("STYLE", _style->currentText());
   _settings->setData("OUTPUT", _output->text());

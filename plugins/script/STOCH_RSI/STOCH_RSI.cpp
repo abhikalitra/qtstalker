@@ -49,22 +49,17 @@ int STOCH_RSI::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   int period = settings->getInt("PERIOD");
 
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
 
-  line = getSTOCHRSI(in, period);
+  line = getSTOCHRSI(list, period);
   if (! line)
     return 1;
 
@@ -114,7 +109,9 @@ int STOCH_RSI::command (Command *command)
     return 1;
   }
 
-  line = getSTOCHRSI(in, period);
+  QList<Curve *> list;
+  list << in;
+  line = getSTOCHRSI(list, period);
   if (! line)
     return 1;
 
@@ -126,28 +123,30 @@ int STOCH_RSI::command (Command *command)
   return 0;
 }
 
-Curve * STOCH_RSI::getSTOCHRSI (Curve *in, int period)
+Curve * STOCH_RSI::getSTOCHRSI (QList<Curve *> &list, int period)
 {
-  QList<int> keys;
-  in->keys(keys);
-  int size = keys.count();
+  if (! list.count())
+    return 0;
 
-  TA_Real input[size];
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  int size = keys.count();
   TA_Real out[size];
   TA_Real out2[size];
+  TA_Real in[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
+  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_STOCHRSI(0,
                               size - 1,
-                              &input[0],
+                              &in[0],
                               period,
                               period,
                               1,
@@ -163,17 +162,16 @@ Curve * STOCH_RSI::getSTOCHRSI (Curve *in, int period)
     return 0;
   }
 
-  Curve *line = new Curve;
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
+    delete c;
+    return 0;
   }
 
-  return line;
+  return c;
 }
 
 QWidget * STOCH_RSI::dialog (QWidget *p, Setting *set)

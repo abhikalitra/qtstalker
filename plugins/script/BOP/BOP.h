@@ -34,6 +34,7 @@ class BOP : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getBOP (QList<Curve *> &);
 };
 
 extern "C"

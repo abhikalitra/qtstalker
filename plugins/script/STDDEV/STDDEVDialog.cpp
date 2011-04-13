@@ -62,6 +62,7 @@ void STDDEVDialog::createGeneralPage ()
   // deviation
   _dev = new QDoubleSpinBox;
   _dev->setRange(-100000, 100000);
+  _dev->setDecimals(4);
   _dev->setValue(_settings->getDouble("DEVIATION"));
   form->addRow(tr("Deviation"), _dev);
 

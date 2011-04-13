@@ -49,52 +49,17 @@ int CCI::calculate (BarData *bd, Indicator *i, Setting *settings)
   
   int period = settings->getInt("PERIOD");
 
-  Curve *ihigh = i->line("High");
-  if (! ihigh)
+  InputType it;
+  QStringList order;
+  order << "High" << "Low" << "Close";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    InputType it;
-    ihigh = it.input(bd, "High");
-    if (! ihigh)
-    {
-      qDebug() << _plugin << "::calculate: no High";
-      return 1;
-    }
-
-    ihigh->setLabel("High");
-    i->setLine("High", ihigh);
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
 
-  Curve *ilow = i->line("Low");
-  if (! ilow)
-  {
-    InputType it;
-    ilow = it.input(bd, "Low");
-    if (! ilow)
-    {
-      qDebug() << _plugin << "::calculate: no Low";
-      return 1;
-    }
-
-    ilow->setLabel("Low");
-    i->setLine("Low", ilow);
-  }
-
-  Curve *iclose = i->line("Close");
-  if (! iclose)
-  {
-    InputType it;
-    iclose = it.input(bd, "Close");
-    if (! iclose)
-    {
-      qDebug() << _plugin << "::calculate: no Close";
-      return 1;
-    }
-
-    iclose->setLabel("Close");
-    i->setLine("Close", iclose);
-  }
-
-  line = getCCI(ihigh, ilow, iclose, period);
+  line = getCCI(list, period);
   if (! line)
     return 1;
 
@@ -160,10 +125,12 @@ int CCI::command (Command *command)
     return 1;
   }
 
-  line = getCCI(ihigh, ilow, iclose, period);
+  QList<Curve *> list;
+  list << ihigh << ilow << iclose;
+  line = getCCI(list, period);
   if (! line)
     return 1;
-  
+
   line->setLabel(name);
   i->setLine(name, line);
 
@@ -172,24 +139,14 @@ int CCI::command (Command *command)
   return 0;
 }
 
-Curve * CCI::getCCI (Curve *ihigh, Curve *ilow, Curve *iclose, int period)
+Curve * CCI::getCCI (QList<Curve *> &list, int period)
 {
+  InputType it;
   QList<int> keys;
-  int size = ihigh->count();
-  ihigh->keys(keys);
-  
-  if (ilow->count() < size)
-  {
-    size = ilow->count();
-    ilow->keys(keys);
-  }
-  
-  if (iclose->count() < size)
-  {
-    size = iclose->count();
-    iclose->keys(keys);
-  }
+  if (it.keys(list, keys))
+    return 0;
 
+  int size = keys.count();
   TA_Real out[size];
   TA_Real high[size];
   TA_Real low[size];
@@ -197,26 +154,9 @@ Curve * CCI::getCCI (Curve *ihigh, Curve *ilow, Curve *iclose, int period)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int ipos = 0;
-  int opos = 0;
-  for (; ipos < keys.count(); ipos++, opos++)
-  {
-    CurveBar *hbar = ihigh->bar(keys.at(ipos));
-    if (! hbar)
-      continue;
-
-    CurveBar *lbar = ilow->bar(keys.at(ipos));
-    if (! lbar)
-      continue;
-
-    CurveBar *cbar = iclose->bar(keys.at(ipos));
-    if (! cbar)
-      continue;
-
-    high[opos] = (TA_Real) hbar->data();
-    low[opos] = (TA_Real) lbar->data();
-    close[opos] = (TA_Real) cbar->data();
-  }
+  size = it.fill(list, keys, &high[0], &low[0], &close[0], &close[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_CCI(0,
                          size - 1,
@@ -234,17 +174,16 @@ Curve * CCI::getCCI (Curve *ihigh, Curve *ilow, Curve *iclose, int period)
     return 0;
   }
 
-  Curve *line = new Curve;
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
+    delete c;
+    return 0;
   }
 
-  return line;
+  return c;
 }
 
 QWidget * CCI::dialog (QWidget *p, Setting *set)

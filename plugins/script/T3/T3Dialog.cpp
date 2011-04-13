@@ -62,6 +62,7 @@ void T3Dialog::createGeneralPage ()
   // vfactor
   _vfactor = new QDoubleSpinBox;
   _vfactor->setRange(0, 1);
+  _vfactor->setDecimals(4);
   _vfactor->setValue(_settings->getDouble("VFACTOR"));
   form->addRow(tr("V Factor"), _vfactor);
 

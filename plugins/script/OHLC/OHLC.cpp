@@ -23,6 +23,7 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "OHLCDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -34,38 +35,25 @@ OHLC::OHLC ()
 
 int OHLC::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  QColor color(settings->data("COLOR"));
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
+  }
 
-  Curve *line;
+  InputType it;
+  line = it.ohlc(bd);
+  if (! line)
+    return 1;
+  
   if (settings->data("STYLE") == "Bars")
-  {
-    line = new Curve;
     line->setType("Bars");
-  }
   else
-  {
-    line = new Curve;
     line->setType("Candle");
-  }
-    
+
+  line->setAllColor(QColor(settings->data("COLOR")));
   line->setZ(settings->getInt("Z"));
-
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
-  {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
-    
-    CurveBar *b = new CurveBar;
-    b->setData(0, bar->open());
-    b->setData(1, bar->high());
-    b->setData(2, bar->low());
-    b->setData(3, bar->close());
-    b->setColor(color);
-    line->setBar(loop, b);
-  }
-
   line->setLabel(settings->data("OUTPUT"));
   i->setLine(settings->data("OUTPUT"), line);
 
@@ -86,6 +74,14 @@ int OHLC::command (Command *command)
   if (! i)
   {
     qDebug() << _plugin << "::command: no indicator";
+    return 1;
+  }
+
+  QString name = command->parm("NAME");
+  Curve *line = i->line(name);
+  if (line)
+  {
+    qDebug() << _plugin << "::command: duplicate name" << name;
     return 1;
   }
 
@@ -117,14 +113,6 @@ int OHLC::command (Command *command)
     return 1;
   }
 
-  QString name = command->parm("NAME");
-  Curve *line = i->line(name);
-  if (line)
-  {
-    qDebug() << _plugin << "::command: duplicate name" << name;
-    return 1;
-  }
-
   QColor color("#A0A0A0");
   QString s = command->parm("COLOR");
   if (! s.isEmpty())
@@ -137,27 +125,35 @@ int OHLC::command (Command *command)
     }
   }
 
+  QList<Curve *> list;
+  list << iopen << ihigh << ilow << iclose;
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+  {
+    qDebug() << _plugin << "::command: invalid keys";
+    return 1;
+  }
+  
   line = new Curve;
   line->setType("Bars");
 
-  int ipos = 0;
-  int end = 0;
-  iclose->keyRange(ipos, end);
-  for (; ipos <= end; ipos++)
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    CurveBar *obar = iopen->bar(ipos);
+    CurveBar *obar = iopen->bar(keys.at(loop));
     if (! obar)
       continue;
 
-    CurveBar *hbar = ihigh->bar(ipos);
+    CurveBar *hbar = ihigh->bar(keys.at(loop));
     if (! hbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(ipos);
+    CurveBar *lbar = ilow->bar(keys.at(loop));
     if (! lbar)
       continue;
 
-    CurveBar *cbar = iclose->bar(ipos);
+    CurveBar *cbar = iclose->bar(keys.at(loop));
     if (! cbar)
       continue;
 
@@ -167,7 +163,7 @@ int OHLC::command (Command *command)
     bar->setData(2, lbar->data());
     bar->setData(3, cbar->data());
     bar->setColor(color);
-    line->setBar(ipos, bar);
+    line->setBar(keys.at(loop), bar);
   }
 
   line->setLabel(name);

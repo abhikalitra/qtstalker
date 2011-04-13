@@ -23,6 +23,7 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "TYPICAL_PRICEDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -99,27 +100,30 @@ int TYPICAL_PRICE::command (Command *command)
     return 1;
   }
 
-  int loop = 0;
-  int end = 0;
-  close->keyRange(loop, end);
+  InputType it;
+  QList<int> keys;
+  QList<Curve *> list;
+  list << high << low << close;
+  it.keys(list, keys);
   
   line = new Curve;
-  for (; loop <= end; loop++)
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    CurveBar *h = high->bar(loop);
+    CurveBar *h = high->bar(keys.at(loop));
     if (! h)
       continue;
 
-    CurveBar *l = low->bar(loop);
+    CurveBar *l = low->bar(keys.at(loop));
     if (! l)
       continue;
 
-    CurveBar *c = close->bar(loop);
+    CurveBar *c = close->bar(keys.at(loop));
     if (! c)
       continue;
     
     double t = (h->data() + l->data() + c->data()) / 3.0;
-    line->setBar(loop, new CurveBar(t));
+    line->setBar(keys.at(loop), new CurveBar(t));
   }
 
   line->setLabel(name);

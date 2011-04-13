@@ -44,6 +44,7 @@ class LINEARREG : public Plugin
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
     QStringList method ();
+    Curve * getLR (QList<Curve *> &, int, int);
 
   protected:
     QStringList _method;

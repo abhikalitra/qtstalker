@@ -55,63 +55,22 @@ int MIN::calculate (BarData *bd, Indicator *i, Setting *settings)
     }
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in = i->line(settings->data(key));
-    if (! in)
+    InputType it;
+    QStringList order;
+    order << settings->data(key);
+    QList<Curve *> list;
+    if (it.inputs(list, order, i, bd))
     {
-      InputType it;
-      in = it.input(bd, settings->data(key));
-      if (! in)
-      {
-        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
-        return 1;
-      }
-
-      in->setZ(-1);
-      in->setLabel(settings->data(key));
-      i->setLine(settings->data(key), in);
+      qDebug() << _plugin << "::calculate: input missing";
+      return 1;
     }
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
     int period = settings->getInt(key);
 
-    TA_Real input[in->count()];
-    TA_Real out[in->count()];
-    TA_Integer outBeg;
-    TA_Integer outNb;
-
-    QList<int> keys;
-    in->keys(keys);
-
-    int loop2 = 0;
-    for (; loop2 < keys.count(); loop2++)
-    {
-      CurveBar *bar = in->bar(keys.at(loop2));
-      input[loop2] = (TA_Real) bar->data();
-    }
-
-    TA_RetCode rc = TA_MIN(0,
-                           keys.count() - 1,
-                           &input[0],
-                           period,
-                           &outBeg,
-                           &outNb,
-                           &out[0]);
-    if (rc != TA_SUCCESS)
-    {
-      qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    line = getMIN(list, period);
+    if (! line)
       return 1;
-    }
-
-    line = new Curve;
-
-    int keyLoop = keys.count() - 1;
-    int outLoop = outNb - 1;
-    while (keyLoop > -1 && outLoop > -1)
-    {
-      line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-      keyLoop--;
-      outLoop--;
-    }
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
     line->setAllColor(QColor(settings->data(key)));
@@ -166,47 +125,11 @@ int MIN::command (Command *command)
     return 1;
   }
 
-  if (in->count() < period)
+  QList<Curve *> list;
+  list << in;
+  line = getMIN(list, period);
+  if (! line)
     return 1;
-
-  TA_Real input[in->count()];
-  TA_Real out[in->count()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_MIN(0,
-                         keys.count() - 1,
-                         &input[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
-  }
-
-  line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
-  }
 
   line->setLabel(name);
   i->setLine(name, line);
@@ -214,6 +137,52 @@ int MIN::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+Curve * MIN::getMIN (QList<Curve *> &list, int period)
+{
+  if (! list.count())
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  int size = keys.count();
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  size = it.fill(list, keys, &input[0], &input[0], &input[0], &input[0]);
+  if (! size)
+    return 0;
+
+  TA_RetCode rc = TA_MIN(0,
+                         size - 1,
+                         &input[0],
+                         period,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::getMIN: TA-Lib error" << rc;
+    return 0;
+  }
+
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+  {
+    delete c;
+    return 0;
+  }
+
+  return c;
 }
 
 QWidget * MIN::dialog (QWidget *p, Setting *set)

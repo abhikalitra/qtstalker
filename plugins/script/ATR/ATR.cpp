@@ -24,6 +24,7 @@
 #include "ta_libc.h"
 #include "Globals.h"
 #include "ATRDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -39,54 +40,28 @@ ATR::ATR ()
 
 int ATR::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int period = settings->getInt("PERIOD");
-  
-  int size = bd->count();
-  TA_Real out[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
   {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
-
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-    close[loop] = (TA_Real) bar->close();
-  }
-
-  TA_RetCode rc = TA_ATR(0,
-                         size - 1,
-                         &high[0],
-                         &low[0],
-                         &close[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
     return 1;
   }
 
-  Curve *line = new Curve;
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  int period = settings->getInt("PERIOD");
+  
+  InputType it;
+  QStringList order;
+  order << "High" << "Low" << "Close";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    line->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dataLoop--;
-    outLoop--;
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
+
+  line = getATR(list, period);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -150,8 +125,28 @@ int ATR::command (Command *command)
     return 1;
   }
 
-  int size = iclose->count();
+  QList<Curve *> list;
+  list << ihigh << ilow << iclose;
+  line = getATR(list, period);
+  if (! line)
+    return 1;
 
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * ATR::getATR (QList<Curve *> &list, int period)
+{
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  int size = keys.count();
   TA_Real out[size];
   TA_Real high[size];
   TA_Real low[size];
@@ -159,28 +154,9 @@ int ATR::command (Command *command)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int ipos = 0;
-  int opos = 0;
-  int end = 0;
-  iclose->keyRange(ipos, end);
-  for (; ipos <= end; ipos++, opos++)
-  {
-    CurveBar *hbar = ihigh->bar(ipos);
-    if (! hbar)
-      continue;
-
-    CurveBar *lbar = ilow->bar(ipos);
-    if (! lbar)
-      continue;
-
-    CurveBar *cbar = iclose->bar(ipos);
-    if (! cbar)
-      continue;
-
-    high[opos] = (TA_Real) hbar->data();
-    low[opos] = (TA_Real) lbar->data();
-    close[opos] = (TA_Real) cbar->data();
-  }
+  size = it.fill(list, keys, &high[0], &low[0], &close[0], &close[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_ATR(0,
                          size - 1,
@@ -194,27 +170,20 @@ int ATR::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getATR: TA-Lib error" << rc;
+    return 0;
   }
 
-  line = new Curve;
-
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (outLoop > -1 && dataLoop > -1)
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    line->setBar(dataLoop, new CurveBar(out[outLoop]));
-    dataLoop--;
-    outLoop--;
+    delete c;
+    return 0;
   }
 
-  line->setLabel(name);
-  i->setLine(name, line);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return c;
 }
 
 QWidget * ATR::dialog (QWidget *p, Setting *set)

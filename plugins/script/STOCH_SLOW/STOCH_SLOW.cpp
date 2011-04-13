@@ -63,54 +63,22 @@ int STOCH_SLOW::calculate (BarData *bd, Indicator *i, Setting *settings)
   int kma = mat.fromString(settings->data("MA_TYPE_SLOWK"));
   int dma = mat.fromString(settings->data("MA_TYPE_SLOWD"));
 
-  Curve *ihigh = i->line("High");
-  if (! ihigh)
+  InputType it;
+  QStringList order;
+  order << "High" << "Low" << "Close";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    InputType it;
-    ihigh = it.input(bd, "High");
-    if (! ihigh)
-    {
-      qDebug() << _plugin << "::calculate: no High";
-      return 1;
-    }
-
-    ihigh->setLabel("High");
-    i->setLine("High", ihigh);
-  }
-
-  Curve *ilow = i->line("Low");
-  if (! ilow)
-  {
-    InputType it;
-    ilow = it.input(bd, "Low");
-    if (! ilow)
-    {
-      qDebug() << _plugin << "::calculate: no Low";
-      return 1;
-    }
-
-    ilow->setLabel("Low");
-    i->setLine("Low", ilow);
-  }
-
-  Curve *iclose = i->line("Close");
-  if (! iclose)
-  {
-    InputType it;
-    iclose = it.input(bd, "Close");
-    if (! iclose)
-    {
-      qDebug() << _plugin << "::calculate: no Close";
-      return 1;
-    }
-
-    iclose->setLabel("Close");
-    i->setLine("Close", iclose);
-  }
-
-  QList<Curve *> lines = getSTOCHS(ihigh, ilow, iclose, fkperiod, skperiod, sdperiod, kma, dma);
-  if (! lines.count())
+    qDebug() << _plugin << "::calculate: input missing";
     return 1;
+  }
+
+  QList<Curve *> lines = getSTOCHS(list, fkperiod, skperiod, sdperiod, kma, dma);
+  if (lines.count() != 2)
+  {
+    qDeleteAll(lines);
+    return 1;
+  }
 
   kline = lines.at(0);
   kline->setAllColor(QColor(settings->data("COLOR_K")));
@@ -119,15 +87,12 @@ int STOCH_SLOW::calculate (BarData *bd, Indicator *i, Setting *settings)
   kline->setZ(settings->getInt("Z_K"));
   i->setLine(settings->data("OUTPUT_K"), kline);
 
-  if (lines.count() == 2)
-  {
-    dline = lines.at(1);
-    dline->setAllColor(QColor(settings->data("COLOR_D")));
-    dline->setLabel(settings->data("OUTPUT_D"));
-    dline->setType(settings->data("STYLE_D"));
-    dline->setZ(settings->getInt("Z_D"));
-    i->setLine(settings->data("OUTPUT_D"), dline);
-  }
+  dline = lines.at(1);
+  dline->setAllColor(QColor(settings->data("COLOR_D")));
+  dline->setLabel(settings->data("OUTPUT_D"));
+  dline->setType(settings->data("STYLE_D"));
+  dline->setZ(settings->getInt("Z_D"));
+  i->setLine(settings->data("OUTPUT_D"), dline);
 
   return 0;
 }
@@ -227,45 +192,40 @@ int STOCH_SLOW::command (Command *command)
     return 1;
   }
 
-  QList<Curve *> lines = getSTOCHS(ihigh, ilow, iclose, fkperiod, skperiod, sdperiod, kma, dma);
-  if (! lines.count())
+  QList<Curve *> list;
+  list << ihigh << ilow << iclose;
+  QList<Curve *> lines = getSTOCHS(list, fkperiod, skperiod, sdperiod, kma, dma);
+  if (lines.count() != 2)
+  {
+    qDeleteAll(lines);
     return 1;
+  }
 
   Curve *kline = lines.at(0);
   kline->setLabel(kname);
   i->setLine(kname, kline);
 
-  if (lines.count() == 2)
-  {
-    Curve *dline = lines.at(1);
-    dline->setLabel(dname);
-    i->setLine(dname, dline);
-  }
+  Curve *dline = lines.at(1);
+  dline->setLabel(dname);
+  i->setLine(dname, dline);
 
   command->setReturnCode("0");
 
   return 0;
 }
 
-QList<Curve *> STOCH_SLOW::getSTOCHS (Curve *ihigh, Curve *ilow, Curve *iclose, int fkperiod,
-				      int skperiod, int sdperiod, int kma, int dma)
+QList<Curve *> STOCH_SLOW::getSTOCHS (QList<Curve *> &list, int fkperiod, int skperiod, int sdperiod, int kma, int dma)
 {
+  QList<Curve *> lines;
+  if (! list.count())
+    return lines;
+
+  InputType it;
   QList<int> keys;
-  int size = ihigh->count();
-  ihigh->keys(keys);
+  if (it.keys(list, keys))
+    return lines;
 
-  if (ilow->count() < size)
-  {
-    size = ilow->count();
-    ilow->keys(keys);
-  }
-
-  if (iclose->count() < size)
-  {
-    size = iclose->count();
-    iclose->keys(keys);
-  }
-
+  int size = keys.count();
   TA_Real high[size];
   TA_Real low[size];
   TA_Real close[size];
@@ -274,26 +234,9 @@ QList<Curve *> STOCH_SLOW::getSTOCHS (Curve *ihigh, Curve *ilow, Curve *iclose, 
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int ipos = 0;
-  int opos = 0;
-  for (; ipos < keys.count(); ipos++, opos++)
-  {
-    CurveBar *hbar = ihigh->bar(keys.at(ipos));
-    if (! hbar)
-      continue;
-
-    CurveBar *lbar = ilow->bar(keys.at(ipos));
-    if (! lbar)
-      continue;
-
-    CurveBar *cbar = iclose->bar(keys.at(ipos));
-    if (! cbar)
-      continue;
-
-    high[opos] = (TA_Real) hbar->data();
-    low[opos] = (TA_Real) lbar->data();
-    close[opos] = (TA_Real) cbar->data();
-  }
+  size = it.fill(list, keys, &high[0], &low[0], &close[0], &close[0]);
+  if (! size)
+    return lines;
 
   TA_RetCode rc = TA_STOCH(0,
                            size - 1,
@@ -310,27 +253,22 @@ QList<Curve *> STOCH_SLOW::getSTOCHS (Curve *ihigh, Curve *ilow, Curve *iclose, 
                            &out[0],
                            &out2[0]);
 
-  QList<Curve *> lines;
   if (rc != TA_SUCCESS)
   {
     qDebug() << _plugin << "::getSTOCHS: TA-Lib error" << rc;
     return lines;
   }
 
-  Curve *kline = new Curve;
-  Curve *dline = new Curve;
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  Curve *c = new Curve;
+  lines.append(c);
+  c = new Curve;
+  lines.append(c);
+  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
   {
-    kline->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    dline->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
-    keyLoop--;
-    outLoop--;
+    qDeleteAll(lines);
+    lines.clear();
+    return lines;
   }
-
-  lines.append(kline);
-  lines.append(dline);
 
   return lines;
 }

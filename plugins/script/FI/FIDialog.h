@@ -42,10 +42,8 @@ class FIDialog : public QWidget
 
   private:
     Setting *_settings;
-    QSpinBox *_period;
     ColorButton *_color;
     QComboBox *_style;
-    QComboBox *_maType;
     QSpinBox *_z;
     QLineEdit *_output;
 };

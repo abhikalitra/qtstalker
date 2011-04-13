@@ -38,33 +38,31 @@ SZ::SZ ()
 
 int SZ::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
+  }
+
   int period = settings->getInt("PERIOD");
   int ndp = settings->getInt("PERIOD_NO_DECLINE");
   double coeff = settings->getDouble("COEFFICIENT");
   int method = _method.indexOf(settings->data("METHOD"));
 
   InputType it;
-  Curve *high = it.input(bd, "High");
-  if (! high)
-    return 1;
-
-  Curve *low = it.input(bd, "Low");
-  if (! low)
+  QStringList order;
+  order << "High" << "Low";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    delete high;
+    qDebug() << _plugin << "::calculate: input missing";
     return 1;
   }
 
-  Curve *line = getSZ(high, low, method, period, ndp, coeff);
+  line = getSZ(list, method, period, ndp, coeff);
   if (! line)
-  {
-    delete high;
-    delete low;
     return 1;
-  }
-
-  delete high;
-  delete low;
   
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -144,11 +142,11 @@ int SZ::command (Command *command)
     return 1;
   }
 
-  Curve *pl = getSZ(ihigh, ilow, method, period, no_decline_period, coefficient);
+  QList<Curve *> list;
+  list << ihigh << ilow;
+  Curve *pl = getSZ(list, method, period, no_decline_period, coefficient);
   if (! pl)
-  {
     return 1;
-  }
 
   pl->setLabel(name);
   i->setLine(name, pl);
@@ -158,8 +156,16 @@ int SZ::command (Command *command)
   return 0;
 }
 
-Curve * SZ::getSZ (Curve *ihigh, Curve *ilow, int method, int period, int no_decline_period, double coefficient)
+Curve * SZ::getSZ (QList<Curve *> &list, int method, int period, int no_decline_period, double coefficient)
 {
+  if (list.count() != 2)
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+  
   int display_uptrend = 0;
   int display_dntrend = 0;
   int position = 1;
@@ -191,12 +197,11 @@ Curve * SZ::getSZ (Curve *ihigh, Curve *ilow, int method, int period, int no_dec
     old_dntrend_stops[loop] = 0;
   }
 
-  int ipos = 0;
-  int end = 0;
-  ihigh->keyRange(ipos, end);
-  ipos += period + 1;
+  Curve *ihigh = list.at(0);
+  Curve *ilow = list.at(1);
+  int ipos = period + 1;
   int start = ipos;
-  for (; ipos <= end; ipos++)
+  for (; ipos < keys.count(); ipos++)
   {
     // calculate downside/upside penetration for lookback period
     int lbloop;
@@ -209,19 +214,19 @@ Curve * SZ::getSZ (Curve *ihigh, Curve *ilow, int method, int period, int no_dec
     double dntrend_noise_cnt = 0;
     for (lbloop = lbstart; lbloop < ipos; lbloop++)
     {
-      CurveBar *hbar = ihigh->bar(lbloop);
+      CurveBar *hbar = ihigh->bar(keys.at(lbloop));
       if (! hbar)
         continue;
 
-      CurveBar *phbar = ihigh->bar(lbloop - 1);
+      CurveBar *phbar = ihigh->bar(keys.at(lbloop - 1));
       if (! phbar)
         continue;
 
-      CurveBar *lbar = ilow->bar(lbloop);
+      CurveBar *lbar = ilow->bar(keys.at(lbloop));
       if (! lbar)
         continue;
 
-      CurveBar *plbar = ilow->bar(lbloop - 1);
+      CurveBar *plbar = ilow->bar(keys.at(lbloop - 1));
       if (! plbar)
         continue;
 
@@ -246,11 +251,11 @@ Curve * SZ::getSZ (Curve *ihigh, Curve *ilow, int method, int period, int no_dec
     if (dntrend_noise_cnt > 0)
       dntrend_noise_avg /= dntrend_noise_cnt;
 
-    CurveBar *phbar = ihigh->bar(ipos - 1);
+    CurveBar *phbar = ihigh->bar(keys.at(ipos - 1));
     if (! phbar)
       continue;
 
-    CurveBar *plbar = ilow->bar(ipos - 1);
+    CurveBar *plbar = ilow->bar(keys.at(ipos - 1));
     if (! plbar)
       continue;
 
@@ -282,8 +287,8 @@ Curve * SZ::getSZ (Curve *ihigh, Curve *ilow, int method, int period, int no_dec
     old_uptrend_stops[0] = uptrend_stop;
     old_dntrend_stops[0] = dntrend_stop;
 
-    sz_uptrend->setBar(ipos, new CurveBar(adjusted_uptrend_stop));
-    sz_dntrend->setBar(ipos, new CurveBar(adjusted_dntrend_stop));
+    sz_uptrend->setBar(keys.at(ipos), new CurveBar(adjusted_uptrend_stop));
+    sz_dntrend->setBar(keys.at(ipos), new CurveBar(adjusted_dntrend_stop));
   }
 
   Curve *pl = 0;

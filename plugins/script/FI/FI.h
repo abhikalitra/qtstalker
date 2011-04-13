@@ -34,6 +34,7 @@ class FI : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getFI (QList<Curve *> &);
 };
 
 extern "C"

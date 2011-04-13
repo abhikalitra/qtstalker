@@ -65,6 +65,7 @@ void SZDialog::createGeneralPage ()
   // coefficient
   _coeff = new QDoubleSpinBox;
   _coeff->setRange(0, 100000);
+  _coeff->setDecimals(4);
   _coeff->setValue(_settings->getDouble("COEFFICIENT"));
   form->addRow(tr("Coefficient"), _coeff);
 

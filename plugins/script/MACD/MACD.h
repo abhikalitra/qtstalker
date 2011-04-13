@@ -34,6 +34,7 @@ class MACD : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    QList<Curve *> getMACD (QList<Curve *> &, int fp, int sp, int sigp, int fma, int sma, int sigma);
 };
 
 extern "C"

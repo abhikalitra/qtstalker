@@ -41,6 +41,27 @@ BBANDS::BBANDS ()
 
 int BBANDS::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *upper = i->line(settings->data("OUTPUT_UP"));
+  if (upper)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_UP" << settings->data("OUTPUT_UP");
+    return 1;
+  }
+
+  Curve *middle = i->line(settings->data("OUTPUT_MID"));
+  if (middle)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_MID" << settings->data("OUTPUT_MID");
+    return 1;
+  }
+
+  Curve *lower = i->line(settings->data("OUTPUT_DOWN"));
+  if (lower)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_DOWN" << settings->data("OUTPUT_DOWN");
+    return 1;
+  }
+
   int period = settings->getInt("PERIOD");
   double udev = settings->getDouble("DEVIATION_UP");
   double ldev = settings->getDouble("DEVIATION_DOWN");
@@ -48,85 +69,38 @@ int BBANDS::calculate (BarData *bd, Indicator *i, Setting *settings)
   MAType types;
   int type = types.fromString(settings->data("MA_TYPE"));
 
-  Curve *input = i->line(settings->data("INPUT"));
-  if (! input)
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    InputType it;
-    input = it.input(bd, settings->data("INPUT"));
-    if (! input)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    input->setZ(-1);
-    i->setLine(settings->data("INPUT"), input);
-  }
-
-  int size = input->count();
-  TA_Real in[size];
-  TA_Real uout[size];
-  TA_Real mout[size];
-  TA_Real lout[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  QList<int> keys;
-  input->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = input->bar(keys.at(loop));
-    in[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_BBANDS(0,
-                            keys.count() - 1,
-                            &in[0],
-                            period,
-                            udev,
-                            ldev,
-                            (TA_MAType) type,
-                            &outBeg,
-                            &outNb,
-                            &uout[0],
-                            &mout[0],
-                            &lout[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: input missing";
     return 1;
   }
 
-  Curve *upper = new Curve;
-  Curve *middle = new Curve;
-  Curve *lower = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  QList<Curve *> lines = getBBANDS(list, period, udev, ldev, type);
+  if (lines.count() != 3)
   {
-    upper->setBar(keys.at(keyLoop), new CurveBar(uout[outLoop]));
-    middle->setBar(keys.at(keyLoop), new CurveBar(mout[outLoop]));
-    lower->setBar(keys.at(keyLoop), new CurveBar(lout[outLoop]));
-
-    keyLoop--;
-    outLoop--;
+    qDeleteAll(lines);
+    return 1;
   }
 
+  upper = lines.at(0);
   upper->setAllColor(QColor(settings->data("COLOR_UP")));
   upper->setLabel(settings->data("OUTPUT_UP"));
   upper->setType(settings->data("STYLE_UP"));
   upper->setZ(settings->getInt("Z_UP"));
   i->setLine(settings->data("OUTPUT_UP"), upper);
   
+  middle = lines.at(1);
   middle->setAllColor(QColor(settings->data("COLOR_MID")));
   middle->setLabel(settings->data("OUTPUT_MID"));
   middle->setType(settings->data("STYLE_MID"));
   middle->setZ(settings->getInt("Z_UP"));
   i->setLine(settings->data("OUTPUT_MID"), middle);
-  
+
+  lower = lines.at(2);
   lower->setAllColor(QColor(settings->data("COLOR_DOWN")));
   lower->setLabel(settings->data("OUTPUT_DOWN"));
   lower->setType(settings->data("STYLE_DOWN"));
@@ -219,26 +193,57 @@ int BBANDS::command (Command *command)
     return 1;
   }
 
-  int size = input->count();
+  QList<Curve *> list;
+  list << input;
+  QList<Curve *> lines = getBBANDS(list, period, udev, ldev, type);
+  if (lines.count() != 3)
+  {
+    qDeleteAll(lines);
+    return 1;
+  }
+
+  Curve *upper = lines.at(0);
+  upper->setLabel(uname);
+  i->setLine(uname, upper);
+  
+  Curve *middle = lines.at(1);
+  middle->setLabel(mname);
+  i->setLine(mname, middle);
+
+  Curve *lower = lines.at(2);
+  lower->setLabel(lname);
+  i->setLine(lname, lower);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+QList<Curve *> BBANDS::getBBANDS (QList<Curve *> &list, int period, double udev, double ldev, int type)
+{
+  QList<Curve *> lines;
+  if (! list.count())
+    return lines;
+  
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return lines;
+
+  int size = keys.count();
   TA_Real in[size];
-  TA_Real uout[size];
-  TA_Real mout[size];
-  TA_Real lout[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Real out3[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  QList<int> keys;
-  input->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = input->bar(keys.at(loop));
-    in[loop] = (TA_Real) bar->data();
-  }
+  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  if (! size)
+    return lines;
 
   TA_RetCode rc = TA_BBANDS(0,
-                            keys.count() - 1,
+                            size - 1,
                             &in[0],
                             period,
                             udev,
@@ -246,42 +251,30 @@ int BBANDS::command (Command *command)
                             (TA_MAType) type,
                             &outBeg,
                             &outNb,
-                            &uout[0],
-                            &mout[0],
-                            &lout[0]);
+                            &out[0],
+                            &out2[0],
+			    &out3[0]);
+
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getBBANDS: TA-Lib error" << rc;
+    return lines;
   }
 
-  Curve *upper = new Curve;
-  Curve *middle = new Curve;
-  Curve *lower = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  Curve *c = new Curve;
+  lines.append(c);
+  c = new Curve;
+  lines.append(c);
+  c = new Curve;
+  lines.append(c);
+  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
   {
-    upper->setBar(keys.at(keyLoop), new CurveBar(uout[outLoop]));
-    middle->setBar(keys.at(keyLoop), new CurveBar(mout[outLoop]));
-    lower->setBar(keys.at(keyLoop), new CurveBar(lout[outLoop]));
-
-    keyLoop--;
-    outLoop--;
+    qDeleteAll(lines);
+    lines.clear();
+    return lines;
   }
 
-  upper->setLabel(uname);
-  middle->setLabel(mname);
-  lower->setLabel(lname);
-
-  i->setLine(uname, upper);
-  i->setLine(mname, middle);
-  i->setLine(lname, lower);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return lines;
 }
 
 QWidget * BBANDS::dialog (QWidget *p, Setting *set)

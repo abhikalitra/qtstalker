@@ -34,6 +34,7 @@ class VAR : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getVAR (QList<Curve *> &, int, double);
 };
 
 extern "C"

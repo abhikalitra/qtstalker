@@ -40,72 +40,45 @@ HT_SINE::HT_SINE ()
 
 int HT_SINE::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  Curve *sline = i->line(settings->data("OUTPUT_SINE"));
+  if (sline)
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
-  }
-
-  int size = in->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_HT_SINE (0,
-                              size - 1,
-                              &input[0],
-                              &outBeg,
-                              &outNb,
-                              &out[0],
-                              &out2[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_SINE" << settings->data("OUTPUT_SINE");
     return 1;
   }
 
-  Curve *sline = new Curve;
-  Curve *lline = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  Curve *lline = i->line(settings->data("OUTPUT_LEAD"));
+  if (lline)
   {
-    sline->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    lline->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
-
-    keyLoop--;
-    outLoop--;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT_LEAD" << settings->data("OUTPUT_LEAD");
+    return 1;
   }
 
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
+  {
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
+  }
+
+  QList<Curve *> lines = getSINE(list);
+  if (lines.count() != 2)
+  {
+    qDeleteAll(lines);
+    return 1;
+  }
+
+  sline = lines.at(0);
   sline->setAllColor(QColor(settings->data("COLOR_SINE")));
   sline->setLabel(settings->data("OUTPUT_SINE"));
   sline->setType(settings->data("STYLE_SINE"));
   sline->setZ(settings->getInt("Z_SINE"));
   i->setLine(settings->data("OUTPUT_SINE"), sline);
   
+  lline = lines.at(1);
   lline->setAllColor(QColor(settings->data("COLOR_LEAD")));
   lline->setLabel(settings->data("OUTPUT_LEAD"));
   lline->setType(settings->data("STYLE_LEAD"));
@@ -152,63 +125,76 @@ int HT_SINE::command (Command *command)
     return 1;
   }
 
-  if (in->count() < 1)
-    return 1;
-
-  int size = in->count();
-  TA_Integer outBeg;
-  TA_Integer outNb;
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  QList<Curve *> list;
+  list << in;
+  QList<Curve *> lines = getSINE(list);
+  if (lines.count() != 2)
   {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_HT_SINE (0,
-                                size - 1,
-                                &input[0],
-                                &outBeg,
-                                &outNb,
-                                &out[0],
-                                &out2[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
+    qDeleteAll(lines);
     return 1;
   }
 
-  Curve *sline = new Curve;
-  Curve *lline = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    sline->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    lline->setBar(keys.at(keyLoop), new CurveBar(out2[outLoop]));
-
-    keyLoop--;
-    outLoop--;
-  }
-
+  Curve *sline = lines.at(0);
   sline->setLabel(sname);
-  lline->setLabel(lname);
-
   i->setLine(sname, sline);
+
+  Curve *lline = lines.at(1);
+  lline->setLabel(lname);
   i->setLine(lname, lline);
 
   command->setReturnCode("0");
 
   return 0;
+}
+
+QList<Curve *> HT_SINE::getSINE (QList<Curve *> &list)
+{
+  QList<Curve *> lines;
+  if (! list.count())
+    return lines;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return lines;
+
+  int size = keys.count();
+  TA_Real input[size];
+  TA_Real out[size];
+  TA_Real out2[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  size = it.fill(list, keys, &input[0], &input[0], &input[0], &input[0]);
+  if (! size)
+    return lines;
+
+  TA_RetCode rc = TA_HT_SINE(0,
+                             size - 1,
+                             &input[0],
+                             &outBeg,
+                             &outNb,
+                             &out[0],
+                             &out2[0]);
+  
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::getSINE: TA-Lib error" << rc;
+    return lines;
+  }
+
+  Curve *c = new Curve;
+  lines.append(c);
+  c = new Curve;
+  lines.append(c);
+  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
+  {
+    qDeleteAll(lines);
+    lines.clear();
+    return lines;
+  }
+
+  return lines;
 }
 
 QWidget * HT_SINE::dialog (QWidget *p, Setting *set)
@@ -224,9 +210,9 @@ void HT_SINE::defaults (Setting *set)
   set->setData("STYLE_SINE", QString("Line"));
   set->setData("STYLE_LEAD", QString("Line"));
   set->setData("INPUT", QString("Close"));
-  set->setData("OUTPUT_SINE", _plugin);
+  set->setData("OUTPUT_SINE", QString("SINE"));
   set->setData("Z_SINE", 0);
-  set->setData("OUTPUT_LEAD", _plugin);
+  set->setData("OUTPUT_LEAD", QString("LEAD"));
   set->setData("Z_LEAD", 0);
 }
 

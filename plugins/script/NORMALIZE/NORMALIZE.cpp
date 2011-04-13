@@ -44,7 +44,6 @@ int NORMALIZE::calculate (BarData *bd, Indicator *i, Setting *settings)
     int col = 0;
     QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
     QString name = settings->data(key);
-
     Curve *line = i->line(name);
     if (line)
     {
@@ -53,47 +52,31 @@ int NORMALIZE::calculate (BarData *bd, Indicator *i, Setting *settings)
     }
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in = i->line(settings->data(key));
-    if (! in)
+    InputType it;
+    QStringList order;
+    order << settings->data(key);
+    QList<Curve *> list;
+    if (it.inputs(list, order, i, bd))
     {
-      InputType it;
-      in = it.input(bd, settings->data(key));
-      if (! in)
-      {
-        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
-        return 1;
-      }
-
-      in->setZ(-1);
-      in->setLabel(settings->data(key));
-      i->setLine(settings->data(key), in);
+      qDebug() << _plugin << "::calculate: input missing";
+      return 1;
     }
 
-    line = new Curve;
-    double max = 0;
-    double min = 0;
-    QList<int> keys;
-    in->keys(keys);
-    in->highLowRange(keys.at(0), keys.count() - 1, max, min);
-    double range = fabs(max) + fabs(min);
-    int loop2 = 0;
-    for (; loop2 < keys.count(); loop2++)
-    {
-      CurveBar *bar = in->bar(keys.at(loop2));
-      line->setBar(keys.at(loop2), new CurveBar(((bar->data() - min) / range) * 100));
-    }
+    line = getNORM(list);
+    if (! line)
+      return 1;
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    in->setAllColor(QColor(settings->data(key)));
+    line->setAllColor(QColor(settings->data(key)));
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    in->setType(settings->data(key));
+    line->setType(settings->data(key));
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    in->setZ(settings->getInt(key));
+    line->setZ(settings->getInt(key));
 
-    in->setLabel(name);
-    i->setLine(name, in);
+    line->setLabel(name);
+    i->setLine(name, line);
   }
   
   return 0;
@@ -127,25 +110,11 @@ int NORMALIZE::command (Command *command)
     return 1;
   }
 
-  if (in->count() < 1)
+  QList<Curve *> list;
+  list << in;
+  line = getNORM(list);
+  if (! line)
     return 1;
-
-  line = new Curve;
-  
-  double max = 0;
-  double min = 0;
-  QList<int> keys;
-  in->keys(keys);
-  in->highLowRange(keys.at(0), keys.count() - 1, max, min);
-
-  double range = fabs(max) + fabs(min);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    line->setBar(keys.at(loop), new CurveBar(((bar->data() - min) / range) * 100));
-  }
 
   line->setLabel(name);
   i->setLine(name, line);
@@ -153,6 +122,33 @@ int NORMALIZE::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+Curve * NORMALIZE::getNORM (QList<Curve *> &list)
+{
+  if (! list.count())
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  Curve *in = list.at(0);
+  double max = 0;
+  double min = 0;
+  in->highLowRange(keys.at(0), keys.at(keys.count() - 1), max, min);
+  double range = fabs(max) + fabs(min);
+  
+  Curve *line = new Curve;
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *bar = in->bar(keys.at(loop));
+    line->setBar(keys.at(loop), new CurveBar(((bar->data() - min) / range) * 100));
+  }
+
+  return line;
 }
 
 QWidget * NORMALIZE::dialog (QWidget *p, Setting *set)

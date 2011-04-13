@@ -34,6 +34,7 @@ class MEDIAN_PRICE : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getMP (QList<Curve *> &);
 };
 
 extern "C"

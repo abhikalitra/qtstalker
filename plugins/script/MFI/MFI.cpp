@@ -49,67 +49,17 @@ int MFI::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   int period = settings->getInt("PERIOD");
 
-  Curve *high = i->line("High");
-  if (! high)
+  InputType it;
+  QStringList order;
+  order << "High" << "Low" << "Close" << "Volume";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    InputType it;
-    high = it.input(bd, "High");
-    if (! high)
-    {
-      qDebug() << _plugin << "::calculate: no High";
-      return 1;
-    }
-
-    high->setLabel("High");
-    i->setLine("High", high);
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
 
-  Curve *low = i->line("Low");
-  if (! low)
-  {
-    InputType it;
-    low = it.input(bd, "Low");
-    if (! low)
-    {
-      qDebug() << _plugin << "::calculate: no Low";
-      return 1;
-    }
-
-    low->setLabel("Low");
-    i->setLine("Low", low);
-  }
-
-  Curve *close = i->line("Close");
-  if (! close)
-  {
-    InputType it;
-    close = it.input(bd, "Close");
-    if (! close)
-    {
-      qDebug() << _plugin << "::calculate: no Close";
-      return 1;
-    }
-
-    close->setLabel("Close");
-    i->setLine("Close", close);
-  }
-
-  Curve *vol = i->line("Volume");
-  if (! vol)
-  {
-    InputType it;
-    vol = it.input(bd, "Volume");
-    if (! vol)
-    {
-      qDebug() << _plugin << "::calculate: no Volume";
-      return 1;
-    }
-
-    vol->setLabel("Volume");
-    i->setLine("Volume", vol);
-  }
-
-  line = getMFI(high, low, close, vol, period);
+  line = getMFI(list, period);
   if (! line)
     return 1;
 
@@ -183,7 +133,9 @@ int MFI::command (Command *command)
     return 1;
   }
 
-  line = getMFI(ihigh, ilow, iclose, ivol, period);
+  QList<Curve *> list;
+  list << ihigh << ilow << iclose << ivol;
+  line = getMFI(list, period);
   if (! line)
     return 1;
 
@@ -195,30 +147,17 @@ int MFI::command (Command *command)
   return 0;
 }
 
-Curve * MFI::getMFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int period)
+Curve * MFI::getMFI (QList<Curve *> &list, int period)
 {
+  if (list.count() != 4)
+    return 0;
+
+  InputType it;
   QList<int> keys;
-  int size = ihigh->count();
-  ihigh->keys(keys);
+  if (it.keys(list, keys))
+    return 0;
 
-  if (ilow->count() < size)
-  {
-    size = ilow->count();
-    ilow->keys(keys);
-  }
-
-  if (iclose->count() < size)
-  {
-    size = iclose->count();
-    iclose->keys(keys);
-  }
-
-  if (ivol->count() < size)
-  {
-    size = ivol->count();
-    ivol->keys(keys);
-  }
-
+  int size = keys.count();
   TA_Real out[size];
   TA_Real high[size];
   TA_Real low[size];
@@ -227,30 +166,9 @@ Curve * MFI::getMFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int 
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *hbar = ihigh->bar(keys.at(loop));
-    if (! hbar)
-      continue;
-
-    CurveBar *lbar = ilow->bar(keys.at(loop));
-    if (! lbar)
-      continue;
-
-    CurveBar *cbar = iclose->bar(keys.at(loop));
-    if (! cbar)
-      continue;
-
-    CurveBar *vbar = ivol->bar(keys.at(loop));
-    if (! vbar)
-      continue;
-
-    high[loop] = (TA_Real) hbar->data();
-    low[loop] = (TA_Real) lbar->data();
-    close[loop] = (TA_Real) cbar->data();
-    volume[loop] = (TA_Real) vbar->data();
-  }
+  size = it.fill(list, keys, &high[0], &low[0], &close[0], &volume[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_MFI(0,
                          size - 1,
@@ -258,7 +176,7 @@ Curve * MFI::getMFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int 
                          &low[0],
                          &close[0],
                          &volume[0],
-                         period,
+			 period,
                          &outBeg,
                          &outNb,
                          &out[0]);
@@ -269,17 +187,16 @@ Curve * MFI::getMFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int 
     return 0;
   }
 
-  Curve *line = new Curve;
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
+    delete c;
+    return 0;
   }
 
-  return line;
+  return c;
 }
 
 QWidget * MFI::dialog (QWidget *p, Setting *set)

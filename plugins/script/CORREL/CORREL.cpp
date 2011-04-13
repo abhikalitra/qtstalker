@@ -80,18 +80,16 @@ int CORREL::calculate (BarData *bd, Indicator *i, Setting *settings)
   if (! in2)
     return 1;
 
-  if (in->count() < period || in2->count() < period)
-  {
-    delete in2;
-    return 1;
-  }
-
-  line = getCORREL(in, in2, period);
+  QList<Curve *> list;
+  list << in << in2;
+  line = getCORREL(list, period);
   if (! line)
   {
     delete in2;
     return 1;
   }
+
+  delete in2;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -147,7 +145,9 @@ int CORREL::command (Command *command)
     return 1;
   }
 
-  line = getCORREL(in, in2, period);
+  QList<Curve *> list;
+  list << in << in2;
+  line = getCORREL(list, period);
   if (! line)
     return 1;
 
@@ -159,38 +159,26 @@ int CORREL::command (Command *command)
   return 0;
 }
 
-Curve * CORREL::getCORREL (Curve *in, Curve *in2, int period)
+Curve * CORREL::getCORREL (QList<Curve *> &list, int period)
 {
-  QList<int> keys;
-  int size = in->count();
-  if (in2->count() < size)
-  {
-    size = in2->count();
-    in2->keys(keys);
-  }
-  else
-    in->keys(keys);
+  if (list.count() != 2)
+    return 0;
 
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  int size = keys.count();
   TA_Real input[size];
   TA_Real input2[size];
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    if (! bar)
-      continue;
-
-    CurveBar *bar2 = in2->bar(keys.at(loop));
-    if (! bar2)
-      continue;
-
-    input[loop] = (TA_Real) bar->data();
-    input2[loop] = (TA_Real) bar2->data();
-  }
+  size = it.fill(list, keys, &input[0], &input2[0], &input2[0], &input2[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_CORREL(0,
                             size - 1,
@@ -207,17 +195,16 @@ Curve * CORREL::getCORREL (Curve *in, Curve *in2, int period)
     return 0;
   }
 
-  Curve *line = new Curve;
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
+    delete c;
+    return 0;
   }
 
-  return line;
+  return c;
 }
 
 QWidget * CORREL::dialog (QWidget *p, Setting *set)

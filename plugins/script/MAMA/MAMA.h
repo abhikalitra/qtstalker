@@ -34,6 +34,7 @@ class MAMA : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    QList<Curve *> getMAMA (QList<Curve *> &, double fast, double slow);
 };
 
 extern "C"

@@ -34,6 +34,7 @@ class MAX : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getMAX (QList<Curve *> &, int);
 };
 
 extern "C"

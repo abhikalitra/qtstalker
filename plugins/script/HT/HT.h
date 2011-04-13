@@ -43,6 +43,7 @@ class HT : public Plugin
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
     QStringList method ();
+    Curve * getHT (QList<Curve *> &, int);
 
   protected:
     QStringList _method;

@@ -34,6 +34,7 @@ class PDI : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getPDI (QList<Curve *> &, int);
 };
 
 extern "C"

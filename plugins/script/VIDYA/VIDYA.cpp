@@ -43,25 +43,27 @@ VIDYA::VIDYA ()
 
 int VIDYA::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
+  }
+
   int period = settings->getInt("PERIOD");
   int vperiod = settings->getInt("VPERIOD");
 
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
 
-  Curve *line = getVIDYA(in, period, vperiod);
+  line = getVIDYA(list, period, vperiod);
   if (! line)
     return 1;
 
@@ -119,10 +121,9 @@ int VIDYA::command (Command *command)
     return 1;
   }
 
-  if (in->count() < period || in->count() < vperiod)
-    return 1;
-
-  line = getVIDYA(in, period, vperiod);
+  QList<Curve *> list;
+  list << in;
+  line = getVIDYA(list, period, vperiod);
   if (! line)
     return 1;
 
@@ -134,15 +135,23 @@ int VIDYA::command (Command *command)
   return 0;
 }
 
-Curve * VIDYA::getVIDYA (Curve *in, int period, int vperiod)
+Curve * VIDYA::getVIDYA (QList<Curve *> &list, int period, int vperiod)
 {
-  Curve *cmo = getCMO(in, vperiod);
+  if (! list.count())
+    return 0;
+  
+  Curve *cmo = getCMO(list, vperiod);
   if (! cmo)
     return 0;
 
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+  int size = keys.count();
+
   Curve *out = new Curve;
 
-  int size = in->count();
   QVector<double> *inSeries = new QVector<double>(size);
   inSeries->fill(0.0);
   QVector<double> *offset = new QVector<double>(size);
@@ -154,10 +163,8 @@ Curve * VIDYA::getVIDYA (Curve *in, int period, int vperiod)
 
   double c = 2 / (double) period + 1;
 
-  QList<int> keys;
-  in->keys(keys);
-
   int loop = 0;
+  Curve *in = list.at(0);
   for (; loop < keys.count(); loop++)
   {
     CurveBar *bar = in->bar(keys.at(loop));
@@ -192,51 +199,50 @@ Curve * VIDYA::getVIDYA (Curve *in, int period, int vperiod)
   return out;
 }
 
-Curve * VIDYA::getCMO (Curve *in, int period)
+Curve * VIDYA::getCMO (QList<Curve *> &list, int period)
 {
-  if (in->count() < period)
+  if (! list.count())
     return 0;
 
-  TA_Real input[in->count()];
-  TA_Real out[in->count()];
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  int size = keys.count();
+  TA_Real input[size];
+  TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
+  size = it.fill(list, keys, &input[0], &input[0], &input[0], &input[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_CMO(0,
-                         keys.count() - 1,
+                         size - 1,
                          &input[0],
                          period,
                          &outBeg,
                          &outNb,
                          &out[0]);
+
   if (rc != TA_SUCCESS)
   {
     qDebug() << _plugin << "::getCMO: TA-Lib error" << rc;
     return 0;
   }
 
-  Curve *line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
+    delete c;
+    return 0;
   }
 
-  return line;
+  return c;
 }
 
 QWidget * VIDYA::dialog (QWidget *p, Setting *set)

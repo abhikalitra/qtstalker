@@ -24,7 +24,6 @@
 #include "Globals.h"
 #include "RuleWidget.h"
 #include "InputType.h"
-//#include "ta_libc.h"
 
 #include <QtDebug>
 
@@ -32,10 +31,6 @@ ARITHMETIC::ARITHMETIC ()
 {
   _plugin = "ARITHMETIC";
   _type = "INDICATOR";
-
-//  TA_RetCode rc = TA_Initialize();
-//  if (rc != TA_SUCCESS)
-//    qDebug("ARITHMETIC::ARITHMETIC: error on TA_Initialize");
 }
 
 int ARITHMETIC::calculate (BarData *bd, Indicator *i, Setting *settings)
@@ -125,158 +120,6 @@ int ARITHMETIC::calculate (BarData *bd, Indicator *i, Setting *settings)
   }
 
   return 0;
-  
-/*
-  int rows = settings->getInt("ROWS");
-  int loop = 0;
-  for (; loop < rows; loop++)
-  {
-    int col = 0;
-    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString name = settings->data(key);
-    Curve *line = i->line(name);
-    if (line)
-    {
-      qDebug() << _plugin << "::calculate: duplicate output" << name;
-      return 1;
-    }
-
-    QStringList l;
-    l << "ADD" << "DIV" << "MULT" << "SUB";
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    int method = l.indexOf(settings->data(key));
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in = i->line(settings->data(key));
-    if (! in)
-    {
-      InputType it;
-      in = it.input(bd, settings->data(key));
-      if (! in)
-      {
-        qDebug() << _plugin << "::calculate: no INPUT" << settings->data(key);
-        return 1;
-      }
-
-      in->setLabel(settings->data(key));
-      i->setLine(settings->data(key), in);
-    }
-
-    double value = 0;
-    int valueFlag = FALSE;
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in2 = i->line(settings->data(key));
-    if (! in2)
-    {
-      InputType it;
-      in2 = it.input(bd, settings->data(key));
-      if (! in2)
-      {
-        bool ok;
-        value = settings->data(key).toDouble(&ok);
-	if (! ok)
-	{
-          qDebug() << _plugin << "::calculate: invalid INPUT2" << settings->data(key);
-          return 1;
-	}
-
-	valueFlag++;
-      }
-      else
-      {
-        in2->setLabel(settings->data(key));
-        i->setLine(settings->data(key), in2);
-      }
-    }
-
-    int high = 0;
-    int low = 0;
-    in->keyRange(low, high);
-
-    if (! valueFlag)
-    {
-      int tlow = 0;
-      int thigh = 0;
-      in2->keyRange(tlow, thigh);
-      if (tlow > low)
-        low = tlow;
-      if (thigh < high)
-        high = thigh;
-    }
-
-    int size = high - low + 1;
-    TA_Real out[size];
-    TA_Real input[size];
-    TA_Real input2[size];
-    TA_Integer outBeg;
-    TA_Integer outNb;
-
-    int loop2 = low;
-    for (; loop2 <= high; loop2++)
-    {
-      CurveBar *bar = in->bar(loop2);
-      if (! bar)
-        continue;
-
-      CurveBar *bar2 = in2->bar(loop2);
-      if (! bar2)
-        continue;
-
-      input[loop2] = (TA_Real) bar->data();
-      input2[loop2] = (TA_Real) bar2->data();
-    }
-
-    TA_RetCode rc = TA_SUCCESS;
-    switch (method)
-    {
-      case 0:
-        rc = TA_ADD (0, size - 1, &input[0], &input2[0], &outBeg, &outNb, &out[0]);
-        break;
-      case 1:
-        rc = TA_DIV (0, size - 1, &input[0], &input2[0], &outBeg, &outNb, &out[0]);
-        break;
-      case 2:
-        rc = TA_MULT (0, size - 1, &input[0], &input2[0], &outBeg, &outNb, &out[0]);
-        break;
-      case 3:
-        rc = TA_SUB (0, size - 1, &input[0], &input2[0], &outBeg, &outNb, &out[0]);
-        break;
-      default:
-	return 1;
-        break;
-    }
-
-    if (rc != TA_SUCCESS)
-    {
-      qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
-      return 1;
-    }
-
-    line = new Curve;
-    int dataLoop = size - 1;
-    int outLoop = outNb - 1;
-    while (outLoop > -1 && dataLoop > -1)
-    {
-      line->setBar(dataLoop, new CurveBar(out[outLoop]));
-      dataLoop--;
-      outLoop--;
-    }
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setAllColor(QColor(settings->data(key)));
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setType(settings->data(key));
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setZ(settings->getInt(key));
-
-    line->setLabel(name);
-    i->setLine(name, line);
-  }
-
-  return 0;
-*/
 }
 
 int ARITHMETIC::command (Command *command)

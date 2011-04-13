@@ -21,7 +21,6 @@
 
 #include "BOPDialog.h"
 #include "Globals.h"
-#include "MAType.h"
 
 #include <QtDebug>
 #include <QStringList>
@@ -56,34 +55,17 @@ void BOPDialog::createGeneralPage ()
   _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
   form->addRow(tr("Style"), _style);
 
-  // smoothing
-  _smoothing = new QSpinBox;
-  _smoothing->setRange(1, 100000);
-  _smoothing->setValue(_settings->getInt("SMOOTHING"));
-  form->addRow(tr("Smoothing"), _smoothing);
-
-  // smoothing type
-  MAType mat;
-  l = mat.list();
-
-  _smoothingType = new QComboBox;
-  _smoothingType->addItems(l);
-  _smoothingType->setCurrentIndex(_smoothingType->findText(_settings->data("SMOOTHING_TYPE"), Qt::MatchExactly));
-  form->addRow(tr("Smoothing Type"), _smoothingType);
-
   // z
   _z = new QSpinBox;
   _z->setRange(-1, 99);
   _z->setValue(_settings->getInt("Z"));
-  form->addRow(tr("Plot Order"), _z);
+  form->addRow(tr("Plot"), _z);
 }
 
 void BOPDialog::save ()
 {
   _settings->setData("COLOR", _color->color().name());
   _settings->setData("STYLE", _style->currentText());
-  _settings->setData("SMOOTHING", _smoothing->value());
-  _settings->setData("SMOOTHING_TYPE", _smoothingType->currentText());
   _settings->setData("OUTPUT", _output->text());
   _settings->setData("Z", _z->text());
 }

@@ -40,64 +40,29 @@ VAR::VAR ()
 
 int VAR::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int period = settings->getInt("PERIOD");
-
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
-  }
-
-  int size = in->count();
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_VAR(0,
-                         size - 1,
-                         &input[0],
-                         period,
-                         0,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
     return 1;
   }
 
-  Curve *line = new Curve;
+  int period = settings->getInt("PERIOD");
+  double dev = settings->getDouble("DEVIATION");
 
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
+
+  line = getVAR(list, period, dev);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -114,6 +79,7 @@ int VAR::command (Command *command)
   // NAME
   // INPUT
   // PERIOD
+  // DEVIATION
 
   Indicator *i = command->indicator();
   if (! i)
@@ -145,50 +111,18 @@ int VAR::command (Command *command)
     return 1;
   }
 
-  int size = in->count();
-  if (size < period)
-    return 1;
-
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  double dev = command->parm("DEVIATION").toDouble(&ok);
+  if (! ok)
   {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_VAR(0,
-                         size - 1,
-                         &input[0],
-                         period,
-                         0,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
+    qDebug() << _plugin << "::command: invalid DEVIATION" << command->parm("DEVIATION");
     return 1;
   }
 
-  line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
-  }
+  QList<Curve *> list;
+  list << in;
+  line = getVAR(list, period, dev);
+  if (! line)
+    return 1;
 
   line->setLabel(name);
   i->setLine(name, line);
@@ -196,6 +130,53 @@ int VAR::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+Curve * VAR::getVAR (QList<Curve *> &list, int period, double dev)
+{
+  if (! list.count())
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  int size = keys.count();
+  TA_Real out[size];
+  TA_Real in[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  if (! size)
+    return 0;
+
+  TA_RetCode rc = TA_VAR(0,
+                         size - 1,
+                         &in[0],
+			 period,
+			 dev,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::getVAR: TA-Lib error" << rc;
+    return 0;
+  }
+
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+  {
+    delete c;
+    return 0;
+  }
+
+  return c;
 }
 
 QWidget * VAR::dialog (QWidget *p, Setting *set)
@@ -210,6 +191,7 @@ void VAR::defaults (Setting *set)
   set->setData("LABEL", _plugin);
   set->setData("STYLE", QString("HistogramBar"));
   set->setData("PERIOD", 20);
+  set->setData("DEVIATION", 2);
   set->setData("INPUT", QString("Close"));
   set->setData("Z", 0);
   set->setData("OUTPUT", _plugin);

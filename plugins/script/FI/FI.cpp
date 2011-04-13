@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "FIDialog.h"
-#include "MAType.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -35,43 +35,26 @@ FI::FI ()
 
 int FI::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int period = settings->getInt("SMOOTHING");
-
-  MAType mat;
-  int type = mat.fromString(settings->data("SMOOTHING_TYPE"));
-
-  Curve *line = new Curve;
-
-  int loop = 1;
-  double force = 0;
-  for (; loop < bd->count(); loop++)
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
   {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
-
-    Bar *ybar = bd->bar(loop - 1);
-    if (! ybar)
-      continue;
-
-    double cdiff = bar->close() - ybar->close();
-    force = bar->volume() * cdiff;
-
-    line->setBar(loop, new CurveBar(force));
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
   }
 
-  if (period > 1)
+  InputType it;
+  QStringList order;
+  order << "Close" << "Volume";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    Curve *ma = mat.getMA(line, period, type);
-    if (! ma)
-    {
-      delete line;
-      return 1;
-    }
-
-    delete line;
-    line = ma;
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
+
+  line = getFI(list);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -88,8 +71,6 @@ int FI::command (Command *command)
   // INPUT_CLOSE
   // INPUT_VOLUME
   // NAME
-  // PERIOD
-  // MA_TYPE
 
   Indicator *i = command->indicator();
   if (! i)
@@ -120,61 +101,11 @@ int FI::command (Command *command)
     return 1;
   }
 
-  bool ok;
-  int period = command->parm("PERIOD").toInt(&ok);
-  if (! ok)
-  {
-    qDebug() << _plugin << "::command: invalid period" << command->parm("PERIOD");
+  QList<Curve *> list;
+  list << iclose << ivol;
+  line = getFI(list);
+  if (! line)
     return 1;
-  }
-
-  MAType mat;
-  int type = mat.fromString(command->parm("MA_TYPE"));
-  if (type == -1)
-  {
-    qDebug() << _plugin << "::command: invalid ma type" << command->parm("MA_TYPE");
-    return 1;
-  }
-
-  line = new Curve;
-
-  int ipos = 0;
-  int end = 0;
-  iclose->keyRange(ipos, end);
-  ipos++;
-  double force = 0;
-  for (; ipos <= end; ipos++)
-  {
-    CurveBar *cbar = iclose->bar(ipos);
-    if (! cbar)
-      continue;
-
-    CurveBar *cybar = iclose->bar(ipos - 1);
-    if (! cybar)
-      continue;
-
-    CurveBar *vbar = ivol->bar(ipos);
-    if (! vbar)
-      continue;
-
-    double cdiff = cbar->data() - cybar->data();
-    force = vbar->data() * cdiff;
-
-    line->setBar(ipos, new CurveBar(force));
-  }
-
-  if (period > 1)
-  {
-    Curve *ma = mat.getMA(line, period, type);
-    if (! ma)
-    {
-      delete line;
-      return 1;
-    }
-
-    delete line;
-    line = ma;
-  }
 
   line->setLabel(name);
   i->setLine(name, line);
@@ -182,6 +113,44 @@ int FI::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+Curve * FI::getFI (QList<Curve *> &list)
+{
+  if (list.count() != 2)
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  Curve *line = new Curve;
+  Curve *close = list.at(0);
+  Curve *vol = list.at(1);
+  int loop = 1;
+  double force = 0;
+  for (; loop < keys.count(); loop++)
+  {
+    CurveBar *cbar = close->bar(keys.at(loop));
+    if (! cbar)
+      continue;
+
+    CurveBar *ycbar = close->bar(keys.at(loop - 1));
+    if (! ycbar)
+      continue;
+
+    CurveBar *vbar = vol->bar(keys.at(loop));
+    if (! vbar)
+      continue;
+
+    double cdiff = cbar->data() - ycbar->data();
+    force = vbar->data() * cdiff;
+
+    line->setBar(keys.at(loop), new CurveBar(force));
+  }
+
+  return line;
 }
 
 QWidget * FI::dialog (QWidget *p, Setting *set)
@@ -194,8 +163,6 @@ void FI::defaults (Setting *set)
   set->setData("PLUGIN", _plugin);
   set->setData("COLOR", QString("yellow"));
   set->setData("STYLE", QString("HistogramBar"));
-  set->setData("SMOOTHING", 2);
-  set->setData("SMOOTHING_TYPE", QString("EMA"));
   set->setData("OUTPUT", _plugin);
   set->setData("Z", 0);
 }

@@ -178,6 +178,7 @@ void InputDialog::newDouble (QString &key, QString &label, QString &value)
 {
   QDoubleSpinBox *sb = new QDoubleSpinBox(this);
   sb->setRange(-99999999, 99999999);
+  sb->setDecimals(4);
   sb->setValue(value.toDouble());
   _form->addRow(label, sb);
   _doubles.insert(key, sb);

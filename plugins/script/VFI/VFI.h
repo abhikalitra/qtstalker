@@ -34,7 +34,7 @@ class VFI : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
-    Curve * getVFI (Curve *ihigh, Curve *ilow, Curve *iclose, Curve *ivol, int period);
+    Curve * getVFI (QList<Curve *> &, int period);
 };
 
 extern "C"

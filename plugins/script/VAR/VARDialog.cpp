@@ -59,6 +59,13 @@ void VARDialog::createGeneralPage ()
   _period->setValue(_settings->getInt("PERIOD"));
   form->addRow(tr("Period"), _period);
 
+  // deviation
+  _dev = new QDoubleSpinBox;
+  _dev->setRange(0, 100);
+  _dev->setDecimals(4);
+  _dev->setValue(_settings->getDouble("DEVIATION"));
+  form->addRow(tr("Deviation"), _dev);
+
   // color
   _color = new ColorButton(this, QColor(_settings->data("COLOR")));
   _color->setColorButton();
@@ -77,7 +84,7 @@ void VARDialog::createGeneralPage ()
   _z = new QSpinBox;
   _z->setRange(-1, 99);
   _z->setValue(_settings->getInt("Z"));
-  form->addRow(tr("Plot Order"), _z);
+  form->addRow(tr("Plot"), _z);
 }
 
 void VARDialog::save ()
@@ -86,6 +93,7 @@ void VARDialog::save ()
   _settings->setData("COLOR", _color->color().name());
   _settings->setData("STYLE", _style->currentText());
   _settings->setData("PERIOD", _period->value());
+  _settings->setData("DEVIATION", _dev->value());
   _settings->setData("OUTPUT", _output->text());
   _settings->setData("Z", _z->text());
 }

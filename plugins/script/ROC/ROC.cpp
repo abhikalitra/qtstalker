@@ -41,76 +41,30 @@ ROC::ROC ()
 
 int ROC::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  int period = settings->getInt("PERIOD");
-
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
-  }
-
-  int method = _method.indexOf(settings->data("METHOD"));
-
-  QList<int> keys;
-  in->keys(keys);
-  int size = keys.count();
-
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_SUCCESS;
-  switch ((Method) method)
-  {
-    case _ROCN:
-      rc = TA_ROC(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case _ROCP:
-      rc = TA_ROCP(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case _ROCR:
-      rc = TA_ROCR(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case _ROCR100:
-      rc = TA_ROCR100(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
     return 1;
   }
 
-  Curve *line = new Curve;
+  int period = settings->getInt("PERIOD");
 
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  int method = _method.indexOf(settings->data("METHOD"));
+
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
+
+  line = getROC(list, period, method);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -166,40 +120,54 @@ int ROC::command (Command *command)
     return 1;
   }
 
-  if (in->count() < period)
+  QList<Curve *> list;
+  list << in;
+  line = getROC(list, period, method);
+  if (! line)
     return 1;
+  
+  line->setLabel(name);
+  i->setLine(name, line);
 
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * ROC::getROC (QList<Curve *> &list, int period, int method)
+{
+  if (! list.count())
+    return 0;
+
+  InputType it;
   QList<int> keys;
-  in->keys(keys);
-  int size = keys.count();
+  if (it.keys(list, keys))
+    return 0;
 
-  TA_Real input[size];
+  int size = keys.count();
   TA_Real out[size];
+  TA_Real in[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < size; loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
+  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_SUCCESS;
-
   switch ((Method) method)
   {
     case _ROCN:
-      rc = TA_ROC(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_ROC(0, size - 1, &in[0], period, &outBeg, &outNb, &out[0]);
       break;
     case _ROCP:
-      rc = TA_ROCP(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_ROCP(0, size - 1, &in[0], period, &outBeg, &outNb, &out[0]);
       break;
     case _ROCR:
-      rc = TA_ROCR(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_ROCR(0, size - 1, &in[0], period, &outBeg, &outNb, &out[0]);
       break;
     case _ROCR100:
-      rc = TA_ROCR100(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
+      rc = TA_ROCR100(0, size - 1, &in[0], period, &outBeg, &outNb, &out[0]);
       break;
     default:
       break;
@@ -207,27 +175,20 @@ int ROC::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getROC: TA-Lib error" << rc;
+    return 0;
   }
 
-  line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
+    delete c;
+    return 0;
   }
 
-  line->setLabel(name);
-  i->setLine(name, line);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return c;
 }
 
 QWidget * ROC::dialog (QWidget *p, Setting *set)

@@ -71,12 +71,14 @@ void BBANDSDialog::createGeneralPage ()
   // up deviation
   _upDev = new QDoubleSpinBox;
   _upDev->setRange(-100000, 100000);
+  _upDev->setDecimals(4);
   _upDev->setValue(_settings->getDouble("DEVIATION_UP"));
   form->addRow(tr("Upper Deviation"), _upDev);
 
   // low deviation
   _lowDev = new QDoubleSpinBox;
   _lowDev->setRange(-100000, 100000);
+  _lowDev->setDecimals(4);
   _lowDev->setValue(_settings->getDouble("DEVIATION_DOWN"));
   form->addRow(tr("Lower Deviation"), _lowDev);
 
@@ -121,7 +123,7 @@ void BBANDSDialog::createUpperPage ()
   _zUp = new QSpinBox;
   _zUp->setRange(-1, 99);
   _zUp->setValue(_settings->getInt("Z_UP"));
-  form->addRow(tr("Plot Order"), _zUp);
+  form->addRow(tr("Plot"), _zUp);
 
   _tabs->addTab(w, tr("Upper"));
 }
@@ -155,7 +157,7 @@ void BBANDSDialog::createMiddlePage ()
   _zMid = new QSpinBox;
   _zMid->setRange(-1, 99);
   _zMid->setValue(_settings->getInt("Z_MID"));
-  form->addRow(tr("Plot Order"), _zMid);
+  form->addRow(tr("Plot"), _zMid);
 
   _tabs->addTab(w, tr("Middle"));
 }
@@ -189,7 +191,7 @@ void BBANDSDialog::createLowerPage ()
   _zDown = new QSpinBox;
   _zDown->setRange(-1, 99);
   _zDown->setValue(_settings->getInt("Z_DOWN"));
-  form->addRow(tr("Plot Order"), _zDown);
+  form->addRow(tr("Plot"), _zDown);
 
   _tabs->addTab(w, tr("Lower"));
 }

@@ -50,66 +50,23 @@ int MEDIAN_PRICE::calculate (BarData *bd, Indicator *i, Setting *settings)
     }
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in = i->line(settings->data(key));
-    if (! in)
-    {
-      InputType it;
-      in = it.input(bd, settings->data(key));
-      if (! in)
-      {
-        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
-        return 1;
-      }
-
-      in->setZ(-1);
-      in->setLabel(settings->data(key));
-      i->setLine(settings->data(key), in);
-    }
-
+    QStringList order;
+    order << settings->data(key);
+    
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in2 = i->line(settings->data(key));
-    if (! in2)
+    order << settings->data(key);
+
+    InputType it;
+    QList<Curve *> list;
+    if (it.inputs(list, order, i, bd))
     {
-      InputType it;
-      in2 = it.input(bd, settings->data(key));
-      if (! in2)
-      {
-        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
-        return 1;
-      }
-
-      in2->setZ(-1);
-      in2->setLabel(settings->data(key));
-      i->setLine(settings->data(key), in2);
+      qDebug() << _plugin << "::calculate: input missing";
+      return 1;
     }
-  
-    int high = 0;
-    int low = 0;
-    in->keyRange(low, high);
 
-    int tlow = 0;
-    int thigh = 0;
-    in2->keyRange(tlow, thigh);
-    if (tlow < low)
-      low = tlow;
-    if (thigh > high)
-      high = thigh;
-
-    line = new Curve;
-    int loop2 = low;
-    for (; loop2 <= high; loop2++)
-    {
-      CurveBar *bar = in->bar(loop2);
-      if (! bar)
-        continue;
-
-      CurveBar *bar2 = in2->bar(loop2);
-      if (! bar2)
-        continue;
-
-      double t = (bar->data() + bar2->data()) / 2.0;
-      line->setBar(loop2, new CurveBar(t));
-    }
+    line = getMP(list);
+    if (! line)
+      return 1;
 
     key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
     line->setAllColor(QColor(settings->data(key)));
@@ -163,19 +120,35 @@ int MEDIAN_PRICE::command (Command *command)
     return 1;
   }
 
-  QList<int> keys;
-  int size = in->count();
-  if (in2->count() > size)
-  {
-    size = in2->count();
-    in2->keys(keys);
-  }
-  else
-    in->keys(keys);
+  QList<Curve *> list;
+  list << in << in2;
+  line = getMP(list);
+  if (! line)
+    return 1;
 
-  line = new Curve;
+  line->setLabel(name);
+  i->setLine(name, line);
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * MEDIAN_PRICE::getMP (QList<Curve *> &list)
+{
+  if (list.count() != 2)
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  Curve *line = new Curve;
+  Curve *in = list.at(0);
+  Curve *in2 = list.at(1);
   int loop = 0;
-  for (; loop < size; loop++)
+  for (; loop < keys.count(); loop++)
   {
     CurveBar *bar = in->bar(keys.at(loop));
     if (! bar)
@@ -189,12 +162,7 @@ int MEDIAN_PRICE::command (Command *command)
     line->setBar(keys.at(loop), new CurveBar(t));
   }
 
-  line->setLabel(name);
-  i->setLine(name, line);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return line;
 }
 
 QWidget * MEDIAN_PRICE::dialog (QWidget *p, Setting *set)

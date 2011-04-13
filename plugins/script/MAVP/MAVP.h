@@ -34,6 +34,7 @@ class MAVP : public Plugin
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
     QWidget * dialog (QWidget *, Setting *);
+    Curve * getMAVP (QList<Curve *> &, int min, int max, int type);
 };
 
 extern "C"

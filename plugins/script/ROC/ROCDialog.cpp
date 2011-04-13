@@ -87,10 +87,10 @@ void ROCDialog::createGeneralPage ()
   _z = new QSpinBox;
   _z->setRange(-1, 99);
   _z->setValue(_settings->getInt("Z"));
-  form->addRow(tr("Plot Order"), _z);
+  form->addRow(tr("Plot"), _z);
 }
 
-void ROCDialog::done ()
+void ROCDialog::save ()
 {
   _settings->setData("METHOD", _method->currentText());
   _settings->setData("INPUT", _input->currentText());

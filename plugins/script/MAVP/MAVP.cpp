@@ -41,115 +41,32 @@ MAVP::MAVP ()
 
 int MAVP::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
+  {
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
+    return 1;
+  }
+
   int min = settings->getInt("PERIOD_MIN");
   int max = settings->getInt("PERIOD_MAX");
 
   MAType mat;
   int type = mat.fromString(settings->data("MA_TYPE"));
   
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT") << settings->data("INPUT2");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
-  }
-
-  Curve *in2 = i->line(settings->data("INPUT2"));
-  if (! in2)
-  {
-    InputType it;
-    in2 = it.input(bd, settings->data("INPUT2"));
-    if (! in2)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT2");
-      return 1;
-    }
-
-    in2->setZ(-1);
-    i->setLine(settings->data("INPUT2"), in2);
-  }
-
-  int flag = 0;
-  int size = in->count();
-  if (in2->count() < size)
-  {
-    size = in2->count();
-    flag = 1;
-  }
-
-  QList<int> keys;
-  in->keys(keys);
-  QList<int> keys2;
-  in2->keys(keys2);
-
-  TA_Real input[size];
-  TA_Real input2[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = keys.count() - 1;
-  int loop2 = keys2.count() - 1;
-  while (loop > -1 && loop2 > -1)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    CurveBar *bar2 = in2->bar(keys2.at(loop2));
-    input[loop] = (TA_Real) bar->data();
-    input2[loop2] = (TA_Real) bar2->data();
-
-    loop--;
-    loop2--;
-  }
-
-  TA_RetCode rc = TA_MAVP(0,
-                          size - 1,
-                          &input[0],
-                          &input2[0],
-                          min,
-                          max,
-                          (TA_MAType) type,
-                          &outBeg,
-                          &outNb,
-                          &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: input missing";
     return 1;
   }
 
-  Curve *line = new Curve;
-
-  if (! flag)
-  {
-    int keyLoop = keys.count() - 1;
-    int outLoop = outNb - 1;
-    while (keyLoop > -1 && outLoop > -1)
-    {
-      line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-      keyLoop--;
-      outLoop--;
-    }
-  }
-  else
-  {
-    int keyLoop = keys2.count() - 1;
-    int outLoop = outNb - 1;
-    while (keyLoop > -1 && outLoop > -1)
-    {
-      line->setBar(keys2.at(keyLoop), new CurveBar(out[outLoop]));
-      keyLoop--;
-      outLoop--;
-    }
-  }
+  line = getMAVP(list, min, max, type);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -222,40 +139,40 @@ int MAVP::command (Command *command)
     return 1;
   }
 
-  if (in->count() < min || in->count() < max)
+  QList<Curve *> list;
+  list << in << in2;
+  line = getMAVP(list, min, max, type);
+  if (! line)
     return 1;
 
-  int flag = 0;
-  int size = in->count();
-  if (in2->count() < size)
-  {
-    size = in2->count();
-    flag = 1;
-  }
+  line->setLabel(name);
+  i->setLine(name, line);
 
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+Curve * MAVP::getMAVP (QList<Curve *> &list, int min, int max, int type)
+{
+  if (list.count() != 2)
+    return 0;
+
+  InputType it;
   QList<int> keys;
-  in->keys(keys);
-  QList<int> keys2;
-  in2->keys(keys2);
+  if (it.keys(list, keys))
+    return 0;
 
+  int size = keys.count();
   TA_Real input[size];
   TA_Real input2[size];
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = keys.count() - 1;
-  int loop2 = keys2.count() - 1;
-  while (loop > -1 && loop2 > -1)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    CurveBar *bar2 = in2->bar(keys2.at(loop2));
-    input[loop] = (TA_Real) bar->data();
-    input2[loop2] = (TA_Real) bar2->data();
-
-    loop--;
-    loop2--;
-  }
+  size = it.fill(list, keys, &input[0], &input2[0], &input2[0], &input2[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_MAVP(0,
                           size - 1,
@@ -270,41 +187,20 @@ int MAVP::command (Command *command)
 
   if (rc != TA_SUCCESS)
   {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
+    qDebug() << _plugin << "::getMAVP: TA-Lib error" << rc;
+    return 0;
   }
 
-  line = new Curve;
-
-  if (! flag)
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    int keyLoop = keys.count() - 1;
-    int outLoop = outNb - 1;
-    while (keyLoop > -1 && outLoop > -1)
-    {
-      line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-      keyLoop--;
-      outLoop--;
-    }
-  }
-  else
-  {
-    int keyLoop = keys2.count() - 1;
-    int outLoop = outNb - 1;
-    while (keyLoop > -1 && outLoop > -1)
-    {
-      line->setBar(keys2.at(keyLoop), new CurveBar(out[outLoop]));
-      keyLoop--;
-      outLoop--;
-    }
+    delete c;
+    return 0;
   }
 
-  line->setLabel(name);
-  i->setLine(name, line);
-
-  command->setReturnCode("0");
-
-  return 0;
+  return c;
 }
 
 QWidget * MAVP::dialog (QWidget *p, Setting *set)

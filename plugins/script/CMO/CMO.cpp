@@ -49,65 +49,19 @@ int CMO::calculate (BarData *bd, Indicator *i, Setting *settings)
   
   int period = settings->getInt("PERIOD");
 
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
+  InputType it;
+  QStringList order;
+  order << settings->data("INPUT");
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
   {
-    InputType it;
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
   }
 
-  line = getCMO(in, period);
+  line = getCMO(list, period);
   if (! line)
     return 1;
-
-/*  
-  TA_Real input[in->count()];
-  TA_Real out[in->count()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_CMO(0,
-                         keys.count() - 1,
-                         &input[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
-    return 1;
-  }
-
-  Curve *line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
-  }
-*/
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -155,54 +109,12 @@ int CMO::command (Command *command)
     return 1;
   }
 
-/*
-  if (in->count() < period)
-    return 1;
-
-  TA_Real input[in->count()];
-  TA_Real out[in->count()];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
-
-  TA_RetCode rc = TA_CMO(0,
-                         keys.count() - 1,
-                         &input[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
-    return 1;
-  }
-
-  line = new Curve;
-
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
-  {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
-  }
-*/
-
-  line = getCMO(in, period);
+  QList<Curve *> list;
+  list << in;
+  line = getCMO(list, period);
   if (! line)
     return 1;
-  
+
   line->setLabel(name);
   i->setLine(name, line);
 
@@ -211,23 +123,25 @@ int CMO::command (Command *command)
   return 0;
 }
 
-Curve * CMO::getCMO (Curve *in, int period)
+Curve * CMO::getCMO (QList<Curve *> &list, int period)
 {
-  int size = in->count();
+  if (! list.count())
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  int size = keys.count();
   TA_Real input[size];
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  QList<int> keys;
-  in->keys(keys);
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
-  }
+  size = it.fill(list, keys, &input[0], &input[0], &input[0], &input[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_CMO(0,
                          size - 1,
@@ -236,23 +150,23 @@ Curve * CMO::getCMO (Curve *in, int period)
                          &outBeg,
                          &outNb,
                          &out[0]);
+  
   if (rc != TA_SUCCESS)
   {
     qDebug() << _plugin << "::getCMO: TA-Lib error" << rc;
     return 0;
   }
 
-  Curve *line = new Curve;
-  int keyLoop = keys.count() - 1;
-  int outLoop = outNb - 1;
-  while (keyLoop > -1 && outLoop > -1)
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
-    keyLoop--;
-    outLoop--;
+    delete c;
+    return 0;
   }
 
-  return line;
+  return c;
 }
 
 QWidget * CMO::dialog (QWidget *p, Setting *set)

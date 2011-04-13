@@ -24,6 +24,7 @@
 #include "ta_libc.h"
 #include "Globals.h"
 #include "SARDialog.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -39,49 +40,29 @@ SAR::SAR ()
 
 int SAR::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
-  double init = settings->getDouble("STEP_INITIAL");
-  double max = settings->getDouble("STEP_MAX");
-
-  int size = bd->count();
-  TA_Real out[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
+  Curve *line = i->line(settings->data("OUTPUT"));
+  if (line)
   {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
-
-    high[loop] = (TA_Real) bar->high();
-    low[loop] = (TA_Real) bar->low();
-  }
-
-  TA_RetCode rc = TA_SAR(0,
-                         size - 1,
-                         &high[0],
-                         &low[0],
-                         init,
-                         max,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::calculate: TA-Lib error" << rc;
+    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
     return 1;
   }
 
-  Curve *line = new Curve;
-  line->setType("Dot");
+  double init = settings->getDouble("STEP_INITIAL");
+  double max = settings->getDouble("STEP_MAX");
 
-  loop = 0;
-  for (; loop < outNb; loop++)
-    line->setBar(loop + 1, new CurveBar(out[loop]));
+  InputType it;
+  QStringList order;
+  order << "High" << "Low";
+  QList<Curve *> list;
+  if (it.inputs(list, order, i, bd))
+  {
+    qDebug() << _plugin << "::calculate: input missing";
+    return 1;
+  }
+
+  line = getSAR(list, init, max);
+  if (! line)
+    return 1;
 
   line->setAllColor(QColor(settings->data("COLOR")));
   line->setLabel(settings->data("OUTPUT"));
@@ -144,54 +125,11 @@ int SAR::command (Command *command)
     return 1;
   }
 
-  int size = ihigh->count();
-
-  TA_Real out[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  int ipos = 0;
-  int opos = 0;
-  int end = 0;
-  ihigh->keyRange(ipos, end);
-  for (; ipos <= end; ipos++, opos++)
-  {
-    CurveBar *hbar = ihigh->bar(ipos);
-    if (! hbar)
-      continue;
-
-    CurveBar *lbar = ilow->bar(ipos);
-    if (! lbar)
-      continue;
-
-    high[opos] = (TA_Real) hbar->data();
-    low[opos] = (TA_Real) lbar->data();
-  }
-
-  TA_RetCode rc = TA_SAR(0,
-                         size - 1,
-                         &high[0],
-                         &low[0],
-                         init,
-                         max,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _plugin << "::command: TA-Lib error" << rc;
+  QList<Curve *> list;
+  list << ihigh << ilow;
+  line = getSAR(list, init, max);
+  if (! line)
     return 1;
-  }
-
-  line = new Curve;
-  line->setType("Dot");
-
-  int loop = 0;
-  for (; loop < outNb; loop++)
-    line->setBar(loop + 1, new CurveBar(out[loop]));
 
   line->setLabel(name);
   i->setLine(name, line);
@@ -199,6 +137,56 @@ int SAR::command (Command *command)
   command->setReturnCode("0");
 
   return 0;
+}
+
+Curve * SAR::getSAR (QList<Curve *> &list, double init, double max)
+{
+  if (list.count() != 2)
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  int size = keys.count();
+  TA_Real out[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  size = it.fill(list, keys, &high[0], &low[0], &low[0], &low[0]);
+  if (! size)
+    return 0;
+
+  TA_RetCode rc = TA_SAR(0,
+                         size - 1,
+                         &high[0],
+                         &low[0],
+			 init,
+			 max,
+                         &outBeg,
+                         &outNb,
+                         &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _plugin << "::getSAR: TA-Lib error" << rc;
+    return 0;
+  }
+
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  c->setType("Dot");
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+  {
+    delete c;
+    return 0;
+  }
+
+  return c;
 }
 
 QWidget * SAR::dialog (QWidget *p, Setting *set)
