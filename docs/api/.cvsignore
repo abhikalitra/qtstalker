@@ -1,4 +1,4 @@
-_*.html
+*_*.html
 annotated.html
 assistant*.html
 class*.html
@@ -12,8 +12,10 @@ index.html
 index.qhp
 inherits.html
 installdox
+namespace*.html
 pages.html
 qtstalker_*.html
+search
 src_*.html
 struct*.html
 tabs.css
