@@ -21,6 +21,7 @@
 
 #include "ColorButton.h"
 
+#include <QDebug>
 #include <QColorDialog>
 
 ColorButton::ColorButton (QWidget *w, QColor c) : QPushButton (w)
@@ -51,9 +52,10 @@ QColor & ColorButton::color ()
 
 void ColorButton::colorDialog ()
 {
-  QColorDialog *dialog = new QColorDialog(_color, 0);
+  QColorDialog *dialog = new QColorDialog(_color, this);
   connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(colorDialog2(QColor)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+  dialog->setOption(QColorDialog::ShowAlphaChannel, TRUE);
   dialog->show();
 }
   
@@ -63,7 +65,7 @@ void ColorButton::colorDialog2 (QColor color)
     return;
   
   _color = color;
-  
+
   setColorButton();
   
   _changed = TRUE;

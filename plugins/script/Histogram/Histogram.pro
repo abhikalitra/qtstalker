@@ -3,5 +3,7 @@
 }
 
 HEADERS += Histogram.h
+HEADERS += HistogramDraw.h
 
 SOURCES += Histogram.cpp
+SOURCES += HistogramDraw.cpp

@@ -41,6 +41,8 @@ class Bars : public Plugin
     int request (Setting *, Setting *);
     void setParent (void *);
     int clear ();
+    int info (Setting *, Setting *);
+    int highLowRange (Setting *, Setting *);
 
   private:
     QwtPlot *_plot;

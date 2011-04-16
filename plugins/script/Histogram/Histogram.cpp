@@ -37,15 +37,21 @@ Histogram::~Histogram ()
   qDeleteAll(_items);
 }
 
-int Histogram::request (Setting *request, Setting *)
+int Histogram::request (Setting *request, Setting *data)
 {
   QStringList l;
-  l << "CLEAR";
+  l << "CLEAR" << "HIGH_LOW" << "INFO";
 
   switch (l.indexOf(request->data("REQUEST")))
   {
     case 0:
       return clear();
+      break;
+    case 1:
+      return highLowRange(request, data);
+      break;
+    case 2:
+      return info(request, data);
       break;
     default:
       return 1;
@@ -71,8 +77,9 @@ int Histogram::setCurve (Curve *curve)
     return 1;
 
   QSettings set(g_localSettings);
-  QwtPlotCurve *qcurve = new QwtPlotCurve;
+  HistogramDraw *qcurve = new HistogramDraw;
   qcurve->setRenderHint(QwtPlotItem::RenderAntialiased, set.value("antialias", TRUE).toBool());
+  qcurve->setCurveData(curve);
       
   QList<int> keys;
   curve->keys(keys);
@@ -92,7 +99,6 @@ int Histogram::setCurve (Curve *curve)
   c.setAlpha(150);
   qcurve->setPen(c);
   qcurve->setBrush(c);
-
   qcurve->setTitle(curve->label());
   qcurve->setPen(QPen(curve->color()));
   qcurve->setZ(curve->z());
@@ -101,6 +107,62 @@ int Histogram::setCurve (Curve *curve)
   _items.insert(curve->label(), qcurve);
 
   return 0;
+}
+
+int Histogram::info (Setting *request, Setting *data)
+{
+  int index = request->getInt("INDEX");
+  QHashIterator<QString, HistogramDraw *> it(_items);
+  while (it.hasNext())
+  {
+    it.next();
+    it.value()->info(index, data);
+  }
+
+  return 0;
+}
+int Histogram::highLowRange (Setting *request, Setting *data)
+{
+  int rc = 1;
+  int flag = 0;
+  double h = 0;
+  double l = 0;
+  int start = request->getInt("START");
+  int end = request->getInt("END");
+  QHashIterator<QString, HistogramDraw *> it(_items);
+  while (it.hasNext())
+  {
+    it.next();
+
+    double th = 0;
+    double tl = 0;
+    if (it.value()->highLowRange(start, end, th, tl))
+      continue;
+
+    rc = 0;
+
+    if (! flag)
+    {
+      h = th;
+      l = tl;
+      flag++;
+    }
+    else
+    {
+      if (th > h)
+        h = th;
+      if (tl < l)
+        l = tl;
+    }
+  }
+
+  if (flag)
+  {
+    data->setData("HIGH", h);
+    data->setData("LOW", l);
+  }
+
+  return rc;
 }
 
 //*************************************************************

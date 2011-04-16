@@ -19,36 +19,33 @@
  *  USA.
  */
 
-#ifndef CURVE_BAR_HPP
-#define CURVE_BAR_HPP
+#ifndef PLUGIN_VBP_DIALOG_HPP
+#define PLUGIN_VBP_DIALOG_HPP
 
-#include <QColor>
-#include <QHash>
-#include <QDateTime>
+#include <QWidget>
+#include <QSpinBox>
+#include <QLineEdit>
 
-class CurveBar
+#include "ColorButton.h"
+#include "Setting.h"
+
+class VBPDialog : public QWidget
 {
-  public:
-    CurveBar ();
-    CurveBar (double);
-    CurveBar (QColor, double);
-    double data (int);
-    double data ();
-    void setData (int, double);
-    void setData (double);
-    void setColor (QColor);
-    QColor color ();
-    void setDateTime (QDateTime);
-    QDateTime dateTime ();
-    int count ();
-    int highLow (double &, double &);
-    int isDate ();
-    void copy (CurveBar *);
+  Q_OBJECT
 
-  protected:
-    QHash<int, double> _data;
-    QColor _color;
-    QDateTime _dateTime;
+  public:
+    VBPDialog (QWidget *, Setting *);
+    void createGeneralPage ();
+
+  public slots:
+    void save ();
+
+  private:
+    Setting *_settings;
+    ColorButton *_upColor;
+    ColorButton *_downColor;
+    QSpinBox *_z;
+    QLineEdit *_output;
 };
 
 #endif

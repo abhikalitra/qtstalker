@@ -288,18 +288,26 @@ void Plot::setHighLow ()
     _low = 999999999.0;
   }
 
-  QHashIterator<QString, Curve *> it(_indicator->curves());
+  QHashIterator<QString, Plugin *> it(_qcurves);
   while (it.hasNext())
   {
     it.next();
-    Curve *curve = it.value();
-    
-    double h, l;
-    curve->highLowRange(_startPos, _endPos, h, l);
-    if (h > _high)
-      _high = h;
-    if (l < _low)
-      _low = l;
+    Plugin *plug = it.value();
+
+    Setting set, set2;
+    set.setData("REQUEST", QString("HIGH_LOW"));
+    set.setData("START", _startPos);
+    set.setData("END", _endPos);
+    if (plug->request(&set, &set2))
+      continue;
+
+    double d = set2.getDouble("HIGH");
+    if (d > _high)
+      _high = d;
+
+    d = set2.getDouble("LOW");
+    if (d < _low)
+      _low = d;
   }
 
   QHashIterator<QString, Plugin *> it2(_chartObjects);
@@ -443,12 +451,15 @@ void Plot::mouseMove (QPoint p)
 
   _dateScaleDraw->info(index, set);
 
-  QHashIterator<QString, Curve *> it(_indicator->curves());
+  QHashIterator<QString, Plugin *> it(_qcurves);
   while (it.hasNext())
   {
     it.next();
-    Curve *curve = it.value();
-    curve->info(index, set);
+
+    Setting request;
+    request.setData("REQUEST", QString("INFO"));
+    request.setData("INDEX", index);
+    it.value()->request(&request, &set);
   }
 
   emit signalInfoMessage(set);

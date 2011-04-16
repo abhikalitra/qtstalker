@@ -1222,3 +1222,7 @@
 
            Added IndicatorExport.pl and IndicatorImport.pl scripts.
 
+20110416:  Added VBP (Volume By Price) indicator and HistogramHorizontal plugins. As per feature request
+           #3285760.
+
+           

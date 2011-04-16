@@ -29,6 +29,7 @@
 
 #include "Plugin.h"
 #include "Setting.h"
+#include "DotDraw.h"
 
 class Dot : public Plugin
 {
@@ -41,10 +42,12 @@ class Dot : public Plugin
     int request (Setting *, Setting *);
     void setParent (void *);
     int clear ();
+    int info (Setting *, Setting *);
+    int highLowRange (Setting *, Setting *);
 
   private:
     QwtPlot *_plot;
-    QHash<QString, QwtPlotCurve *> _items;
+    QHash<QString, DotDraw *> _items;
 };
 
 extern "C"

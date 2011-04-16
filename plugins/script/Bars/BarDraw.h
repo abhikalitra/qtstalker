@@ -45,11 +45,12 @@ class BarDraw : public QwtPlotCurve
 
     void init();
     void setData (Curve *);
-    double high ();
-    double low ();
+    int highLow (double &h, double &l);
+    int highLowRange (int start, int end, double &h, double &l);
+    int info (int, Setting *);
 
   private:
-    QList<CurveBar *> _list;
+    Curve *_line;
     double _high;
     double _low;
 };

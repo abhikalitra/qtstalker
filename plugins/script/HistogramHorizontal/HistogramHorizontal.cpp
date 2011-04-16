@@ -19,28 +19,28 @@
  *  USA.
  */
 
-#include "Dot.h"
+#include "HistogramHorizontal.h"
 #include "Globals.h"
 #include "Curve.h"
 
 #include <QtDebug>
 
-Dot::Dot ()
+HistogramHorizontal::HistogramHorizontal ()
 {
-  _plugin = "Dot";
+  _plugin = "HistogramHorizontal";
   _type = "CURVE";
 }
 
-Dot::~Dot ()
+HistogramHorizontal::~HistogramHorizontal ()
 {
   qDeleteAll(_items);
 }
 
-int Dot::request (Setting *request, Setting *data)
+int HistogramHorizontal::request (Setting *request, Setting *data)
 {
   QStringList l;
-  l << "CLEAR" << "HIGH_LOW" << "INFO";
-
+  l << "CLEAR" << "HIGH_LOW";
+  
   switch (l.indexOf(request->data("REQUEST")))
   {
     case 0:
@@ -49,92 +49,61 @@ int Dot::request (Setting *request, Setting *data)
     case 1:
       return highLowRange(request, data);
       break;
-    case 2:
-      return info(request, data);
-      break;
     default:
       return 1;
       break;
   }
 }
 
-void Dot::setParent (void *p)
+void HistogramHorizontal::setParent (void *p)
 {
   _plot = (QwtPlot *) p;
 }
 
-int Dot::clear ()
+int HistogramHorizontal::clear ()
 {
   qDeleteAll(_items);
   _items.clear();
   return 0;
 }
 
-int Dot::setCurve (Curve *curve)
+int HistogramHorizontal::setCurve (Curve *curve)
 {
   if (curve->type() != _plugin)
     return 1;
   
-  DotDraw *qcurve = new DotDraw;
-  qcurve->setStyle(QwtPlotCurve::Dots);
-  qcurve->setCurveData(curve);
+  HistogramHorizontalDraw *qcurve = new HistogramHorizontalDraw;
+  qcurve->setData(curve);
 
-  QList<int> keys;
-  curve->keys(keys);
-
-  QwtArray<double> x;
-  QwtArray<double> y;
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    x.append(keys.at(loop));
-    CurveBar *bar = curve->bar(keys.at(loop));
-    y.append(bar->data());
-  }
-  qcurve->setData(x, y);
-  
   qcurve->setTitle(curve->label());
   qcurve->setPen(QPen(curve->color()));
   qcurve->setZ(curve->z());
   qcurve->setYAxis(QwtPlot::yRight);
   qcurve->attach(_plot);
+    
   _items.insert(curve->label(), qcurve);
 
   return 0;
 }
 
-int Dot::info (Setting *request, Setting *data)
-{
-  int index = request->getInt("INDEX");
-  QHashIterator<QString, DotDraw *> it(_items);
-  while (it.hasNext())
-  {
-    it.next();
-    it.value()->info(index, data);
-  }
-
-  return 0;
-}
-int Dot::highLowRange (Setting *request, Setting *data)
+int HistogramHorizontal::highLowRange (Setting *, Setting *data)
 {
   int rc = 1;
   int flag = 0;
   double h = 0;
   double l = 0;
-  int start = request->getInt("START");
-  int end = request->getInt("END");
-  QHashIterator<QString, DotDraw *> it(_items);
+  QHashIterator<QString, HistogramHorizontalDraw *> it(_items);
   while (it.hasNext())
   {
     it.next();
 
     double th = 0;
     double tl = 0;
-    if (it.value()->highLowRange(start, end, th, tl))
+    if (it.value()->highLow(th, tl))
       continue;
-
+    
     rc = 0;
-
+    
     if (! flag)
     {
       h = th;
@@ -165,6 +134,6 @@ int Dot::highLowRange (Setting *request, Setting *data)
 
 Plugin * createPlugin ()
 {
-  Dot *o = new Dot;
+  HistogramHorizontal *o = new HistogramHorizontal;
   return ((Plugin *) o);
 }

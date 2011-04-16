@@ -137,7 +137,9 @@ Curve * NORMALIZE::getNORM (QList<Curve *> &list)
   Curve *in = list.at(0);
   double max = 0;
   double min = 0;
-  in->highLowRange(keys.at(0), keys.at(keys.count() - 1), max, min);
+  if (in->highLow(max, min))
+    return 0;
+    
   double range = fabs(max) + fabs(min);
   
   Curve *line = new Curve;

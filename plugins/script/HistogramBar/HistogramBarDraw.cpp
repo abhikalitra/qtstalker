@@ -20,6 +20,7 @@
  */
 
 #include "HistogramBarDraw.h"
+#include "Strip.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -37,21 +38,32 @@ class HistogramBarDraw::PrivateData
 
 HistogramBarDraw::HistogramBarDraw (const QwtText &title) : QwtPlotCurve (title)
 {
+  _line = 0;
   init();
 }
 
 HistogramBarDraw::HistogramBarDraw (const QString &title) : QwtPlotCurve (QwtText(title))
 {
+  _line = 0;
   init();
 }
 
 HistogramBarDraw::~HistogramBarDraw ()
 {
   delete _data;
+  if (_line)
+    delete _line;
 }
 
 void HistogramBarDraw::init ()
 {
+  if (_line)
+    delete _line;
+  _line = 0;
+
+  _high = 0;
+  _low = 0;
+
   _data = new PrivateData();
   _data->reference = 0.0;
   _data->attributes = HistogramBarDraw::Auto;
@@ -60,7 +72,7 @@ void HistogramBarDraw::init ()
   setItemAttribute(QwtPlotItem::AutoScale, TRUE);
   setItemAttribute(QwtPlotItem::Legend, TRUE);
 
-  setZ(20.0);
+  setZ(-1);
 }
 
 void HistogramBarDraw::setBaseline (double reference)
@@ -79,6 +91,13 @@ double HistogramBarDraw::baseline () const
 
 void HistogramBarDraw::setData (Curve *curve)
 {
+  init();
+
+  _line = new Curve;
+  curve->copy(_line);
+
+  curve->highLow(_high, _low);
+  
   QList<int> keys;
   curve->keys(keys);
   if (! keys.count())
@@ -196,7 +215,6 @@ void HistogramBarDraw::draw(QPainter *painter, const QwtScaleMap &xMap, const Qw
   if (size > (int) iData.size())
     size = (int) iData.size();
 
-//  for (int i = 0; i < (int)iData.size(); i++)
   for (; i < size; i++)
   {
     if (_data->attributes & HistogramBarDraw::Xfy)
@@ -228,7 +246,6 @@ void HistogramBarDraw::draw(QPainter *painter, const QwtScaleMap &xMap, const Qw
 
       QColor color = _colors.value(i);
       painter->setPen(QPen(color));
-
       drawBar(painter, Qt::Horizontal, QRect(x0, y1, x2 - x0, y2 - y1));
     }
     else
@@ -260,7 +277,6 @@ void HistogramBarDraw::draw(QPainter *painter, const QwtScaleMap &xMap, const Qw
 
       QColor color = _colors.value(i);
       painter->setPen(QPen(color));
-
       drawBar(painter, Qt::Vertical, QRect(x1, y0, x2 - x1, y2 - y0));
     }
   }
@@ -297,5 +313,71 @@ void HistogramBarDraw::drawBar (QPainter *painter, Qt::Orientation, const QRect&
   QwtPainter::drawLine(painter, r.right(), r.top() + 2, r.right(), r.bottom() - 1);
 
   painter->restore();
+}
+
+int HistogramBarDraw::highLowRange (int start, int end, double &h, double &l)
+{
+  if (! _line)
+    return 1;
+
+  int rc = 1;
+  int loop = start;
+  int flag = 0;
+  for (; loop < end; loop++)
+  {
+    CurveBar *r = _line->bar(loop);
+    if (! r)
+      continue;
+
+    double th, tl;
+    if (r->highLow(th, tl))
+      continue;
+
+    rc = 0;
+
+    if (! flag)
+    {
+      h = th;
+      l = tl;
+      flag++;
+    }
+    else
+    {
+      if (th > h)
+        h = th;
+      if (tl < l)
+        l = tl;
+    }
+  }
+
+  return rc;
+}
+
+int HistogramBarDraw::info (int index, Setting *data)
+{
+  if (! _line)
+    return 1;
+
+  CurveBar *b = _line->bar(index);
+  if (! b)
+    return 1;
+
+  Strip strip;
+  QString d;
+  strip.strip(b->data(), 4, d);
+  data->setData(_line->label(), d);
+
+  return 0;
+}
+
+int HistogramBarDraw::highLow (double &h, double &l)
+{
+  if (! _line)
+    return 1;
+
+  h = _high;
+  l = _low;
+
+  return 0;
 }
 

@@ -37,15 +37,21 @@ Line::~Line ()
   qDeleteAll(_items);
 }
 
-int Line::request (Setting *request, Setting *)
+int Line::request (Setting *request, Setting *data)
 {
   QStringList l;
-  l << "CLEAR";
+  l << "CLEAR" << "HIGH_LOW" << "INFO";
 
   switch (l.indexOf(request->data("REQUEST")))
   {
     case 0:
       return clear();
+      break;
+    case 1:
+      return highLowRange(request, data);
+      break;
+    case 2:
+      return info(request, data);
       break;
     default:
       return 1;
@@ -70,10 +76,11 @@ int Line::setCurve (Curve *curve)
   if (curve->type() != _plugin)
     return 1;
   
-  QwtPlotCurve *qcurve = new QwtPlotCurve;
+  LineDraw *qcurve = new LineDraw;
   QSettings set(g_localSettings);
   qcurve->setRenderHint(QwtPlotItem::RenderAntialiased, set.value("antialias", TRUE).toBool());
   qcurve->setStyle(QwtPlotCurve::Lines);
+  qcurve->setCurveData(curve);
 
   QList<int> keys;
   curve->keys(keys);
@@ -97,6 +104,62 @@ int Line::setCurve (Curve *curve)
   _items.insert(curve->label(), qcurve);
 
   return 0;
+}
+
+int Line::info (Setting *request, Setting *data)
+{
+  int index = request->getInt("INDEX");
+  QHashIterator<QString, LineDraw *> it(_items);
+  while (it.hasNext())
+  {
+    it.next();
+    it.value()->info(index, data);
+  }
+
+  return 0;
+}
+int Line::highLowRange (Setting *request, Setting *data)
+{
+  int rc = 1;
+  int flag = 0;
+  double h = 0;
+  double l = 0;
+  int start = request->getInt("START");
+  int end = request->getInt("END");
+  QHashIterator<QString, LineDraw *> it(_items);
+  while (it.hasNext())
+  {
+    it.next();
+
+    double th = 0;
+    double tl = 0;
+    if (it.value()->highLowRange(start, end, th, tl))
+      continue;
+
+    rc = 0;
+
+    if (! flag)
+    {
+      h = th;
+      l = tl;
+      flag++;
+    }
+    else
+    {
+      if (th > h)
+        h = th;
+      if (tl < l)
+        l = tl;
+    }
+  }
+
+  if (flag)
+  {
+    data->setData("HIGH", h);
+    data->setData("LOW", l);
+  }
+
+  return rc;
 }
 
 //*************************************************************

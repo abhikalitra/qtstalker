@@ -328,3 +328,26 @@ QDateTime Bar::lastDate ()
 {
   return _lastDate;
 }
+
+void Bar::copy (Bar *d)
+{
+  d->setOpen(_open);
+  d->setHigh(_high);
+  d->setLow(_low);
+  d->setClose(_close);
+  d->setVolume(_volume);
+  d->setOI(_oi);
+  d->setDates(_startDate, _endDate);
+  d->setLength(_length);
+  d->setLastDate(_lastDate);
+}
+
+int Bar::length ()
+{
+  return _length;
+}
+
+void Bar::setLength (int d)
+{
+  _length = d;
+}

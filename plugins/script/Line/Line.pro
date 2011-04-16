@@ -3,5 +3,7 @@
 }
 
 HEADERS += Line.h
+HEADERS += LineDraw.h
 
 SOURCES += Line.cpp
+SOURCES += LineDraw.cpp

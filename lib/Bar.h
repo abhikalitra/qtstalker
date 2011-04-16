@@ -47,6 +47,8 @@ class Bar
     QDateTime startDate ();
     void setLastDate (QDateTime);
     QDateTime lastDate ();
+    int length ();
+    void setLength (int);
 
     int setOpen (QString);
     void setOpen (double);
@@ -71,6 +73,8 @@ class Bar
     int setOI (QString);
     void setOI (double);
     double oi ();
+
+    void copy (Bar *);
 
   protected:
     double _open;

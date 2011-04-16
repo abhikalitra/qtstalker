@@ -254,7 +254,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -917,14 +917,6 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Smoothing Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Smoothing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
@@ -933,7 +925,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1443,7 +1435,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2084,7 +2076,7 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3402,7 +3394,30 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Plot Order</source>
+        <source>Deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VBPDialog</name>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Up Volume Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Down Volume Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

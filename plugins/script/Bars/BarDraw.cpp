@@ -20,6 +20,7 @@
  */
 
 #include "BarDraw.h"
+#include "Strip.h"
 
 #include <qwt_plot.h>
 #include <qwt_painter.h>
@@ -28,59 +29,45 @@
 
 BarDraw::BarDraw (const QwtText &title) : QwtPlotCurve (title)
 {
+  _line = 0;
   init();
 }
 
 BarDraw::BarDraw (const QString &title) : QwtPlotCurve (QwtText(title))
 {
+  _line = 0;
   init();
 }
 
 BarDraw::~BarDraw ()
 {
-  qDeleteAll(_list);
+  if (_line)
+    delete _line;
 }
 
 void BarDraw::init ()
 {
+  if (_line)
+    delete _line;
+  _line = 0;
+
   _high = 0;
   _low = 0;
   
   setItemAttribute(QwtPlotItem::AutoScale, TRUE);
   setItemAttribute(QwtPlotItem::Legend, TRUE);
 
-  setZ(0.0);
+  setZ(-1);
 }
 
 void BarDraw::setData (Curve *curve)
 {
-  qDeleteAll(_list);
-  _list.clear();
+  init();
 
-  QList<int> keys;
-  curve->keys(keys);
+  _line = new Curve;
+  curve->copy(_line);
 
-  _high = -99999999;
-  _low = 99999999;
-
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    CurveBar *bar = curve->bar(keys.at(loop));
-    CurveBar *b = new CurveBar;
-    b->setData(0, bar->data(0));
-    b->setData(1, bar->data(1));
-    b->setData(2, bar->data(2));
-    b->setData(3, bar->data(3));
-    b->setColor(bar->color());
-    _list.append(b);
-
-    if (b->data(1) > _high)
-      _high = b->data(1);
-
-    if (b->data(2) < _low)
-      _low = b->data(2);
-  }
+  curve->highLow(_high, _low);
 
   itemChanged();
 }
@@ -105,12 +92,12 @@ void BarDraw::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap
 
   int loop = sd->lowerBound();
   int size = sd->upperBound();
-  if (size > _list.count())
-    size = _list.count();
+  if (size > _line->count())
+    size = _line->count();
 
   for (; loop < size; loop++)
   {
-    CurveBar *b = _list.at(loop);
+    CurveBar *b = _line->bar(loop);
 
     painter->setPen(b->color());
 
@@ -131,12 +118,78 @@ void BarDraw::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap
   }
 }
 
-double BarDraw::high ()
+int BarDraw::highLow (double &h, double &l)
 {
-  return _high;
+  if (! _line)
+    return 1;
+
+  h = _high;
+  l = _low;
+
+  return 0;
 }
 
-double BarDraw::low ()
+int BarDraw::highLowRange (int start, int end, double &h, double &l)
 {
-  return _low;
+  if (! _line)
+    return 1;
+
+  int rc = 1;
+  int loop = start;
+  int flag = 0;
+  for (; loop < end; loop++)
+  {
+    CurveBar *r = _line->bar(loop);
+    if (! r)
+      continue;
+
+    double th, tl;
+    if (r->highLow(th, tl))
+      continue;
+
+    rc = 0;
+
+    if (! flag)
+    {
+      h = th;
+      l = tl;
+      flag++;
+    }
+    else
+    {
+      if (th > h)
+        h = th;
+      if (tl < l)
+        l = tl;
+    }
+  }
+
+  return rc;
+}
+
+int BarDraw::info (int index, Setting *data)
+{
+  if (! _line)
+    return 1;
+
+  CurveBar *b = _line->bar(index);
+  if (! b)
+    return 1;
+
+  Strip strip;
+
+  QString d;
+  strip.strip(b->data(0), 4, d);
+  data->setData("O", d);
+
+  strip.strip(b->data(1), 4, d);
+  data->setData("H", d);
+
+  strip.strip(b->data(2), 4, d);
+  data->setData("L", d);
+
+  strip.strip(b->data(3), 4, d);
+  data->setData("C", d);
+
+  return 0;
 }

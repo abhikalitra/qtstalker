@@ -115,3 +115,16 @@ int CurveBar::isDate ()
 {
   return (int) _dateTime.isValid();
 }
+
+void CurveBar::copy (CurveBar *d)
+{
+  QHashIterator<int, double> it(_data);
+  while (it.hasNext())
+  {
+    it.next();
+    d->setData(it.key(), it.value());
+  }
+
+  d->setColor(_color);
+  d->setDateTime(_dateTime);
+}

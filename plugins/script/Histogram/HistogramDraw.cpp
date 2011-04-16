@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "CandleDraw.h"
+#include "HistogramDraw.h"
 #include "Strip.h"
 
 #include <qwt_plot.h>
@@ -27,25 +27,25 @@
 #include <qwt_scale_div.h>
 #include <QDebug>
 
-CandleDraw::CandleDraw (const QwtText &title) : QwtPlotCurve (title)
+HistogramDraw::HistogramDraw (const QwtText &title) : QwtPlotCurve (title)
 {
   _line = 0;
   init();
 }
 
-CandleDraw::CandleDraw (const QString &title) : QwtPlotCurve (QwtText(title))
+HistogramDraw::HistogramDraw (const QString &title) : QwtPlotCurve (QwtText(title))
 {
   _line = 0;
   init();
 }
 
-CandleDraw::~CandleDraw ()
+HistogramDraw::~HistogramDraw ()
 {
   if (_line)
     delete _line;
 }
 
-void CandleDraw::init ()
+void HistogramDraw::init ()
 {
   if (_line)
     delete _line;
@@ -60,19 +60,19 @@ void CandleDraw::init ()
   setZ(-1);
 }
 
-void CandleDraw::setData (Curve *curve)
+void HistogramDraw::setCurveData (Curve *curve)
 {
   init();
 
   _line = new Curve;
   curve->copy(_line);
-  
+
   curve->highLow(_high, _low);
 
   itemChanged();
 }
 
-QwtDoubleRect CandleDraw::boundingRect () const
+QwtDoubleRect HistogramDraw::boundingRect () const
 {
   QwtDoubleRect rect(0, 0, 0, 0);
   rect.setBottom(_low);
@@ -81,72 +81,27 @@ QwtDoubleRect CandleDraw::boundingRect () const
   return rect;
 }
 
-int CandleDraw::rtti () const
+int HistogramDraw::rtti () const
 {
   return QwtPlotCurve::UserCurve;
 }
 
-void CandleDraw::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
-{
-  QwtScaleDiv *sd = plot()->axisScaleDiv(QwtPlot::xBottom); // test
-
-  int loop = sd->lowerBound();
-  int size = sd->upperBound();
-  if (size > _line->count())
-    size = _line->count();
-  
-  bool ff = FALSE;
-  for (; loop < size; loop++)
-  {
-    CurveBar *b = _line->bar(loop);
-    if (! b)
-      continue;
-
-    ff = FALSE;
-    if (b->data(3) < b->data(0))
-      ff = TRUE;
-
-    painter->setPen(b->color());
-
-    int x = xMap.transform(loop);
-
-    int xo = yMap.transform(b->data(0));
-    int xh = yMap.transform(b->data(1));
-    int xl = yMap.transform(b->data(2));
-    int xc = yMap.transform(b->data(3));
-
-    if (! ff)
-    {
-      // empty candle
-      painter->drawLine (x + 3, xh, x + 3, xc);
-      painter->drawLine (x + 3, xo, x + 3, xl);
-      painter->drawRect(x, xc, 6, xo - xc);
-    }
-    else
-    {
-      // filled candle
-      painter->drawLine (x + 2, xh, x + 2, xl);
-      painter->fillRect(x, xo, 5, xc - xo, b->color());
-    }
-  }
-}
-
-int CandleDraw::highLow (double &h, double &l)
+int HistogramDraw::highLow (double &h, double &l)
 {
   if (! _line)
     return 1;
 
   h = _high;
   l = _low;
-  
+
   return 0;
 }
 
-int CandleDraw::highLowRange (int start, int end, double &h, double &l)
+int HistogramDraw::highLowRange (int start, int end, double &h, double &l)
 {
   if (! _line)
     return 1;
-  
+
   int rc = 1;
   int loop = start;
   int flag = 0;
@@ -180,29 +135,19 @@ int CandleDraw::highLowRange (int start, int end, double &h, double &l)
   return rc;
 }
 
-int CandleDraw::info (int index, Setting *data)
+int HistogramDraw::info (int index, Setting *data)
 {
   if (! _line)
     return 1;
-  
+
   CurveBar *b = _line->bar(index);
   if (! b)
     return 1;
 
   Strip strip;
-
   QString d;
-  strip.strip(b->data(0), 4, d);
-  data->setData("O", d);
-
-  strip.strip(b->data(1), 4, d);
-  data->setData("H", d);
-
-  strip.strip(b->data(2), 4, d);
-  data->setData("L", d);
-
-  strip.strip(b->data(3), 4, d);
-  data->setData("C", d);
+  strip.strip(b->data(), 4, d);
+  data->setData(_line->label(), d);
 
   return 0;
 }

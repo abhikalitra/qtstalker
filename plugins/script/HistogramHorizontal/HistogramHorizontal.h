@@ -19,36 +19,38 @@
  *  USA.
  */
 
-#ifndef CURVE_BAR_HPP
-#define CURVE_BAR_HPP
+#ifndef PLUGIN_HISTOGRAM_HORIZONTAL_HPP
+#define PLUGIN_HISTOGRAM_HORIZONTAL_HPP
 
-#include <QColor>
+#include <QStringList>
 #include <QHash>
-#include <QDateTime>
+#include <qwt_plot.h>
 
-class CurveBar
+#include "Plugin.h"
+#include "HistogramHorizontalDraw.h"
+#include "Setting.h"
+
+class HistogramHorizontal : public Plugin
 {
-  public:
-    CurveBar ();
-    CurveBar (double);
-    CurveBar (QColor, double);
-    double data (int);
-    double data ();
-    void setData (int, double);
-    void setData (double);
-    void setColor (QColor);
-    QColor color ();
-    void setDateTime (QDateTime);
-    QDateTime dateTime ();
-    int count ();
-    int highLow (double &, double &);
-    int isDate ();
-    void copy (CurveBar *);
+  Q_OBJECT
 
-  protected:
-    QHash<int, double> _data;
-    QColor _color;
-    QDateTime _dateTime;
+  public:
+    HistogramHorizontal ();
+    ~HistogramHorizontal ();
+    int setCurve (Curve *);
+    int request (Setting *, Setting *);
+    void setParent (void *);
+    int clear ();
+    int highLowRange (Setting *, Setting *);
+
+  private:
+    QwtPlot *_plot;
+    QHash<QString, HistogramHorizontalDraw *> _items;
 };
+
+extern "C"
+{
+  Plugin * createPlugin ();
+}
 
 #endif

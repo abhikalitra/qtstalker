@@ -19,36 +19,29 @@
  *  USA.
  */
 
-#ifndef CURVE_BAR_HPP
-#define CURVE_BAR_HPP
+#ifndef PLUGIN_VBP_HPP
+#define PLUGIN_VBP_HPP
+
+#include "Plugin.h"
 
 #include <QColor>
-#include <QHash>
-#include <QDateTime>
 
-class CurveBar
+class VBP : public Plugin
 {
-  public:
-    CurveBar ();
-    CurveBar (double);
-    CurveBar (QColor, double);
-    double data (int);
-    double data ();
-    void setData (int, double);
-    void setData (double);
-    void setColor (QColor);
-    QColor color ();
-    void setDateTime (QDateTime);
-    QDateTime dateTime ();
-    int count ();
-    int highLow (double &, double &);
-    int isDate ();
-    void copy (CurveBar *);
+  Q_OBJECT
 
-  protected:
-    QHash<int, double> _data;
-    QColor _color;
-    QDateTime _dateTime;
+  public:
+    VBP ();
+    int command (Command *);
+    int calculate (BarData *, Indicator *, Setting *);
+    void defaults (Setting *);
+    QWidget * dialog (QWidget *, Setting *);
+    Curve * getVBP (QList<Curve *> &, QColor, QColor);
 };
+
+extern "C"
+{
+  Plugin * createPlugin ();
+}
 
 #endif

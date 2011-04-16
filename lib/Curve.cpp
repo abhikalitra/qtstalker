@@ -33,14 +33,17 @@ Curve::Curve ()
 
 Curve::~Curve ()
 {
-  if (_data.count())
-    qDeleteAll(_data);
+  qDeleteAll(_data);
 }
 
 void Curve::init ()
 {
   _z = -1;
   _color = QColor(Qt::red);
+  qDeleteAll(_data);
+  _data.clear();
+  _label.clear();
+  _type.clear();
 }
 
 void Curve::setBar (int index, CurveBar *bar)
@@ -150,6 +153,7 @@ QStringList Curve::list ()
   return set.value("curve_plugins").toStringList();
 }
 
+/*
 void Curve::info (int index, Setting &set)
 {
   CurveBar *b = bar(index);
@@ -158,7 +162,7 @@ void Curve::info (int index, Setting &set)
 
   Strip strip;
 
-  if (b->count() == 4)
+  if (_type == "Bars" || _type == "Candle")
   {
     QString d;
     strip.strip(b->data(0), 4, d);
@@ -209,6 +213,7 @@ int Curve::highLowRange (int start, int end, double &h, double &l)
 
   return rc;
 }
+*/
 
 void Curve::deleteBar (int d)
 {
@@ -218,4 +223,55 @@ void Curve::deleteBar (int d)
     _data.remove(d);
     delete bar;
   }
+}
+
+void Curve::copy (Curve *d)
+{
+  d->init();
+
+  QMapIterator<int, CurveBar *> it(_data);
+  while (it.hasNext())
+  {
+    it.next();
+    CurveBar *b = new CurveBar;
+    it.value()->copy(b);
+    d->setBar(it.key(), b);
+  }
+
+  d->setLabel(_label);
+  d->setType(_type);
+  d->setZ(_z);
+  d->setColor(_color);
+}
+
+int Curve::highLow (double &h, double &l)
+{
+  int rc = 1;
+  int flag = 0;
+  h = 0;
+  l = 0;
+  QMapIterator<int, CurveBar *> it(_data);
+  while (it.hasNext())
+  {
+    it.next();
+    rc = 0;
+
+    if (! flag)
+    {
+      it.value()->highLow(h, l);
+      flag++;
+    }
+    else
+    {
+      double th = 0;
+      double tl = 0;
+      it.value()->highLow(th, tl);
+      if (th > h)
+	h = th;
+      if (tl < l)
+	l = tl;
+    }
+  }
+
+  return rc;
 }

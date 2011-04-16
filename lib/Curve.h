@@ -50,9 +50,9 @@ class Curve
     void setColor (QColor);
     QColor & color ();
     QStringList list ();
-    void info (int, Setting &);
-    int highLowRange (int start, int end, double &h, double &l);
     void deleteBar (int);
+    void copy (Curve *);
+    int highLow (double &, double &);
 
   protected:
     QMap<int, CurveBar *> _data;
