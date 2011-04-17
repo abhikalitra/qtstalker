@@ -52,7 +52,7 @@ QColor & ColorButton::color ()
 
 void ColorButton::colorDialog ()
 {
-  QColorDialog *dialog = new QColorDialog(_color, this);
+  QColorDialog *dialog = new QColorDialog(_color, 0);
   connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(colorDialog2(QColor)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->setOption(QColorDialog::ShowAlphaChannel, TRUE);

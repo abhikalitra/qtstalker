@@ -95,7 +95,7 @@ Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
   connect(_menu, SIGNAL(signalDeleteAllChartObjects()), this, SLOT(deleteAllChartObjects()));
   connect(_menu, SIGNAL(signalEditIndicator()), _indicator, SLOT(dialog()));
 
-  _dock = new DockWidget(name.left(4), mw);
+  _dock = new DockWidget(name, mw);
   _dock->setObjectName(name);
   _dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
   _dock->setWidget(this);
@@ -387,12 +387,7 @@ void Plot::setYPoints ()
     if (! bar)
       continue;
 
-    QColor color = bar->color();
-
-    if (curve->type() == "Dot" || curve->type() == "Histogram" || curve->type() == "Line")
-      color = curve->color();
-
-    _plotScaleDraw->addPoint(color, bar->data());
+    _plotScaleDraw->addPoint(bar->color(), bar->data());
   }
 }
 

@@ -41,6 +41,7 @@ class LineDraw : public QwtPlotCurve
     virtual ~LineDraw ();
     virtual QwtDoubleRect boundingRect () const;
     virtual int rtti () const;
+    virtual void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
 
     void init();
     void setCurveData (Curve *);

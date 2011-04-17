@@ -78,7 +78,7 @@ int HistogramBar::setCurve (Curve *curve)
   HistogramBarDraw *qcurve = new HistogramBarDraw;
   qcurve->setData(curve);
   qcurve->setTitle(curve->label());
-  qcurve->setPen(QPen(curve->color()));
+//  qcurve->setPen(QPen(curve->color()));
   qcurve->setZ(curve->z());
   qcurve->setYAxis(QwtPlot::yRight);
   qcurve->attach(_plot);

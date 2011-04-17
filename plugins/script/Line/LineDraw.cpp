@@ -151,3 +151,39 @@ int LineDraw::info (int index, Setting *data)
 
   return 0;
 }
+
+void LineDraw::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
+{
+  QwtScaleDiv *sd = plot()->axisScaleDiv(QwtPlot::xBottom);
+
+  int loop = sd->lowerBound();
+  int size = sd->upperBound();
+
+  QPen pen;
+  pen.setStyle(Qt::SolidLine);
+  pen.setJoinStyle(Qt::RoundJoin);
+  pen.setCapStyle(Qt::RoundCap);
+  pen.setWidth(1);
+
+  for (; loop < size; loop++)
+  {
+    CurveBar *yb = _line->bar(loop - 1);
+    if (! yb)
+      continue;
+    
+    CurveBar *b = _line->bar(loop);
+    if (! b)
+      continue;
+
+    int x = xMap.transform(loop - 1);
+    int x2 = xMap.transform(loop);
+      
+    int y = yMap.transform(yb->data());
+    int y2 = yMap.transform(b->data());
+
+//    pen.setColor(b->color());
+//    painter->setPen(pen);
+    painter->setPen(b->color());
+    painter->drawLine (x, y, x2, y2);
+  }
+}

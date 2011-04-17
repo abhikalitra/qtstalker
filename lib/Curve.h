@@ -23,7 +23,7 @@
 #define CURVE_HPP
 
 #include <QStringList>
-#include <QMap>
+#include <QHash>
 #include <QColor>
 
 #include "CurveBar.h"
@@ -47,19 +47,16 @@ class Curve
     int z ();
     void keys (QList<int> &);
     void keyRange (int &startIndex, int &endIndex);
-    void setColor (QColor);
-    QColor & color ();
     QStringList list ();
     void deleteBar (int);
     void copy (Curve *);
     int highLow (double &, double &);
 
   protected:
-    QMap<int, CurveBar *> _data;
+    QHash<int, CurveBar *> _data;
     QString _label;
     QString _type;
     int _z;
-    QColor _color;
 };
 
 #endif

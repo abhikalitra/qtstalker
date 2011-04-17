@@ -95,12 +95,12 @@ int Histogram::setCurve (Curve *curve)
   }
   qcurve->setData(x, y);
 
-  QColor c = curve->color();
-  c.setAlpha(150);
-  qcurve->setPen(c);
-  qcurve->setBrush(c);
+//  QColor c = curve->color();
+//  c.setAlpha(150);
+//  qcurve->setPen(c);
+//  qcurve->setBrush(c);
   qcurve->setTitle(curve->label());
-  qcurve->setPen(QPen(curve->color()));
+//  qcurve->setPen(QPen(curve->color()));
   qcurve->setZ(curve->z());
   qcurve->setYAxis(QwtPlot::yRight);
   qcurve->attach(_plot);

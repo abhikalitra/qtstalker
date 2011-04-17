@@ -76,7 +76,7 @@ int HistogramHorizontal::setCurve (Curve *curve)
   qcurve->setData(curve);
 
   qcurve->setTitle(curve->label());
-  qcurve->setPen(QPen(curve->color()));
+//  qcurve->setPen(QPen(curve->color()));
   qcurve->setZ(curve->z());
   qcurve->setYAxis(QwtPlot::yRight);
   qcurve->attach(_plot);

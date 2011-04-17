@@ -1225,4 +1225,7 @@
 20110416:  Added VBP (Volume By Price) indicator and HistogramHorizontal plugins. As per feature request
            #3285760.
 
+20110417:  Changed Indicator tab width to adjust to text width as per request.
+
+           Fixed COMPARE plugin bugs.
            

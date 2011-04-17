@@ -39,7 +39,6 @@ Curve::~Curve ()
 void Curve::init ()
 {
   _z = -1;
-  _color = QColor(Qt::red);
   qDeleteAll(_data);
   _data.clear();
   _label.clear();
@@ -48,16 +47,21 @@ void Curve::init ()
 
 void Curve::setBar (int index, CurveBar *bar)
 {
-  CurveBar *b = _data.value(index);
-  if (b)
+  if (_data.contains(index))
+  {
+    CurveBar *b = _data.value(index);
     delete b;
+  }
 
   _data.insert(index, bar);
 }
 
 CurveBar * Curve::bar (int index)
 {
-  return _data.value(index);
+  if (_data.contains(index))
+    return _data.value(index);
+  else
+    return 0;
 }
 
 void Curve::setType (QString d)
@@ -88,26 +92,22 @@ int Curve::count ()
 void Curve::keys (QList<int> &l)
 {
   l = _data.keys();
+  qSort(l);
 }
 
 void Curve::keyRange (int &startIndex, int &endIndex)
 {
-  QMapIterator<int, CurveBar *> it(_data);
-  it.toFront();
-  if (! it.hasNext())
-  {
-    startIndex = 0;
-    endIndex = 0;
+  startIndex = 0;
+  endIndex = 0;
+
+  if (! _data.count())
     return;
-  }
   
-  it.next();
-
-  startIndex = it.key();
-
-  it.toBack();
-  it.previous();
-  endIndex = it.key();
+  QList<int> keys;
+  keys = _data.keys();
+  qSort(keys);
+  startIndex = keys.at(0);
+  endIndex = keys.at(keys.count() - 1);
 }
 
 int Curve::setAllColor (QColor color)
@@ -115,9 +115,7 @@ int Curve::setAllColor (QColor color)
   if (! color.isValid())
     return 1;
 
-  setColor(color);
-  
-  QMapIterator<int, CurveBar *> it(_data);
+  QHashIterator<int, CurveBar *> it(_data);
   while (it.hasNext())
   {
     it.next();
@@ -135,16 +133,6 @@ void Curve::setZ (int z)
 int Curve::z ()
 {
   return _z;
-}
-
-void Curve::setColor (QColor c)
-{
-  _color = c;
-}
-
-QColor & Curve::color ()
-{
-  return _color;
 }
 
 QStringList Curve::list ()
@@ -217,9 +205,9 @@ int Curve::highLowRange (int start, int end, double &h, double &l)
 
 void Curve::deleteBar (int d)
 {
-  CurveBar *bar = _data.value(d);
-  if (bar)
+  if (_data.contains(d))
   {
+    CurveBar *bar = _data.value(d);
     _data.remove(d);
     delete bar;
   }
@@ -229,7 +217,7 @@ void Curve::copy (Curve *d)
 {
   d->init();
 
-  QMapIterator<int, CurveBar *> it(_data);
+  QHashIterator<int, CurveBar *> it(_data);
   while (it.hasNext())
   {
     it.next();
@@ -241,7 +229,6 @@ void Curve::copy (Curve *d)
   d->setLabel(_label);
   d->setType(_type);
   d->setZ(_z);
-  d->setColor(_color);
 }
 
 int Curve::highLow (double &h, double &l)
@@ -250,7 +237,7 @@ int Curve::highLow (double &h, double &l)
   int flag = 0;
   h = 0;
   l = 0;
-  QMapIterator<int, CurveBar *> it(_data);
+  QHashIterator<int, CurveBar *> it(_data);
   while (it.hasNext())
   {
     it.next();
