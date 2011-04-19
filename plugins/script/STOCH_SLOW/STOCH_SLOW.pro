@@ -3,7 +3,7 @@
 } 
 
 HEADERS += STOCH_SLOW.h
-HEADERS += STOCHSDialog.h
+HEADERS += STOCH_SLOWWidget.h
 
 SOURCES += STOCH_SLOW.cpp
-SOURCES += STOCHSDialog.cpp
+SOURCES += STOCH_SLOWWidget.cpp

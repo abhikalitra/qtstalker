@@ -24,8 +24,7 @@
 #include "Operator.h"
 #include "Strip.h"
 #include "Curve.h"
-#include "InputType.h"
-#include "RuleWidget.h"
+#include "COLORWidget.h"
 
 #include <QtDebug>
 
@@ -33,208 +32,6 @@ COLOR::COLOR ()
 {
   _plugin = "COLOR";
   _type = "INDICATOR";
-}
-
-int COLOR::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  int rows = settings->getInt("ROWS");
-  int loop = 0;
-  for (; loop < rows; loop++)
-  {
-    // color
-    int col = 0;
-    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QColor color(settings->data(key));
-
-    // input 1
-    int offset = 0;
-    Curve *line = 0;
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString name = settings->data(key);
-    QStringList tl = name.split(".", QString::SkipEmptyParts);
-    if (tl.count() == 2)
-    {
-      line = i->line(tl.at(0));
-      if (! line)
-      {
-        InputType it;
-        line = it.input(bd, tl.at(0));
-        if (! line)
-        {
-          qDebug() << _plugin << "::calculate: invalid INPUT" << name;
-          return 1;
-        }
-
-        line->setLabel(tl.at(0));
-        i->setLine(tl.at(0), line);
-      }
-
-      bool ok;
-      offset = tl.at(1).toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << _plugin << "::calculate: invalid INPUT" << name;
-        return 1;
-      }
-    }
-    else
-    {
-      line = i->line(name);
-      if (! line)
-      {
-        InputType it;
-        line = it.input(bd, name);
-        if (! line)
-        {
-          qDebug() << _plugin << "::calculate: invalid INPUT" << name;
-          return 1;
-        }
-
-        line->setLabel(name);
-        i->setLine(name, line);
-      }
-    }
-
-    // verify OP
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Operator top;
-    Operator::Type op = top.stringToOperator(settings->data(key));
-
-    // input 2
-    int valueFlag = FALSE;
-    double value = 0;
-    int offset2 = 0;
-    Curve *line2 = 0;
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    name = settings->data(key);
-    tl = name.split(".", QString::SkipEmptyParts);
-    if (tl.count() == 2)
-    {
-      line2 = i->line(tl.at(0));
-      if (! line2)
-      {
-        InputType it;
-        line2 = it.input(bd, tl.at(0));
-        if (! line2)
-        {
-          qDebug() << _plugin << "::calculate: invalid INPUT2" << name;
-          return 1;
-        }
-
-        line2->setLabel(tl.at(0));
-        i->setLine(tl.at(0), line2);
-      }
-
-      bool ok;
-      offset2 = tl.at(1).toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << _plugin << "::calculate: invalid INPUT2" << name;
-        return 1;
-      }
-    }
-    else
-    {
-      bool ok;
-      value = name.toDouble(&ok);
-      if (! ok)
-      {
-        line2 = i->line(name);
-        if (! line2)
-        {
-          InputType it;
-          line2 = it.input(bd, name);
-          if (! line2)
-          {
-            qDebug() << _plugin << "::calculate: invalid INPUT2" << name;
-            return 1;
-          }
-
-          line->setLabel(name);
-          i->setLine(name, line);
-        }
-      }
-
-      valueFlag++;
-    }
-
-    // input 3
-    int offset3 = 0;
-    Curve *line3 = 0;
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    name = settings->data(key);
-    tl = name.split(".", QString::SkipEmptyParts);
-    if (tl.count() == 2)
-    {
-      line3 = i->line(tl.at(0));
-      if (! line3)
-      {
-        qDebug() << _plugin << "::calculate: invalid INPUT3" << name;
-        return 1;
-      }
-
-      bool ok;
-      offset3 = tl.at(1).toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << _plugin << "::calculate: invalid INPUT3" << name;
-        return 1;
-      }
-    }
-    else
-    {
-      line3 = i->line(name);
-      if (! line3)
-      {
-        qDebug() << _plugin << "::calculate: invalid INPUT3" << name;
-        return 1;
-      }
-    }
-
-    // find lowest and highest index values
-    int high = 0;
-    int low = 0;
-    line->keyRange(low, high);
-
-    if (! valueFlag)
-    {
-      int tlow = 0;
-      int thigh = 0;
-      line2->keyRange(tlow, thigh);
-      if (tlow < low)
-        low = tlow;
-      if (thigh > high)
-        high = thigh;
-    }
-
-    int loop2 = low;
-    for (; loop2 <= high; loop2++)
-    {
-      CurveBar *bar = line->bar(loop2 - offset);
-      if (! bar)
-        continue;
-
-      double v2 = 0;
-      if (valueFlag)
-        v2 = value;
-      else
-      {
-        CurveBar *bar2 = line2->bar(loop2 - offset2);
-        if (! bar2)
-          continue;
-        v2 = bar2->data();
-      }
-
-      CurveBar *bar3 = line3->bar(loop2 - offset3);
-      if (! bar3)
-        continue;
-
-      if (top.test(bar->data(), op, v2))
-        bar3->setColor(color);
-    }
-  }
-  
-  return 0;
 }
 
 int COLOR::command (Command *command)
@@ -288,8 +85,8 @@ int COLOR::command (Command *command)
 
   // verify NAME2
   int offset2 = 0;
-  int valueFlag = FALSE;
-  double value = 0;
+  int valueFlag2 = FALSE;
+  double value2 = 0;
   Curve *line2 = 0;
   QString name2 = command->parm("NAME2");
   l = name2.split(".", QString::SkipEmptyParts);
@@ -314,7 +111,7 @@ int COLOR::command (Command *command)
   else
   {
     bool ok;
-    value = name2.toDouble(&ok);
+    value2 = name2.toDouble(&ok);
     if (! ok)
     {
       line2 = i->line(name2);
@@ -325,7 +122,7 @@ int COLOR::command (Command *command)
       }
     }
 
-    valueFlag++;
+    valueFlag2++;
   }
 
   // verify NAME3
@@ -364,7 +161,7 @@ int COLOR::command (Command *command)
   int low = 0;
   line->keyRange(low, high);
 
-  if (! valueFlag)
+  if (! valueFlag2)
   {
     int tlow = 0;
     int thigh = 0;
@@ -383,8 +180,8 @@ int COLOR::command (Command *command)
       continue;
 
     double v2 = 0;
-    if (valueFlag)
-      v2 = value;
+    if (valueFlag2)
+      v2 = value2;
     else
     {
       CurveBar *bar2 = line2->bar(loop - offset2);
@@ -406,24 +203,21 @@ int COLOR::command (Command *command)
   return 0;
 }
 
-QWidget * COLOR::dialog (QWidget *p, Setting *set)
+PluginWidget * COLOR::dialog (QWidget *p)
 {
-  QStringList header;
-  header << tr("Color") << tr("Input 1") << tr("Operator") << tr("Input 2") << tr("Input 3");
-
-  QList<int> format;
-  format << RuleWidget::_COLOR << RuleWidget::_INPUT << RuleWidget::_OPERATOR;
-  format << RuleWidget::_INPUT << RuleWidget::_INPUT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new COLORWidget(p);
 }
 
-void COLOR::defaults (Setting *set)
+void COLOR::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=Close";
+  l << "OP=EQ";
+  l << "NAME2=Close";
+  l << "NAME3=Close";
+  l << "COLOR=#FF0000";
+  d = l.join(",");
 }
 
 //*************************************************************

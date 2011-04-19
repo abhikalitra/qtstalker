@@ -22,7 +22,7 @@
 #include "AVERAGE_PRICE.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "AVERAGE_PRICEDialog.h"
+#include "AVERAGE_PRICEWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -31,38 +31,6 @@ AVERAGE_PRICE::AVERAGE_PRICE ()
 {
   _plugin = "AVERAGE_PRICE";
   _type = "INDICATOR";
-}
-
-int AVERAGE_PRICE::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  InputType it;
-  QStringList order;
-  order << "Open" << "High" << "Low" << "Close";
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getAP(list);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int AVERAGE_PRICE::command (Command *command)
@@ -172,18 +140,21 @@ Curve * AVERAGE_PRICE::getAP (QList<Curve *> &list)
   return line;
 }
 
-QWidget * AVERAGE_PRICE::dialog (QWidget *p, Setting *set)
+PluginWidget * AVERAGE_PRICE::dialog (QWidget *p)
 {
-  return new AVERAGE_PRICEDialog(p, set);
+  return new AVERAGE_PRICEWidget(p);
 }
 
-void AVERAGE_PRICE::defaults (Setting *set)
+void AVERAGE_PRICE::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("red"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("OUTPUT", QString("AP"));
-  set->setData("Z", 0);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=AP";
+  l << "INPUT_OPEN=Open";
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "INPUT_CLOSE=Close";
+  d = l.join(",");
 }
 
 //*************************************************************

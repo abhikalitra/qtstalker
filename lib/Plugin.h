@@ -29,6 +29,7 @@
 #include "Setting.h"
 #include "BarData.h"
 #include "Curve.h"
+#include "PluginWidget.h"
 
 class Plugin : public QObject
 {
@@ -42,9 +43,8 @@ class Plugin : public QObject
     Plugin ();
     virtual ~Plugin ();
     virtual int command (Command *);
-    virtual int calculate (BarData *, Indicator *, Setting *);
-    virtual void defaults (Setting *);
-    virtual QWidget * dialog (QWidget *, Setting *);
+    virtual void defaults (QString &);
+    virtual PluginWidget * dialog (QWidget *);
     virtual int request (Setting *, Setting *);
     virtual void setParent (void *);
     virtual int setCurve (Curve *);

@@ -21,7 +21,7 @@
 
 #include "WEIGHTED_CLOSE.h"
 #include "Globals.h"
-#include "WEIGHTED_CLOSEDialog.h"
+#include "WEIGHTED_CLOSEWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -30,38 +30,6 @@ WEIGHTED_CLOSE::WEIGHTED_CLOSE ()
 {
   _plugin = "WEIGHTED_CLOSE";
   _type = "INDICATOR";
-}
-
-int WEIGHTED_CLOSE::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  InputType it;
-  QStringList order;
-  order << "High" << "Low" << "Close";
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getWC(list);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int WEIGHTED_CLOSE::command (Command *command)
@@ -158,18 +126,20 @@ Curve * WEIGHTED_CLOSE::getWC (QList<Curve *> &list)
   return line;
 }
 
-QWidget * WEIGHTED_CLOSE::dialog (QWidget *p, Setting *set)
+PluginWidget * WEIGHTED_CLOSE::dialog (QWidget *p)
 {
-  return new WEIGHTED_CLOSEDialog(p, set);
+  return new WEIGHTED_CLOSEWidget(p);
 }
 
-void WEIGHTED_CLOSE::defaults (Setting *set)
+void WEIGHTED_CLOSE::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("red"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("OUTPUT", QString("WC"));
-  set->setData("Z", 0);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=WC";
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "INPUT_CLOSE=Close";
+  d = l.join(",");
 }
 
 //*************************************************************

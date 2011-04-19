@@ -31,9 +31,8 @@ class MAMA : public Plugin
   public:
     MAMA ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     QList<Curve *> getMAMA (QList<Curve *> &, double fast, double slow);
 };
 

@@ -3,7 +3,7 @@
 } 
 
 HEADERS += MOM.h
-HEADERS += MOMDialog.h
+HEADERS += MOMWidget.h
 
 SOURCES += MOM.cpp
-SOURCES += MOMDialog.cpp
+SOURCES += MOMWidget.cpp

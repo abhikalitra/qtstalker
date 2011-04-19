@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "T3Dialog.h"
+#include "T3Widget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,41 +36,6 @@ T3::T3 ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("T3::T3: error on TA_Initialize");
-}
-
-int T3::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-  double vfactor = settings->getDouble("VFACTOR");
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getT3(list, period, vfactor);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int T3::command (Command *command)
@@ -179,22 +144,20 @@ Curve * T3::getT3 (QList<Curve *> &list, int period, double vfactor)
   return c;
 }
 
-QWidget * T3::dialog (QWidget *p, Setting *set)
+PluginWidget * T3::dialog (QWidget *p)
 {
-  return new T3Dialog(p, set);
+  return new T3Widget(p);
 }
 
-void T3::defaults (Setting *set)
+void T3::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("yellow"));
-  set->setData("LABEL", _plugin);
-  set->setData("STYLE", QString("Line"));
-  set->setData("PERIOD", 5);
-  set->setData("VFACTOR", 0.7);
-  set->setData("INPUT", QString("Close"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "PERIOD=5";
+  l << "VFACTOR=0.7";
+  d = l.join(",");
 }
 
 //*************************************************************

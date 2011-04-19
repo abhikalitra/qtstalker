@@ -3,8 +3,8 @@
 } 
 
 HEADERS += VBP.h
-HEADERS += VBPDialog.h
+HEADERS += VBPWidget.h
 
 SOURCES += VBP.cpp
-SOURCES += VBPDialog.cpp
+SOURCES += VBPWidget.cpp
 

@@ -33,33 +33,6 @@ OHLC::OHLC ()
   _plugin = "OHLC";
 }
 
-int OHLC::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  InputType it;
-  line = it.ohlc(bd);
-  if (! line)
-    return 1;
-  
-  if (settings->data("STYLE") == "Bars")
-    line->setType("Bars");
-  else
-    line->setType("Candle");
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setZ(settings->getInt("Z"));
-  line->setLabel(settings->data("OUTPUT"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
-}
-
 int OHLC::command (Command *command)
 {
   // PARMS:
@@ -174,18 +147,21 @@ int OHLC::command (Command *command)
   return 0;
 }
 
-QWidget * OHLC::dialog (QWidget *p, Setting *set)
+PluginWidget * OHLC::dialog (QWidget *p)
 {
-  return new OHLCDialog(p, set);
+  return new OHLCDialog(p);
 }
 
-void OHLC::defaults (Setting *set)
+void OHLC::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("#A0A0A0"));
-  set->setData("STYLE", QString("Bars"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", QString("OHLC"));
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT_OPEN=Open";
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "INPUT_CLOSE=Close";
+  d = l.join(",");
 }
 
 //*************************************************************

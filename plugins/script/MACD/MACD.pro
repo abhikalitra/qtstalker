@@ -3,7 +3,7 @@
 } 
 
 HEADERS += MACD.h
-HEADERS += MACDDialog.h
+HEADERS += MACDWidget.h
 
 SOURCES += MACD.cpp
-SOURCES += MACDDialog.cpp
+SOURCES += MACDWidget.cpp

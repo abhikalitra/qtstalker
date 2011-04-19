@@ -21,51 +21,65 @@
 
 #include "ADDialog.h"
 #include "Globals.h"
+#include "Command.h"
 
 #include <QtDebug>
 #include <QStringList>
 #include <QFormLayout>
 
-ADDialog::ADDialog (QWidget *p, Setting *set) : QWidget (p)
+ADDialog::ADDialog (QWidget *p) : PluginWidget (p)
 {
-  _settings = set;
   createGeneralPage();
 }
 
 void ADDialog::createGeneralPage ()
 {
   QFormLayout *form = new QFormLayout;
-  setLayout(form);
+  _vbox->addLayout(form);
 
   // output
-  _output = new QLineEdit(_settings->data("OUTPUT"));
-  form->addRow(tr("Output"), _output);
+  _output = new LineEdit;
+  form->addRow("NAME", _output);
 
-  // color
-  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
-  _color->setColorButton();
-  form->addRow(tr("Color"), _color);
+  // high input
+  _hinput = new LineEdit;
+  form->addRow("INPUT_HIGH", _hinput);
 
-  // style
-  Curve c;
-  QStringList l = c.list();
+  // low input
+  _linput = new LineEdit;
+  form->addRow("INPUT_LOW", _linput);
 
-  _style = new QComboBox;
-  _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
-  form->addRow(tr("Style"), _style);
+  // close input
+  _cinput = new LineEdit;
+  form->addRow("INPUT_CLOSE", _cinput);
 
-  // z
-  _z = new QSpinBox;
-  _z->setRange(-1, 99);
-  _z->setValue(_settings->getInt("Z"));
-  form->addRow(tr("Plot Order"), _z);
+  // vol input
+  _vinput = new LineEdit;
+  form->addRow("INPUT_VOLUME", _vinput);
 }
 
-void ADDialog::save ()
+void ADDialog::setCommand (QString d)
 {
-  _settings->setData("COLOR", _color->color().name());
-  _settings->setData("STYLE", _style->currentText());
-  _settings->setData("OUTPUT", _output->text());
-  _settings->setData("Z", _z->text());
+  Command command(d);
+  if (command.parm("PLUGIN") != "AD")
+    return;
+
+  _output->setText(command.parm("NAME"));
+  _hinput->setText(command.parm("INPUT_HIGH"));
+  _linput->setText(command.parm("INPUT_LOW"));
+  _cinput->setText(command.parm("INPUT_CLOSE"));
+  _vinput->setText(command.parm("INPUT_VOLUME"));
+}
+
+void ADDialog::commands (QStringList &l, int tab)
+{
+  QStringList cl;
+  cl << "PLUGIN=AD";
+  cl << "NAME=" + _output->text();
+  cl << "INPUT_HIGH=" + _hinput->text();
+  cl << "INPUT_LOW=" + _linput->text();
+  cl << "INPUT_CLOSE=" + _cinput->text();
+  cl << "INPUT_VOLUME=" + _vinput->text();
+  cl << "TAB=" + QString::number(tab);
+  l.append(cl.join(","));
 }

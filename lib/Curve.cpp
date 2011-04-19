@@ -39,6 +39,7 @@ Curve::~Curve ()
 void Curve::init ()
 {
   _z = -1;
+  _pen = 1;
   qDeleteAll(_data);
   _data.clear();
   _label.clear();
@@ -141,68 +142,6 @@ QStringList Curve::list ()
   return set.value("curve_plugins").toStringList();
 }
 
-/*
-void Curve::info (int index, Setting &set)
-{
-  CurveBar *b = bar(index);
-  if (! b)
-    return;
-
-  Strip strip;
-
-  if (_type == "Bars" || _type == "Candle")
-  {
-    QString d;
-    strip.strip(b->data(0), 4, d);
-    set.setData("O", d);
-      
-    strip.strip(b->data(1), 4, d);
-    set.setData("H", d);
-      
-    strip.strip(b->data(2), 4, d);
-    set.setData("L", d);
-      
-    strip.strip(b->data(3), 4, d);
-    set.setData("C", d);
-  }
-  else
-  {
-    QString d;
-    strip.strip(b->data(), 4, d);
-    set.setData(label(), d);
-  }
-}
-
-int Curve::highLowRange (int start, int end, double &h, double &l)
-{
-  int rc = 1;
-  int loop;
-  h = -9999999999.0;
-  l = 9999999999.0;
-
-  for (loop = start; loop <= end; loop++)
-  {
-    CurveBar *r = _data.value(loop);
-    if (! r)
-      continue;
-
-    double th, tl;
-    if (r->highLow(th, tl))
-      continue;
-
-    rc = 0;
-
-    if (th > h)
-      h = th;
-  
-    if (tl < l)
-      l = tl;
-  }
-
-  return rc;
-}
-*/
-
 void Curve::deleteBar (int d)
 {
   if (_data.contains(d))
@@ -261,4 +200,14 @@ int Curve::highLow (double &h, double &l)
   }
 
   return rc;
+}
+
+void Curve::setPen (int d)
+{
+  _pen = d;
+}
+
+int Curve::pen ()
+{
+  return _pen;
 }

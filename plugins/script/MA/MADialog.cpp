@@ -21,83 +21,168 @@
 
 #include "MADialog.h"
 #include "Globals.h"
-#include "InputType.h"
 #include "MAType.h"
+#include "LineEdit.h"
+#include "Command.h"
+
+#include "../pics/add.xpm"
+#include "../pics/delete.xpm"
 
 #include <QtDebug>
-#include <QStringList>
-#include <QFormLayout>
+#include <QToolBar>
+#include <QSettings>
+#include <QComboBox>
+#include <QSpinBox>
 
-MADialog::MADialog (QWidget *p, Setting *set) : QWidget (p)
+MADialog::MADialog (QWidget *p) : PluginWidget (p)
 {
-  _settings = set;
   createGeneralPage();
+  loadSettings();
 }
 
 void MADialog::createGeneralPage ()
 {
-  QFormLayout *form = new QFormLayout;
-  setLayout(form);
+  // toolbar
+  QToolBar *tb = new QToolBar;
+  _vbox->addWidget(tb);
 
-  // output
-  _output = new QLineEdit(_settings->data("OUTPUT"));
-  form->addRow(tr("Output"), _output);
+  // add button
+  QToolButton *b = new QToolButton;
+  b->setIcon(QIcon(add_xpm));
+  b->setToolTip(tr("Add Item"));
+  connect(b, SIGNAL(clicked(bool)), this, SLOT(addItem()));
+  tb->addWidget(b);
 
-  // input
-  InputType it;
-  QStringList l = it.list();
-  l.append(_settings->data("INPUT"));
-  l.removeDuplicates();
+  // delete button
+  _deleteButton = new QToolButton;
+  _deleteButton->setIcon(QIcon(delete_xpm));
+  _deleteButton->setToolTip(tr("Delete Item"));
+  connect(_deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteItem()));
+  tb->addWidget(_deleteButton);
 
-  _input = new QComboBox;
-  _input->addItems(l);
-  _input->setCurrentIndex(_input->findText(_settings->data("INPUT"), Qt::MatchExactly));
-  _input->setEditable(TRUE);
-  form->addRow(tr("Input"), _input);
+  // list
+  QStringList l;
+  l << "" << "NAME" << "METHOD" << "INPUT" << "PERIOD";
 
-  // type
-  MAType mat;
-  l = mat.list();
+  _tree = new QTreeWidget;
+  _tree->setHeaderLabels(l);
+  _tree->setSortingEnabled(TRUE);
+  _tree->setRootIsDecorated(FALSE);
+  _tree->setSelectionMode(QAbstractItemView::SingleSelection);
+  connect(_tree, SIGNAL(itemSelectionChanged()), this, SLOT(selectionChanged()));
+  _vbox->addWidget(_tree);
 
-  _type = new QComboBox;
-  _type->addItems(l);
-  _type->setCurrentIndex(_type->findText(_settings->data("TYPE"), Qt::MatchExactly));
-  form->addRow(tr("Type"), _type);
-
-  // period
-  _period = new QSpinBox;
-  _period->setRange(1, 100000);
-  _period->setValue(_settings->getInt("PERIOD"));
-  form->addRow(tr("Period"), _period);
-
-  // color
-  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
-  _color->setColorButton();
-  form->addRow(tr("Color"), _color);
-
-  // plot style
-  Curve c;
-  l = c.list();
-
-  _style = new QComboBox;
-  _style->addItems(l);
-  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
-  form->addRow(tr("Style"), _style);
-
-  // z
-  _z = new QSpinBox;
-  _z->setRange(-1, 99);
-  _z->setValue(_settings->getInt("Z"));
-  form->addRow(tr("Plot Order"), _z);
+  selectionChanged();
 }
 
-void MADialog::save ()
+void MADialog::setCommand (QString d)
 {
-  _settings->setData("INPUT", _input->currentText());
-  _settings->setData("COLOR", _color->color().name());
-  _settings->setData("STYLE", _style->currentText());
-  _settings->setData("PERIOD", _period->value());
-  _settings->setData("TYPE", _type->currentText());
-  _settings->setData("OUTPUT", _output->text());
-  _settings->setData("Z", _z->text());
+  Command command(d);
+  if (command.parm("PLUGIN") != "MA")
+    return;
+
+  addItem(command.parm("NAME"),
+	  command.parm("METHOD"),
+	  command.parm("INPUT"),
+	  command.parm("PERIOD"));
+}
+
+void MADialog::selectionChanged ()
+{
+  bool status = TRUE;
+  QList<QTreeWidgetItem *> l = _tree->selectedItems();
+  if (! l.count())
+    status = FALSE;
+  _deleteButton->setEnabled(status);
+}
+
+void MADialog::addItem ()
+{
+  addItem(QString("MA"), QString("EMA"), QString("Close"), QString("10"));
+}
+
+void MADialog::addItem (QString name, QString method, QString input, QString period)
+{
+  QTreeWidgetItem *item = new QTreeWidgetItem(_tree);
+
+  int col = 1;
+  LineEdit *le = new LineEdit;
+  le->setText(name);
+  _tree->setItemWidget(item, col++, le);
+
+  MAType mat;
+  QComboBox *cb = new QComboBox;
+  cb->addItems(mat.list());
+  cb->setCurrentIndex(cb->findText(method, Qt::MatchExactly));
+  _tree->setItemWidget(item, col++, cb);
+
+  le = new LineEdit;
+  le->setText(input);
+  _tree->setItemWidget(item, col++, le);
+
+  QSpinBox *sb = new QSpinBox;
+  sb->setRange(2, 99999);
+  sb->setValue(period.toInt());
+  _tree->setItemWidget(item, col++, sb);
+}
+
+void MADialog::deleteItem ()
+{
+  QList<QTreeWidgetItem *> l = _tree->selectedItems();
+  if (! l.count())
+    return;
+
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+    delete l.at(loop);
+}
+
+void MADialog::loadSettings ()
+{
+  QSettings set(g_globalSettings);
+  int loop = 0;
+  for (; loop < _tree->columnCount(); loop++)
+  {
+    QString key = "MADialog_rule_column_width_" + QString::number(loop);
+    _tree->setColumnWidth(loop, set.value(key, 75).toInt());
+  }
+}
+
+void MADialog::commands (QStringList &l, int tab)
+{
+  int loop = 0;
+  for (; loop < _tree->topLevelItemCount(); loop++)
+  {
+    QTreeWidgetItem *item = _tree->topLevelItem(loop);
+    if (! item)
+      continue;
+
+    QStringList cl;
+    cl << "PLUGIN=MA";
+
+    int col = 1;
+    LineEdit *le = (LineEdit *) _tree->itemWidget(item, col++);
+    cl << "NAME=" + le->text();
+
+    QComboBox *cb = (QComboBox *) _tree->itemWidget(item, col++);
+    cl << "METHOD=" + cb->currentText();
+
+    le = (LineEdit *) _tree->itemWidget(item, col++);
+    cl << "INPUT=" + le->text();
+
+    QSpinBox *sb = (QSpinBox *) _tree->itemWidget(item, col++);
+    cl << "PERIOD=" + sb->text();
+
+    cl << "TAB=" + QString::number(tab);
+
+    l.append(cl.join(","));
+  }
+
+  QSettings set(g_globalSettings);
+  for (loop = 0; loop < _tree->columnCount(); loop++)
+  {
+    QString key = "MADialog_rule_column_width_" + QString::number(loop);
+    set.setValue(key, _tree->columnWidth(loop));
+  }
+  set.sync();
 }

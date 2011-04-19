@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "MFIDialog.h"
+#include "MFIWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,40 +36,6 @@ MFI::MFI ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("MFI::MFI: error on TA_Initialize");
-}
-
-int MFI::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-
-  InputType it;
-  QStringList order;
-  order << "High" << "Low" << "Close" << "Volume";
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getMFI(list, period);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int MFI::command (Command *command)
@@ -199,19 +165,22 @@ Curve * MFI::getMFI (QList<Curve *> &list, int period)
   return c;
 }
 
-QWidget * MFI::dialog (QWidget *p, Setting *set)
+PluginWidget * MFI::dialog (QWidget *p)
 {
-  return new MFIDialog(p, set);
+  return new MFIWidget(p);
 }
 
-void MFI::defaults (Setting *set)
+void MFI::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("red"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("PERIOD", 9);
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "INPUT_CLOSE=Close";
+  l << "INPUT_VOLUME=Volume";
+  l << "PERIOD=9";
+  d = l.join(",");
 }
 
 //*************************************************************

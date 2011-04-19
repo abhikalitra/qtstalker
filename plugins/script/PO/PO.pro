@@ -3,7 +3,7 @@
 } 
 
 HEADERS += PO.h
-HEADERS += PODialog.h
+HEADERS += POWidget.h
 
 SOURCES += PO.cpp
-SOURCES += PODialog.cpp
+SOURCES += POWidget.cpp

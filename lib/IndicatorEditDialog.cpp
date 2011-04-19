@@ -24,32 +24,23 @@
 #include "PluginFactory.h"
 #include "DataDataBase.h"
 #include "NewDialog.h"
+#include "PluginWidget.h"
 
 #include <QtDebug>
 #include <QSettings>
 #include <QInputDialog>
 
-IndicatorEditDialog::IndicatorEditDialog (QWidget *p, IndicatorSettings *set) : Dialog (p)
+IndicatorEditDialog::IndicatorEditDialog (QWidget *p, QString n) : Dialog (p)
 {
-  _settings = set;
+  _name = n;
   _keySize = "indicator_edit_dialog_window_size";
   _keyPos = "indicator_edit_dialog_window_position";
   _status = _NONE;
   _newFlag = 0;
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Indicator");
-  if (_settings != 0)
-    l << _settings->data("NAME");
+  l << "QtStalker" << g_session << ":" << tr("Indicator") << _name;
   setWindowTitle(l.join(" "));
-
-  if (_settings == 0)
-  {
-    Indicator i;
-    i.settings()->copy(&_tsettings);
-  }
-  else
-    _settings->copy(&_tsettings);
 
   createGUI();
 
@@ -61,15 +52,13 @@ void IndicatorEditDialog::createGUI ()
   _tabs = new QTabWidget;
   _vbox->insertWidget(0, _tabs);
 
+  QStringList l;
+  DataDataBase db("indicators");
+  db.load(_name, l);
+  
   int loop = 0;
-  for (; loop < _tsettings.count(); loop++)
-  {
-    Setting *set = _tsettings.settings(loop);
-    if (! set)
-      continue;
-
-    addTab(set);
-  }
+  for (; loop < l.count(); loop++)
+    addTab(l.at(loop), 0);
 
   // add button
   QPushButton *b = _buttonBox->addButton(QString("&Add"), QDialogButtonBox::ActionRole);
@@ -128,13 +117,11 @@ void IndicatorEditDialog::addIndicator2 (QString d)
   settings.setValue("indicator_edit_dialog_last_indicator", d);
   settings.sync();
 
-  Setting *set = new Setting;
-  plug->defaults(set);
+  QString s;
+  plug->defaults(s);
   delete plug;
 
-  _tsettings.addSettings(set);
-
-  addTab(set);
+  addTab(s, 1);
 }
 
 void IndicatorEditDialog::deleteIndicator ()
@@ -150,34 +137,52 @@ void IndicatorEditDialog::deleteIndicator ()
   _tabs->removeTab(index);
 
   delete w;
-
-  _tsettings.removeSettings(index);
 }
 
-void IndicatorEditDialog::addTab (Setting *set)
+void IndicatorEditDialog::addTab (QString d, int insertFlag)
 {
-  PluginFactory fac;
-  Plugin *plug = fac.plugin(set->data("PLUGIN"));
-  if (! plug)
+  Command command(d);
+
+  int flag = 0;
+  PluginWidget *w = 0;
+  QString s = command.parm("TAB");
+  if (s.isEmpty())
+    flag++;
+  else
   {
-    qDebug() << "IndicatorEditDialog::addTab: no plugin" << set->data("PLUGIN");
-    return;
+    w = (PluginWidget *) _tabs->widget(s.toInt());
+    if (! w)
+      flag++;
   }
 
-  QWidget *w = plug->dialog(this, set);
-  if (! w)
+  if (flag)
   {
+    PluginFactory fac;
+    Plugin *plug = fac.plugin(command.plugin());
+    if (! plug)
+      return;
+
+    w = plug->dialog(this);
+    if (! w)
+    {
+      delete plug;
+      return;
+    }
     delete plug;
-    return;
+
+    if (insertFlag)
+    {
+      _tabs->insertTab(_tabs->currentIndex() + 1, w, command.plugin());
+      _tabs->setCurrentIndex(_tabs->currentIndex() + 1);
+    }
+    else
+    {
+      _tabs->addTab(w, command.plugin());
+      _tabs->setCurrentIndex(_tabs->count() - 1);
+    }
   }
-
-  delete plug;
   
-  connect(this, SIGNAL(signalSave()), w, SLOT(save()));
-
-  _tabs->addTab(w, set->data("PLUGIN"));
-
-  _tabs->setCurrentIndex(_tabs->count() - 1);
+  w->setCommand(d);
 }
 
 void IndicatorEditDialog::newDialog ()
@@ -195,11 +200,13 @@ void IndicatorEditDialog::newDialog ()
 
 void IndicatorEditDialog::newDialog2 (QString d)
 {
-  _tsettings.setData("NAME", d);
+  _name = d;
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Indicator") << _tsettings.data("NAME");
+  l << "QtStalker" << g_session << ":" << tr("Indicator") << _name;
   setWindowTitle(l.join(" "));
+
+  _newFlag = 1;
 
   if (_status == _DONE)
     done();
@@ -215,32 +222,33 @@ void IndicatorEditDialog::apply ()
 
 int IndicatorEditDialog::applySave ()
 {
-  if (_tsettings.data("NAME").isEmpty())
+  if (_name.isEmpty())
   {
     newDialog();
     return 1;
   }
 
-  // each tab finalize their changes to _settings
-  emit signalSave();
-
-  if (_settings == 0)
-    _tsettings.save();
-  else
-  {
-    _settings->clearAll();
-    _tsettings.copy(_settings);
-    _settings->save();
-  }
-
   Indicator i;
-  i.add(_tsettings.data("NAME"));
-
-  if (_settings == 0 && ! _newFlag)
+  i.setName(_name);
+  i.load();
+  
+  QStringList l;
+  int loop = 0;
+  for (; loop < _tabs->count(); loop++)
   {
-    _newFlag = 1;
-    g_middleMan->indicatorNew(_tsettings.data("NAME"));
+    PluginWidget *w = (PluginWidget *) _tabs->widget(loop);
+    w->commands(l, loop);
   }
+
+  i.setCommands(l);
+  i.save();
+
+  i.add(_name);
+
+  saveSettings();
+
+  if (_newFlag)
+    g_middleMan->indicatorNew(_name);
 
   emit signalDone();
 

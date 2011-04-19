@@ -22,7 +22,7 @@
 #include "VBP.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "VBPDialog.h"
+#include "VBPWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -32,39 +32,6 @@ VBP::VBP ()
 {
   _type = "INDICATOR";
   _plugin = "VBP";
-}
-
-int VBP::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  QColor upColor(settings->data("COLOR_UP"));
-  QColor downColor(settings->data("COLOR_DOWN"));
-
-  InputType it;
-  QStringList order;
-  order << "Close" << "Volume";
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getVBP(list, upColor, downColor);
-  if (! line)
-    return 1;
-  
-  line->setZ(settings->getInt("Z"));
-  line->setLabel(settings->data("OUTPUT"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int VBP::command (Command *command)
@@ -250,18 +217,21 @@ Curve * VBP::getVBP (QList<Curve *> &list, QColor upColor, QColor downColor)
   return line;
 }
 
-QWidget * VBP::dialog (QWidget *p, Setting *set)
+PluginWidget * VBP::dialog (QWidget *p)
 {
-  return new VBPDialog(p, set);
+  return new VBPWidget(p);
 }
 
-void VBP::defaults (Setting *set)
+void VBP::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR_UP", QString("#00FF00"));
-  set->setData("COLOR_DOWN", QString("#FF0000"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", QString("VBP"));
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT_CLOSE=Close";
+  l << "INPUT_VOLUME=Volume";
+  l << "COLOR_UP=#00FF00";
+  l << "COLOR_DOWN=#FF0000";
+  d = l.join(",");
 }
 
 //*************************************************************

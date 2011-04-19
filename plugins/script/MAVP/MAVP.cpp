@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "MAVPDialog.h"
+#include "MAVPWidget.h"
 #include "InputType.h"
 #include "MAType.h"
 
@@ -37,44 +37,6 @@ MAVP::MAVP ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("MAVP::MAVP: error on TA_Initialize");
-}
-
-int MAVP::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int min = settings->getInt("PERIOD_MIN");
-  int max = settings->getInt("PERIOD_MAX");
-
-  MAType mat;
-  int type = mat.fromString(settings->data("MA_TYPE"));
-  
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT") << settings->data("INPUT2");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getMAVP(list, min, max, type);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int MAVP::command (Command *command)
@@ -203,23 +165,22 @@ Curve * MAVP::getMAVP (QList<Curve *> &list, int min, int max, int type)
   return c;
 }
 
-QWidget * MAVP::dialog (QWidget *p, Setting *set)
+PluginWidget * MAVP::dialog (QWidget *p)
 {
-  return new MAVPDialog(p, set);
+  return new MAVPWidget(p);
 }
 
-void MAVP::defaults (Setting *set)
+void MAVP::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("INPUT", QString("Close"));
-  set->setData("INPUT2", QString("Close"));
-  set->setData("COLOR", QString("red"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("PERIOD_MIN", 2);
-  set->setData("PERIOD_MAX", 30);
-  set->setData("MA_TYPE", QString("EMA"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "INPUT2=Close";
+  l << "PERIOD_MIN=2";
+  l << "PERIOD_MAX=30";
+  l << "MA_TYPE=EMA";
+  d = l.join(",");
 }
 
 //*************************************************************

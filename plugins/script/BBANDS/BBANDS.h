@@ -31,9 +31,8 @@ class BBANDS : public Plugin
   public:
     BBANDS ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     QList<Curve *> getBBANDS (QList<Curve *> &, int period, double udev, double ldev, int type);
 };
 

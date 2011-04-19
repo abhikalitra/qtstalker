@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "PODialog.h"
+#include "POWidget.h"
 #include "InputType.h"
 #include "MAType.h"
 
@@ -38,46 +38,6 @@ PO::PO ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("PO::PO: error on TA_Initialize");
-}
-
-int PO::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int fast = settings->getInt("PERIOD_FAST");
-  int slow = settings->getInt("PERIOD_SLOW");
-
-  MAType mat;
-  int type = mat.fromString(settings->data("MA_TYPE"));
-
-  int method = _method.indexOf(settings->data("METHOD"));
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getPO(list, fast, slow, type, method);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int PO::command (Command *command)
@@ -207,26 +167,25 @@ Curve * PO::getPO (QList<Curve *> &list, int fast, int slow, int type, int metho
   return c;
 }
 
-QWidget * PO::dialog (QWidget *p, Setting *set)
+PluginWidget * PO::dialog (QWidget *p)
 {
-  return new PODialog(p, set);
+  return new POWidget(p);
 }
 
-void PO::defaults (Setting *set)
+void PO::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("yellow"));
-  set->setData("STYLE", QString("HistogramBar"));
-  set->setData("PERIOD_FAST", 12);
-  set->setData("PERIOD_SLOW", 26);
-  set->setData("MA_TYPE", QString("EMA"));
-  set->setData("INPUT", QString("Close"));
-  set->setData("METHOD", QString("APO"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "PERIOD_FAST=12";
+  l << "PERIOD_SLOW=26";
+  l << "MA_TYPE=EMA";
+  l << "METHOD=APO";
+  d = l.join(",");
 }
 
-QStringList PO::method ()
+QStringList PO::list ()
 {
   return _method;
 }

@@ -52,6 +52,8 @@ class HLINE : public Plugin
     int command (Command *);
     int calculate (BarData *, Indicator *, Setting *);
     void defaults (Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     QWidget * dialog (QWidget *, Setting *);
     int request (Setting *, Setting *);
     void setParent (void *);

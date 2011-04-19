@@ -82,7 +82,6 @@ int Line::setCurve (Curve *curve)
   qcurve->setStyle(QwtPlotCurve::Lines);
   qcurve->setCurveData(curve);
 
-/*
   QList<int> keys;
   curve->keys(keys);
 
@@ -96,10 +95,16 @@ int Line::setCurve (Curve *curve)
     y.append(bar->data());
   }
   qcurve->setData(x, y);
-*/
 
   qcurve->setTitle(curve->label());
-//  qcurve->setPen(QPen(curve->color()));
+
+  CurveBar *bar = curve->bar(keys.at(0));
+
+  QPen pen = qcurve->pen();
+  pen.setColor(bar->color());
+  pen.setWidth(curve->pen());
+  qcurve->setPen(pen);
+  
   qcurve->setZ(curve->z());
   qcurve->setYAxis(QwtPlot::yRight);
   qcurve->attach(_plot);

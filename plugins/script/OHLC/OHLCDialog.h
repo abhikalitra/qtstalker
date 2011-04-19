@@ -23,31 +23,28 @@
 #define PLUGIN_OHLC_DIALOG_HPP
 
 #include <QWidget>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QLineEdit>
 
-#include "ColorButton.h"
-#include "Setting.h"
+#include "PluginWidget.h"
+#include "LineEdit.h"
 
-class OHLCDialog : public QWidget
+class OHLCDialog : public PluginWidget
 {
   Q_OBJECT
 
   public:
-    OHLCDialog (QWidget *, Setting *);
+    OHLCDialog (QWidget *);
     void createGeneralPage ();
 
   public slots:
-    void save ();
+    void setCommand (QString);
+    void commands (QStringList &, int);
 
   private:
-    QStringList _styleList;
-    Setting *_settings;
-    ColorButton *_color;
-    QComboBox *_style;
-    QSpinBox *_z;
-    QLineEdit *_output;
+    LineEdit *_output;
+    LineEdit *_oinput;
+    LineEdit *_hinput;
+    LineEdit *_linput;
+    LineEdit *_cinput;
 };
 
 #endif

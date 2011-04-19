@@ -3,5 +3,7 @@
 } 
 
 HEADERS += MIN.h
+HEADERS += MINWidget.h
 
 SOURCES += MIN.cpp
+SOURCES += MINWidget.cpp

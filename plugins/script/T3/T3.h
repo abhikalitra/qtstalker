@@ -31,9 +31,8 @@ class T3 : public Plugin
   public:
     T3 ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     Curve * getT3 (QList<Curve *> &, int, double);
 };
 

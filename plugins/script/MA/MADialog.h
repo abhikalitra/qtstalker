@@ -22,33 +22,31 @@
 #ifndef PLUGIN_MA_DIALOG_HPP
 #define PLUGIN_MA_DIALOG_HPP
 
-#include <QComboBox>
-#include <QSpinBox>
-#include <QLineEdit>
+#include <QTreeWidget>
+#include <QToolButton>
 
-#include "ColorButton.h"
-#include "Setting.h"
+#include "PluginWidget.h"
 
-class MADialog : public QWidget
+class MADialog : public PluginWidget
 {
   Q_OBJECT
 
   public:
-    MADialog (QWidget *, Setting *);
+    MADialog (QWidget *);
     void createGeneralPage();
+    void loadSettings();
 
   public slots:
-    void save ();
+    void setCommand (QString);
+    void commands (QStringList &, int);
+    void selectionChanged ();
+    void deleteItem ();
+    void addItem ();
+    void addItem (QString, QString, QString, QString);
 
   private:
-    Setting *_settings;
-    QSpinBox *_period;
-    ColorButton *_color;
-    QComboBox *_style;
-    QComboBox *_type;
-    QComboBox *_input;
-    QLineEdit *_output;
-    QSpinBox *_z;
+    QTreeWidget *_tree;
+    QToolButton *_deleteButton;
 };
 
 #endif

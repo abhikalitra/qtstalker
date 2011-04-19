@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "SARDialog.h"
+#include "SARWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,40 +36,6 @@ SAR::SAR ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("SAR::SAR: error on TA_Initialize");
-}
-
-int SAR::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  double init = settings->getDouble("STEP_INITIAL");
-  double max = settings->getDouble("STEP_MAX");
-
-  InputType it;
-  QStringList order;
-  order << "High" << "Low";
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getSAR(list, init, max);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int SAR::command (Command *command)
@@ -189,19 +155,21 @@ Curve * SAR::getSAR (QList<Curve *> &list, double init, double max)
   return c;
 }
 
-QWidget * SAR::dialog (QWidget *p, Setting *set)
+PluginWidget * SAR::dialog (QWidget *p)
 {
-  return new SARDialog(p, set);
+  return new SARWidget(p);
 }
 
-void SAR::defaults (Setting *set)
+void SAR::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("white"));
-  set->setData("STEP_INITIAL", 0.02);
-  set->setData("STEP_MAX", 0.2);
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "STEP_INITIAL=0.02";
+  l << "STEP_MAX=0.2";
+  d = l.join(",");
 }
 
 //*************************************************************

@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "InputType.h"
-#include "RuleWidget.h"
+#include "MEDIAN_PRICEWidget.h"
 
 #include <QtDebug>
 
@@ -31,57 +31,6 @@ MEDIAN_PRICE::MEDIAN_PRICE ()
 {
   _plugin = "MEDIAN_PRICE";
   _type = "INDICATOR";
-}
-
-int MEDIAN_PRICE::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  int rows = settings->getInt("ROWS");
-  int loop = 0;
-  for (; loop < rows; loop++)
-  {
-    int col = 0;
-    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString name = settings->data(key);
-    Curve *line = i->line(name);
-    if (line)
-    {
-      qDebug() << _plugin << "::calculate: duplicate output" << name;
-      return 1;
-    }
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QStringList order;
-    order << settings->data(key);
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    order << settings->data(key);
-
-    InputType it;
-    QList<Curve *> list;
-    if (it.inputs(list, order, i, bd))
-    {
-      qDebug() << _plugin << "::calculate: input missing";
-      return 1;
-    }
-
-    line = getMP(list);
-    if (! line)
-      return 1;
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setAllColor(QColor(settings->data(key)));
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setType(settings->data(key));
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setZ(settings->getInt(key));
-    
-    line->setLabel(name);
-    i->setLine(name, line);
-  }
-  
-  return 0;
 }
 
 int MEDIAN_PRICE::command (Command *command)
@@ -165,24 +114,19 @@ Curve * MEDIAN_PRICE::getMP (QList<Curve *> &list)
   return line;
 }
 
-QWidget * MEDIAN_PRICE::dialog (QWidget *p, Setting *set)
+PluginWidget * MEDIAN_PRICE::dialog (QWidget *p)
 {
-  QStringList header;
-  header << tr("Output") << tr("Input 1") << tr("Input 2") << tr("Color") << tr("Style") << tr("Plot");
-
-  QList<int> format;
-  format << RuleWidget::_OUTPUT << RuleWidget::_INPUT << RuleWidget::_INPUT;
-  format << RuleWidget::_COLOR << RuleWidget::_STYLE << RuleWidget::_PLOT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new MEDIAN_PRICEWidget(p);
 }
 
-void MEDIAN_PRICE::defaults (Setting *set)
+void MEDIAN_PRICE::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=MP";
+  l << "INPUT=High";
+  l << "INPUT2=Low";
+  d = l.join(",");
 }
 
 //*************************************************************

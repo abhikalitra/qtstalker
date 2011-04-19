@@ -29,7 +29,6 @@
 
 #include "Curve.h"
 #include "Setting.h"
-#include "IndicatorSettings.h"
 
 class Indicator : public QObject
 {
@@ -62,9 +61,9 @@ class Indicator : public QObject
     QHash<QString, Setting> & chartObjects ();
     int chartObjectCount ();
     int lineCount ();
-    IndicatorSettings * settings ();
     void remove (int, QStringList);
     void add (QString);
+    void setCommands (QStringList &);
 
   public slots:
     int save ();
@@ -80,7 +79,11 @@ class Indicator : public QObject
   protected:
     QHash<QString, Curve *> _lines;
     QHash<QString, Setting> _chartObjects;
-    IndicatorSettings *_settings;
+    QStringList _commands;
+    QString _name;
+    bool _lock;
+    bool _date;
+    bool _log;
 };
 
 #endif

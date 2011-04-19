@@ -31,9 +31,8 @@ class HT_SINE : public Plugin
   public:
     HT_SINE ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     QList<Curve *> getSINE (QList<Curve *> &);
 };
 

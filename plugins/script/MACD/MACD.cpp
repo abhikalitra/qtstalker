@@ -25,7 +25,7 @@
 #include "Globals.h"
 #include "InputType.h"
 #include "MAType.h"
-#include "MACDDialog.h"
+#include "MACDWidget.h"
 
 #include <QtDebug>
 
@@ -37,79 +37,6 @@ MACD::MACD ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("MACD::MACD: error on TA_Initialize");
-}
-
-int MACD::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *macd = i->line(settings->data("OUTPUT_MACD"));
-  if (macd)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_MACD" << settings->data("OUTPUT_MACD");
-    return 1;
-  }
-
-  Curve *signal = i->line(settings->data("OUTPUT_SIG"));
-  if (signal)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_SIG" << settings->data("OUTPUT_SIG");
-    return 1;
-  }
-
-  Curve *hist = i->line(settings->data("OUTPUT_HIST"));
-  if (hist)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_HIST" << settings->data("OUTPUT_HIST");
-    return 1;
-  }
-
-  int fperiod = settings->getInt("PERIOD_FAST");
-  int speriod = settings->getInt("PERIOD_SLOW");
-  int sigperiod = settings->getInt("PERIOD_SIG");
-
-  MAType mat;
-  int ftype = mat.fromString(settings->data("MA_TYPE_FAST"));
-  int stype = mat.fromString(settings->data("MA_TYPE_SLOW"));
-  int sigtype = mat.fromString(settings->data("MA_TYPE_SIG"));
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  QList<Curve *> lines = getMACD(list, fperiod, speriod, sigperiod, ftype, stype, sigtype);
-  if (lines.count() != 3)
-  {
-    qDeleteAll(lines);
-    return 1;
-  }
-
-  macd = lines.at(0);
-  macd->setAllColor(QColor(settings->data("COLOR_MACD")));
-  macd->setLabel(settings->data("OUTPUT_MACD"));
-  macd->setType(settings->data("STYLE_MACD"));
-  macd->setZ(settings->getInt("Z_MACD"));
-  i->setLine(settings->data("OUTPUT_MACD"), macd);
-  
-  signal = lines.at(1);
-  signal->setAllColor(QColor(settings->data("COLOR_SIG")));
-  signal->setLabel(settings->data("OUTPUT_SIG"));
-  signal->setType(settings->data("STYLE_SIG"));
-  signal->setZ(settings->getInt("Z_SIG"));
-  i->setLine(settings->data("OUTPUT_SIG"), signal);
-
-  hist = lines.at(2);
-  hist->setAllColor(QColor(settings->data("COLOR_HIST")));
-  hist->setLabel(settings->data("OUTPUT_HIST"));
-  hist->setType(settings->data("STYLE_HIST"));
-  hist->setZ(settings->getInt("Z_HIST"));
-  i->setLine(settings->data("OUTPUT_HIST"), hist);
-
-  return 0;
 }
 
 int MACD::command (Command *command)
@@ -294,33 +221,26 @@ QList<Curve *> MACD::getMACD (QList<Curve *> &list, int fp, int sp, int sigp, in
   return lines;
 }
 
-QWidget * MACD::dialog (QWidget *p, Setting *set)
+PluginWidget * MACD::dialog (QWidget *p)
 {
-  return new MACDDialog(p, set);
+  return new MACDWidget(p);
 }
 
-void MACD::defaults (Setting *set)
+void MACD::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("INPUT", QString("Close"));
-  set->setData("COLOR_MACD", QString("red"));
-  set->setData("COLOR_SIG", QString("yellow"));
-  set->setData("COLOR_HIST", QString("blue"));
-  set->setData("OUTPUT_MACD", QString("MACD"));
-  set->setData("OUTPUT_SIG", QString("SIG"));
-  set->setData("OUTPUT_HIST", QString("HIST"));
-  set->setData("STYLE_MACD", QString("Line"));
-  set->setData("STYLE_SIG", QString("Line"));
-  set->setData("STYLE_HIST", QString("HistogramBar"));
-  set->setData("PERIOD_FAST", 12);
-  set->setData("PERIOD_SLOW", 26);
-  set->setData("PERIOD_SIG", 9);
-  set->setData("MA_TYPE_FAST", QString("EMA"));
-  set->setData("MA_TYPE_SLOW", QString("EMA"));
-  set->setData("MA_TYPE_SIG", QString("EMA"));
-  set->setData("Z_MACD", 1);
-  set->setData("Z_SIG", 2);
-  set->setData("Z_HIST", 0);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME_MACD=MACD";
+  l << "NAME_SIGNAL=SIG";
+  l << "NAME_HIST=HIST";
+  l << "INPUT=Close";
+  l << "PERIOD_FAST=12";
+  l << "PERIOD_SLOW=26";
+  l << "PERIOD_SIGNAL=9";
+  l << "MA_TYPE_FAST=EMA";
+  l << "MA_TYPE_SLOW=EMA";
+  l << "MA_TYPE_SIGNAL=EMA";
+  d = l.join(",");
 }
 
 //*************************************************************

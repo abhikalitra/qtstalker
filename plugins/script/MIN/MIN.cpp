@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "RuleWidget.h"
+#include "MINWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,56 +36,6 @@ MIN::MIN ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("MIN::MIN: error on TA_Initialize");
-}
-
-int MIN::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  int rows = settings->getInt("ROWS");
-  int loop = 0;
-  for (; loop < rows; loop++)
-  {
-    int col = 0;
-    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString name = settings->data(key);
-    Curve *line = i->line(name);
-    if (line)
-    {
-      qDebug() << _plugin << "::calculate: duplicate output" << name;
-      return 1;
-    }
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    InputType it;
-    QStringList order;
-    order << settings->data(key);
-    QList<Curve *> list;
-    if (it.inputs(list, order, i, bd))
-    {
-      qDebug() << _plugin << "::calculate: input missing";
-      return 1;
-    }
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    int period = settings->getInt(key);
-
-    line = getMIN(list, period);
-    if (! line)
-      return 1;
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setAllColor(QColor(settings->data(key)));
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setType(settings->data(key));
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setZ(settings->getInt(key));
-
-    line->setLabel(name);
-    i->setLine(name, line);
-  }
-
-  return 0;
 }
 
 int MIN::command (Command *command)
@@ -185,24 +135,19 @@ Curve * MIN::getMIN (QList<Curve *> &list, int period)
   return c;
 }
 
-QWidget * MIN::dialog (QWidget *p, Setting *set)
+PluginWidget * MIN::dialog (QWidget *p)
 {
-  QStringList header;
-  header << tr("Output") << tr("Input") << tr("Period") << tr("Color") << tr("Style") << tr("Plot");
-
-  QList<int> format;
-  format << RuleWidget::_OUTPUT << RuleWidget::_INPUT << RuleWidget::_INTEGER;
-  format << RuleWidget::_COLOR << RuleWidget::_STYLE << RuleWidget::_PLOT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new MINWidget(p);
 }
 
-void MIN::defaults (Setting *set)
+void MIN::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "PERIOD=10";
+  d = l.join(",");
 }
 
 //*************************************************************

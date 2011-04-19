@@ -3,7 +3,7 @@
 } 
 
 HEADERS += HT.h
-HEADERS += HTDialog.h
+HEADERS += HTWidget.h
 
 SOURCES += HT.cpp
-SOURCES += HTDialog.cpp
+SOURCES += HTWidget.cpp

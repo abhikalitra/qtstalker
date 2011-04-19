@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "ULTOSCDialog.h"
+#include "ULTOSCWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,42 +36,6 @@ ULTOSC::ULTOSC ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("ULTOSC::ULTOSC: error on TA_Initialize");
-}
-
-int ULTOSC::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int sp = settings->getInt("PERIOD_SHORT");
-  int mp = settings->getInt("PERIOD_MED");
-  int lp = settings->getInt("PERIOD_LONG");
-
-  InputType it;
-  QStringList order;
-  order << "High" << "Low" << "Close";
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getULTOSC(list, sp, mp, lp);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int ULTOSC::command (Command *command)
@@ -209,21 +173,23 @@ Curve * ULTOSC::getULTOSC (QList<Curve *> &list, int sp, int mp, int lp)
   return c;
 }
 
-QWidget * ULTOSC::dialog (QWidget *p, Setting *set)
+PluginWidget * ULTOSC::dialog (QWidget *p)
 {
-  return new ULTOSCDialog(p, set);
+  return new ULTOSCWidget(p);
 }
 
-void ULTOSC::defaults (Setting *set)
+void ULTOSC::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("red"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("PERIOD_SHORT", 7);
-  set->setData("PERIOD_MED", 14);
-  set->setData("PERIOD_LONG", 28);
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "INPUT_CLOSE=Close";
+  l << "PERIOD_SHORT=7";
+  l << "PERIOD_MED=14";
+  l << "PERIOD_LONG=28";
+  d = l.join(",");
 }
 
 //*************************************************************

@@ -31,9 +31,8 @@ class STOCH_SLOW : public Plugin
   public:
     STOCH_SLOW ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     QList<Curve *> getSTOCHS (QList<Curve *> &, int fkperiod, int skperiod, int sdperiod, int kma, int dma);
 };
 

@@ -152,6 +152,7 @@ int LineDraw::info (int index, Setting *data)
   return 0;
 }
 
+/*
 void LineDraw::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   QwtScaleDiv *sd = plot()->axisScaleDiv(QwtPlot::xBottom);
@@ -181,9 +182,8 @@ void LineDraw::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
     int y = yMap.transform(yb->data());
     int y2 = yMap.transform(b->data());
 
-//    pen.setColor(b->color());
-//    painter->setPen(pen);
     painter->setPen(b->color());
     painter->drawLine (x, y, x2, y2);
   }
 }
+*/

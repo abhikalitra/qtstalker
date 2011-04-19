@@ -26,7 +26,6 @@
 #include <QTabWidget>
 
 #include "Dialog.h"
-#include "IndicatorSettings.h"
 
 class IndicatorEditDialog : public Dialog
 {
@@ -44,9 +43,9 @@ class IndicatorEditDialog : public Dialog
       _APPLY
     };
     
-    IndicatorEditDialog (QWidget *, IndicatorSettings *);
+    IndicatorEditDialog (QWidget *, QString);
     void createGUI ();
-    void addTab (Setting *);
+    void addTab (QString, int);
     void newDialog ();
 
   public slots:
@@ -60,8 +59,7 @@ class IndicatorEditDialog : public Dialog
 
   private:
     QTabWidget *_tabs;
-    IndicatorSettings *_settings;
-    IndicatorSettings _tsettings;
+    QString _name;
     int _status;
     int _newFlag;
 };

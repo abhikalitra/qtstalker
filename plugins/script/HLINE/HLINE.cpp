@@ -25,7 +25,7 @@
 #include "DataDataBase.h"
 #include "ConfirmDialog.h"
 #include "DateScaleDraw.h"
-#include "RuleWidget.h"
+#include "HLINEWidget.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
@@ -518,23 +518,30 @@ int HLINE::command (Command *command)
   return 0;
 }
 
-QWidget * HLINE::dialog (QWidget *p, Setting *set)
+PluginWidget * HLINE::dialog (QWidget *p)
 {
-  QStringList header;
-  header << tr("Value") << tr("Color") << tr("Plot");
-
-  QList<int> format;
-  format << RuleWidget::_DOUBLE << RuleWidget::_COLOR << RuleWidget::_PLOT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new HLINEWidget(p);
 }
 
 void HLINE::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
+}
+
+void HLINE::defaults (QString &d)
+{
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "TYPE=HLine";
+  l << "NAME=-1";
+  l << "INDICATOR=";
+  l << "EXCHANGE=";
+  l << "SYMBOL=";
+  l << "PRICE=0";
+  l << "COLOR=white";
+  l << "Z=-1";
+  l << "RO=1";
+  d = l.join(",");
 }
 
 //*************************************************************

@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "RSIDialog.h"
+#include "RSIWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,40 +36,6 @@ RSI::RSI ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("RSI::RSI: error on TA_Initialize");
-}
-
-int RSI::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getRSI(list, period);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int RSI::command (Command *command)
@@ -169,20 +135,19 @@ Curve * RSI::getRSI (QList<Curve *> &list, int period)
   return c;
 }
 
-QWidget * RSI::dialog (QWidget *p, Setting *set)
+PluginWidget * RSI::dialog (QWidget *p)
 {
-  return new RSIDialog(p, set);
+  return new RSIWidget(p);
 }
 
-void RSI::defaults (Setting *set)
+void RSI::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("red"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("PERIOD", 14);
-  set->setData("INPUT", QString("Close"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "PERIOD=14";
+  d = l.join(",");
 }
 
 //*************************************************************

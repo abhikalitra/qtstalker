@@ -3,7 +3,7 @@
 } 
 
 HEADERS += T3.h
-HEADERS += T3Dialog.h
+HEADERS += T3Widget.h
 
 SOURCES += T3.cpp
-SOURCES += T3Dialog.cpp
+SOURCES += T3Widget.cpp

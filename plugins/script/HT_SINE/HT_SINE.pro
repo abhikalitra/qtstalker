@@ -3,7 +3,7 @@
 } 
 
 HEADERS += HT_SINE.h
-HEADERS += HT_SINEDialog.h
+HEADERS += HT_SINEWidget.h
 
 SOURCES += HT_SINE.cpp
-SOURCES += HT_SINEDialog.cpp
+SOURCES += HT_SINEWidget.cpp

@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "HT_SINEDialog.h"
+#include "HT_SINEWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,56 +36,6 @@ HT_SINE::HT_SINE ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("HT_SINE::HT_SINE: error on TA_Initialize");
-}
-
-int HT_SINE::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *sline = i->line(settings->data("OUTPUT_SINE"));
-  if (sline)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_SINE" << settings->data("OUTPUT_SINE");
-    return 1;
-  }
-
-  Curve *lline = i->line(settings->data("OUTPUT_LEAD"));
-  if (lline)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_LEAD" << settings->data("OUTPUT_LEAD");
-    return 1;
-  }
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  QList<Curve *> lines = getSINE(list);
-  if (lines.count() != 2)
-  {
-    qDeleteAll(lines);
-    return 1;
-  }
-
-  sline = lines.at(0);
-  sline->setAllColor(QColor(settings->data("COLOR_SINE")));
-  sline->setLabel(settings->data("OUTPUT_SINE"));
-  sline->setType(settings->data("STYLE_SINE"));
-  sline->setZ(settings->getInt("Z_SINE"));
-  i->setLine(settings->data("OUTPUT_SINE"), sline);
-  
-  lline = lines.at(1);
-  lline->setAllColor(QColor(settings->data("COLOR_LEAD")));
-  lline->setLabel(settings->data("OUTPUT_LEAD"));
-  lline->setType(settings->data("STYLE_LEAD"));
-  lline->setZ(settings->getInt("Z_LEAD"));
-  i->setLine(settings->data("OUTPUT_LEAD"), lline);
-
-  return 0;
 }
 
 int HT_SINE::command (Command *command)
@@ -197,23 +147,19 @@ QList<Curve *> HT_SINE::getSINE (QList<Curve *> &list)
   return lines;
 }
 
-QWidget * HT_SINE::dialog (QWidget *p, Setting *set)
+PluginWidget * HT_SINE::dialog (QWidget *p)
 {
-  return new HT_SINEDialog(p, set);
+  return new HT_SINEWidget(p);
 }
 
-void HT_SINE::defaults (Setting *set)
+void HT_SINE::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR_SINE", QString("red"));
-  set->setData("COLOR_LEAD", QString("yellow"));
-  set->setData("STYLE_SINE", QString("Line"));
-  set->setData("STYLE_LEAD", QString("Line"));
-  set->setData("INPUT", QString("Close"));
-  set->setData("OUTPUT_SINE", QString("SINE"));
-  set->setData("Z_SINE", 0);
-  set->setData("OUTPUT_LEAD", QString("LEAD"));
-  set->setData("Z_LEAD", 0);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME_SINE=SINE";
+  l << "NAME_LEAD=LEAD";
+  l << "INPUT=Close";
+  d = l.join(",");
 }
 
 //*************************************************************

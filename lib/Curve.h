@@ -51,12 +51,15 @@ class Curve
     void deleteBar (int);
     void copy (Curve *);
     int highLow (double &, double &);
+    void setPen (int);
+    int pen ();
 
   protected:
     QHash<int, CurveBar *> _data;
     QString _label;
     QString _type;
     int _z;
+    int _pen;
 };
 
 #endif

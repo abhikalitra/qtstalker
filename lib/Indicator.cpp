@@ -30,69 +30,64 @@
 
 Indicator::Indicator (QObject *p) : QObject (p)
 {
-  _settings = new IndicatorSettings;
   init();
 }
 
 Indicator::Indicator ()
 {
-  _settings = new IndicatorSettings;
   init();
 }
 
 Indicator::~Indicator ()
 {
-  delete _settings;
 }
 
 void Indicator::init ()
 {
-  _settings->setData("LOCK", 0);
-  _settings->setData("DATE_AXIS", 1);
-  _settings->setData("LOG_SCALING", 0);
+  _lock = 0;
+  _date = 1;
+  _log = 0;
+  _name.clear();
 }
 
 void Indicator::setName (QString d)
 {
-  _settings->setData("NAME", d);
+  _name = d;
 }
 
 QString Indicator::name ()
 {
-  return _settings->data("NAME");
+  return _name;
 }
 
 void Indicator::setLock (bool d)
 {
-  _settings->setData("LOCK", d);
+  _lock = d;
 }
 
 bool Indicator::lock ()
 {
-  bool d = _settings->getInt("LOCK");
-  return d;
+  return _lock;
 }
 
 void Indicator::setDate (bool d)
 {
-  _settings->setData("DATE_AXIS", d);
+  _date = d;
 }
 
 bool Indicator::date ()
 {
-  bool d = _settings->getInt("DATE_AXIS");
-  return d;
+  return _date;
 }
 
 void Indicator::setLog (bool d)
 {
-  _settings->setData("LOG_SCALING", d);
+  _log = d;
 }
 
 bool Indicator::log ()
 {
-  bool d = _settings->getInt("LOG_SCALING");
-  return d;
+  return _log;
 }
 
 void Indicator::setLine (QString k, Curve *d)
@@ -176,39 +171,74 @@ void Indicator::clearLines ()
 
 int Indicator::save ()
 {
-  if (_settings->save())
-  {
-    qDebug() << "Indicator::save: error saving indicator";
+  DataDataBase db("indicators");
+  db.transaction();
+  
+  if (db.removeName(_name))
     return 1;
-  }
+
+  if (db.save(_name, "LOCK", QString::number((int) _lock)))
+    return 1;
+  
+  if (db.save(_name, "DATE_AXIS", QString::number((int) _date)))
+    return 1;
+
+  if (db.save(_name, "LOG_SCALING", QString::number((int) _log)))
+    return 1;
+
+  if (db.save(_name, _commands))
+    return 1;
+
+  db.commit();
 
   return 0;
 }
 
 int Indicator::load ()
 {
-  return _settings->load(name());
+  DataDataBase db("indicators");
+
+  QString data;
+  if (db.load(_name, "LOCK", data))
+    return 1;
+  if (! data.isEmpty())
+    _lock = data.toInt();
+
+  if (db.load(_name, "DATE_AXIS", data))
+    return 1;
+  if (! data.isEmpty())
+    _date = data.toInt();
+
+  if (db.load(_name, "LOG_SCALING", data))
+    return 1;
+  if (! data.isEmpty())
+    _log = data.toInt();
+
+  if (db.load(_name, _commands))
+    return 1;
+
+  return 0;
 }
 
 void Indicator::calculate ()
 {
+  PluginFactory fac;
   int loop = 0;
-  for (; loop < _settings->count(); loop++)
+  for (; loop < _commands.count(); loop++)
   {
-    Setting *set = _settings->settings(loop);
-    
-    PluginFactory fac;
-    Plugin *plug = fac.plugin(set->data("PLUGIN"));
+    Command command(_commands.at(loop));
+    if (! command.count())
+      continue;
+
+    Plugin *plug = fac.plugin(command.plugin());
     if (! plug)
     {
-      qDebug() << "Indicator::calculate: no plugin";
+      qDebug() << "Indicator::calculate: syntax error" << command.plugin();
       continue;
     }
 
-    if (plug->calculate(g_barData, this, set))
-      qDebug() << "Indicator::calculate: plugin error";
-
-    delete plug;
+    command.setIndicator(this);
+    plug->command(&command);
   }
 
   weedPlots();
@@ -223,7 +253,7 @@ void Indicator::loadChartObjects ()
   DataDataBase db("chartObjects");
   QStringList names;
   QStringList l;
-  l << _settings->data("NAME") << g_barData->exchange() << g_barData->symbol();
+  l << _name << g_barData->exchange() << g_barData->symbol();
   if (db.search("KEY", l.join("_"), names))
   {
     qDebug() << "Indicator::loadChartObjects: search error";
@@ -256,22 +286,17 @@ int Indicator::lineCount ()
   return _lines.count();
 }
 
-IndicatorSettings * Indicator::settings ()
-{
-  return _settings;
-}
-
 void Indicator::dialog ()
 {
-  IndicatorEditDialog *dialog = new IndicatorEditDialog(g_parent, _settings);
+  IndicatorEditDialog *dialog = new IndicatorEditDialog(g_parent, _name);
   connect(dialog, SIGNAL(signalDone()), this, SLOT(dialogDone()));
   dialog->show();
 }
 
 void Indicator::dialogDone ()
 {
-//  save();
   emit signalClear();
+  load();
   calculate();
 }
 
@@ -305,4 +330,9 @@ void Indicator::add (QString d)
   l.removeDuplicates();
   set.setValue("indicators", l);
   set.sync();
+}
+
+void Indicator::setCommands (QStringList &l)
+{
+  _commands = l;
 }

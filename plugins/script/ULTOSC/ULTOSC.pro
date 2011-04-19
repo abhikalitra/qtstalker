@@ -3,7 +3,7 @@
 } 
 
 HEADERS += ULTOSC.h
-HEADERS += ULTOSCDialog.h
+HEADERS += ULTOSCWidget.h
 
 SOURCES += ULTOSC.cpp
-SOURCES += ULTOSCDialog.cpp
+SOURCES += ULTOSCWidget.cpp

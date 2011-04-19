@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "ROCDialog.h"
+#include "ROCWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -37,42 +37,6 @@ ROC::ROC ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("ROC::ROC: error on TA_Initialize");
-}
-
-int ROC::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-
-  int method = _method.indexOf(settings->data("METHOD"));
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getROC(list, period, method);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int ROC::command (Command *command)
@@ -191,24 +155,23 @@ Curve * ROC::getROC (QList<Curve *> &list, int period, int method)
   return c;
 }
 
-QWidget * ROC::dialog (QWidget *p, Setting *set)
+PluginWidget * ROC::dialog (QWidget *p)
 {
-  return new ROCDialog(p, set);
+  return new ROCWidget(p);
 }
 
-void ROC::defaults (Setting *set)
+void ROC::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("yellow"));
-  set->setData("STYLE", QString("HistogramBar"));
-  set->setData("PERIOD", 10);
-  set->setData("INPUT", QString("Close"));
-  set->setData("METHOD", QString("ROC"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "METHOD=ROC";
+  l << "INPUT=Close";
+  l << "PERIOD=14";
+  d = l.join(",");
 }
 
-QStringList ROC::method ()
+QStringList ROC::list ()
 {
   return _method;
 }

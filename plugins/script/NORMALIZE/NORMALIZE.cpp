@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "InputType.h"
-#include "RuleWidget.h"
+#include "NORMALIZEWidget.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -32,54 +32,6 @@ NORMALIZE::NORMALIZE ()
 {
   _plugin = "NORMALIZE";
   _type = "INDICATOR";
-}
-
-int NORMALIZE::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  int rows = settings->getInt("ROWS");
-  int loop = 0;
-  for (; loop < rows; loop++)
-  {
-    // output
-    int col = 0;
-    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString name = settings->data(key);
-    Curve *line = i->line(name);
-    if (line)
-    {
-      qDebug() << _plugin << "::calculate: duplicate OUTPUT" << name;
-      return 1;
-    }
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    InputType it;
-    QStringList order;
-    order << settings->data(key);
-    QList<Curve *> list;
-    if (it.inputs(list, order, i, bd))
-    {
-      qDebug() << _plugin << "::calculate: input missing";
-      return 1;
-    }
-
-    line = getNORM(list);
-    if (! line)
-      return 1;
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setAllColor(QColor(settings->data(key)));
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setType(settings->data(key));
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setZ(settings->getInt(key));
-
-    line->setLabel(name);
-    i->setLine(name, line);
-  }
-  
-  return 0;
 }
 
 int NORMALIZE::command (Command *command)
@@ -153,24 +105,18 @@ Curve * NORMALIZE::getNORM (QList<Curve *> &list)
   return line;
 }
 
-QWidget * NORMALIZE::dialog (QWidget *p, Setting *set)
+PluginWidget * NORMALIZE::dialog (QWidget *p)
 {
-  QStringList header;
-  header << tr("Output") << tr("Input") << tr("Color") << tr("Style") << tr("Plot");
-
-  QList<int> format;
-  format << RuleWidget::_OUTPUT << RuleWidget::_INPUT << RuleWidget::_COLOR;
-  format << RuleWidget::_STYLE << RuleWidget::_PLOT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new NORMALIZEWidget(p);
 }
 
-void NORMALIZE::defaults (Setting *set)
+void NORMALIZE::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=AP";
+  l << "INPUT=Close";
+  d = l.join(",");
 }
 
 //*************************************************************

@@ -1228,4 +1228,10 @@
 20110417:  Changed Indicator tab width to adjust to text width as per request.
 
            Fixed COMPARE plugin bugs.
-           
+
+20110419:  Changed the indicator builder to use the script interface. The dialogs for the plugins now use
+           the same keys as scripts. Updated all the plugins. CVS users will need to recreate the internal
+           indicators.
+
+           Added ability to set line thickness for plots as per user request.
+

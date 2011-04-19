@@ -3,7 +3,7 @@
 } 
 
 HEADERS += AROON.h
-HEADERS += AROONDialog.h
+HEADERS += AROONWidget.h
 
 SOURCES += AROON.cpp
-SOURCES += AROONDialog.cpp
+SOURCES += AROONWidget.cpp

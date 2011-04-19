@@ -22,8 +22,8 @@
 #include "ARITHMETIC.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "RuleWidget.h"
 #include "InputType.h"
+#include "ARITHMETICWidget.h"
 
 #include <QtDebug>
 
@@ -31,95 +31,6 @@ ARITHMETIC::ARITHMETIC ()
 {
   _plugin = "ARITHMETIC";
   _type = "INDICATOR";
-}
-
-int ARITHMETIC::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  int rows = settings->getInt("ROWS");
-  int loop = 0;
-  for (; loop < rows; loop++)
-  {
-    int col = 0;
-    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString name = settings->data(key);
-    Curve *line = i->line(name);
-    if (line)
-    {
-      qDebug() << _plugin << "::calculate: duplicate output" << name;
-      return 1;
-    }
-
-    QStringList l;
-    l << "ADD" << "DIV" << "MULT" << "SUB";
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    int method = l.indexOf(settings->data(key));
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in = i->line(settings->data(key));
-    if (! in)
-    {
-      InputType it;
-      in = it.input(bd, settings->data(key));
-      if (! in)
-      {
-        qDebug() << _plugin << "::calculate: no INPUT" << settings->data(key);
-        return 1;
-      }
-
-      in->setLabel(settings->data(key));
-      i->setLine(settings->data(key), in);
-    }
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in2 = i->line(settings->data(key));
-    if (! in2)
-    {
-      InputType it;
-      in2 = it.input(bd, settings->data(key));
-      if (! in2)
-      {
-        bool ok;
-        double value = settings->data(key).toDouble(&ok);
-	if (! ok)
-	{
-          qDebug() << _plugin << "::calculate: invalid INPUT2" << settings->data(key);
-          return 1;
-	}
-
-        in2 = new Curve;
-        QList<int> keys;
-        in->keys(keys);
-	int loop2 = 0;
-	for (; loop2 < keys.count(); loop2++)
-          in2->setBar(keys.at(loop2), new CurveBar(value));
-        in2->setLabel(settings->data(key));
-        i->setLine(settings->data(key), in2);
-      }
-      else
-      {
-        in2->setLabel(settings->data(key));
-        i->setLine(settings->data(key), in2);
-      }
-    }
-
-    line = getARITHMETIC(in, in2, method);
-    if (! line)
-      return 1;
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setAllColor(QColor(settings->data(key)));
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setType(settings->data(key));
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setZ(settings->getInt(key));
-    
-    line->setLabel(name);
-    i->setLine(name, line);
-  }
-
-  return 0;
 }
 
 int ARITHMETIC::command (Command *command)
@@ -243,28 +154,20 @@ Curve * ARITHMETIC::getARITHMETIC (Curve *in, Curve *in2, int method)
   return line;
 }
 
-QWidget * ARITHMETIC::dialog (QWidget *p, Setting *set)
+PluginWidget * ARITHMETIC::dialog (QWidget *p)
 {
-  QStringList header;
-  header << tr("Output") << tr("Method") << tr("Input 1") << tr("Input 2") << tr("Color");
-  header << tr("Style") << tr("Plot");
-
-  QList<int> format;
-  format << RuleWidget::_OUTPUT << RuleWidget::_LIST << RuleWidget::_INPUT;
-  format << RuleWidget::_INPUT << RuleWidget::_COLOR << RuleWidget::_STYLE << RuleWidget::_PLOT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  QStringList l;
-  l << "ADD" << "DIV" << "MULT" << "SUB";
-  w->setList(l);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new ARITHMETICWidget(p);
 }
 
-void ARITHMETIC::defaults (Setting *set)
+void ARITHMETIC::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "INPUT2=Close";
+  l << "METHOD=ADD";
+  d = l.join(",");
 }
 
 //*************************************************************

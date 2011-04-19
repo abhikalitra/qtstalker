@@ -31,9 +31,8 @@ class HT_PHASOR : public Plugin
   public:
     HT_PHASOR ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     QList<Curve *> getPHASOR (QList<Curve *> &);
 };
 

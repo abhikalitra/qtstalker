@@ -31,9 +31,8 @@ class STDDEV : public Plugin
   public:
     STDDEV ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     Curve * getSTDDEV (QList<Curve *> &, int, double);
 };
 

@@ -3,7 +3,7 @@
 } 
 
 HEADERS += ATR.h
-HEADERS += ATRDialog.h
+HEADERS += ATRWidget.h
 
 SOURCES += ATR.cpp
-SOURCES += ATRDialog.cpp
+SOURCES += ATRWidget.cpp

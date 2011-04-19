@@ -31,9 +31,8 @@ class AROON : public Plugin
   public:
     AROON ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     QList<Curve *> getAROON (QList<Curve *> &, int period);
 };
 

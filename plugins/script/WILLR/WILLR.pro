@@ -3,7 +3,7 @@
 } 
 
 HEADERS += WILLR.h
-HEADERS += WILLRDialog.h
+HEADERS += WILLRWidget.h
 
 SOURCES += WILLR.cpp
-SOURCES += WILLRDialog.cpp
+SOURCES += WILLRWidget.cpp

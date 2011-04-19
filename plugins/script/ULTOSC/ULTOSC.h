@@ -31,9 +31,8 @@ class ULTOSC : public Plugin
   public:
     ULTOSC ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     Curve * getULTOSC (QList<Curve *> &, int sp, int mp, int lp);
 };
 

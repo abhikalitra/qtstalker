@@ -25,7 +25,6 @@
 #include "DataDataBase.h"
 #include "ConfirmDialog.h"
 #include "DateScaleDraw.h"
-#include "RuleWidget.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
@@ -655,18 +654,7 @@ int TLINE::command (Command *command)
 
 QWidget * TLINE::dialog (QWidget *p, Setting *set)
 {
-  QStringList header;
-  header << tr("Start Date") << tr("Start Value") << tr("End Date") << tr("End Value");
-  header << tr("Color") << tr("Plot");
-
-  QList<int> format;
-  format << RuleWidget::_DATE << RuleWidget::_DOUBLE << RuleWidget::_DATE << RuleWidget::_DOUBLE ;
-  format << RuleWidget::_COLOR << RuleWidget::_PLOT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new TLineDialog(p, set);
 }
 
 void TLINE::defaults (Setting *set)

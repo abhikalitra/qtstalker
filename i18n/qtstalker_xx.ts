@@ -2,175 +2,24 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>ADDialog</name>
+    <name>ARITHMETICWidget</name>
     <message>
-        <source>Color</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ADXDialog</name>
+    <name>AVERAGE_PRICEWidget</name>
     <message>
-        <source>Period</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ADXRDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ARITHMETIC</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>AROONDialog</name>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ATRDialog</name>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>AVERAGE_PRICEDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -208,111 +57,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>BBANDSDialog</name>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upper Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lower Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Upper</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Middle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Lower</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>BETADialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index symbol used for comparison eg. SP500</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>BOPDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>BUY</name>
     <message>
         <source>&amp;Edit</source>
@@ -340,22 +84,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -417,160 +145,35 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>CANDLE_PATTERN</name>
+    <name>CANDLE_PATTERNWidget</name>
     <message>
-        <source>Pattern</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Penetration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>CCIDialog</name>
+    <name>COLORWidget</name>
     <message>
-        <source>Color</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>CMODialog</name>
+    <name>COMPAREWidget</name>
     <message>
-        <source>Color</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>COLOR</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Operator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>COMPARE</name>
-    <message>
-        <source>Operator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CORRELDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index symbol used for comparison eg. SP500</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -789,25 +392,13 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>DOHLCVI</name>
+    <name>DOHLCVIWidget</name>
     <message>
-        <source>Output</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -907,25 +498,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Exchange Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>FIDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1078,12 +650,23 @@ eg. perl -l -T</source>
         <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>HLINEWidget</name>
     <message>
-        <source>Value</source>
+        <source>Add Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1111,83 +694,25 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>HTDialog</name>
+    <name>IPLOTWidget</name>
     <message>
-        <source>Color</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Method</source>
+        <source>Use Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Style</source>
+        <source>Use Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>HT_PHASORDialog</name>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>HT_SINEDialog</name>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
+        <source>Pen</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1261,370 +786,46 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>LINEARREGDialog</name>
-    <message>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MA</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MACDDialog</name>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>MADialog</name>
     <message>
-        <source>Input</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MAMADialog</name>
+    <name>MAXWidget</name>
     <message>
-        <source>Input</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Fast Limit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MAVPDialog</name>
+    <name>MEDIAN_PRICEWidget</name>
     <message>
-        <source>Input</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MA</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Min Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>MAX</name>
+    <name>MINWidget</name>
     <message>
-        <source>Output</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MDIDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MEDIAN_PRICE</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MFIDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MIN</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MOMDialog</name>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1640,25 +841,13 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>NORMALIZE</name>
+    <name>NORMALIZEWidget</name>
     <message>
-        <source>Output</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1685,87 +874,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>already exists</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>OHLCDialog</name>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PDIDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PODialog</name>
-    <message>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2050,64 +1158,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ROCDialog</name>
-    <message>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>RSIDialog</name>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>RecentCharts</name>
     <message>
         <source>Recent Charts</source>
@@ -2220,29 +1270,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>SARDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Initial Step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum Step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>SELECT_DIALOG</name>
     <message>
         <source>Items</source>
@@ -2283,198 +1310,15 @@ eg. perl -l -T</source>
         <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
-    <name>SHIFT</name>
+    <name>SHIFTWidget</name>
     <message>
-        <source>Output</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>STDDEVDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>STOCHRSIDialog</name>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>STOCHSDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fast Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Slow Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>STOCH_FASTDialog</name>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SZDialog</name>
-    <message>
-        <source>Method</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No Decline Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Coefficient</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2796,37 +1640,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>T3Dialog</name>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>V Factor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>TEXT</name>
     <message>
         <source>&amp;Edit</source>
@@ -2858,41 +1671,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>THERMDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2950,30 +1728,6 @@ eg. perl -l -T</source>
         <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>TLineDialog</name>
@@ -3011,48 +1765,13 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>TRIXDialog</name>
+    <name>TYPICAL_PRICEWidget</name>
     <message>
-        <source>Input</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TYPICAL_PRICEDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3341,141 +2060,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>ULTOSCDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Short Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Medium Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Long Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>VARDialog</name>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Deviation</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>VBPDialog</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Up Volume Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Down Volume Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>VFIDialog</name>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>VIDYADialog</name>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>VLINE</name>
     <message>
         <source>&amp;Edit</source>
@@ -3495,18 +2079,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3530,44 +2102,13 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>WEIGHTED_CLOSEDialog</name>
+    <name>WEIGHTED_CLOSEWidget</name>
     <message>
-        <source>Output</source>
+        <source>Add Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>WILLRDialog</name>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
+        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

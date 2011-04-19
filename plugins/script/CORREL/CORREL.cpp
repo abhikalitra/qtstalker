@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "CORRELDialog.h"
+#include "CORRELWidget.h"
 #include "InputType.h"
 #include "QuoteDataBase.h"
 
@@ -37,67 +37,6 @@ CORREL::CORREL ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CORREL::CORREL: error on TA_Initialize");
-}
-
-int CORREL::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-
-  InputType it;
-  Curve *in = i->line(settings->data("INPUT"));
-  if (! in)
-  {
-    in = it.input(bd, settings->data("INPUT"));
-    if (! in)
-    {
-      qDebug() << _plugin << "::calculate: no input" << settings->data("INPUT");
-      return 1;
-    }
-
-    in->setZ(-1);
-    i->setLine(settings->data("INPUT"), in);
-  }
-
-  BarData tbd;
-  tbd.setKey(settings->data("INDEX"));
-  tbd.setRange(bd->range());
-  tbd.setBarLength(bd->barLength());
-  tbd.setStartDate(bd->startDate());
-  tbd.setEndDate(bd->endDate());
-
-  QuoteDataBase db;
-  if (db.getBars(&tbd))
-    return 1;
-
-  Curve *in2 = it.input(&tbd, "Close");
-  if (! in2)
-    return 1;
-
-  QList<Curve *> list;
-  list << in << in2;
-  line = getCORREL(list, period);
-  if (! line)
-  {
-    delete in2;
-    return 1;
-  }
-
-  delete in2;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int CORREL::command (Command *command)
@@ -207,21 +146,20 @@ Curve * CORREL::getCORREL (QList<Curve *> &list, int period)
   return c;
 }
 
-QWidget * CORREL::dialog (QWidget *p, Setting *set)
+PluginWidget * CORREL::dialog (QWidget *p)
 {
-  return new CORRELDialog(p, set);
+  return new CORRELWidget(p);
 }
 
-void CORREL::defaults (Setting *set)
+void CORREL::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("red"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("PERIOD", 30);
-  set->setData("INPUT", QString("Close"));
-  set->setData("INDEX", QString("YAHOO:SPY"));
-  set->setData("OUTPUT", _plugin);
-  set->setData("Z", 0);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "INDEX=YAHOO:SPY";
+  l << "PERIOD=30";
+  d = l.join(",");
 }
 
 //*************************************************************

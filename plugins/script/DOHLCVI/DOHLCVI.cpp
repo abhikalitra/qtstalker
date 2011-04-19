@@ -22,8 +22,7 @@
 #include "DOHLCVI.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "RuleWidget.h"
-#include "InputType.h"
+#include "DOHLCVIWidget.h"
 
 #include <QtDebug>
 
@@ -32,46 +31,6 @@ DOHLCVI::DOHLCVI ()
   _plugin = "DOHLCVI";
   _type = "INDICATOR";
   _methods << "D" << "O" << "H" << "L" << "C" << "V" << "I";
-}
-
-int DOHLCVI::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  int rows = settings->getInt("ROWS");
-  int loop = 0;
-  for (; loop < rows; loop++)
-  {
-    // output
-    int col = 0;
-    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString name = settings->data(key);
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Curve *in = i->line(settings->data(key));
-    if (! in)
-    {
-      InputType it;
-      in = it.input(bd, settings->data(key));
-      if (! in)
-      {
-        qDebug() << _plugin << "::calculate: no input" << settings->data(key);
-        return 1;
-      }
-    }
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    in->setAllColor(QColor(settings->data(key)));
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    in->setType(settings->data(key));
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    in->setZ(settings->getInt(key));
-    
-    in->setLabel(name);
-    i->setLine(name, in);
-  }
-
-  return 0;
 }
 
 int DOHLCVI::command (Command *command)
@@ -152,24 +111,23 @@ int DOHLCVI::command (Command *command)
   return 0;
 }
 
-QWidget * DOHLCVI::dialog (QWidget *p, Setting *set)
+PluginWidget * DOHLCVI::dialog (QWidget *p)
 {
-  QStringList header;
-  header << tr("Output") << tr("Input") << tr("Color") << tr("Style") << tr("Plot");
-
-  QList<int> format;
-  format << RuleWidget::_OUTPUT << RuleWidget::_INPUT << RuleWidget::_COLOR;
-  format << RuleWidget::_STYLE << RuleWidget::_PLOT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new DOHLCVIWidget(p);
 }
 
-void DOHLCVI::defaults (Setting *set)
+void DOHLCVI::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=Close";
+  l << "METHOD=C";
+  d = l.join(",");
+}
+
+QStringList DOHLCVI::list ()
+{
+  return _methods;
 }
 
 //*************************************************************

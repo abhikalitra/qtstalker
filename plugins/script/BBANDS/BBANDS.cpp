@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "BBANDSDialog.h"
+#include "BBANDSWidget.h"
 #include "MAType.h"
 #include "InputType.h"
 
@@ -37,77 +37,6 @@ BBANDS::BBANDS ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("BBANDS::BBANDS: error on TA_Initialize");
-}
-
-int BBANDS::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *upper = i->line(settings->data("OUTPUT_UP"));
-  if (upper)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_UP" << settings->data("OUTPUT_UP");
-    return 1;
-  }
-
-  Curve *middle = i->line(settings->data("OUTPUT_MID"));
-  if (middle)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_MID" << settings->data("OUTPUT_MID");
-    return 1;
-  }
-
-  Curve *lower = i->line(settings->data("OUTPUT_DOWN"));
-  if (lower)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_DOWN" << settings->data("OUTPUT_DOWN");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-  double udev = settings->getDouble("DEVIATION_UP");
-  double ldev = settings->getDouble("DEVIATION_DOWN");
-  
-  MAType types;
-  int type = types.fromString(settings->data("MA_TYPE"));
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  QList<Curve *> lines = getBBANDS(list, period, udev, ldev, type);
-  if (lines.count() != 3)
-  {
-    qDeleteAll(lines);
-    return 1;
-  }
-
-  upper = lines.at(0);
-  upper->setAllColor(QColor(settings->data("COLOR_UP")));
-  upper->setLabel(settings->data("OUTPUT_UP"));
-  upper->setType(settings->data("STYLE_UP"));
-  upper->setZ(settings->getInt("Z_UP"));
-  i->setLine(settings->data("OUTPUT_UP"), upper);
-  
-  middle = lines.at(1);
-  middle->setAllColor(QColor(settings->data("COLOR_MID")));
-  middle->setLabel(settings->data("OUTPUT_MID"));
-  middle->setType(settings->data("STYLE_MID"));
-  middle->setZ(settings->getInt("Z_UP"));
-  i->setLine(settings->data("OUTPUT_MID"), middle);
-
-  lower = lines.at(2);
-  lower->setAllColor(QColor(settings->data("COLOR_DOWN")));
-  lower->setLabel(settings->data("OUTPUT_DOWN"));
-  lower->setType(settings->data("STYLE_DOWN"));
-  lower->setZ(settings->getInt("Z_UP"));
-  i->setLine(settings->data("OUTPUT_DOWN"), lower);
-
-  return 0;
 }
 
 int BBANDS::command (Command *command)
@@ -277,31 +206,24 @@ QList<Curve *> BBANDS::getBBANDS (QList<Curve *> &list, int period, double udev,
   return lines;
 }
 
-QWidget * BBANDS::dialog (QWidget *p, Setting *set)
+PluginWidget * BBANDS::dialog (QWidget *p)
 {
-  return new BBANDSDialog(p, set);
+  return new BBANDSWidget(p);
 }
 
-void BBANDS::defaults (Setting *set)
+void BBANDS::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR_UP", QString("red"));
-  set->setData("OUTPUT_UP", QString("BBU"));
-  set->setData("STYLE_UP", QString("Line"));
-  set->setData("COLOR_MID", QString("yellow"));
-  set->setData("OUTPUT_MID", QString("BBM"));
-  set->setData("STYLE_MID", QString("Line"));
-  set->setData("COLOR_DOWN", QString("green"));
-  set->setData("OUTPUT_DOWN", QString("BBL"));
-  set->setData("STYLE_DOWN", QString("Line"));
-  set->setData("DEVIATION_DOWN", 2);
-  set->setData("DEVIATION_UP", 2);
-  set->setData("INPUT", QString("Close"));
-  set->setData("PERIOD", 20);
-  set->setData("MA_TYPE", QString("EMA"));
-  set->setData("Z_UP", 1);
-  set->setData("Z_MID", 1);
-  set->setData("Z_DOWN", 1);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME_UPPER=BBU";
+  l << "NAME_MIDDLE=BBM";
+  l << "NAME_LOWER=BBL";
+  l << "INPUT=Close";
+  l << "PERIOD=20";
+  l << "MA_TYPE=EMA";
+  l << "DEV_UP=2";
+  l << "DEV_DOWN=2";
+  d = l.join(",");
 }
 
 //*************************************************************

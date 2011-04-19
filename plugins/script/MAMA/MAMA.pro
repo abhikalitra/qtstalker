@@ -3,7 +3,7 @@
 } 
 
 HEADERS += MAMA.h
-HEADERS += MAMADialog.h
+HEADERS += MAMAWidget.h
 
 SOURCES += MAMA.cpp
-SOURCES += MAMADialog.cpp
+SOURCES += MAMAWidget.cpp

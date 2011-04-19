@@ -33,9 +33,8 @@ class VBP : public Plugin
   public:
     VBP ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     Curve * getVBP (QList<Curve *> &, QColor, QColor);
 };
 

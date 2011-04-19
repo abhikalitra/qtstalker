@@ -40,10 +40,9 @@ class LINEARREG : public Plugin
 
     LINEARREG ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
-    QStringList method ();
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
+    QStringList list ();
     Curve * getLR (QList<Curve *> &, int, int);
 
   protected:

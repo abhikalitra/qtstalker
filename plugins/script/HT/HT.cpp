@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "HTDialog.h"
+#include "HTWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -37,40 +37,6 @@ HT::HT ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("HT::HT: error on TA_Initialize");
-}
-
-int HT::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int method = _method.indexOf(settings->data("METHOD"));
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getHT(list, method);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int HT::command (Command *command)
@@ -199,23 +165,22 @@ Curve * HT::getHT (QList<Curve *> &list, int method)
   return c;
 }
 
-QWidget * HT::dialog (QWidget *p, Setting *set)
+PluginWidget * HT::dialog (QWidget *p)
 {
-  return new HTDialog(p, set);
+  return new HTWidget(p);
 }
 
-void HT::defaults (Setting *set)
+void HT::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("yellow"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("METHOD", QString("TRENDLINE"));
-  set->setData("INPUT", QString("Close"));
-  set->setData("OUTPUT", _plugin);
-  set->setData("Z", 0);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "METHOD=TRENDLINE";
+  d = l.join(",");
 }
 
-QStringList HT::method ()
+QStringList HT::list ()
 {
   return _method;
 }

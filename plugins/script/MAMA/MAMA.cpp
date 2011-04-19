@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "MAMADialog.h"
+#include "MAMAWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,59 +36,6 @@ MAMA::MAMA ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("MAMA::MAMA: error on TA_Initialize");
-}
-
-int MAMA::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *mama = i->line(settings->data("OUTPUT_MAMA"));
-  if (mama)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_MAMA" << settings->data("OUTPUT_MAMA");
-    return 1;
-  }
-
-  Curve *fama = i->line(settings->data("OUTPUT_FAMA"));
-  if (fama)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_FAMA" << settings->data("OUTPUT_FAMA");
-    return 1;
-  }
-
-  double fastLimit = settings->getDouble("LIMIT_FAST");
-  double slowLimit = settings->getDouble("LIMIT_SLOW");
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  QList<Curve *> lines = getMAMA(list, fastLimit, slowLimit);
-  if (lines.count() != 2)
-  {
-    qDeleteAll(lines);
-    return 1;
-  }
-
-  mama = lines.at(0);
-  mama->setAllColor(QColor(settings->data("COLOR_MAMA")));
-  mama->setLabel(settings->data("OUTPUT_MAMA"));
-  mama->setType(settings->data("STYLE_MAMA"));
-  mama->setZ(settings->getInt("Z_MAMA"));
-  i->setLine(settings->data("OUTPUT_MAMA"), mama);
-  
-  fama = lines.at(1);
-  fama->setAllColor(QColor(settings->data("COLOR_FAMA")));
-  fama->setLabel(settings->data("OUTPUT_FAMA"));
-  fama->setType(settings->data("STYLE_FAMA"));
-  fama->setZ(settings->getInt("Z_FAMA"));
-  i->setLine(settings->data("OUTPUT_FAMA"), fama);
-
-  return 0;
 }
 
 int MAMA::command (Command *command)
@@ -219,25 +166,21 @@ QList<Curve *> MAMA::getMAMA (QList<Curve *> &list, double flimit, double slimit
   return lines;
 }
 
-QWidget * MAMA::dialog (QWidget *p, Setting *set)
+PluginWidget * MAMA::dialog (QWidget *p)
 {
-  return new MAMADialog(p, set);
+  return new MAMAWidget(p);
 }
 
-void MAMA::defaults (Setting *set)
+void MAMA::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("INPUT", QString("Close"));
-  set->setData("COLOR_MAMA", QString("red"));
-  set->setData("COLOR_FAMA", QString("yellow"));
-  set->setData("STYLE_MAMA", QString("Line"));
-  set->setData("STYLE_FAMA", QString("Line"));
-  set->setData("LIMIT_FAST", 0.5);
-  set->setData("LIMIT_SLOW", 0.05);
-  set->setData("Z_MAMA", 0);
-  set->setData("OUTPUT_MAMA", _plugin);
-  set->setData("Z_FAMA", 0);
-  set->setData("OUTPUT_FAMA", QString("FAMA"));
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME_MAMA=MAMA";
+  l << "NAME_FAMA=FAMA";
+  l << "INPUT=Close";
+  l << "LIMIT_FAST=0.5";
+  l << "LIMIT_SLOW=0.05";
+  d = l.join(",");
 }
 
 //*************************************************************

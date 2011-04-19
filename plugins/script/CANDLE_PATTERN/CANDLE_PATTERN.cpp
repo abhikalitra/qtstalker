@@ -24,7 +24,7 @@
 #include "Globals.h"
 #include "CandleType.h"
 #include "InputType.h"
-#include "RuleWidget.h"
+#include "CANDLE_PATTERNWidget.h"
 
 #include <QtDebug>
 #include <QList>
@@ -34,32 +34,6 @@ CANDLE_PATTERN::CANDLE_PATTERN ()
 {
   _plugin = "CANDLE_PATTERN";
   _type = "INDICATOR";
-}
-
-int CANDLE_PATTERN::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  int rows = settings->getInt("ROWS");
-  CandleType ct;
-  int loop = 0;
-  for (; loop < rows; loop++)
-  {
-    int col = 0;
-    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString pattern = settings->data(key);
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    double pen = settings->getDouble(key);
-
-    Curve *tline = ct.getPattern(bd, ct.fromString(pattern), pen);
-    if (! tline)
-      continue;
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    tline->setLabel(settings->data(key));
-    i->setLine(settings->data(key), tline);
-  }
-  
-  return 0;  
 }
 
 int CANDLE_PATTERN::command (Command *command)
@@ -183,23 +157,23 @@ int CANDLE_PATTERN::command (Command *command)
   return 0;
 }
 
-QWidget * CANDLE_PATTERN::dialog (QWidget *p, Setting *s)
+PluginWidget * CANDLE_PATTERN::dialog (QWidget *p)
 {
-  QStringList header;
-  header << tr("Pattern") << tr("Penetration") << tr("Output");
-
-  QList<int> format;
-  format << RuleWidget::_CANDLE << RuleWidget::_DOUBLE << RuleWidget::_OUTPUT;
-  
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(s, format, header);
-  w->loadSettings();
-  return w;
+  return new CANDLE_PATTERNWidget(p);
 }
 
-void CANDLE_PATTERN::defaults (Setting *set)
+void CANDLE_PATTERN::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=CP";
+  l << "INPUT_OPEN=Open";
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "INPUT_CLOSE=Close";
+  l << "METHOD=DOJI";
+  l << "PENETRATION=0.5";
+  d = l.join(",");
 }
 
 //*************************************************************

@@ -24,7 +24,7 @@
 
 #include "SZ.h"
 #include "Globals.h"
-#include "SZDialog.h"
+#include "SZWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -34,43 +34,6 @@ SZ::SZ ()
   _plugin = "SZ";
   _method << "LONG" << "SHORT";
   _type = "INDICATOR";
-}
-
-int SZ::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-  int ndp = settings->getInt("PERIOD_NO_DECLINE");
-  double coeff = settings->getDouble("COEFFICIENT");
-  int method = _method.indexOf(settings->data("METHOD"));
-
-  InputType it;
-  QStringList order;
-  order << "High" << "Low";
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getSZ(list, method, period, ndp, coeff);
-  if (! line)
-    return 1;
-  
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-  
-  return 0;  
 }
 
 int SZ::command (Command *command)
@@ -307,26 +270,26 @@ Curve * SZ::getSZ (QList<Curve *> &list, int method, int period, int no_decline_
   return pl;
 }
 
-QWidget * SZ::dialog (QWidget *p, Setting *set)
+PluginWidget * SZ::dialog (QWidget *p)
 {
-  return new SZDialog(p, set);
+  return new SZWidget(p);
 }
 
-void SZ::defaults (Setting *set)
+void SZ::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("yellow"));
-  set->setData("LABEL", _plugin);
-  set->setData("STYLE", QString("Line"));
-  set->setData("PERIOD", 10);
-  set->setData("PERIOD_NO_DECLINE", 2);
-  set->setData("COEFFICIENT", 2);
-  set->setData("METHOD", QString("LONG"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "METHOD=LONG";
+  l << "PERIOD=10";
+  l << "PERIOD_NO_DECLINE=2";
+  l << "COEFFICIENT=2";
+  d = l.join(",");
 }
 
-QStringList SZ::method ()
+QStringList SZ::list ()
 {
   return _method;
 }

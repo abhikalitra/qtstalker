@@ -22,10 +22,8 @@
 #include "COMPARE.h"
 #include "Globals.h"
 #include "Operator.h"
-#include "Strip.h"
 #include "Curve.h"
-#include "InputType.h"
-#include "RuleWidget.h"
+#include "COMPAREWidget.h"
 
 #include <QtDebug>
 
@@ -33,278 +31,6 @@ COMPARE::COMPARE ()
 {
   _plugin = "COMPARE";
   _type = "INDICATOR";
-}
-
-int COMPARE::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  int rows = settings->getInt("ROWS");
-  int loop = 0;
-  for (; loop < rows; loop++)
-  {
-    int col = 0;
-    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString name = settings->data(key);
-    Curve *line = i->line(name);
-    if (line)
-    {
-      qDebug() << _plugin << "::calculate: duplicate output" << name;
-      return 1;
-    }
-    
-    // verify OP
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    Operator top;
-    Operator::Type op = top.stringToOperator(settings->data(key));
-
-    // input 2
-    int offset2 = 0;
-    Curve *line2 = 0;
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString tname = settings->data(key);
-    QStringList tl = tname.split(".", QString::SkipEmptyParts);
-    if (tl.count() == 2)
-    {
-      line2 = i->line(tl.at(0));
-      if (! line2)
-      {
-        InputType it;
-        line2 = it.input(bd, tl.at(0));
-        if (! line2)
-        {
-          qDebug() << _plugin << "::calculate: invalid NAME2" << tname;
-          return 1;
-        }
-
-        line2->setZ(-1);
-        line2->setLabel(tl.at(0));
-        i->setLine(tl.at(0), line2);
-      }
-
-      bool ok;
-      offset2 = tl.at(1).toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << _plugin << "::calculate: invalid NAME2" << tname;
-        return 1;
-      }
-    }
-    else
-    {
-      line2 = i->line(tname);
-      if (! line2)
-      {
-        InputType it;
-        line2 = it.input(bd, tname);
-        if (! line2)
-        {
-          qDebug() << _plugin << "::calculate: invalid NAME2" << tname;
-          return 1;
-        }
-
-        line2->setZ(-1);
-        line2->setLabel(tname);
-        i->setLine(tname, line2);
-      }
-    }
-
-    // input 3
-    int valueFlag3 = FALSE;
-    double value3 = 0;
-    int offset3 = 0;
-    Curve *line3 = 0;
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    tname = settings->data(key);
-    tl = tname.split(".", QString::SkipEmptyParts);
-    if (tl.count() == 2)
-    {
-      line3 = i->line(tl.at(0));
-      if (! line3)
-      {
-        InputType it;
-        line3 = it.input(bd, tl.at(0));
-        if (! line3)
-        {
-          qDebug() << _plugin << "::calculate: invalid NAME3" << tname;
-          return 1;
-        }
-
-        line3->setZ(-1);
-        line3->setLabel(tl.at(0));
-        i->setLine(tl.at(0), line3);
-      }
-
-      bool ok;
-      offset3 = tl.at(1).toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << _plugin << "::calculate: invalid NAME3" << tname;
-        return 1;
-      }
-    }
-    else
-    {
-      bool ok;
-      value3 = tname.toDouble(&ok);
-      if (! ok)
-      {
-        line3 = i->line(tname);
-        if (! line3)
-        {
-          InputType it;
-          line3 = it.input(bd, tname);
-          if (! line3)
-          {
-            qDebug() << _plugin << "::calculate: invalid NAME3" << tname;
-            return 1;
-          }
-
-          line3->setZ(-1);
-          line3->setLabel(tname);
-          i->setLine(tname, line3);
-        }
-      }
-
-      valueFlag3++;
-    }
-
-    // input 4
-    int valueFlag4 = FALSE;
-    double value4 = 0;
-    int offset4 = 0;
-    Curve *line4 = 0;
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    tname = settings->data(key);
-    tl = tname.split(".", QString::SkipEmptyParts);
-    if (tl.count() == 2)
-    {
-      line4 = i->line(tl.at(0));
-      if (! line4)
-      {
-        InputType it;
-        line4 = it.input(bd, tl.at(0));
-        if (! line4)
-        {
-          qDebug() << _plugin << "::calculate: invalid NAME4" << tname;
-          return 1;
-        }
-
-        line4->setZ(-1);
-        line4->setLabel(tl.at(0));
-        i->setLine(tl.at(0), line4);
-      }
-
-      bool ok;
-      offset4 = tl.at(1).toInt(&ok);
-      if (! ok)
-      {
-        qDebug() << _plugin << "::calculate: invalid NAME4" << tname;
-        return 1;
-      }
-    }
-    else
-    {
-      bool ok;
-      value4 = tname.toDouble(&ok);
-      if (! ok)
-      {
-        line4 = i->line(tname);
-        if (! line4)
-        {
-          InputType it;
-          line4 = it.input(bd, tname);
-          if (! line4)
-          {
-            qDebug() << _plugin << "::calculate: invalid NAME4" << tname;
-            return 1;
-          }
-
-          line4->setZ(-1);
-          line4->setLabel(tname);
-          i->setLine(tname, line4);
-        }
-      }
-
-      valueFlag4++;
-    }
-
-    // find lowest and highest index values
-    // input 2
-    int high = 0;
-    int low = 0;
-    line2->keyRange(low, high);
-
-    // input3
-    if (! valueFlag3)
-    {
-      int tlow = 0;
-      int thigh = 0;
-      line3->keyRange(tlow, thigh);
-      if (tlow < low)
-        low = tlow;
-      if (thigh > high)
-        high = thigh;
-    }
-
-    // input 4
-    if (! valueFlag4)
-    {
-      int tlow = 0;
-      int thigh = 0;
-      line4->keyRange(tlow, thigh);
-      if (tlow < low)
-        low = tlow;
-      if (thigh > high)
-        high = thigh;
-    }
-
-    line = new Curve;
-    int loop2 = low;
-    for (; loop2 <= high; loop2++)
-    {
-      CurveBar *bar2 = line2->bar(loop2 - offset2);
-      if (! bar2)
-        continue;
-
-      double v3 = 0;
-      if (valueFlag3)
-        v3 = value3;
-      else
-      {
-        CurveBar *bar3 = line3->bar(loop2 - offset3);
-        if (! bar3)
-          continue;
-        v3 = bar3->data();
-      }
-
-      double v4 = 0;
-      if (valueFlag4)
-        v4 = value4;
-      else
-      {
-        CurveBar *bar4 = line4->bar(loop2 - offset4);
-        if (! bar4)
-          continue;
-        v4 = bar4->data();
-      }
-
-      if (top.test(bar2->data(), op, v3))
-        line->setBar(loop2, new CurveBar(v4));
-    }
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setAllColor(QColor(settings->data(key)));
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setType(settings->data(key));
-
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    line->setZ(settings->getInt(key));
-
-    line->setLabel(name);
-    i->setLine(name, line);
-  }
-  
-  return 0;
 }
 
 int COMPARE::command (Command *command)
@@ -516,26 +242,21 @@ int COMPARE::command (Command *command)
   return 0;
 }
 
-QWidget * COMPARE::dialog (QWidget *p, Setting *set)
+PluginWidget * COMPARE::dialog (QWidget *p)
 {
-  QStringList header;
-  header << tr("Output") << tr("Input") << tr("Operator") << tr("Input 2") << tr("Input 3");
-  header << tr("Color") << tr("Style") << tr("Plot");
-
-  QList<int> format;
-  format << RuleWidget::_OUTPUT << RuleWidget::_INPUT << RuleWidget::_OPERATOR;
-  format << RuleWidget::_INPUT << RuleWidget::_INPUT << RuleWidget::_COLOR;
-  format << RuleWidget::_STYLE << RuleWidget::_PLOT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new COMPAREWidget(p);
 }
 
-void COMPARE::defaults (Setting *set)
+void COMPARE::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "OP=EQ";
+  l << "NAME2=Close";
+  l << "NAME3=Close";
+  l << "NAME4=Close";
+  d = l.join(",");
 }
 
 //*************************************************************

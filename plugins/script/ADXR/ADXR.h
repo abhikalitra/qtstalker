@@ -31,9 +31,8 @@ class ADXR : public Plugin
   public:
     ADXR ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     Curve * getADXR (QList<Curve *> &, int period);
 };
 

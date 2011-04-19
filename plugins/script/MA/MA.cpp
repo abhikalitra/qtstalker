@@ -22,8 +22,7 @@
 #include "MA.h"
 #include "Curve.h"
 #include "MAType.h"
-#include "InputType.h"
-#include "RuleWidget.h"
+#include "MADialog.h"
 
 #include <QtDebug>
 
@@ -31,68 +30,6 @@ MA::MA ()
 {
   _plugin = "MA";
   _type = "INDICATOR";
-}
-
-int MA::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  int rows = settings->getInt("ROWS");
-  int loop = 0;
-  for (; loop < rows; loop++)
-  {
-    // output
-    int col = 0;
-    QString key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    QString name = settings->data(key);
-    Curve *line = i->line(name);
-    if (line)
-    {
-      qDebug() << _plugin << "::calculate: duplicate OUTPUT" << name;
-      return 1;
-    }
-
-    // input
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    InputType it;
-    QStringList order;
-    order << settings->data(key);
-    QList<Curve *> list;
-    if (it.inputs(list, order, i, bd))
-    {
-      qDebug() << _plugin << "::calculate: input missing";
-      return 1;
-    }
-    if (! list.count())
-      return 1;
-    Curve *in = list.at(0);
-
-    // type
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    MAType mat;
-    int type = mat.fromString(settings->data(key));
-  
-    // period
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    int period = settings->getInt(key);
-
-    Curve *ma = mat.getMA(in, period, type);
-    if (! ma)
-      return 1;
-
-    // color
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    ma->setAllColor(QColor(settings->data(key)));
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    ma->setType(settings->data(key));
-    
-    key = QString::number(loop) + "," + QString::number(col++) + ",DATA";
-    ma->setZ(settings->getInt(key));
-    
-    ma->setLabel(name);
-    i->setLine(name, ma);
-  }
-
-  return 0;
 }
 
 int MA::command (Command *command)
@@ -153,24 +90,20 @@ int MA::command (Command *command)
   return 0;
 }
 
-QWidget * MA::dialog (QWidget *p, Setting *set)
+PluginWidget * MA::dialog (QWidget *p)
 {
-  QStringList header;
-  header << tr("Output") << tr("Input") << tr("Type") << tr("Period") << tr("Color") << tr("Style") << tr("Plot");
-
-  QList<int> format;
-  format << RuleWidget::_OUTPUT << RuleWidget::_INPUT << RuleWidget::_MA;
-  format << RuleWidget::_INTEGER << RuleWidget::_COLOR << RuleWidget::_STYLE << RuleWidget::_PLOT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new MADialog(p);
 }
 
-void MA::defaults (Setting *set)
+void MA::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "PERIOD=10";
+  l << "METHOD=EMA";
+  d = l.join(",");
 }
 
 //*************************************************************

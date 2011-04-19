@@ -3,7 +3,7 @@
 } 
 
 HEADERS += RSI.h
-HEADERS += RSIDialog.h
+HEADERS += RSIWidget.h
 
 SOURCES += RSI.cpp
-SOURCES += RSIDialog.cpp
+SOURCES += RSIWidget.cpp

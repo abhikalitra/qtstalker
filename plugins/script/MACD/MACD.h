@@ -31,9 +31,8 @@ class MACD : public Plugin
   public:
     MACD ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     QList<Curve *> getMACD (QList<Curve *> &, int fp, int sp, int sigp, int fma, int sma, int sigma);
 };
 

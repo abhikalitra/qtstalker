@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "PDIDialog.h"
+#include "PDIWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,40 +36,6 @@ PDI::PDI ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("PDI::PDI: error on TA_Initialize");
-}
-
-int PDI::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-
-  InputType it;
-  QStringList order;
-  order << "High" << "Low" << "Close";
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getPDI(list, period);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int PDI::command (Command *command)
@@ -194,19 +160,21 @@ Curve * PDI::getPDI (QList<Curve *> &list, int period)
   return c;
 }
 
-QWidget * PDI::dialog (QWidget *p, Setting *set)
+PluginWidget * PDI::dialog (QWidget *p)
 {
-  return new PDIDialog(p, set);
+  return new PDIWidget(p);
 }
 
-void PDI::defaults (Setting *set)
+void PDI::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("blue"));
-  set->setData("OUTPUT", _plugin);
-  set->setData("STYLE", QString("Line"));
-  set->setData("PERIOD", 14);
-  set->setData("Z", 0);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "INPUT_CLOSE=Close";
+  l << "PERIOD=14";
+  d = l.join(",");
 }
 
 //*************************************************************

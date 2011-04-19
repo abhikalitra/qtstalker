@@ -3,7 +3,7 @@
 } 
 
 HEADERS += HT_PHASOR.h
-HEADERS += HT_PHASORDialog.h
+HEADERS += HT_PHASORWidget.h
 
 SOURCES += HT_PHASOR.cpp
-SOURCES += HT_PHASORDialog.cpp
+SOURCES += HT_PHASORWidget.cpp

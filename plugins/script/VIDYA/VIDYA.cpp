@@ -23,7 +23,7 @@
 #include "Globals.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "VIDYADialog.h"
+#include "VIDYAWidget.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -39,41 +39,6 @@ VIDYA::VIDYA ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("VIDYA::VIDYA: error on TA_Initialize");
-}
-
-int VIDYA::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-  int vperiod = settings->getInt("VPERIOD");
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getVIDYA(list, period, vperiod);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-  
-  return 0;  
 }
 
 int VIDYA::command (Command *command)
@@ -245,21 +210,20 @@ Curve * VIDYA::getCMO (QList<Curve *> &list, int period)
   return c;
 }
 
-QWidget * VIDYA::dialog (QWidget *p, Setting *set)
+PluginWidget * VIDYA::dialog (QWidget *p)
 {
-  return new VIDYADialog(p, set);
+  return new VIDYAWidget(p);
 }
 
-void VIDYA::defaults (Setting *set)
+void VIDYA::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("yellow"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("PERIOD", 10);
-  set->setData("VPERIOD", 10);
-  set->setData("INPUT", QString("Close"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "PERIOD=10";
+  l << "PERIOD_VOLUME=10";
+  d = l.join(",");
 }
 
 //*************************************************************

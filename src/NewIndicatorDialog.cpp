@@ -75,31 +75,15 @@ void NewIndicatorDialog::done ()
     return;
   }
 
-  PluginFactory fac;
-  Plugin *plug = fac.plugin(_indicator->currentText());
-  if (! plug)
-  {
-    qDebug() << "NewIndicatorDialog::done: no plugin" << _indicator->currentText();
-    return;
-  }
-
   Indicator i;
-  plug->defaults(i.settings());
   i.setName(name);
   if (i.save())
   {
     qDebug() << "NewIndicatorDialog::done: indicator save error";
-    delete plug;
     return;
   }
-  delete plug;
 
-  QSettings set(g_localSettings);
-  QStringList l = set.value("indicators").toStringList();
-  l.append(name);
-  l.removeDuplicates();
-  set.setValue("indicators", l);
-  set.sync();
+  i.add(name);
 
   saveSettings();
 

@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "STOCHSDialog.h"
+#include "STOCH_SLOWWidget.h"
 #include "MAType.h"
 #include "InputType.h"
 
@@ -37,64 +37,6 @@ STOCH_SLOW::STOCH_SLOW ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("STOCH_SLOW::STOCH_SLOW: error on TA_Initialize");
-}
-
-int STOCH_SLOW::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *kline = i->line(settings->data("OUTPUT_K"));
-  if (kline)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_K" << settings->data("OUTPUT_K");
-    return 1;
-  }
-
-  Curve *dline = i->line(settings->data("OUTPUT_D"));
-  if (dline)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_D" << settings->data("OUTPUT_D");
-    return 1;
-  }
-
-  int fkperiod = settings->getInt("PERIOD_FASTK");
-  int skperiod = settings->getInt("PERIOD_SLOWK");
-  int sdperiod = settings->getInt("PERIOD_SLOWD");
-
-  MAType mat;
-  int kma = mat.fromString(settings->data("MA_TYPE_SLOWK"));
-  int dma = mat.fromString(settings->data("MA_TYPE_SLOWD"));
-
-  InputType it;
-  QStringList order;
-  order << "High" << "Low" << "Close";
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  QList<Curve *> lines = getSTOCHS(list, fkperiod, skperiod, sdperiod, kma, dma);
-  if (lines.count() != 2)
-  {
-    qDeleteAll(lines);
-    return 1;
-  }
-
-  kline = lines.at(0);
-  kline->setAllColor(QColor(settings->data("COLOR_K")));
-  kline->setLabel(settings->data("OUTPUT_K"));
-  kline->setType(settings->data("STYLE_K"));
-  kline->setZ(settings->getInt("Z_K"));
-  i->setLine(settings->data("OUTPUT_K"), kline);
-
-  dline = lines.at(1);
-  dline->setAllColor(QColor(settings->data("COLOR_D")));
-  dline->setLabel(settings->data("OUTPUT_D"));
-  dline->setType(settings->data("STYLE_D"));
-  dline->setZ(settings->getInt("Z_D"));
-  i->setLine(settings->data("OUTPUT_D"), dline);
-
-  return 0;
 }
 
 int STOCH_SLOW::command (Command *command)
@@ -273,27 +215,26 @@ QList<Curve *> STOCH_SLOW::getSTOCHS (QList<Curve *> &list, int fkperiod, int sk
   return lines;
 }
 
-QWidget * STOCH_SLOW::dialog (QWidget *p, Setting *set)
+PluginWidget * STOCH_SLOW::dialog (QWidget *p)
 {
-  return new STOCHSDialog(p, set);
+  return new STOCH_SLOWWidget(p);
 }
 
-void STOCH_SLOW::defaults (Setting *set)
+void STOCH_SLOW::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR_K", QString("red"));
-  set->setData("STYLE_K", QString("Line"));
-  set->setData("COLOR_D", QString("yellow"));
-  set->setData("STYLE_D", QString("Line"));
-  set->setData("PERIOD_FASTK", 5);
-  set->setData("PERIOD_SLOWK", 3);
-  set->setData("PERIOD_SLOWD", 3);
-  set->setData("MA_TYPE_SLOWK", QString("EMA"));
-  set->setData("MA_TYPE_SLOWD", QString("EMA"));
-  set->setData("Z_K", 0);
-  set->setData("OUTPUT_K", QString("%K"));
-  set->setData("Z_D", 0);
-  set->setData("OUTPUT_D", QString("%D"));
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME_SLOWK=%K";
+  l << "NAME_SLOWD=%D";
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "INPUT_CLOSE=Close";
+  l << "PERIOD_FASTK=5";
+  l << "PERIOD_SLOWK=3";
+  l << "PERIOD_SLOWD=3";
+  l << "MA_TYPE_SLOWK=EMA";
+  l << "MA_TYPE_SLOWD=EMA";
+  d = l.join(",");
 }
 
 //*************************************************************

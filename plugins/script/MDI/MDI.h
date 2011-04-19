@@ -31,9 +31,8 @@ class MDI : public Plugin
   public:
     MDI ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     Curve * getMDI (QList<Curve *> &, int);
 };
 

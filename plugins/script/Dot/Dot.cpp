@@ -94,7 +94,9 @@ int Dot::setCurve (Curve *curve)
   qcurve->setData(x, y);
   
   qcurve->setTitle(curve->label());
-//  qcurve->setPen(QPen(curve->color()));
+
+  CurveBar *bar = curve->bar(keys.at(0));
+  qcurve->setPen(QPen(bar->color()));
   qcurve->setZ(curve->z());
   qcurve->setYAxis(QwtPlot::yRight);
   qcurve->attach(_plot);

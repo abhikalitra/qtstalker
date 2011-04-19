@@ -22,7 +22,7 @@
 #include "TYPICAL_PRICE.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "TYPICAL_PRICEDialog.h"
+#include "TYPICAL_PRICEWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -31,29 +31,6 @@ TYPICAL_PRICE::TYPICAL_PRICE ()
 {
   _plugin = "TYPICAL_PRICE";
   _type = "INDICATOR";
-}
-
-int TYPICAL_PRICE::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = new Curve;
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
-  {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
-
-    double t = (bar->high() + bar->low() + bar->close()) / 3.0;
-    line->setBar(loop, new CurveBar(t));
-  }
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int TYPICAL_PRICE::command (Command *command)
@@ -134,18 +111,20 @@ int TYPICAL_PRICE::command (Command *command)
   return 0;
 }
 
-QWidget * TYPICAL_PRICE::dialog (QWidget *p, Setting *set)
+PluginWidget * TYPICAL_PRICE::dialog (QWidget *p)
 {
-  return new TYPICAL_PRICEDialog(p, set);
+  return new TYPICAL_PRICEWidget(p);
 }
 
-void TYPICAL_PRICE::defaults (Setting *set)
+void TYPICAL_PRICE::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("red"));
-  set->setData("STYLE", QString("Line"));
-  set->setData("OUTPUT", QString("TP"));
-  set->setData("Z", 0);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=TP";
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "INPUT_CLOSE=Close";
+  d = l.join(",");
 }
 
 //*************************************************************

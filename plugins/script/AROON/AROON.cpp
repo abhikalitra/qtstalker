@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "AROONDialog.h"
+#include "AROONWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,58 +36,6 @@ AROON::AROON ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("AROON::AROON: error on TA_Initialize");
-}
-
-int AROON::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *upper = i->line(settings->data("OUTPUT_UP"));
-  if (upper)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_UP" << settings->data("OUTPUT_UP");
-    return 1;
-  }
-
-  Curve *lower = i->line(settings->data("OUTPUT_DOWN"));
-  if (lower)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT_DOWN" << settings->data("OUTPUT_DOWN");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-  
-  InputType it;
-  QStringList order;
-  order << "High" << "Low";
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  QList<Curve *> lines = getAROON(list, period);
-  if (! lines.count())
-    return 1;
-
-  upper = lines.at(0);
-  upper->setAllColor(QColor(settings->data("COLOR_UP")));
-  upper->setLabel(settings->data("OUTPUT_UP"));
-  upper->setType(settings->data("STYLE_UP"));
-  upper->setZ(settings->getInt("Z_UP"));
-  i->setLine(settings->data("OUTPUT_UP"), upper);
-  
-  if (lines.count() == 2)
-  {
-    lower = lines.at(1);
-    lower->setAllColor(QColor(settings->data("COLOR_DOWN")));
-    lower->setLabel(settings->data("OUTPUT_DOWN"));
-    lower->setType(settings->data("STYLE_DOWN"));
-    lower->setZ(settings->getInt("Z_DOWN"));
-    i->setLine(settings->data("OUTPUT_DOWN"), lower);
-  }
-
-  return 0;
 }
 
 int AROON::command (Command *command)
@@ -216,23 +164,21 @@ QList<Curve *> AROON::getAROON (QList<Curve *> &list, int period)
   return lines;
 }
 
-QWidget * AROON::dialog (QWidget *p, Setting *set)
+PluginWidget * AROON::dialog (QWidget *p)
 {
-  return new AROONDialog(p, set);
+  return new AROONWidget(p);
 }
 
-void AROON::defaults (Setting *set)
+void AROON::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR_UP", QString("green"));
-  set->setData("OUTPUT_UP", QString("AROONU"));
-  set->setData("STYLE_UP", QString("Line"));
-  set->setData("COLOR_DOWN", QString("red"));
-  set->setData("OUTPUT_DOWN", QString("AROOND"));
-  set->setData("STYLE_DOWN", QString("Line"));
-  set->setData("PERIOD", 14);
-  set->setData("Z_UP", 0);
-  set->setData("Z_DOWN", 0);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME_UPPER=AROONU";
+  l << "NAME_LOWER=AROONL";
+  l << "INPUT_HIGH=High";
+  l << "INPUT_LOW=Low";
+  l << "PERIOD=14";
+  d = l.join(",");
 }
 
 //*************************************************************

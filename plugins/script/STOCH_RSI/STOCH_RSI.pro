@@ -3,7 +3,7 @@
 } 
 
 HEADERS += STOCH_RSI.h
-HEADERS += STOCHRSIDialog.h
+HEADERS += STOCH_RSIWidget.h
 
 SOURCES += STOCH_RSI.cpp
-SOURCES += STOCHRSIDialog.cpp
+SOURCES += STOCH_RSIWidget.cpp

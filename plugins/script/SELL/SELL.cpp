@@ -25,7 +25,6 @@
 #include "DataDataBase.h"
 #include "ConfirmDialog.h"
 #include "DateScaleDraw.h"
-#include "RuleWidget.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
@@ -556,16 +555,7 @@ int SELL::command (Command *command)
 
 QWidget * SELL::dialog (QWidget *p, Setting *set)
 {
-  QStringList header;
-  header << tr("Date") << tr("Value") << tr("Color") << tr("Plot");
-
-  QList<int> format;
-  format << RuleWidget::_DATE << RuleWidget::_DOUBLE << RuleWidget::_COLOR << RuleWidget::_PLOT;
-
-  RuleWidget *w = new RuleWidget(p, _plugin);
-  w->setRules(set, format, header);
-  w->loadSettings();
-  return w;
+  return new SellDialog(p, set);
 }
 
 void SELL::defaults (Setting *set)

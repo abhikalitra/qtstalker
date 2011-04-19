@@ -22,30 +22,29 @@
 #ifndef PLUGIN_AD_DIALOG_HPP
 #define PLUGIN_AD_DIALOG_HPP
 
-#include <QComboBox>
-#include <QSpinBox>
-#include <QLineEdit>
+#include <QWidget>
 
-#include "ColorButton.h"
-#include "Setting.h"
+#include "PluginWidget.h"
+#include "LineEdit.h"
 
-class ADDialog : public QWidget
+class ADDialog : public PluginWidget
 {
   Q_OBJECT
 
   public:
-    ADDialog (QWidget *, Setting *);
+    ADDialog (QWidget *);
     void createGeneralPage ();
 
   public slots:
-    void save ();
+    void setCommand (QString);
+    void commands (QStringList &, int);
 
   private:
-    Setting *_settings;
-    ColorButton *_color;
-    QComboBox *_style;
-    QSpinBox *_z;
-    QLineEdit *_output;
+    LineEdit *_output;
+    LineEdit *_hinput;
+    LineEdit *_linput;
+    LineEdit *_cinput;
+    LineEdit *_vinput;
 };
 
 #endif

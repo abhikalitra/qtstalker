@@ -37,12 +37,7 @@ QString Plugin::type ()
   return _type;
 }
 
-int Plugin::calculate (BarData *, Indicator *, Setting *)
-{
-  return 0;
-}
-
-void Plugin::defaults (Setting *)
+void Plugin::defaults (QString &)
 {
 }
 
@@ -51,7 +46,7 @@ int Plugin::command (Command *)
   return 0;
 }
 
-QWidget * Plugin::dialog (QWidget *, Setting *)
+PluginWidget * Plugin::dialog (QWidget *)
 {
   return 0;
 }

@@ -31,9 +31,8 @@ class STOCH_FAST : public Plugin
   public:
     STOCH_FAST ();
     int command (Command *);
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
     QList<Curve *> getSTOCHF (QList<Curve *> &, int kperiod, int dperiod, int type);
 };
 

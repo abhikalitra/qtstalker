@@ -21,48 +21,64 @@
 
 #include "OHLCDialog.h"
 #include "Globals.h"
+#include "Command.h"
 
 #include <QtDebug>
 #include <QFormLayout>
 
-OHLCDialog::OHLCDialog (QWidget *p, Setting *set) : QWidget (p)
+OHLCDialog::OHLCDialog (QWidget *p) : PluginWidget (p)
 {
-  _settings = set;
-  _styleList << "Bars" << "Candle";
   createGeneralPage();
 }
 
 void OHLCDialog::createGeneralPage ()
 {
   QFormLayout *form = new QFormLayout;
-  setLayout(form);
+  _vbox->addLayout(form);
 
   // output
-  _output = new QLineEdit(_settings->data("OUTPUT"));
-  form->addRow(tr("Output"), _output);
+  _output = new LineEdit;
+  form->addRow("NAME", _output);
   
-  // style
-  _style = new QComboBox;
-  _style->addItems(_styleList);
-  _style->setCurrentIndex(_style->findText(_settings->data("STYLE"), Qt::MatchExactly));
-  form->addRow(tr("Style"), _style);
-  
-  // color
-  _color = new ColorButton(this, QColor(_settings->data("COLOR")));
-  _color->setColorButton();
-  form->addRow(tr("Color"), _color);
+  // open input
+  _oinput = new LineEdit;
+  form->addRow("INPUT_OPEN", _oinput);
 
-  // z
-  _z = new QSpinBox;
-  _z->setRange(-1, 99);
-  _z->setValue(_settings->getInt("Z"));
-  form->addRow(tr("Plot Order"), _z);
+  // high input
+  _hinput = new LineEdit;
+  form->addRow("INPUT_HIGH", _hinput);
+
+  // low input
+  _linput = new LineEdit;
+  form->addRow("INPUT_LOW", _linput);
+
+  // close input
+  _cinput = new LineEdit;
+  form->addRow("INPUT_CLOSE", _cinput);
 }
 
-void OHLCDialog::save ()
+void OHLCDialog::setCommand (QString d)
 {
-  _settings->setData("COLOR", _color->color().name());
-  _settings->setData("STYLE", _style->currentText());
-  _settings->setData("Z", _z->text());
-  _settings->setData("OUTPUT", _output->text());
+  Command command(d);
+  if (command.parm("PLUGIN") != "OHLC")
+    return;
+
+  _output->setText(command.parm("NAME"));
+  _oinput->setText(command.parm("INPUT_OPEN"));
+  _hinput->setText(command.parm("INPUT_HIGH"));
+  _linput->setText(command.parm("INPUT_LOW"));
+  _cinput->setText(command.parm("INPUT_CLOSE"));
+}
+
+void OHLCDialog::commands (QStringList &l, int tab)
+{
+  QStringList cl;
+  cl << "PLUGIN=OHLC";
+  cl << "NAME=" + _output->text();
+  cl << "INPUT_OPEN=" + _oinput->text();
+  cl << "INPUT_HIGH=" + _hinput->text();
+  cl << "INPUT_LOW=" + _linput->text();
+  cl << "INPUT_CLOSE=" + _cinput->text();
+  cl << "TAB=" + QString::number(tab);
+  l.append(cl.join(","));
 }

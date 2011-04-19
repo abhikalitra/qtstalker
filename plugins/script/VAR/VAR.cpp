@@ -23,7 +23,7 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "VARDialog.h"
+#include "VARWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -36,41 +36,6 @@ VAR::VAR ()
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("VAR::VAR: error on TA_Initialize");
-}
-
-int VAR::calculate (BarData *bd, Indicator *i, Setting *settings)
-{
-  Curve *line = i->line(settings->data("OUTPUT"));
-  if (line)
-  {
-    qDebug() << _plugin << "::calculate: duplicate OUTPUT" << settings->data("OUTPUT");
-    return 1;
-  }
-
-  int period = settings->getInt("PERIOD");
-  double dev = settings->getDouble("DEVIATION");
-
-  InputType it;
-  QStringList order;
-  order << settings->data("INPUT");
-  QList<Curve *> list;
-  if (it.inputs(list, order, i, bd))
-  {
-    qDebug() << _plugin << "::calculate: input missing";
-    return 1;
-  }
-
-  line = getVAR(list, period, dev);
-  if (! line)
-    return 1;
-
-  line->setAllColor(QColor(settings->data("COLOR")));
-  line->setLabel(settings->data("OUTPUT"));
-  line->setType(settings->data("STYLE"));
-  line->setZ(settings->getInt("Z"));
-  i->setLine(settings->data("OUTPUT"), line);
-
-  return 0;
 }
 
 int VAR::command (Command *command)
@@ -179,22 +144,20 @@ Curve * VAR::getVAR (QList<Curve *> &list, int period, double dev)
   return c;
 }
 
-QWidget * VAR::dialog (QWidget *p, Setting *set)
+PluginWidget * VAR::dialog (QWidget *p)
 {
-  return new VARDialog(p, set);
+  return new VARWidget(p);
 }
 
-void VAR::defaults (Setting *set)
+void VAR::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COLOR", QString("red"));
-  set->setData("LABEL", _plugin);
-  set->setData("STYLE", QString("HistogramBar"));
-  set->setData("PERIOD", 20);
-  set->setData("DEVIATION", 2);
-  set->setData("INPUT", QString("Close"));
-  set->setData("Z", 0);
-  set->setData("OUTPUT", _plugin);
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "NAME=" + _plugin;
+  l << "INPUT=Close";
+  l << "PERIOD=20";
+  l << "DEVIATION=2";
+  d = l.join(",");
 }
 
 //*************************************************************
