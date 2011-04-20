@@ -1235,3 +1235,5 @@
 
            Added ability to set line thickness for plots as per user request.
 
+20110420:  Fixed COMPARE plugin logic bug. Added an else parm NAME5 so that there are no empty values.
+

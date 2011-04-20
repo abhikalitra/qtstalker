@@ -29,7 +29,7 @@
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
       <td style="vertical-align: top;">Compares NAME2 and NAME3 using
-OP. If the compare is TRUE, then NAME = NAME4.<br>
+OP. If the compare is TRUE, then NAME = NAME4, else NAME = NAME5.<br>
       <br>
       </td>
     </tr>
@@ -42,6 +42,8 @@ NAME2 = &lt;VARIABLE NAME&gt;<br>
 NAME3 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
 value<br>
 NAME4 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
+value<br>
+NAME5 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
 value<br>
       <br>
       </td>
@@ -58,7 +60,7 @@ Failure<br>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
       <td style="vertical-align: top;">PLUGIN=COMPARE, NAME=comp,
 NAME2=Close, OP=GT,
-NAME3=Open, NAME4=1<br>
+NAME3=Open, NAME4=1, NAME5=0<br>
       <br>
       </td>
     </tr>

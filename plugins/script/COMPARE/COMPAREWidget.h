@@ -42,7 +42,7 @@ class COMPAREWidget : public PluginWidget
     void selectionChanged ();
     void deleteItem ();
     void addItem ();
-    void addItem (QString, QString, QString, QString, QString);
+    void addItem (QString, QString, QString, QString, QString, QString);
 
   private:
     QTreeWidget *_tree;

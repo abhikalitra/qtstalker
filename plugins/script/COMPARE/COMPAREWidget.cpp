@@ -61,7 +61,7 @@ void COMPAREWidget::createGeneralPage ()
 
   // list
   QStringList l;
-  l << "" << "NAME" << "OP" << "NAME2" << "NAME3" << "NAME4";
+  l << "" << "NAME" << "NAME2" << "OP" << "NAME3" << "NAME4" << "NAME5";
 
   _tree = new QTreeWidget;
   _tree->setHeaderLabels(l);
@@ -81,10 +81,11 @@ void COMPAREWidget::setCommand (QString d)
     return;
 
   addItem(command.parm("NAME"),
-	  command.parm("OP"),
 	  command.parm("NAME2"),
+	  command.parm("OP"),
 	  command.parm("NAME3"),
-	  command.parm("NAME4"));
+	  command.parm("NAME4"),
+	  command.parm("NAME5"));
 }
 
 void COMPAREWidget::selectionChanged ()
@@ -98,16 +99,20 @@ void COMPAREWidget::selectionChanged ()
 
 void COMPAREWidget::addItem ()
 {
-  addItem(QString("comp"), QString("EQ"), QString("Close"), QString("Close"), QString("Close"));
+  addItem(QString("comp"), QString("Close"), QString("EQ"), QString("Close"), QString("Close"), QString("Close"));
 }
 
-void COMPAREWidget::addItem (QString name, QString op, QString name2, QString name3, QString name4)
+void COMPAREWidget::addItem (QString name, QString name2, QString op, QString name3, QString name4, QString name5)
 {
   QTreeWidgetItem *item = new QTreeWidgetItem(_tree);
 
   int col = 1;
   LineEdit *le = new LineEdit;
   le->setText(name);
+  _tree->setItemWidget(item, col++, le);
+
+  le = new LineEdit;
+  le->setText(name2);
   _tree->setItemWidget(item, col++, le);
 
   Operator oper;
@@ -117,15 +122,15 @@ void COMPAREWidget::addItem (QString name, QString op, QString name2, QString na
   _tree->setItemWidget(item, col++, cb);
 
   le = new LineEdit;
-  le->setText(name2);
-  _tree->setItemWidget(item, col++, le);
-
-  le = new LineEdit;
   le->setText(name3);
   _tree->setItemWidget(item, col++, le);
 
   le = new LineEdit;
   le->setText(name4);
+  _tree->setItemWidget(item, col++, le);
+
+  le = new LineEdit;
+  le->setText(name5);
   _tree->setItemWidget(item, col++, le);
 }
 
@@ -167,11 +172,11 @@ void COMPAREWidget::commands (QStringList &l, int tab)
     LineEdit *le = (LineEdit *) _tree->itemWidget(item, col++);
     cl << "NAME=" + le->text();
 
-    QComboBox *cb = (QComboBox *) _tree->itemWidget(item, col++);
-    cl << "OP=" + cb->currentText();
-
     le = (LineEdit *) _tree->itemWidget(item, col++);
     cl << "NAME2=" + le->text();
+
+    QComboBox *cb = (QComboBox *) _tree->itemWidget(item, col++);
+    cl << "OP=" + cb->currentText();
 
     le = (LineEdit *) _tree->itemWidget(item, col++);
     cl << "NAME3=" + le->text();
@@ -179,6 +184,9 @@ void COMPAREWidget::commands (QStringList &l, int tab)
     le = (LineEdit *) _tree->itemWidget(item, col++);
     cl << "NAME4=" + le->text();
 
+    le = (LineEdit *) _tree->itemWidget(item, col++);
+    cl << "NAME5=" + le->text();
+    
     cl << "TAB=" + QString::number(tab);
 
     l.append(cl.join(","));
