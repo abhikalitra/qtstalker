@@ -93,10 +93,10 @@ int ULTOSC::command (Command *command)
     return 1;
   }
 
-  int mp = command->parm("PERIOD_MEDIUM").toInt(&ok);
+  int mp = command->parm("PERIOD_MED").toInt(&ok);
   if (! ok)
   {
-    qDebug() << _plugin << "::command: invalid PERIOD_MEDIUM" << command->parm("PERIOD_MEDIUM");
+    qDebug() << _plugin << "::command: invalid PERIOD_MED" << command->parm("PERIOD_MED");
     return 1;
   }
 

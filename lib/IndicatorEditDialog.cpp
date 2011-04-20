@@ -45,6 +45,9 @@ IndicatorEditDialog::IndicatorEditDialog (QWidget *p, QString n) : Dialog (p)
   createGUI();
 
   loadSettings();
+
+  if (_name.isEmpty())
+    createDefaults();
 }
 
 void IndicatorEditDialog::createGUI ()
@@ -253,4 +256,10 @@ int IndicatorEditDialog::applySave ()
   emit signalDone();
 
   return 0;
+}
+
+void IndicatorEditDialog::createDefaults ()
+{
+  addIndicator2(QString("DOHLCVI"));
+  addIndicator2(QString("IPLOT"));
 }

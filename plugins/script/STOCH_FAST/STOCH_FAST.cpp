@@ -111,10 +111,10 @@ int STOCH_FAST::command (Command *command)
   }
 
   MAType mat;
-  int type = mat.fromString(command->parm("MA_TYPE_FASTD"));
+  int type = mat.fromString(command->parm("MA_TYPE"));
   if (type == -1)
   {
-    qDebug() << _plugin << "::command: invalid MA_TYPE_FASTD" << command->parm("MA_TYPE_FASTD");
+    qDebug() << _plugin << "::command: invalid MA_TYPE" << command->parm("MA_TYPE");
     return 1;
   }
   
@@ -213,7 +213,7 @@ void STOCH_FAST::defaults (QString &d)
   l << "INPUT_CLOSE=Close";
   l << "PERIOD_FASTK=5";
   l << "PERIOD_FASTD=3";
-  l << "MA_TYPE_FASTD=EMA";
+  l << "MA_TYPE=EMA";
   d = l.join(",");
 }
 

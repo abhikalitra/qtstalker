@@ -44,7 +44,7 @@ int CORREL::command (Command *command)
   // PARMS:
   // NAME
   // INPUT
-  // INPUT2
+  // INDEX
   // PERIOD
 
   Indicator *i = command->indicator();
@@ -69,11 +69,34 @@ int CORREL::command (Command *command)
     return 1;
   }
 
-  Curve *in2 = i->line(command->parm("INPUT2"));
+  Curve *in2 = i->line(command->parm("INDEX"));
   if (! in2)
   {
-    qDebug() << _plugin << "::command: input 2 missing" << command->parm("INPUT2");
-    return 1;
+    BarData *bd = command->barData();
+    if (! bd)
+    {
+      qDebug() << _plugin << "::command: no bardata";
+      return 1;
+    }
+
+    BarData tbd;
+    tbd.setKey(command->parm("INDEX"));
+    tbd.setRange(bd->range());
+    tbd.setBarLength(bd->barLength());
+    tbd.setStartDate(bd->startDate());
+    tbd.setEndDate(bd->endDate());
+
+    QuoteDataBase db;
+    if (db.getBars(&tbd))
+      return 1;
+
+    InputType it;
+    in2 = it.input(&tbd, "Close");
+    if (! in2)
+    {
+      qDebug() << _plugin << "::command: INDEX missing" << command->parm("INDEX");
+      return 1;
+    }
   }
 
   bool ok;

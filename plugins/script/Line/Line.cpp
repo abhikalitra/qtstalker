@@ -97,7 +97,6 @@ int Line::setCurve (Curve *curve)
   qcurve->setData(x, y);
 
   qcurve->setTitle(curve->label());
-
   CurveBar *bar = curve->bar(keys.at(0));
 
   QPen pen = qcurve->pen();

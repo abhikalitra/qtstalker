@@ -22,26 +22,27 @@
 #ifndef PLUGIN_CUS_DIALOG_HPP
 #define PLUGIN_CUS_DIALOG_HPP
 
-#include <QLineEdit>
+#include <QWidget>
 
+#include "PluginWidget.h"
+#include "LineEdit.h"
 #include "FileButton.h"
-#include "Setting.h"
 
-class CUSDialog : public QWidget
+class CUSDialog : public PluginWidget
 {
   Q_OBJECT
 
   public:
-    CUSDialog (QWidget *, Setting *set);
+    CUSDialog (QWidget *);
     void createGeneralPage ();
 
   public slots:
-    void save ();
+    void setCommand (QString);
+    void commands (QStringList &, int);
 
   private:
-    Setting *_settings;
     FileButton *_file;
-    QLineEdit *_command;
+    LineEdit *_command;
 };
 
 #endif

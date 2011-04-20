@@ -21,41 +21,56 @@
 
 #include "CUSDialog.h"
 #include "Globals.h"
+#include "Command.h"
 
 #include <QtDebug>
 #include <QStringList>
 #include <QFormLayout>
 
-CUSDialog::CUSDialog (QWidget *p, Setting *set) : QWidget (p)
+CUSDialog::CUSDialog (QWidget *p) : PluginWidget (p)
 {
-  _settings = set;
   createGeneralPage();
 }
 
 void CUSDialog::createGeneralPage ()
 {
   QFormLayout *form = new QFormLayout;
-  setLayout(form);
+  _vbox->addLayout(form);
 
   // command
-  _command = new QLineEdit(_settings->data("COMMAND"));
+  _command = new LineEdit;
   _command->setToolTip(tr("The interpreter command line and any switches required.\neg. perl -l -T"));
   form->addRow(tr("Command"), _command);
 
   // file
-  QStringList l;
-  l << _settings->data("SCRIPT");
   _file = new FileButton(this);
-  _file->setFiles(l);
   _file->setToolTip(tr("The script location"));
   form->addRow(tr("Script"), _file);
 }
 
-void CUSDialog::save ()
+void CUSDialog::setCommand (QString d)
 {
-  QStringList l = _file->files();
-  if (l.count())
-    _settings->setData("SCRIPT", l.at(0));
+  Command command(d);
+  if (command.parm("PLUGIN") != "CUS")
+    return;
+
+  _command->setText(command.parm("COMMAND"));
+
+  QStringList l;
+  l << command.parm("SCRIPT");
+  _file->setFiles(l);
+}
+
+void CUSDialog::commands (QStringList &l, int tab)
+{
+  QStringList cl;
+  cl << "PLUGIN=CUS";
+  cl << "COMMAND=" + _command->text();
+
+  QStringList fl = _file->files();
+  if (fl.count())
+    cl << "SCRIPT=" + fl.at(0);
   
-  _settings->setData("COMMAND", _command->text());
+  cl << "TAB=" + QString::number(tab);
+  l.append(cl.join(","));
 }

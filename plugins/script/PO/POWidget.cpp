@@ -81,7 +81,7 @@ void POWidget::setCommand (QString d)
   _fast->setValue(command.parm("PERIOD_FAST").toInt());
   _slow->setValue(command.parm("PERIOD_SLOW").toInt());
   _type->setCurrentIndex(_type->findText(command.parm("MA_TYPE")));
-  _method->setCurrentIndex(_type->findText(command.parm("METHOD")));
+  _method->setCurrentIndex(_method->findText(command.parm("METHOD")));
 }
 
 void POWidget::commands (QStringList &l, int tab)

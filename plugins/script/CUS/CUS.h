@@ -30,9 +30,9 @@ class CUS : public Plugin
 
   public:
     CUS ();
-    int calculate (BarData *, Indicator *, Setting *);
-    void defaults (Setting *);
-    QWidget * dialog (QWidget *, Setting *);
+    int command (Command *);
+    void defaults (QString &);
+    PluginWidget * dialog (QWidget *);
 };
 
 extern "C"

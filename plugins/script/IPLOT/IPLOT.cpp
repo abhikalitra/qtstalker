@@ -97,9 +97,9 @@ int IPLOT::command (Command *command)
     qDebug() << _plugin << "::command: invalid Z value" << s;
     return 1;
   }
-  if (z < 0)
+  if (z < -1)
   {
-    qDebug() << _plugin << "::command: invalid z value must be 0 or greater" << z;
+    qDebug() << _plugin << "::command: invalid z value must be -1 or greater" << z;
     return 1;
   }
   line->setZ(z);

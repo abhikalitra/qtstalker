@@ -97,12 +97,12 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # shift upper values forward 1 period
-$command = "PLUGIN=INDICATOR,METHOD=INDEX_SHIFT,NAME=$upperName,INPUT=max,PERIOD=1";
+$command = "PLUGIN=SHIFT,NAME=$upperName,INPUT=max,PERIOD=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # shift lower values forward 1 period
-$command = "PLUGIN=INDICATOR,METHOD=INDEX_SHIFT,NAME=$lowerName,INPUT=min,PERIOD=1";
+$command = "PLUGIN=SHIFT,NAME=$lowerName,INPUT=min,PERIOD=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

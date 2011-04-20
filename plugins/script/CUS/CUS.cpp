@@ -33,6 +33,60 @@ CUS::CUS ()
   _type = "INDICATOR";
 }
 
+int CUS::command (Command *command)
+{
+  // PARMS
+  // SCRIPT
+  // COMMAND
+
+  Indicator *i = command->indicator();
+  if (! i)
+  {
+    qDebug() << _plugin << "::command: no indicator";
+    return 1;
+  }
+
+  BarData *bd = command->barData();
+  if (! bd)
+  {
+    qDebug() << _plugin << "::command: no bardata";
+    return 1;
+  }
+
+  QString scr = command->parm("SCRIPT");
+  if (scr.isEmpty())
+  {
+    qDebug() << _plugin << "::command: SCRIPT missing";
+    return 1;
+  }
+
+  QString com = command->parm("COMMAND");
+  if (com.isEmpty())
+  {
+    qDebug() << _plugin << "::command: COMMAND missing";
+    return 1;
+  }
+
+  Script *script = new Script(this);
+  script->setIndicator(i);
+  script->setBarData(bd);
+  script->setName(scr);
+  script->setFile(scr);
+  script->setCommand(com);
+  script->startScript();
+
+  QEventLoop e;
+  connect(script, SIGNAL(signalDone(QString)), &e, SLOT(quit()));
+  e.exec();
+
+  delete script;
+
+  command->setReturnCode("0");
+
+  return 0;
+}
+
+/*
 int CUS::calculate (BarData *bd, Indicator *i, Setting *settings)
 {
   Script *script = new Script(this);
@@ -51,17 +105,20 @@ int CUS::calculate (BarData *bd, Indicator *i, Setting *settings)
 
   return 0;
 }
+*/
 
-QWidget * CUS::dialog (QWidget *p, Setting *set)
+PluginWidget * CUS::dialog (QWidget *p)
 {
-  return new CUSDialog(p, set);
+  return new CUSDialog(p);
 }
 
-void CUS::defaults (Setting *set)
+void CUS::defaults (QString &d)
 {
-  set->setData("PLUGIN", _plugin);
-  set->setData("COMMAND", QString("perl"));
-  set->setData("SCRIPT", QString());
+  QStringList l;
+  l << "PLUGIN=" + _plugin;
+  l << "COMMAND=perl";
+  l << "SCRIPT=";
+  d = l.join(",");
 }
 
 //*************************************************************

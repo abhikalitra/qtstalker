@@ -91,10 +91,10 @@ int SZ::command (Command *command)
     return 1;
   }
 
-  int no_decline_period = command->parm("NO_DECLINE_PERIOD").toInt(&ok);
+  int no_decline_period = command->parm("PERIOD_NO_DECLINE").toInt(&ok);
   if (! ok)
   {
-    qDebug() << _plugin << "::command: invalid NO_DECLINE_PERIOD" << command->parm("NO_DECLINE_PERIOD");
+    qDebug() << _plugin << "::command: invalid PERIOD_NO_DECLINE" << command->parm("PERIOD_NO_DECLINE");
     return 1;
   }
 

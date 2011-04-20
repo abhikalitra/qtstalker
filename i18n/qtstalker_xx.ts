@@ -1259,17 +1259,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>RuleWidget</name>
-    <message>
-        <source>Add Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>SELECT_DIALOG</name>
     <message>
         <source>Items</source>

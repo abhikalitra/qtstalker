@@ -112,7 +112,7 @@ void SHIFTWidget::addItem (QString name, QString input, QString period)
   _tree->setItemWidget(item, col++, le);
 
   QSpinBox *sb = new QSpinBox;
-  sb->setRange(1, 99999);
+  sb->setRange(-999, 999);
   sb->setValue(period.toInt());
   _tree->setItemWidget(item, col++, sb);
 }

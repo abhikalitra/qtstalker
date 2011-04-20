@@ -47,6 +47,7 @@ class IndicatorEditDialog : public Dialog
     void createGUI ();
     void addTab (QString, int);
     void newDialog ();
+    void createDefaults ();
 
   public slots:
     void done ();

@@ -238,6 +238,7 @@ void Indicator::calculate ()
     }
 
     command.setIndicator(this);
+    command.setBarData(g_barData);
     plug->command(&command);
   }
 

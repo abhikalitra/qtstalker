@@ -30,7 +30,8 @@
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
       <td style="vertical-align: top;"><a
  href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson's
-Correlation Coefficient</a><br>
+Correlation
+Coefficient</a><br>
       <br>
       </td>
     </tr>
@@ -39,7 +40,7 @@ Correlation Coefficient</a><br>
       <td style="vertical-align: top;">PLUGIN = CORREL<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt; (security to compare)<br>
-INPUT2 = &lt;VARIABLE NAME&gt; (an index or benchmark for comparison
+INDEX = &lt;VARIABLE NAME&gt; (an index or benchmark for comparison
 e.g. S&amp;P500)<br>
 PERIOD = &lt;INTEGER&gt;<br>
       <br>
@@ -55,7 +56,7 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=CORREL,NAME=correl,INPUT=close,INPUT2=sp500,PERIOD=10<br>
+      <td style="vertical-align: top;">PLUGIN=CORREL,NAME=correl,INPUT=close,INDEX=sp500,PERIOD=10<br>
       <br>
       </td>
     </tr>
