@@ -32,7 +32,7 @@ class LineEdit : public QLineEdit
   Q_OBJECT
 
   public:
-    LineEdit ();
+    LineEdit (QWidget *);
     
   public slots:
     void verifyString (const QString &);

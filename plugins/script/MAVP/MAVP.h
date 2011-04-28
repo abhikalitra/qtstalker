@@ -31,8 +31,7 @@ class MAVP : public Plugin
   public:
     MAVP ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getMAVP (QList<Curve *> &, int min, int max, int type);
 };
 

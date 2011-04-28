@@ -3,7 +3,5 @@
 } 
 
 HEADERS += FI.h
-HEADERS += FIWidget.h
 
 SOURCES += FI.cpp
-SOURCES += FIWidget.cpp

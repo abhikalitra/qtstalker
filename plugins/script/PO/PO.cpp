@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "POWidget.h"
 #include "InputType.h"
 #include "MAType.h"
 
@@ -167,22 +166,31 @@ Curve * PO::getPO (QList<Curve *> &list, int fast, int slow, int type, int metho
   return c;
 }
 
-PluginWidget * PO::dialog (QWidget *p)
+void PO::settings (Setting *set)
 {
-  return new POWidget(p);
-}
+  set->clear();
 
-void PO::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "PERIOD_FAST=12";
-  l << "PERIOD_SLOW=26";
-  l << "MA_TYPE=EMA";
-  l << "METHOD=APO";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "PERIOD_FAST" << "PERIOD_SLOW" << "MA_TYPE" << "METHOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD_FAST", 12);
+  set->setData("PERIOD_FAST:TYPE", QString("INTEGER"));
+  set->setData("PERIOD_SLOW", 26);
+  set->setData("PERIOD_SLOW:TYPE", QString("INTEGER"));
+  set->setData("MA_TYPE", QString("EMA"));
+  set->setData("MA_TYPE:TYPE", QString("LIST"));
+  MAType mat;
+  set->setData("MA_TYPE:LIST", mat.list().join(","));
+  set->setData("METHOD", QString("APO"));
+  set->setData("METHOD:TYPE", QString("LIST"));
+  set->setData("METHOD:LIST", _method.join(","));
 }
 
 QStringList PO::list ()

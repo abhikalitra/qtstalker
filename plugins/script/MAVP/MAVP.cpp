@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "MAVPWidget.h"
 #include "InputType.h"
 #include "MAType.h"
 
@@ -165,22 +164,30 @@ Curve * MAVP::getMAVP (QList<Curve *> &list, int min, int max, int type)
   return c;
 }
 
-PluginWidget * MAVP::dialog (QWidget *p)
+void MAVP::settings (Setting *set)
 {
-  return new MAVPWidget(p);
-}
+  set->clear();
 
-void MAVP::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "INPUT2=Close";
-  l << "PERIOD_MIN=2";
-  l << "PERIOD_MAX=30";
-  l << "MA_TYPE=EMA";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "INPUT2" << "PERIOD_MIN" << "PERIOD_MAX" << "MA_TYPE";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("INPUT2", QString("Close"));
+  set->setData("INPUT2:TYPE", QString("TEXT"));
+  set->setData("PERIOD_MIN", 2);
+  set->setData("PERIOD_MIN:TYPE", QString("INTEGER"));
+  set->setData("PERIOD_MAX", 30);
+  set->setData("PERIOD_MAX:TYPE", QString("INTEGER"));
+  set->setData("MA_TYPE", QString("EMA"));
+  set->setData("MA_TYPE:TYPE", QString("LIST"));
+  MAType mat;
+  set->setData("MA_TYPE:LIST", mat.list().join(","));
 }
 
 //*************************************************************

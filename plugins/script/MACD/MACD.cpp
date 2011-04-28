@@ -25,7 +25,6 @@
 #include "Globals.h"
 #include "InputType.h"
 #include "MAType.h"
-#include "MACDWidget.h"
 
 #include <QtDebug>
 
@@ -221,26 +220,41 @@ QList<Curve *> MACD::getMACD (QList<Curve *> &list, int fp, int sp, int sigp, in
   return lines;
 }
 
-PluginWidget * MACD::dialog (QWidget *p)
+void MACD::settings (Setting *set)
 {
-  return new MACDWidget(p);
-}
+  set->clear();
 
-void MACD::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME_MACD=MACD";
-  l << "NAME_SIGNAL=SIG";
-  l << "NAME_HIST=HIST";
-  l << "INPUT=Close";
-  l << "PERIOD_FAST=12";
-  l << "PERIOD_SLOW=26";
-  l << "PERIOD_SIGNAL=9";
-  l << "MA_TYPE_FAST=EMA";
-  l << "MA_TYPE_SLOW=EMA";
-  l << "MA_TYPE_SIGNAL=EMA";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME_MACD" << "NAME_SIGNAL" << "NAME_HIST" << "INPUT" << "PERIOD_FAST" << "PERIOD_SLOW";
+  keys << "PERIOD_SIGNAL" << "MA_TYPE_FAST" << "MA_TYPE_SLOW" << "MA_TYPE_SIGNAL";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME_MACD", QString("MACD"));
+  set->setData("NAME_MACD:TYPE", QString("TEXT"));
+  set->setData("NAME_SIGNAL", QString("SIG"));
+  set->setData("NAME_SIGNAL:TYPE", QString("TEXT"));
+  set->setData("NAME_HIST", QString("HIST"));
+  set->setData("NAME_HIST:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD_FAST", 12);
+  set->setData("PERIOD_FAST:TYPE", QString("INTEGER"));
+  set->setData("PERIOD_SLOW", 26);
+  set->setData("PERIOD_SLOW:TYPE", QString("INTEGER"));
+  set->setData("PERIOD_SIGNAL", 9);
+  set->setData("PERIOD_SIGNAL:TYPE", QString("INTEGER"));
+  MAType mat;
+  set->setData("MA_TYPE_FAST", QString("EMA"));
+  set->setData("MA_TYPE_FAST:TYPE", QString("LIST"));
+  set->setData("MA_TYPE_FAST:LIST", mat.list().join(","));
+  set->setData("MA_TYPE_SLOW", QString("EMA"));
+  set->setData("MA_TYPE_SLOW:TYPE", QString("LIST"));
+  set->setData("MA_TYPE_SLOW:LIST", mat.list().join(","));
+  set->setData("MA_TYPE_SIGNAL", QString("EMA"));
+  set->setData("MA_TYPE_SIGNAL:TYPE", QString("LIST"));
+  set->setData("MA_TYPE_SIGNAL:LIST", mat.list().join(","));
 }
 
 //*************************************************************

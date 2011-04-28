@@ -71,7 +71,7 @@ void Setup::setup (QObject *p, QString session)
   if (ti)
     return;
   
-  setupDefaultIndicators();
+//  setupDefaultIndicators();
   setupDefaultScripts();
 
   settings.setValue("default_indicators", 1);
@@ -191,6 +191,7 @@ void Setup::scanPlugins ()
   QStringList il;
   QStringList col;
   QStringList cl;
+  QStringList pl;
   for (; loop < l.count(); loop++)
   {
     QString s = l.at(loop);
@@ -205,6 +206,8 @@ void Setup::scanPlugins ()
       continue;
     }
 
+    pl << s;
+    
     if (plug->type() == "INDICATOR")
       il << s;
     else if (plug->type() == "CHART_OBJECT")
@@ -218,6 +221,7 @@ void Setup::scanPlugins ()
     delete plug;
   }
 
+  settings.setValue("plugins", pl);
   settings.setValue("indicator_plugins", il);
   settings.setValue("chart_object_plugins", col);
   settings.setValue("curve_plugins", cl);

@@ -31,8 +31,7 @@ class BOP : public Plugin
   public:
     BOP ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getBOP (QList<Curve *> &);
 };
 

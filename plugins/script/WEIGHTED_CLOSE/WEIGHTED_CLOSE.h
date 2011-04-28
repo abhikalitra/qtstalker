@@ -32,8 +32,7 @@ class WEIGHTED_CLOSE : public Plugin
   public:
     WEIGHTED_CLOSE ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getWC (QList<Curve *> &);
 };
 

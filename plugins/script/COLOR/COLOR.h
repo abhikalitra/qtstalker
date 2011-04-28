@@ -33,8 +33,7 @@ class COLOR : public Plugin
   public:
     COLOR ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
 };
 
 extern "C"

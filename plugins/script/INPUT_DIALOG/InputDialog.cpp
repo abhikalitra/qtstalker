@@ -120,7 +120,7 @@ void InputDialog::done ()
       }
       case 2: // TEXT
       {
-        QLineEdit *le = _texts.value(key);
+        LineEdit *le = _texts.value(key);
         if (le)
           _command->setReturnData(rkey, le->text());
         break;
@@ -186,7 +186,7 @@ void InputDialog::newDouble (QString &key, QString &label, QString &value)
 
 void InputDialog::newText (QString &key, QString &label, QString &value)
 {
-  QLineEdit *le = new QLineEdit(this);
+  LineEdit *le = new LineEdit(this);
   le->setText(value);
   _form->addRow(label, le);
   _texts.insert(key, le);

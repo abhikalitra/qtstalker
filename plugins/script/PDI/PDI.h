@@ -31,8 +31,7 @@ class PDI : public Plugin
   public:
     PDI ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getPDI (QList<Curve *> &, int);
 };
 

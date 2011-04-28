@@ -31,8 +31,7 @@ class ARITHMETIC : public Plugin
   public:
     ARITHMETIC ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getARITHMETIC (Curve *in, Curve *in2, int method);
 };
 

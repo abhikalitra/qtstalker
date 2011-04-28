@@ -19,15 +19,22 @@
  *  USA.
  */
 
-#ifndef INDICATOR_EDIT_DIALOG_HPP
-#define INDICATOR_EDIT_DIALOG_HPP
+#ifndef PLUGIN_EDIT_DIALOG_HPP
+#define PLUGIN_EDIT_DIALOG_HPP
 
 #include <QStringList>
 #include <QTabWidget>
+#include <QList>
+#include <QListWidget>
+#include <QStackedWidget>
+#include <QSplitter>
+#include <QAction>
+#include <QMenu>
 
 #include "Dialog.h"
+#include "Setting.h"
 
-class IndicatorEditDialog : public Dialog
+class PluginEditDialog : public Dialog
 {
   Q_OBJECT
 
@@ -43,24 +50,47 @@ class IndicatorEditDialog : public Dialog
       _APPLY
     };
     
-    IndicatorEditDialog (QWidget *, QString);
+    PluginEditDialog (QWidget *, QString, QString);
+    ~PluginEditDialog ();
     void createGUI ();
-    void addTab (QString, int);
+    void createActions ();
     void newDialog ();
-    void createDefaults ();
+    void loadPlugins ();
+    void moveItem (int oldRow, int newRow);
 
   public slots:
+    void loadSettings ();
+    void saveSettings ();
     void done ();
-    void addIndicator ();
-    void addIndicator2 (QString);
-    void deleteIndicator ();
+    void addItem ();
+    void addItem2 (QString);
+    void deleteItem ();
+    void insertItem ();
+    void insertItem2 (QString);
     void newDialog2 (QString);
     void apply ();
     int applySave ();
+    void renameItem ();
+    void renameItem2 (QString);
+    void listSelectionChanged ();
+    void rightClick(const QPoint &);
+    void upItem ();
+    void downItem ();
 
   private:
-    QTabWidget *_tabs;
+    QList<Setting *> _settings;
+    QListWidget *_list;
+    QStackedWidget *_stack;
+    QAction *_deleteAction;
+    QAction *_insertAction;
+    QAction *_renameAction;
+    QAction *_addAction;
+    QAction *_upAction;
+    QAction *_downAction;
+    QSplitter *_splitter;
+    QMenu *_menu;
     QString _name;
+    QString _table;
     int _status;
     int _newFlag;
 };

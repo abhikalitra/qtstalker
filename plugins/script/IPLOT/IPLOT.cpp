@@ -21,9 +21,9 @@
 
 #include "IPLOT.h"
 #include "Globals.h"
-#include "IPLOTWidget.h"
 
 #include <QtDebug>
+#include <QSettings>
 
 IPLOT::IPLOT ()
 {
@@ -36,6 +36,8 @@ int IPLOT::command (Command *command)
   // PARMS:
   // NAME
   // STYLE
+  // USE_STYLE
+  // USE_COLOR
   // COLOR
   // Z
   // PEN
@@ -57,34 +59,42 @@ int IPLOT::command (Command *command)
   }
 
   // verify style
-  QString s = command->parm("STYLE");
-  if (! s.isEmpty())
+  int flag = command->parm("USE_STYLE").toInt();
+  if (flag)
   {
-    QStringList l = line->list();
-    int style = l.indexOf(s);
-    if (style == -1)
+    QString s = command->parm("STYLE");
+    if (! s.isEmpty())
     {
-      qDebug() << _plugin << "::command: invalid STYLE" << s;
-      return 1;
+      QStringList l = line->list();
+      int style = l.indexOf(s);
+      if (style == -1)
+      {
+        qDebug() << _plugin << "::command: invalid STYLE" << s;
+        return 1;
+      }
+      line->setType(command->parm("STYLE"));
     }
-    line->setType(command->parm("STYLE"));
   }
 
   // verify color
-  s = command->parm("COLOR");
-  if (! s.isEmpty())
+  flag = command->parm("USE_COLOR").toInt();
+  if (flag)
   {
-    QColor color(s);
-    if (! color.isValid())
+    QString s = command->parm("COLOR");
+    if (! s.isEmpty())
     {
-      qDebug() << _plugin << "::command: invalid COLOR" << s;
-      return 1;
+      QColor color(s);
+      if (! color.isValid())
+      {
+        qDebug() << _plugin << "::command: invalid COLOR" << s;
+        return 1;
+      }
+      line->setAllColor(color);
     }
-    line->setAllColor(color);
   }
   
   // verify Z
-  s = command->parm("Z");
+  QString s = command->parm("Z");
   if (s.isEmpty())
   {
     qDebug() << _plugin << "::command: invalid Z value" << s;
@@ -126,21 +136,32 @@ int IPLOT::command (Command *command)
   return 0;
 }
 
-PluginWidget * IPLOT::dialog (QWidget *p)
+void IPLOT::settings (Setting *set)
 {
-  return new IPLOTWidget(p);
-}
+  set->clear();
 
-void IPLOT::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=Close";
-  l << "COLOR=#FF0000";
-  l << "STYLE=Line";
-  l << "Z=0";
-  l << "PEN=1";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "USE_COLOR" << "COLOR" << "USE_STYLE" << "STYLE" << "Z" << "PEN";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", QString("Close"));
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("USE_COLOR", 1);
+  set->setData("USE_COLOR:TYPE", QString("CHECK"));
+  set->setData("COLOR", QString("#FF0000"));
+  set->setData("COLOR:TYPE", QString("COLOR"));
+  set->setData("USE_STYLE", 1);
+  set->setData("USE_STYLE:TYPE", QString("CHECK"));
+  set->setData("STYLE", QString("Line"));
+  set->setData("STYLE:TYPE", QString("LIST"));
+  QSettings settings(g_globalSettings);
+  set->setData("STYLE:LIST", settings.value("curve_plugins").toStringList().join(","));
+  set->setData("Z", 0);
+  set->setData("Z:TYPE", QString("INTEGER"));
+  set->setData("PEN", 1);
+  set->setData("PEN:TYPE", QString("INTEGER"));
 }
 
 //*************************************************************

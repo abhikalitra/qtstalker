@@ -31,8 +31,7 @@ class RSI : public Plugin
   public:
     RSI ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getRSI (QList<Curve *> &, int);
 };
 

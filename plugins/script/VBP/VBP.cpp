@@ -22,7 +22,6 @@
 #include "VBP.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "VBPWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -217,21 +216,26 @@ Curve * VBP::getVBP (QList<Curve *> &list, QColor upColor, QColor downColor)
   return line;
 }
 
-PluginWidget * VBP::dialog (QWidget *p)
+void VBP::settings (Setting *set)
 {
-  return new VBPWidget(p);
-}
+  set->clear();
 
-void VBP::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT_CLOSE=Close";
-  l << "INPUT_VOLUME=Volume";
-  l << "COLOR_UP=#00FF00";
-  l << "COLOR_DOWN=#FF0000";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_CLOSE" << "INPUT_VOLUME" << "COLOR_UP" << "COLOR_DOWN";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_CLOSE", QString("Close"));
+  set->setData("INPUT_CLOSE:TYPE", QString("TEXT"));
+  set->setData("INPUT_VOLUME", QString("Volume"));
+  set->setData("INPUT_VOLUME:TYPE", QString("TEXT"));
+  set->setData("COLOR_UP", QString("#00FF00"));
+  set->setData("COLOR_UP:TYPE", QString("COLOR"));
+  set->setData("COLOR_DOWN", QString("#FF0000"));
+  set->setData("COLOR_DOWN:TYPE", QString("COLOR"));
 }
 
 //*************************************************************

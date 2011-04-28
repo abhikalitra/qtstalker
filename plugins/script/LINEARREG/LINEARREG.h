@@ -40,8 +40,7 @@ class LINEARREG : public Plugin
 
     LINEARREG ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     QStringList list ();
     Curve * getLR (QList<Curve *> &, int, int);
 

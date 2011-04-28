@@ -33,8 +33,7 @@ class IPLOT : public Plugin
   public:
     IPLOT ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
 };
 
 extern "C"

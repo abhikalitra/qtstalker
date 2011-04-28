@@ -39,8 +39,7 @@ class HT : public Plugin
 
     HT ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     QStringList list ();
     Curve * getHT (QList<Curve *> &, int);
 

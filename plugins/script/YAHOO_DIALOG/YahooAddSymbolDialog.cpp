@@ -46,7 +46,7 @@ YahooAddSymbolDialog::YahooAddSymbolDialog (QWidget *p) : Dialog (p)
 
 void YahooAddSymbolDialog::createGUI ()
 {
-  _symbols = new LineEdit;
+  _symbols = new LineEdit(this);
   _symbols->setToolTip(tr("Enter Yahoo symbols separated by a space"));
   connect(_symbols, SIGNAL(textChanged(const QString &)), this, SLOT(buttonStatus()));
   _form->addRow(tr("Yahoo Symbols"), _symbols);

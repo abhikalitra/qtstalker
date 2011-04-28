@@ -31,8 +31,7 @@ class CANDLE_PATTERN : public Plugin
   public:
     CANDLE_PATTERN ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
 };
 
 extern "C"

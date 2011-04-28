@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "TRIXWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -135,19 +134,22 @@ Curve * TRIX::getTRIX (QList<Curve *> &list, int period)
   return c;
 }
 
-PluginWidget * TRIX::dialog (QWidget *p)
+void TRIX::settings (Setting *set)
 {
-  return new TRIXWidget(p);
-}
+  set->clear();
 
-void TRIX::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "PERIOD=20";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "PERIOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD", 20);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
 }
 
 //*************************************************************

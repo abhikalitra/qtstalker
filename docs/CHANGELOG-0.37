@@ -1237,3 +1237,15 @@
 
 20110420:  Fixed COMPARE plugin logic bug. Added an else parm NAME5 so that there are no empty values.
 
+20110427:  Have added a gui for each plugin. We can now create scripts and indicators using a common
+           unified GUI. Every script/indicator is now just a series of commands in sequence. Each command
+           (plugin) settings are set and the next command builds on the previous ones.
+
+           Now we can use a GUI to build scripts the same as we would for manual scripts using perl etc.
+           We can still use an external scripting language if we want, however the majority of scripts
+           do not require an external interpreter. This allows much improved speed for most scripts.
+
+           Still working on non-indicator commands and have not tested them yet. Indicators do work
+           nicely.
+
+          

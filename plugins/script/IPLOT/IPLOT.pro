@@ -3,7 +3,5 @@
 }
 
 HEADERS += IPLOT.h
-HEADERS += IPLOTWidget.h
 
 SOURCES += IPLOT.cpp
-SOURCES += IPLOTWidget.cpp

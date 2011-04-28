@@ -23,7 +23,6 @@
 #include "Globals.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "VIDYAWidget.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -210,20 +209,24 @@ Curve * VIDYA::getCMO (QList<Curve *> &list, int period)
   return c;
 }
 
-PluginWidget * VIDYA::dialog (QWidget *p)
+void VIDYA::settings (Setting *set)
 {
-  return new VIDYAWidget(p);
-}
+  set->clear();
 
-void VIDYA::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "PERIOD=10";
-  l << "PERIOD_VOLUME=10";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "PERIOD" << "PERIOD_VOLUME";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD", 10);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
+  set->setData("PERIOD_VOLUME", 10);
+  set->setData("PERIOD_VOLUME:TYPE", QString("INTEGER"));
 }
 
 //*************************************************************

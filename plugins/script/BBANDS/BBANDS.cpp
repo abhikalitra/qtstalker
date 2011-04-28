@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "BBANDSWidget.h"
 #include "MAType.h"
 #include "InputType.h"
 
@@ -206,24 +205,34 @@ QList<Curve *> BBANDS::getBBANDS (QList<Curve *> &list, int period, double udev,
   return lines;
 }
 
-PluginWidget * BBANDS::dialog (QWidget *p)
+void BBANDS::settings (Setting *set)
 {
-  return new BBANDSWidget(p);
-}
+  set->clear();
 
-void BBANDS::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME_UPPER=BBU";
-  l << "NAME_MIDDLE=BBM";
-  l << "NAME_LOWER=BBL";
-  l << "INPUT=Close";
-  l << "PERIOD=20";
-  l << "MA_TYPE=EMA";
-  l << "DEV_UP=2";
-  l << "DEV_DOWN=2";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME_UPPER"  << "NAME_MIDDLE" << "NAME_LOWER" << "INPUT" << "PERIOD" << "MA_TYPE" << "DEV_UP" << "DEV_DOWN";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME_UPPER", QString("BBU"));
+  set->setData("NAME_UPPER:TYPE", QString("TEXT"));
+  set->setData("NAME_MIDDLE", QString("BBM"));
+  set->setData("NAME_MIDDLE:TYPE", QString("TEXT"));
+  set->setData("NAME_LOWER", QString("BBL"));
+  set->setData("NAME_LOWER:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD", QString("14"));
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
+  set->setData("DEV_UP", QString("2"));
+  set->setData("DEV_UP:TYPE", QString("DOUBLE"));
+  set->setData("DEV_DOWN", QString("2"));
+  set->setData("DEV_DOWN:TYPE", QString("DOUBLE"));
+  set->setData("MA_TYPE", QString("EMA"));
+  set->setData("MA_TYPE:TYPE", QString("LIST"));
+  MAType mat;
+  set->setData("MA_TYPE:LIST", mat.list().join(","));
 }
 
 //*************************************************************

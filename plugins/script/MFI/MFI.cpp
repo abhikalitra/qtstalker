@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "MFIWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -165,22 +164,28 @@ Curve * MFI::getMFI (QList<Curve *> &list, int period)
   return c;
 }
 
-PluginWidget * MFI::dialog (QWidget *p)
+void MFI::settings (Setting *set)
 {
-  return new MFIWidget(p);
-}
+  set->clear();
 
-void MFI::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "INPUT_CLOSE=Close";
-  l << "INPUT_VOLUME=Volume";
-  l << "PERIOD=9";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_HIGH" << "INPUT_LOW" << "INPUT_CLOSE"  << "INPUT_VOLUME" << "PERIOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("INPUT_CLOSE", QString("Close"));
+  set->setData("INPUT_CLOSE:TYPE", QString("TEXT"));
+  set->setData("INPUT_VOLUME", QString("Volume"));
+  set->setData("INPUT_VOLUME:TYPE", QString("TEXT"));
+  set->setData("PERIOD", 14);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
 }
 
 //*************************************************************

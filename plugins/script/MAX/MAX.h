@@ -31,8 +31,7 @@ class MAX : public Plugin
   public:
     MAX ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getMAX (QList<Curve *> &, int);
 };
 

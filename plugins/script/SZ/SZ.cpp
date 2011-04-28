@@ -24,7 +24,6 @@
 
 #include "SZ.h"
 #include "Globals.h"
-#include "SZWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -270,23 +269,31 @@ Curve * SZ::getSZ (QList<Curve *> &list, int method, int period, int no_decline_
   return pl;
 }
 
-PluginWidget * SZ::dialog (QWidget *p)
+void SZ::settings (Setting *set)
 {
-  return new SZWidget(p);
-}
+  set->clear();
 
-void SZ::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "METHOD=LONG";
-  l << "PERIOD=10";
-  l << "PERIOD_NO_DECLINE=2";
-  l << "COEFFICIENT=2";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_HIGH" << "INPUT_LOW" << "METHOD" << "PERIOD" << "PERIOD_NO_DECLINE" << "COEFFICIENT";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("METHOD", QString("LONG"));
+  set->setData("METHOD:TYPE", QString("LIST"));
+  set->setData("METHOD:TYPE", list().join(","));
+  set->setData("PERIOD", 10);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
+  set->setData("PERIOD_NO_DECLINE", 2);
+  set->setData("PERIOD_NO_DECLINE:TYPE", QString("INTEGER"));
+  set->setData("COEFFICIENT", 2);
+  set->setData("COEFFICIENT:TYPE", QString("DOUBLE"));
 }
 
 QStringList SZ::list ()

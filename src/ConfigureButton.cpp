@@ -23,7 +23,7 @@
 #include "Globals.h"
 #include "Doc.h"
 #include "AboutDialog.h"
-#include "IndicatorEditDialog.h"
+#include "PluginEditDialog.h"
 #include "DataDataBase.h"
 #include "ConfigureDialog.h"
 
@@ -129,6 +129,6 @@ void ConfigureButton::configureDialog ()
 
 void ConfigureButton::newIndicator ()
 {
-  IndicatorEditDialog *dialog = new IndicatorEditDialog(this, 0);
+  PluginEditDialog *dialog = new PluginEditDialog(this, QString(), QString("indicators"));
   dialog->show();
 }

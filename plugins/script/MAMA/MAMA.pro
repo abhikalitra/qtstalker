@@ -3,7 +3,5 @@
 } 
 
 HEADERS += MAMA.h
-HEADERS += MAMAWidget.h
 
 SOURCES += MAMA.cpp
-SOURCES += MAMAWidget.cpp

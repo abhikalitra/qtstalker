@@ -31,9 +31,8 @@ class ADX : public Plugin
   public:
     ADX ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
     Curve * getADX (QList<Curve *> &, int period);
+    void settings (Setting *);
 };
 
 extern "C"

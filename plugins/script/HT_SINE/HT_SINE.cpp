@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "HT_SINEWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -147,19 +146,22 @@ QList<Curve *> HT_SINE::getSINE (QList<Curve *> &list)
   return lines;
 }
 
-PluginWidget * HT_SINE::dialog (QWidget *p)
+void HT_SINE::settings (Setting *set)
 {
-  return new HT_SINEWidget(p);
-}
+  set->clear();
 
-void HT_SINE::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME_SINE=SINE";
-  l << "NAME_LEAD=LEAD";
-  l << "INPUT=Close";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME_SINE" << "NAME_LEAD" << "INPUT";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME_SINE", QString("SINE"));
+  set->setData("NAME_SINE:TYPE", QString("TEXT"));
+  set->setData("NAME_LEAD", QString("LEAD"));
+  set->setData("NAME_LEAD:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

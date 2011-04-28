@@ -518,30 +518,36 @@ int HLINE::command (Command *command)
   return 0;
 }
 
-PluginWidget * HLINE::dialog (QWidget *p)
-{
-  return new HLINEWidget(p);
-}
-
 void HLINE::defaults (Setting *set)
 {
   set->setData("PLUGIN", _plugin);
 }
 
-void HLINE::defaults (QString &d)
+void HLINE::settings (Setting *set)
 {
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "TYPE=HLine";
-  l << "NAME=-1";
-  l << "INDICATOR=";
-  l << "EXCHANGE=";
-  l << "SYMBOL=";
-  l << "PRICE=0";
-  l << "COLOR=white";
-  l << "Z=-1";
-  l << "RO=1";
-  d = l.join(",");
+  set->clear();
+
+  QStringList keys;
+  keys << "DATE" << "PRICE" << "COLOR" << "Z";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("CHART_OBJECT"));
+  set->setData("TYPE", QString("HLine"));
+  set->setData("NAME", -1);
+  set->setData("INDICATOR", QString());
+  set->setData("EXCHANGE", QString());
+  set->setData("SYMBOL", QString());
+  set->setData("RO", 1);
+  
+  set->setData("DATE", QString());
+  set->setData("DATE:TYPE", QString("DATE"));
+  set->setData("PRICE", 0);
+  set->setData("PRICE:TYPE", QString("DOUBLE"));
+  set->setData("COLOR", QString("#FF0000"));
+  set->setData("COLOR:TYPE", QString("COLOR"));
+  set->setData("Z", -1);
+  set->setData("Z:TYPE", QString("INTEGER"));
 }
 
 //*************************************************************

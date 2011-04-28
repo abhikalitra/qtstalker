@@ -32,8 +32,7 @@ class VIDYA : public Plugin
   public:
     VIDYA ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getVIDYA (QList<Curve *> &, int period, int vperiod);
     Curve * getCMO (QList<Curve *> &, int period);
 };

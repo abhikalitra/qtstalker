@@ -3,7 +3,7 @@
 } 
 
 HEADERS += DOHLCVI.h
-HEADERS += DOHLCVIWidget.h
+#HEADERS += DOHLCVIWidget.h
 
 SOURCES += DOHLCVI.cpp
-SOURCES += DOHLCVIWidget.cpp
+#SOURCES += DOHLCVIWidget.cpp

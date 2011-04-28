@@ -31,8 +31,7 @@ class CORREL : public Plugin
   public:
     CORREL ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getCORREL (QList<Curve *> &, int period);
 };
 

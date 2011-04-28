@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "HT_PHASORWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -147,19 +146,22 @@ QList<Curve *> HT_PHASOR::getPHASOR (QList<Curve *> &list)
   return lines;
 }
 
-PluginWidget * HT_PHASOR::dialog (QWidget *p)
+void HT_PHASOR::settings (Setting *set)
 {
-  return new HT_PHASORWidget(p);
-}
+  set->clear();
 
-void HT_PHASOR::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME_PHASE=PHASE";
-  l << "NAME_QUAD=QUAD";
-  l << "INPUT=Close";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME_PHASE" << "NAME_QUAD" << "INPUT";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME_PHASE", QString("PHASE"));
+  set->setData("NAME_PHASE:TYPE", QString("TEXT"));
+  set->setData("NAME_QUAD", QString("QUAD"));
+  set->setData("NAME_QUAD:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

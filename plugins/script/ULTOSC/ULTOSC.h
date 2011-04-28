@@ -31,8 +31,7 @@ class ULTOSC : public Plugin
   public:
     ULTOSC ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getULTOSC (QList<Curve *> &, int sp, int mp, int lp);
 };
 

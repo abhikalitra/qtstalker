@@ -24,7 +24,6 @@
 #include "Globals.h"
 #include "CandleType.h"
 #include "InputType.h"
-#include "CANDLE_PATTERNWidget.h"
 
 #include <QtDebug>
 #include <QList>
@@ -157,23 +156,32 @@ int CANDLE_PATTERN::command (Command *command)
   return 0;
 }
 
-PluginWidget * CANDLE_PATTERN::dialog (QWidget *p)
+void CANDLE_PATTERN::settings (Setting *set)
 {
-  return new CANDLE_PATTERNWidget(p);
-}
+  set->clear();
 
-void CANDLE_PATTERN::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=CP";
-  l << "INPUT_OPEN=Open";
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "INPUT_CLOSE=Close";
-  l << "METHOD=DOJI";
-  l << "PENETRATION=0.5";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_OPEN"  << "INPUT_HIGH" << "INPUT_LOW" << "INPUT_CLOSE" << "METHOD" << "PENETRATION";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_OPEN", QString("Open"));
+  set->setData("INPUT_OPEN:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("INPUT_CLOSE", QString("Close"));
+  set->setData("INPUT_CLOSE:TYPE", QString("TEXT"));
+  set->setData("PENETRATION", 0.5);
+  set->setData("PENETRATION:TYPE", QString("DOUBLE"));
+  set->setData("METHOD", QString("HARAMI"));
+  set->setData("METHOD:TYPE", QString("LIST"));
+  CandleType ct;
+  set->setData("METHOD:TYPE", ct.list().join(","));
 }
 
 //*************************************************************

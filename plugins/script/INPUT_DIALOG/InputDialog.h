@@ -24,7 +24,6 @@
 
 #include <QDoubleSpinBox>
 #include <QSpinBox>
-#include <QLineEdit>
 #include <QHash>
 #include <QStringList>
 #include <QComboBox>
@@ -34,6 +33,7 @@
 #include "Dialog.h"
 #include "SymbolButton.h"
 #include "FileButton.h"
+#include "LineEdit.h"
 
 class InputDialog : public Dialog
 {
@@ -57,7 +57,7 @@ class InputDialog : public Dialog
     QStringList _typeList;
     QHash<QString, QDoubleSpinBox *> _doubles;
     QHash<QString, QSpinBox *> _integers;
-    QHash<QString, QLineEdit *> _texts;
+    QHash<QString, LineEdit *> _texts;
     QHash<QString, QComboBox *> _lists;
     QHash<QString, QDateTimeEdit *> _dates;
     QHash<QString, SymbolButton *> _symbols;

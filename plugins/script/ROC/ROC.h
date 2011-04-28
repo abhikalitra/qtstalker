@@ -39,8 +39,7 @@ class ROC : public Plugin
 
     ROC ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     QStringList list ();
     Curve * getROC (QList<Curve *> &, int, int);
 

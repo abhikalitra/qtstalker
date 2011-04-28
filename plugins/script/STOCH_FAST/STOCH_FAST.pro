@@ -3,7 +3,5 @@
 } 
 
 HEADERS += STOCH_FAST.h
-HEADERS += STOCH_FASTWidget.h
 
 SOURCES += STOCH_FAST.cpp
-SOURCES += STOCH_FASTWidget.cpp

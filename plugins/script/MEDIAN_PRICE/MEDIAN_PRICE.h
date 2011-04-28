@@ -31,8 +31,7 @@ class MEDIAN_PRICE : public Plugin
   public:
     MEDIAN_PRICE ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getMP (QList<Curve *> &);
 };
 

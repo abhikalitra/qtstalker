@@ -35,6 +35,7 @@ class InputType
   public:
     enum Type
     {
+      _DATE,
       _OPEN,
       _HIGH,
       _LOW,

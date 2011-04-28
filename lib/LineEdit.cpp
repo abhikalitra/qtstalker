@@ -21,7 +21,7 @@
 
 #include "LineEdit.h"
 
-LineEdit::LineEdit ()
+LineEdit::LineEdit (QWidget *p) : QLineEdit (p)
 {
   connect(this, SIGNAL(textChanged(const QString &)), this, SLOT(verifyString(const QString &)));
 }

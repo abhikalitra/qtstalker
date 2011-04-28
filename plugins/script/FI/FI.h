@@ -31,8 +31,7 @@ class FI : public Plugin
   public:
     FI ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getFI (QList<Curve *> &);
 };
 

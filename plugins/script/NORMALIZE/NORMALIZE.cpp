@@ -105,18 +105,20 @@ Curve * NORMALIZE::getNORM (QList<Curve *> &list)
   return line;
 }
 
-PluginWidget * NORMALIZE::dialog (QWidget *p)
+void NORMALIZE::settings (Setting *set)
 {
-  return new NORMALIZEWidget(p);
-}
+  set->clear();
 
-void NORMALIZE::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=AP";
-  l << "INPUT=Close";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

@@ -31,8 +31,7 @@ class SHIFT : public Plugin
   public:
     SHIFT ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getSHIFT (QList<Curve *> &, int);
 };
 

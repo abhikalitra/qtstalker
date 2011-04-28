@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "MAMAWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -166,21 +165,26 @@ QList<Curve *> MAMA::getMAMA (QList<Curve *> &list, double flimit, double slimit
   return lines;
 }
 
-PluginWidget * MAMA::dialog (QWidget *p)
+void MAMA::settings (Setting *set)
 {
-  return new MAMAWidget(p);
-}
+  set->clear();
 
-void MAMA::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME_MAMA=MAMA";
-  l << "NAME_FAMA=FAMA";
-  l << "INPUT=Close";
-  l << "LIMIT_FAST=0.5";
-  l << "LIMIT_SLOW=0.05";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME_MAMA" << "NAME_FAMA" << "INPUT" << "LIMIT_FAST" << "LIMIT_SLOW";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME_MAMA", QString("MAMA"));
+  set->setData("NAME_MAMA:TYPE", QString("TEXT"));
+  set->setData("NAME_FAMA", QString("FAMA"));
+  set->setData("NAME_FAMA:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("LIMIT_FAST", 0.5);
+  set->setData("LIMIT_FAST:TYPE", QString("DOUBLE"));
+  set->setData("LIMIT_SLOW", 0.05);
+  set->setData("LIMIT_SLOW:TYPE", QString("DOUBLE"));
 }
 
 //*************************************************************

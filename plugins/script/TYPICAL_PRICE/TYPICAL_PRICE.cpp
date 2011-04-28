@@ -22,7 +22,6 @@
 #include "TYPICAL_PRICE.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "TYPICAL_PRICEWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -111,20 +110,24 @@ int TYPICAL_PRICE::command (Command *command)
   return 0;
 }
 
-PluginWidget * TYPICAL_PRICE::dialog (QWidget *p)
+void TYPICAL_PRICE::settings (Setting *set)
 {
-  return new TYPICAL_PRICEWidget(p);
-}
+  set->clear();
 
-void TYPICAL_PRICE::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=TP";
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "INPUT_CLOSE=Close";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_HIGH" << "INPUT_LOW" << "INPUT_CLOSE";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("INPUT_CLOSE", QString("Close"));
+  set->setData("INPUT_CLOSE:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

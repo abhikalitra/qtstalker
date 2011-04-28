@@ -3,7 +3,5 @@
 } 
 
 HEADERS += MAX.h
-HEADERS += MAXWidget.h
 
 SOURCES += MAX.cpp
-SOURCES += MAXWidget.cpp

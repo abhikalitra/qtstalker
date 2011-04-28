@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "InputType.h"
-#include "ARITHMETICWidget.h"
 
 #include <QtDebug>
 
@@ -154,20 +153,26 @@ Curve * ARITHMETIC::getARITHMETIC (Curve *in, Curve *in2, int method)
   return line;
 }
 
-PluginWidget * ARITHMETIC::dialog (QWidget *p)
+void ARITHMETIC::settings (Setting *set)
 {
-  return new ARITHMETICWidget(p);
-}
+  set->clear();
 
-void ARITHMETIC::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "INPUT2=Close";
-  l << "METHOD=ADD";
-  d = l.join(",");
+  QStringList keys, l;
+  l << "ADD" << "DIV" << "MULT" << "SUB";
+  keys << "NAME" << "INPUT" << "INPUT2" << "METHOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("INPUT2", QString("Close"));
+  set->setData("INPUT2:TYPE", QString("TEXT"));
+  set->setData("METHOD", QString("ADD"));
+  set->setData("METHOD:TYPE", QString("LIST"));
+  set->setData("METHOD:LIST", l.join(","));
 }
 
 //*************************************************************

@@ -37,16 +37,11 @@ QString Plugin::type ()
   return _type;
 }
 
-void Plugin::defaults (QString &)
+void Plugin::settings (Setting *)
 {
 }
 
 int Plugin::command (Command *)
-{
-  return 0;
-}
-
-PluginWidget * Plugin::dialog (QWidget *)
 {
   return 0;
 }

@@ -31,8 +31,7 @@ class MOM : public Plugin
   public:
     MOM ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getMOM (QList<Curve *> &, int);
 };
 

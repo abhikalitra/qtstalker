@@ -39,6 +39,7 @@ class Command
     Command (QString);
     void clear ();
     void parse (QString);
+    void setParm (QString, QString);
     QString plugin ();
     void setReturnData (QString, QString);
     QString returnData (QString);

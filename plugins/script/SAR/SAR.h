@@ -31,8 +31,7 @@ class SAR : public Plugin
   public:
     SAR ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getSAR (QList<Curve *> &, double, double);
 };
 

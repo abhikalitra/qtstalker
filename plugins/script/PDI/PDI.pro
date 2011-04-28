@@ -3,7 +3,5 @@
 } 
 
 HEADERS += PDI.h
-HEADERS += PDIWidget.h
 
 SOURCES += PDI.cpp
-SOURCES += PDIWidget.cpp

@@ -31,8 +31,7 @@ class TYPICAL_PRICE : public Plugin
   public:
     TYPICAL_PRICE ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
 };
 
 extern "C"

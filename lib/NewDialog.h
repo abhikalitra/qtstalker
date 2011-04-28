@@ -26,6 +26,7 @@
 #include <QComboBox>
 
 #include "Dialog.h"
+#include "LineEdit.h"
 
 class NewDialog : public Dialog
 {
@@ -48,6 +49,7 @@ class NewDialog : public Dialog
     QLabel *_title;
     QStringList _items;
     QComboBox *_name;
+    LineEdit *_edit;
 };
 
 #endif

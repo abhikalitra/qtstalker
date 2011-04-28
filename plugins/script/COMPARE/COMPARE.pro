@@ -3,7 +3,5 @@
 }
 
 HEADERS += COMPARE.h
-HEADERS += COMPAREWidget.h
 
 SOURCES += COMPARE.cpp
-SOURCES += COMPAREWidget.cpp

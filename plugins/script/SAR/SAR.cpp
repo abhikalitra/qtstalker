@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "SARWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -155,21 +154,26 @@ Curve * SAR::getSAR (QList<Curve *> &list, double init, double max)
   return c;
 }
 
-PluginWidget * SAR::dialog (QWidget *p)
+void SAR::settings (Setting *set)
 {
-  return new SARWidget(p);
-}
+  set->clear();
 
-void SAR::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "STEP_INITIAL=0.02";
-  l << "STEP_MAX=0.2";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_HIGH" << "INPUT_LOW" << "STEP_INITIAL" << "STEP_MAX";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("STEP_INITIAL", 0.02);
+  set->setData("STEP_INITIAL:TYPE", QString("DOUBLE"));
+  set->setData("STEP_MAX", 0.2);
+  set->setData("STEP_MAX:TYPE", QString("DOUBLE"));
 }
 
 //*************************************************************

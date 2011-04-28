@@ -37,8 +37,7 @@ class PO : public Plugin
 
     PO ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     QStringList list ();
     Curve * getPO (QList<Curve *> &, int, int, int, int);
 

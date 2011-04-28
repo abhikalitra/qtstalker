@@ -3,7 +3,5 @@
 } 
 
 HEADERS += TRIX.h
-HEADERS += TRIXWidget.h
 
 SOURCES += TRIX.cpp
-SOURCES += TRIXWidget.cpp

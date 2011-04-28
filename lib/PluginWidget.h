@@ -19,12 +19,15 @@
  *  USA.
  */
 
-#ifndef PLUGIN_PLUGIN_WIDGET_HPP
-#define PLUGIN_PLUGIN_WIDGET_HPP
+#ifndef PLUGIN_WIDGET_HPP
+#define PLUGIN_WIDGET_HPP
 
 #include <QWidget>
+#include <QFormLayout>
+#include <QHash>
 #include <QStringList>
-#include <QLayout>
+
+#include "Setting.h"
 
 class PluginWidget : public QWidget
 {
@@ -32,13 +35,13 @@ class PluginWidget : public QWidget
 
   public:
     PluginWidget (QWidget *);
-
-  public slots:
-    virtual void setCommand (QString);
-    virtual void commands (QStringList &, int tab);
+    void save ();
+    void setWidgets (Setting *);
 
   protected:
-    QVBoxLayout *_vbox;
+    QFormLayout *_form;
+    Setting *_settings;
+    QHash<QString, void *> _widgets;
 };
 
 #endif

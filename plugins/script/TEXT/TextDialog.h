@@ -26,11 +26,11 @@
 #include <QCheckBox>
 #include <QDateTimeEdit>
 #include <QSpinBox>
-#include <QLineEdit>
 
 #include "ColorButton.h"
 #include "Setting.h"
 #include "FontButton.h"
+#include "LineEdit.h"
 
 class TextDialog : public QWidget
 {
@@ -50,7 +50,7 @@ class TextDialog : public QWidget
     QDateTimeEdit *_date;
     ColorButton *_color;
     FontButton *_font;
-    QLineEdit *_text;
+    LineEdit *_text;
     QSpinBox *_z;
 };
 

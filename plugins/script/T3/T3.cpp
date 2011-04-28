@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "T3Widget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -144,20 +143,24 @@ Curve * T3::getT3 (QList<Curve *> &list, int period, double vfactor)
   return c;
 }
 
-PluginWidget * T3::dialog (QWidget *p)
+void T3::settings (Setting *set)
 {
-  return new T3Widget(p);
-}
+  set->clear();
 
-void T3::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "PERIOD=5";
-  l << "VFACTOR=0.7";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "PERIOD" << "VFACTOR";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD", 5);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
+  set->setData("VFACTOR", 0.7);
+  set->setData("VFACTOR:TYPE", QString("DOUBLE"));
 }
 
 //*************************************************************

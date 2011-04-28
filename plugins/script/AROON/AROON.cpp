@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "AROONWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -164,23 +163,27 @@ QList<Curve *> AROON::getAROON (QList<Curve *> &list, int period)
   return lines;
 }
 
-PluginWidget * AROON::dialog (QWidget *p)
+void AROON::settings (Setting *set)
 {
-  return new AROONWidget(p);
-}
+  set->clear();
 
-void AROON::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME_UPPER=AROONU";
-  l << "NAME_LOWER=AROONL";
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "PERIOD=14";
-  d = l.join(",");
-}
+  QStringList keys;
+  keys << "NAME_UPPER" << "NAME_LOWER" << "INPUT_HIGH" << "INPUT_LOW" << "PERIOD";
+  set->setData("KEYS", keys.join(","));
 
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME_UPPER", QString("AROONU"));
+  set->setData("NAME_UPPER:TYPE", QString("TEXT"));
+  set->setData("NAME_LOWER", QString("AROONL"));
+  set->setData("NAME_LOWER:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("PERIOD", QString("14"));
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
+}
 //*************************************************************
 //*************************************************************
 //*************************************************************

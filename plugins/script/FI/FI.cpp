@@ -22,7 +22,6 @@
 #include "FI.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "FIWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -121,19 +120,22 @@ Curve * FI::getFI (QList<Curve *> &list)
   return line;
 }
 
-PluginWidget * FI::dialog (QWidget *p)
+void FI::settings (Setting *set)
 {
-  return new FIWidget(p);
-}
+  set->clear();
 
-void FI::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT_VOLUME=Volume";
-  l << "INPUT_CLOSE=Close";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_VOLUME" << "INPUT_CLOSE";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_VOLUME", QString("Volume"));
+  set->setData("INPUT_VOLUME:TYPE", QString("TEXT"));
+  set->setData("INPUT_CLOSE", QString("Close"));
+  set->setData("INPUT_CLOSE:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

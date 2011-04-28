@@ -23,7 +23,7 @@
 
 InputType::InputType ()
 {
-  _list << "Open" << "High" << "Low" << "Close" << "Volume" << "OI";
+  _list << "Date" << "Open" << "High" << "Low" << "Close" << "Volume" << "OI";
 }
 
 QStringList & InputType::list ()
@@ -52,6 +52,13 @@ Curve * InputType::input (BarData *bd, QString t)
     
     switch ((Type) type)
     {
+      case _DATE:
+      {
+	CurveBar *cb = new CurveBar;
+	cb->setDateTime(bar->date());
+        line->setBar(loop, cb);
+	break;
+      }
       case _OPEN:
         line->setBar(loop, new CurveBar(bar->open()));
 	break;

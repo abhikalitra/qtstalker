@@ -24,7 +24,6 @@
 #include "Operator.h"
 #include "Strip.h"
 #include "Curve.h"
-#include "COLORWidget.h"
 
 #include <QtDebug>
 
@@ -203,21 +202,28 @@ int COLOR::command (Command *command)
   return 0;
 }
 
-PluginWidget * COLOR::dialog (QWidget *p)
+void COLOR::settings (Setting *set)
 {
-  return new COLORWidget(p);
-}
+  set->clear();
 
-void COLOR::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=Close";
-  l << "OP=EQ";
-  l << "NAME2=Close";
-  l << "NAME3=Close";
-  l << "COLOR=#FF0000";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "OP" << "NAME2" << "NAME3" << "COLOR";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", QString("Close"));
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("OP", QString("EQ"));
+  set->setData("OP:TYPE", QString("LIST"));
+  Operator op;
+  set->setData("OP:LIST", op.list().join(","));
+  set->setData("NAME2", QString("Close"));
+  set->setData("NAME2:TYPE", QString("TEXT"));
+  set->setData("NAME3", QString("Close"));
+  set->setData("NAME3:TYPE", QString("TEXT"));
+  set->setData("COLOR", QString("#FF0000"));
+  set->setData("COLOR:TYPE", QString("COLOR"));
 }
 
 //*************************************************************

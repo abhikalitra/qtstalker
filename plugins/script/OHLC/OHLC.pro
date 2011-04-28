@@ -3,8 +3,6 @@
 } 
 
 HEADERS += OHLC.h
-HEADERS += OHLCDialog.h
 
 SOURCES += OHLC.cpp
-SOURCES += OHLCDialog.cpp
 

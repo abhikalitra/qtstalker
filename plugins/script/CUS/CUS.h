@@ -31,8 +31,7 @@ class CUS : public Plugin
   public:
     CUS ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
 };
 
 extern "C"

@@ -3,7 +3,5 @@
 } 
 
 HEADERS += VAR.h
-HEADERS += VARWidget.h
 
 SOURCES += VAR.cpp
-SOURCES += VARWidget.cpp

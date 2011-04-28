@@ -23,7 +23,6 @@
 #include "Globals.h"
 
 #include <QtDebug>
-#include <QLineEdit>
 
 NewDialog::NewDialog (QWidget *p) : Dialog (p)
 {
@@ -44,7 +43,10 @@ void NewDialog::createGUI ()
   _title = new QLabel;
   _vbox->insertWidget(0, _title);
 
+  _edit = new LineEdit(this);
+  
   _name = new QComboBox;
+  _name->setLineEdit(_edit);
   _name->setEditable(TRUE);
   connect(_name, SIGNAL(editTextChanged(const QString &)), this, SLOT(nameChanged(const QString &)));
   _vbox->insertWidget(1, _name);
@@ -61,7 +63,7 @@ void NewDialog::nameChanged (const QString &text)
 
 void NewDialog::done ()
 {
-  QString name = _name->lineEdit()->text();
+  QString name = _edit->text();
   if (_items.contains(name))
   {
     _message->setText(name + " " + tr("already exists"));

@@ -25,7 +25,6 @@
 #include "DataDataBase.h"
 
 #include <QtDebug>
-#include <QLineEdit>
 #include <QSettings>
 
 NewIndicatorDialog::NewIndicatorDialog (QWidget *p) : Dialog (p)
@@ -48,7 +47,10 @@ NewIndicatorDialog::NewIndicatorDialog (QWidget *p) : Dialog (p)
 
 void NewIndicatorDialog::createGUI ()
 {
+  _edit = new LineEdit(this);
+  
   _name = new QComboBox;
+  _name->setLineEdit(_edit);
   _name->setEditable(TRUE);
   connect(_name, SIGNAL(editTextChanged(const QString &)), this, SLOT(nameChanged(const QString &)));
   _form->addRow(tr("Name"), _name);
@@ -68,7 +70,7 @@ void NewIndicatorDialog::nameChanged (const QString &text)
 
 void NewIndicatorDialog::done ()
 {
-  QString name = _name->lineEdit()->text();
+  QString name = _edit->text();
   if (_items.contains(name))
   {
     _message->setText(name + " " + tr("already exists"));

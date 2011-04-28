@@ -3,7 +3,5 @@
 } 
 
 HEADERS += CORREL.h
-HEADERS += CORRELWidget.h
 
 SOURCES += CORREL.cpp
-SOURCES += CORRELWidget.cpp

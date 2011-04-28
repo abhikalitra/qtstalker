@@ -67,7 +67,7 @@ IndicatorEditDialog::IndicatorEditDialog (QWidget *p, Command *c) : Dialog (p)
 void IndicatorEditDialog::createGUI ()
 {
   // command
-  _com = new LineEdit;
+  _com = new LineEdit(this);
   _com->setText("perl");
   _com->setToolTip(tr("Script command"));
   connect(_com, SIGNAL(textChanged(const QString &)), this, SLOT(buttonStatus()));

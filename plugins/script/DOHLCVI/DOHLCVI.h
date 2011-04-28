@@ -31,12 +31,10 @@ class DOHLCVI : public Plugin
   public:
     DOHLCVI ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
-    QStringList list ();
+    void settings (Setting *);
 
   private:
-    QStringList _methods;
+    QStringList _keys;
 };
 
 extern "C"

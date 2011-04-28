@@ -3,7 +3,5 @@
 } 
 
 HEADERS += VIDYA.h
-HEADERS += VIDYAWidget.h
 
 SOURCES += VIDYA.cpp
-SOURCES += VIDYAWidget.cpp

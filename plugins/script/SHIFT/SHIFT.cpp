@@ -22,7 +22,6 @@
 #include "SHIFT.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "SHIFTWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -109,19 +108,22 @@ Curve * SHIFT::getSHIFT (QList<Curve *> &list, int period)
   return line;
 }
 
-PluginWidget * SHIFT::dialog (QWidget *p)
+void SHIFT::settings (Setting *set)
 {
-  return new SHIFTWidget(p);
-}
+  set->clear();
 
-void SHIFT::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "PERIOD=1";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "PERIOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD", 20);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
 }
 
 //*************************************************************

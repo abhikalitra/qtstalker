@@ -31,8 +31,7 @@ class STOCH_RSI : public Plugin
   public:
     STOCH_RSI ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getSTOCHRSI (QList<Curve *> &, int);
 };
 

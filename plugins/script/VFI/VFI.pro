@@ -3,7 +3,5 @@
 } 
 
 HEADERS += VFI.h
-HEADERS += VFIWidget.h
 
 SOURCES += VFI.cpp
-SOURCES += VFIWidget.cpp

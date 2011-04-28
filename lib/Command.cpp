@@ -63,6 +63,13 @@ void Command::parse (QString d)
   }
 }
 
+void Command::setParm (QString k, QString d)
+{
+  strip(k);
+  strip(d);
+  _parms.insert(k, d);
+}
+
 QString Command::plugin ()
 {
   return _parms.value("PLUGIN");

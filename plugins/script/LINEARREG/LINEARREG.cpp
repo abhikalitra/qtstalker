@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "LINEARREGWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -158,20 +157,25 @@ Curve * LINEARREG::getLR (QList<Curve *> &list, int period, int method)
   return c;
 }
 
-PluginWidget * LINEARREG::dialog (QWidget *p)
+void LINEARREG::settings (Setting *set)
 {
-  return new LINEARREGWidget(p);
-}
+  set->clear();
 
-void LINEARREG::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "PERIOD=14";
-  l << "METHOD=LINEARREG";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "PERIOD" << "METHOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD", 14);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
+  set->setData("METHOD", QString("LINEARREG"));
+  set->setData("METHOD:TYPE", QString("LIST"));
+  set->setData("METHOD:LIST", list().join(","));
 }
 
 QStringList LINEARREG::list ()

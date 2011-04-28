@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "PDIWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -160,21 +159,26 @@ Curve * PDI::getPDI (QList<Curve *> &list, int period)
   return c;
 }
 
-PluginWidget * PDI::dialog (QWidget *p)
+void PDI::settings (Setting *set)
 {
-  return new PDIWidget(p);
-}
+  set->clear();
 
-void PDI::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "INPUT_CLOSE=Close";
-  l << "PERIOD=14";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_HIGH" << "INPUT_LOW" << "INPUT_CLOSE" << "PERIOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("INPUT_CLOSE", QString("Close"));
+  set->setData("INPUT_CLOSE:TYPE", QString("TEXT"));
+  set->setData("PERIOD", QString("14"));
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
 }
 
 //*************************************************************

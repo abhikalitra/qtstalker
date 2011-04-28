@@ -22,7 +22,7 @@
 #include "PlotMenu.h"
 #include "Globals.h"
 #include "ConfirmDialog.h"
-#include "IndicatorEditDialog.h"
+#include "PluginEditDialog.h"
 #include "DataDataBase.h"
 #include "Indicator.h"
 
@@ -285,7 +285,7 @@ void PlotMenu::setIndicator (QString d)
 
 void PlotMenu::newIndicator ()
 {
-  IndicatorEditDialog *dialog = new IndicatorEditDialog(this, 0);
+  PluginEditDialog *dialog = new PluginEditDialog(this, QString(), QString("indicators"));
   dialog->show();
 }
 

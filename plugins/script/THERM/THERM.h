@@ -31,8 +31,7 @@ class THERM : public Plugin
   public:
     THERM ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getTHERM (QList<Curve *> &);
 };
 

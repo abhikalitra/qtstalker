@@ -22,7 +22,6 @@
 #include "MA.h"
 #include "Curve.h"
 #include "MAType.h"
-#include "MADialog.h"
 
 #include <QtDebug>
 
@@ -90,20 +89,26 @@ int MA::command (Command *command)
   return 0;
 }
 
-PluginWidget * MA::dialog (QWidget *p)
+void MA::settings (Setting *set)
 {
-  return new MADialog(p);
-}
+  set->clear();
 
-void MA::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "PERIOD=10";
-  l << "METHOD=EMA";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "PERIOD" << "METHOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD", 10);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
+  set->setData("METHOD", QString("EMA"));
+  set->setData("METHOD:TYPE", QString("LIST"));
+  MAType mat;
+  set->setData("METHOD:LIST", mat.list().join(","));
 }
 
 //*************************************************************

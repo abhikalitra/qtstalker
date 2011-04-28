@@ -31,8 +31,7 @@ class ATR : public Plugin
   public:
     ATR ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getATR (QList<Curve *> &, int);
 };
 

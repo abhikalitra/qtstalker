@@ -3,7 +3,5 @@
 } 
 
 HEADERS += ROC.h
-HEADERS += ROCWidget.h
 
 SOURCES += ROC.cpp
-SOURCES += ROCWidget.cpp

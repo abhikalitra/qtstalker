@@ -31,8 +31,7 @@ class MFI : public Plugin
   public:
     MFI ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getMFI (QList<Curve *> &, int);
 };
 

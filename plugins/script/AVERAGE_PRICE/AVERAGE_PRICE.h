@@ -31,8 +31,7 @@ class AVERAGE_PRICE : public Plugin
   public:
     AVERAGE_PRICE ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getAP (QList<Curve *> &);
 };
 

@@ -1021,6 +1021,56 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
+    <name>PluginEditDialog</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insert Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a unique name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rename Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply Changes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter new name</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginTreeWidget</name>
+    <message>
+        <source>Add Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <source>Open</source>

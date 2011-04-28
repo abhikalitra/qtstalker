@@ -23,7 +23,6 @@
 #include "Globals.h"
 #include "Operator.h"
 #include "Curve.h"
-#include "COMPAREWidget.h"
 
 #include <QtDebug>
 
@@ -309,22 +308,30 @@ int COMPARE::command (Command *command)
   return 0;
 }
 
-PluginWidget * COMPARE::dialog (QWidget *p)
+void COMPARE::settings (Setting *set)
 {
-  return new COMPAREWidget(p);
-}
+  set->clear();
 
-void COMPARE::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "OP=EQ";
-  l << "NAME2=Close";
-  l << "NAME3=Close";
-  l << "NAME4=Close";
-  l << "NAME5=Close";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "OP" << "NAME2" << "NAME3" << "NAME4" << "NAME5";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", QString("Close"));
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("OP", QString("EQ"));
+  set->setData("OP:TYPE", QString("LIST"));
+  Operator op;
+  set->setData("OP:LIST", op.list().join(","));
+  set->setData("NAME2", QString("Close"));
+  set->setData("NAME2:TYPE", QString("TEXT"));
+  set->setData("NAME3", QString("Close"));
+  set->setData("NAME3:TYPE", QString("TEXT"));
+  set->setData("NAME4", QString("Close"));
+  set->setData("NAME4:TYPE", QString("TEXT"));
+  set->setData("NAME5", QString("Close"));
+  set->setData("NAME5:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

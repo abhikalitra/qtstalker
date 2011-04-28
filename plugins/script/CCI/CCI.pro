@@ -3,7 +3,5 @@
 } 
 
 HEADERS += CCI.h
-HEADERS += CCIWidget.h
 
 SOURCES += CCI.cpp
-SOURCES += CCIWidget.cpp

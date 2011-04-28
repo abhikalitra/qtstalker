@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "BETAWidget.h"
 #include "InputType.h"
 #include "QuoteDataBase.h"
 
@@ -169,20 +168,24 @@ Curve * BETA::getBETA (QList<Curve *> &list, int period)
   return c;
 }
 
-PluginWidget * BETA::dialog (QWidget *p)
+void BETA::settings (Setting *set)
 {
-  return new BETAWidget(p);
-}
+  set->clear();
 
-void BETA::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "INDEX=YAHOO:SPY";
-  l << "PERIOD=5";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "INDEX" << "PERIOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("INDEX", QString("YAHOO:SPY"));
+  set->setData("INDEX:TYPE", QString("TEXT"));
+  set->setData("PERIOD", 5);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
 }
 
 //*************************************************************

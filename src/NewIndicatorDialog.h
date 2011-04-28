@@ -26,6 +26,7 @@
 #include <QComboBox>
 
 #include "Dialog.h"
+#include "LineEdit.h"
 
 class NewIndicatorDialog : public Dialog
 {
@@ -47,6 +48,7 @@ class NewIndicatorDialog : public Dialog
     QStringList _items;
     QComboBox *_name;
     QComboBox *_indicator;
+    LineEdit *_edit;
 };
 
 #endif

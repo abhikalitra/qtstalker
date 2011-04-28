@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "STOCH_SLOWWidget.h"
 #include "MAType.h"
 #include "InputType.h"
 
@@ -215,26 +214,40 @@ QList<Curve *> STOCH_SLOW::getSTOCHS (QList<Curve *> &list, int fkperiod, int sk
   return lines;
 }
 
-PluginWidget * STOCH_SLOW::dialog (QWidget *p)
+void STOCH_SLOW::settings (Setting *set)
 {
-  return new STOCH_SLOWWidget(p);
-}
+  set->clear();
 
-void STOCH_SLOW::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME_SLOWK=%K";
-  l << "NAME_SLOWD=%D";
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "INPUT_CLOSE=Close";
-  l << "PERIOD_FASTK=5";
-  l << "PERIOD_SLOWK=3";
-  l << "PERIOD_SLOWD=3";
-  l << "MA_TYPE_SLOWK=EMA";
-  l << "MA_TYPE_SLOWD=EMA";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME_SLOWK"  << "NAME_SLOWD" << "INPUT_HIGH" << "INPUT_LOW" << "INPUT_CLOSE";
+  keys << "PERIOD_FASTK" << "PERIOD_SLOWK" << "PERIOD_SLOWD" << "MA_TYPE_SLOWK" << "MA_TYPE_SLOWD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME_SLOWK", QString("%K"));
+  set->setData("NAME_SLOWK:TYPE", QString("TEXT"));
+  set->setData("NAME_SLOWD", QString("%D"));
+  set->setData("NAME_SLOWD:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("INPUT_CLOSE", QString("Close"));
+  set->setData("INPUT_CLOSE:TYPE", QString("TEXT"));
+  set->setData("PERIOD_FASTK", 5);
+  set->setData("PERIOD_FASTK:TYPE", QString("INTEGER"));
+  set->setData("PERIOD_SLOWK", 3);
+  set->setData("PERIOD_SLOWK:TYPE", QString("INTEGER"));
+  set->setData("PERIOD_SLOWD", 3);
+  set->setData("PERIOD_SLOWD:TYPE", QString("INTEGER"));
+  set->setData("MA_TYPE_SLOWK", QString("EMA"));
+  set->setData("MA_TYPE_SLOWK:TYPE", QString("LIST"));
+  MAType mat;
+  set->setData("MA_TYPE_SLOWK:LIST", mat.list().join(","));
+  set->setData("MA_TYPE_SLOWD", QString("EMA"));
+  set->setData("MA_TYPE_SLOWD:TYPE", QString("LIST"));
+  set->setData("MA_TYPE_SLOWD:LIST", mat.list().join(","));
 }
 
 //*************************************************************

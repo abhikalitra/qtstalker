@@ -28,29 +28,22 @@
   <tbody>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
-      <td style="vertical-align: top;">Creates an array of METHOD
-values
-from the currently loaded quote bars.<br>
+      <td style="vertical-align: top;">Creates arrays of bar values
+from the currently loaded quote bars. All NAME_* parms are optional, so
+only the NAME_* parms used will be created.<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
       <td style="vertical-align: top;">PLUGIN = DOHLCVI<br>
-NAME = &lt;VARIABLE NAME&gt;<br>
-METHOD =<br>
-      <div style="margin-left: 40px;">
-      <ul>
-        <li>D - Date</li>
-        <li>O - Open</li>
-        <li>H - High</li>
-        <li>L - Low</li>
-        <li>C - Close</li>
-        <li>V - Volume</li>
-        <li>I - Open Interest<br>
-        </li>
-      </ul>
-      </div>
+NAME_DATE = &lt;VARIABLE NAME&gt;<br>
+NAME_OPEN = &lt;VARIABLE NAME&gt;<br>
+NAME_HIGH = &lt;VARIABLE NAME&gt;<br>
+NAME_LOW = &lt;VARIABLE NAME&gt;<br>
+NAME_CLOSE = &lt;VARIABLE NAME&gt;<br>
+NAME_VOLUME = &lt;VARIABLE NAME&gt;<br>
+NAME_OI = &lt;VARIABLE NAME&gt;<br>
       <br>
       </td>
     </tr>
@@ -64,7 +57,8 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=DOHLCVI,METHOD=C,NAME=close<br>
+      <td style="vertical-align: top;">PLUGIN=DOHLCVI, NAME_DATE=date,
+NAME_CLOSE=close<br>
       <br>
       </td>
     </tr>

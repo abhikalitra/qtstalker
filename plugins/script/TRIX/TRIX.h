@@ -31,8 +31,7 @@ class TRIX : public Plugin
   public:
     TRIX ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getTRIX (QList<Curve *> &, int);
 };
 

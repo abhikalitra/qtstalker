@@ -32,7 +32,6 @@
 #include "THERM.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "THERMWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -141,19 +140,22 @@ Curve * THERM::getTHERM (QList<Curve *> &list)
   return line;
 }
 
-PluginWidget * THERM::dialog (QWidget *p)
+void THERM::settings (Setting *set)
 {
-  return new THERMWidget(p);
-}
+  set->clear();
 
-void THERM::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_HIGH" << "INPUT_LOW";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

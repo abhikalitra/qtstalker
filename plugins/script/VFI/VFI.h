@@ -31,8 +31,7 @@ class VFI : public Plugin
   public:
     VFI ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getVFI (QList<Curve *> &, int period);
 };
 

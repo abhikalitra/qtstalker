@@ -31,8 +31,7 @@ class MAMA : public Plugin
   public:
     MAMA ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     QList<Curve *> getMAMA (QList<Curve *> &, double fast, double slow);
 };
 

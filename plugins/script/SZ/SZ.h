@@ -40,8 +40,7 @@ class SZ : public Plugin
 
     SZ ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     QStringList list ();
     Curve * getSZ (QList<Curve *> &, int type, int period, int ndp, double coeff);
 

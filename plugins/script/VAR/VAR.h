@@ -31,8 +31,7 @@ class VAR : public Plugin
   public:
     VAR ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getVAR (QList<Curve *> &, int, double);
 };
 

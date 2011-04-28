@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "InputType.h"
-#include "MEDIAN_PRICEWidget.h"
 
 #include <QtDebug>
 
@@ -114,19 +113,22 @@ Curve * MEDIAN_PRICE::getMP (QList<Curve *> &list)
   return line;
 }
 
-PluginWidget * MEDIAN_PRICE::dialog (QWidget *p)
+void MEDIAN_PRICE::settings (Setting *set)
 {
-  return new MEDIAN_PRICEWidget(p);
-}
+  set->clear();
 
-void MEDIAN_PRICE::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=MP";
-  l << "INPUT=High";
-  l << "INPUT2=Low";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "INPUT2";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("High"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("INPUT2", QString("Low"));
+  set->setData("INPUT2:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

@@ -31,8 +31,7 @@ class NORMALIZE : public Plugin
   public:
     NORMALIZE ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getNORM (QList<Curve *> &);
 };
 

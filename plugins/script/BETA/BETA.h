@@ -31,8 +31,7 @@ class BETA : public Plugin
   public:
     BETA ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getBETA (QList<Curve *> &, int period);
 };
 

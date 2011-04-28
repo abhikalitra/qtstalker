@@ -3,7 +3,5 @@
 }
 
 HEADERS += COLOR.h
-HEADERS += COLORWidget.h
 
 SOURCES += COLOR.cpp
-SOURCES += COLORWidget.cpp

@@ -3,7 +3,5 @@
 } 
 
 HEADERS += BETA.h
-HEADERS += BETAWidget.h
 
 SOURCES += BETA.cpp
-SOURCES += BETAWidget.cpp

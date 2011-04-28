@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "STDDEVWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -144,20 +143,24 @@ Curve * STDDEV::getSTDDEV (QList<Curve *> &list, int period, double dev)
   return c;
 }
 
-PluginWidget * STDDEV::dialog (QWidget *p)
+void STDDEV::settings (Setting *set)
 {
-  return new STDDEVWidget(p);
-}
+  set->clear();
 
-void STDDEV::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "PERIOD=10";
-  l << "DEVIATION=2";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "PERIOD" << "DEVIATION";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD", 10);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
+  set->setData("DEVIATION", 2);
+  set->setData("DEVIATION:TYPE", QString("DOUBLE"));
 }
 
 //*************************************************************

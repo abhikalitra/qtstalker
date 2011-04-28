@@ -31,8 +31,7 @@ class HT_PHASOR : public Plugin
   public:
     HT_PHASOR ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     QList<Curve *> getPHASOR (QList<Curve *> &);
 };
 

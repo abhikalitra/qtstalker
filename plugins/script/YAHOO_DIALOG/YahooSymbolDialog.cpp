@@ -62,7 +62,7 @@ void YahooSymbolDialog::createGUI ()
   QLabel *label = new QLabel(tr("Search"));
   tb->addWidget(label);
 
-  _search = new QLineEdit;
+  _search = new LineEdit(this);
   _search->setToolTip(tr("Search Pattern"));
   tb->addWidget(_search);
 

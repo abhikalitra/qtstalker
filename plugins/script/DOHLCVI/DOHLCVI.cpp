@@ -22,7 +22,7 @@
 #include "DOHLCVI.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "DOHLCVIWidget.h"
+#include "InputType.h"
 
 #include <QtDebug>
 
@@ -30,14 +30,19 @@ DOHLCVI::DOHLCVI ()
 {
   _plugin = "DOHLCVI";
   _type = "INDICATOR";
-  _methods << "D" << "O" << "H" << "L" << "C" << "V" << "I";
+  _keys << "NAME_DATE" << "NAME_OPEN" << "NAME_HIGH" << "NAME_LOW" << "NAME_CLOSE" << "NAME_VOLUME" << "NAME_OI";
 }
 
 int DOHLCVI::command (Command *command)
 {
   // PARMS:
-  // METHOD
-  // NAME
+  // NAME_DATE
+  // NAME_OPEN
+  // NAME_HIGH
+  // NAME_LOW
+  // NAME_CLOSE
+  // NAME_VOLUME
+  // NAME_OI
 
   if (g_barData->count() < 1)
   {
@@ -52,82 +57,57 @@ int DOHLCVI::command (Command *command)
     return 1;
   }
 
-  QString name = command->parm("NAME");
-  Curve *line = i->line(name);
-  if (line)
-  {
-    qDebug() << _plugin << "::command: duplicate name" << name;
-    return 1;
-  }
-
-  int method = _methods.indexOf(command->parm("METHOD"));
-  if (method == -1)
-  {
-    qDebug() << _plugin << "::command: invalid METHOD" << command->parm("METHOD");
-    return 1;
-  }
+  InputType it;
+  QStringList fieldList = it.list();
   
-  line = new Curve;
   int loop = 0;
-  for (; loop < g_barData->count(); loop++)
+  for (; loop < _keys.count(); loop++)
   {
-    Bar *b = g_barData->bar(loop);
-
-    switch (method)
+    QString name = command->parm(_keys.at(loop));
+    if (! name.isEmpty())
     {
-      case 0: // date
+      Curve *line = i->line(name);
+      if (! line)
       {
-	CurveBar *cb = new CurveBar;
-	cb->setDateTime(b->date());
-        line->setBar(loop, cb);
-	break;
+        line = it.input(g_barData, fieldList.at(loop));
+        if (! line)
+        {
+          qDebug() << _plugin << "::command:" << _keys.at(loop) << "error";
+          return 1;
+        }
+      
+        line->setLabel(name);
+        i->setLine(name, line);
       }
-      case 1: // open
-        line->setBar(loop, new CurveBar(b->open()));
-	break;
-      case 2: // high
-        line->setBar(loop, new CurveBar(b->high()));
-	break;
-      case 3: // low
-        line->setBar(loop, new CurveBar(b->low()));
-	break;
-      case 4: // close
-        line->setBar(loop, new CurveBar(b->close()));
-	break;
-      case 5: // volume
-        line->setBar(loop, new CurveBar(b->volume()));
-	break;
-      case 6: // oi
-        line->setBar(loop, new CurveBar(b->oi()));
-	break;
     }
   }
-
-  line->setLabel(name);
-  i->setLine(name, line);
-
+  
   command->setReturnCode("0");
 
   return 0;
 }
 
-PluginWidget * DOHLCVI::dialog (QWidget *p)
+void DOHLCVI::settings (Setting *set)
 {
-  return new DOHLCVIWidget(p);
-}
+  set->clear();
 
-void DOHLCVI::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=Close";
-  l << "METHOD=C";
-  d = l.join(",");
-}
-
-QStringList DOHLCVI::list ()
-{
-  return _methods;
+  set->setData("KEYS", _keys.join(","));
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME_DATE", QString());
+  set->setData("NAME_DATE:TYPE", QString("TEXT"));
+  set->setData("NAME_OPEN", QString());
+  set->setData("NAME_OPEN:TYPE", QString("TEXT"));
+  set->setData("NAME_HIGH", QString());
+  set->setData("NAME_HIGH:TYPE", QString("TEXT"));
+  set->setData("NAME_LOW", QString());
+  set->setData("NAME_LOW:TYPE", QString("TEXT"));
+  set->setData("NAME_CLOSE", QString());
+  set->setData("NAME_CLOSE:TYPE", QString("TEXT"));
+  set->setData("NAME_VOLUME", QString());
+  set->setData("NAME_VOLUME:TYPE", QString("TEXT"));
+  set->setData("NAME_OI", QString());
+  set->setData("NAME_OI:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

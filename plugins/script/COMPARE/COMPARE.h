@@ -33,8 +33,7 @@ class COMPARE : public Plugin
   public:
     COMPARE ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
 };
 
 extern "C"

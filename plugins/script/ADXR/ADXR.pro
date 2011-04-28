@@ -3,7 +3,5 @@
 } 
 
 HEADERS += ADXR.h
-HEADERS += ADXRWidget.h
 
 SOURCES += ADXR.cpp
-SOURCES += ADXRWidget.cpp

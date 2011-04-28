@@ -21,7 +21,6 @@
 
 #include "CUS.h"
 #include "Globals.h"
-#include "CUSDialog.h"
 #include "Script.h"
 
 #include <QtDebug>
@@ -86,41 +85,21 @@ int CUS::command (Command *command)
   return 0;
 }
 
-/*
-int CUS::calculate (BarData *bd, Indicator *i, Setting *settings)
+void CUS::settings (Setting *set)
 {
-  Script *script = new Script(this);
-  script->setIndicator(i);
-  script->setBarData(bd);
-  script->setName(settings->data("SCRIPT"));
-  script->setFile(settings->data("SCRIPT"));
-  script->setCommand(settings->data("COMMAND"));
-  script->startScript();
+  set->clear();
 
-  QEventLoop e;
-  connect(script, SIGNAL(signalDone(QString)), &e, SLOT(quit()));
-  e.exec();
+  QStringList keys;
+  keys << "COMMAND" << "SCRIPT";
+  set->setData("KEYS", keys.join(","));
 
-  delete script;
-
-  return 0;
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("COMMAND", QString("perl"));
+  set->setData("COMMAND:TYPE", QString("TEXT"));
+  set->setData("SCRIPT", QString());
+  set->setData("SCRIPT:TYPE", QString("TEXT"));
 }
-*/
-
-PluginWidget * CUS::dialog (QWidget *p)
-{
-  return new CUSDialog(p);
-}
-
-void CUS::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "COMMAND=perl";
-  l << "SCRIPT=";
-  d = l.join(",");
-}
-
 //*************************************************************
 //*************************************************************
 //*************************************************************

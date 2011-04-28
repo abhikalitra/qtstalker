@@ -31,8 +31,7 @@ class CMO : public Plugin
   public:
     CMO ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getCMO (QList<Curve *> &, int);
 };
 

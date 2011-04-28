@@ -22,7 +22,6 @@
 #include "OHLC.h"
 #include "Curve.h"
 #include "Globals.h"
-#include "OHLCDialog.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -147,21 +146,26 @@ int OHLC::command (Command *command)
   return 0;
 }
 
-PluginWidget * OHLC::dialog (QWidget *p)
+void OHLC::settings (Setting *set)
 {
-  return new OHLCDialog(p);
-}
+  set->clear();
 
-void OHLC::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT_OPEN=Open";
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "INPUT_CLOSE=Close";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_OPEN"  << "INPUT_HIGH" << "INPUT_LOW" << "INPUT_CLOSE";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_OPEN", QString("Open"));
+  set->setData("INPUT_OPEN:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("INPUT_CLOSE", QString("Close"));
+  set->setData("INPUT_CLOSE:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

@@ -3,7 +3,5 @@
 } 
 
 HEADERS += MDI.h
-HEADERS += MDIWidget.h
 
 SOURCES += MDI.cpp
-SOURCES += MDIWidget.cpp

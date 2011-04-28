@@ -3,7 +3,7 @@
 <head>
   <meta content="text/html; charset=ISO-8859-1"
  http-equiv="Content-Type">
-  <title>Qtstalker: INDICATOR_PLOT_COLOR_COMPARE_VALUE</title>
+  <title>Qtstalker: VBP</title>
   <link rel="stylesheet" type="text/css" href="qtstalker.css"
  media="screen">
   <script src="qtstalker.js" type="text/javascript"> </script>
@@ -20,7 +20,7 @@
 </div>
 </div>
 <!-- Content -->
-<h1>INDICATOR_PLOT_COLOR_COMPARE_VALUE
+<h1>VBP<br>
 </h1>
 <br>
 <table style="text-align: left; width: 1336px; height: 153px;"
@@ -28,20 +28,20 @@
   <tbody>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
-      <td style="vertical-align: top;">Compares NAME and VALUE using
-OP. If the compare is TRUE, then COLOR is applied to NAME2.<br>
+      <td style="vertical-align: top;"><a
+ href="http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:volume_by_price">Volume
+By Price. </a><br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN =
-INDICATOR_PLOT_COLOR_COMPARE_VALUE<br>
+      <td style="vertical-align: top;">PLUGIN = VBP<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
-OP = &lt;OPERATOR&gt;<br>
-VALUE = &lt;DECIMAL&gt;<br>
-NAME2 = &lt;VARIABLE NAME&gt;<br>
-COLOR = &lt;COLOR&gt;<br>
+INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
+INPUT_VOLUME = &lt;VARIABLE NAME&gt;<br>
+COLOR_UP = &lt;COLOR&gt;<br>
+COLOR_DOWN = &lt;COLOR&gt;<br>
       <br>
       </td>
     </tr>
@@ -55,7 +55,8 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=INDICATOR_PLOT_COLOR_COMPARE_VALUE,NAME=close,OP=GT,VALUE=0,NAME2=close,COLOR=green<br>
+      <td style="vertical-align: top;">PLUGIN=VBP, NAME=vbp,
+INPUT_CLOSE=Close, INPUT_VOLUME=Volume, COLOR_UP=green, COLOR_DOWN=red<br>
       <br>
       </td>
     </tr>

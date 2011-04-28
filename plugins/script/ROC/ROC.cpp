@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "ROCWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -155,20 +154,25 @@ Curve * ROC::getROC (QList<Curve *> &list, int period, int method)
   return c;
 }
 
-PluginWidget * ROC::dialog (QWidget *p)
+void ROC::settings (Setting *set)
 {
-  return new ROCWidget(p);
-}
+  set->clear();
 
-void ROC::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "METHOD=ROC";
-  l << "INPUT=Close";
-  l << "PERIOD=14";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "PERIOD" << "METHOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("PERIOD", 14);
+  set->setData("PERIOD:TYPE", QString("INTEGER"));
+  set->setData("METHOD", QString("ROC"));
+  set->setData("METHOD:TYPE", QString("LIST"));
+  set->setData("METHOD:TYPE", list().join(","));
 }
 
 QStringList ROC::list ()

@@ -21,7 +21,6 @@
 
 #include "WEIGHTED_CLOSE.h"
 #include "Globals.h"
-#include "WEIGHTED_CLOSEWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -126,20 +125,24 @@ Curve * WEIGHTED_CLOSE::getWC (QList<Curve *> &list)
   return line;
 }
 
-PluginWidget * WEIGHTED_CLOSE::dialog (QWidget *p)
+void WEIGHTED_CLOSE::settings (Setting *set)
 {
-  return new WEIGHTED_CLOSEWidget(p);
-}
+  set->clear();
 
-void WEIGHTED_CLOSE::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=WC";
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "INPUT_CLOSE=Close";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT_HIGH" << "INPUT_LOW" << "INPUT_CLOSE";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", QString("WC"));
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("INPUT_CLOSE", QString("Close"));
+  set->setData("INPUT_CLOSE:TYPE", QString("TEXT"));
 }
 
 //*************************************************************

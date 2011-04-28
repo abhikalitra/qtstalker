@@ -60,7 +60,8 @@ void TextDialog::createGUI ()
   form->addRow(tr("Price"), _price);
 
   // text
-  _text = new QLineEdit(_co->data("TEXT"));
+  _text = new LineEdit(this);
+  _text->setText(_co->data("TEXT"));
   form->addRow(tr("Text"), _text);
 
   // default

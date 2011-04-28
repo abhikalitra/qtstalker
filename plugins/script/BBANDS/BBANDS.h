@@ -31,8 +31,7 @@ class BBANDS : public Plugin
   public:
     BBANDS ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     QList<Curve *> getBBANDS (QList<Curve *> &, int period, double udev, double ldev, int type);
 };
 

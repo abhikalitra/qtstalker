@@ -3,7 +3,5 @@
 } 
 
 HEADERS += HT.h
-HEADERS += HTWidget.h
 
 SOURCES += HT.cpp
-SOURCES += HTWidget.cpp

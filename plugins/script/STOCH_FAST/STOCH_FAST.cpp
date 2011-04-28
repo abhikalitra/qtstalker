@@ -24,7 +24,6 @@
 #include "ta_libc.h"
 #include "Globals.h"
 #include "MAType.h"
-#include "STOCH_FASTWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -197,24 +196,35 @@ QList<Curve *> STOCH_FAST::getSTOCHF (QList<Curve *> &list, int kperiod, int dpe
   return lines;
 }
 
-PluginWidget * STOCH_FAST::dialog (QWidget *p)
+void STOCH_FAST::settings (Setting *set)
 {
-  return new STOCH_FASTWidget(p);
-}
+  set->clear();
 
-void STOCH_FAST::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME_FASTK=%K";
-  l << "NAME_FASTD=%D";
-  l << "INPUT_HIGH=High";
-  l << "INPUT_LOW=Low";
-  l << "INPUT_CLOSE=Close";
-  l << "PERIOD_FASTK=5";
-  l << "PERIOD_FASTD=3";
-  l << "MA_TYPE=EMA";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME_FASTK"  << "NAME_FASTD" << "INPUT_HIGH" << "INPUT_LOW" << "INPUT_CLOSE";
+  keys << "PERIOD_FASTK" << "PERIOD_FASTD" << "MA_TYPE";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME_FASTK", QString("%K"));
+  set->setData("NAME_FASTK:TYPE", QString("TEXT"));
+  set->setData("NAME_FASTD", QString("%D"));
+  set->setData("NAME_FASTD:TYPE", QString("TEXT"));
+  set->setData("INPUT_HIGH", QString("High"));
+  set->setData("INPUT_HIGH:TYPE", QString("TEXT"));
+  set->setData("INPUT_LOW", QString("Low"));
+  set->setData("INPUT_LOW:TYPE", QString("TEXT"));
+  set->setData("INPUT_CLOSE", QString("Close"));
+  set->setData("INPUT_CLOSE:TYPE", QString("TEXT"));
+  set->setData("PERIOD_FASTK", 5);
+  set->setData("PERIOD_FASTK:TYPE", QString("INTEGER"));
+  set->setData("PERIOD_FASTD", 3);
+  set->setData("PERIOD_FASTD:TYPE", QString("INTEGER"));
+  set->setData("MA_TYPE", QString("EMA"));
+  set->setData("MA_TYPE:TYPE", QString("LIST"));
+  MAType mat;
+  set->setData("MA_TYPE:LIST", mat.list().join(","));
 }
 
 //*************************************************************

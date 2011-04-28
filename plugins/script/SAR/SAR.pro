@@ -3,7 +3,5 @@
 } 
 
 HEADERS += SAR.h
-HEADERS += SARWidget.h
 
 SOURCES += SAR.cpp
-SOURCES += SARWidget.cpp

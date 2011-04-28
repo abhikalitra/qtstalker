@@ -31,9 +31,8 @@ class AD : public Plugin
   public:
     AD ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
     Curve * getAD (QList<Curve *> &);
+    void settings (Setting *);
 };
 
 extern "C"

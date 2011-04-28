@@ -3,7 +3,5 @@
 } 
 
 HEADERS += SZ.h
-HEADERS += SZWidget.h
 
 SOURCES += SZ.cpp
-SOURCES += SZWidget.cpp

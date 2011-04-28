@@ -3,7 +3,5 @@
 } 
 
 HEADERS += MFI.h
-HEADERS += MFIWidget.h
 
 SOURCES += MFI.cpp
-SOURCES += MFIWidget.cpp

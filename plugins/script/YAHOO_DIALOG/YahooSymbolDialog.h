@@ -24,9 +24,9 @@
 
 #include <QListWidget>
 #include <QToolButton>
-#include <QLineEdit>
 
 #include "Dialog.h"
+#include "LineEdit.h"
 
 class YahooSymbolDialog : public Dialog
 {
@@ -47,7 +47,7 @@ class YahooSymbolDialog : public Dialog
 
   private:
     QListWidget *_list;
-    QLineEdit *_search;
+    LineEdit *_search;
 };
 
 #endif

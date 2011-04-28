@@ -3,7 +3,5 @@
 } 
 
 HEADERS += BOP.h
-HEADERS += BOPWidget.h
 
 SOURCES += BOP.cpp
-SOURCES += BOPWidget.cpp

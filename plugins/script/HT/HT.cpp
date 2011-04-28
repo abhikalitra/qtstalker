@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "HTWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
@@ -165,19 +164,23 @@ Curve * HT::getHT (QList<Curve *> &list, int method)
   return c;
 }
 
-PluginWidget * HT::dialog (QWidget *p)
+void HT::settings (Setting *set)
 {
-  return new HTWidget(p);
-}
+  set->clear();
 
-void HT::defaults (QString &d)
-{
-  QStringList l;
-  l << "PLUGIN=" + _plugin;
-  l << "NAME=" + _plugin;
-  l << "INPUT=Close";
-  l << "METHOD=TRENDLINE";
-  d = l.join(",");
+  QStringList keys;
+  keys << "NAME" << "INPUT" << "METHOD";
+  set->setData("KEYS", keys.join(","));
+
+  set->setData("PLUGIN", _plugin);
+  set->setData("PLUGIN_TYPE", QString("INDICATOR"));
+  set->setData("NAME", _plugin);
+  set->setData("NAME:TYPE", QString("TEXT"));
+  set->setData("INPUT", QString("Close"));
+  set->setData("INPUT:TYPE", QString("TEXT"));
+  set->setData("METHOD", QString("TRENDLINE"));
+  set->setData("METHOD:TYPE", QString("LIST"));
+  set->setData("METHOD:LIST", list().join(","));
 }
 
 QStringList HT::list ()

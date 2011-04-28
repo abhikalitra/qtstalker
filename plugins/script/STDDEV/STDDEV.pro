@@ -3,7 +3,5 @@
 } 
 
 HEADERS += STDDEV.h
-HEADERS += STDDEVWidget.h
 
 SOURCES += STDDEV.cpp
-SOURCES += STDDEVWidget.cpp

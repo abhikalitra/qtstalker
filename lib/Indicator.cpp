@@ -23,7 +23,7 @@
 #include "DataDataBase.h"
 #include "Globals.h"
 #include "PluginFactory.h"
-#include "IndicatorEditDialog.h"
+#include "PluginEditDialog.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -226,7 +226,17 @@ void Indicator::calculate ()
   int loop = 0;
   for (; loop < _commands.count(); loop++)
   {
-    Command command(_commands.at(loop));
+    Setting set;
+    set.parse(_commands.at(loop));
+
+    QStringList tl;
+    set.keyList(tl);
+    
+    int loop2 = 0;
+    Command command;
+    for (; loop2 < tl.count(); loop2++)
+      command.setParm(tl.at(loop2), set.data(tl.at(loop2)));
+
     if (! command.count())
       continue;
 
@@ -289,7 +299,7 @@ int Indicator::lineCount ()
 
 void Indicator::dialog ()
 {
-  IndicatorEditDialog *dialog = new IndicatorEditDialog(g_parent, _name);
+  PluginEditDialog *dialog = new PluginEditDialog(g_parent, _name, QString("indicators"));
   connect(dialog, SIGNAL(signalDone()), this, SLOT(dialogDone()));
   dialog->show();
 }

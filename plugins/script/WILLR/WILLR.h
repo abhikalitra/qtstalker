@@ -31,8 +31,7 @@ class WILLR : public Plugin
   public:
     WILLR ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getWILLR (QList<Curve *> &, int);
 };
 

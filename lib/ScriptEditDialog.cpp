@@ -52,7 +52,7 @@ ScriptEditDialog::ScriptEditDialog (QWidget *p, QString n) : Dialog (p)
 void ScriptEditDialog::createGUI ()
 {
   // command
-  _com = new LineEdit;
+  _com = new LineEdit(this);
   _com->setText("perl");
   _com->setToolTip(tr("Interpreter command and switches eg. perl -l -T"));
   connect(_com, SIGNAL(textEdited(const QString &)), this, SLOT(buttonStatus()));

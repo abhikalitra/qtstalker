@@ -31,8 +31,7 @@ class MA : public Plugin
   public:
     MA ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
 };
 
 extern "C"

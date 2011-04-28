@@ -3,7 +3,5 @@
 } 
 
 HEADERS += SHIFT.h
-HEADERS += SHIFTWidget.h
 
 SOURCES += SHIFT.cpp
-SOURCES += SHIFTWidget.cpp

@@ -31,8 +31,7 @@ class MIN : public Plugin
   public:
     MIN ();
     int command (Command *);
-    void defaults (QString &);
-    PluginWidget * dialog (QWidget *);
+    void settings (Setting *);
     Curve * getMIN (QList<Curve *> &, int);
 };
 
