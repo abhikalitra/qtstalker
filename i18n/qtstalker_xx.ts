@@ -2,28 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>ARITHMETICWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>AVERAGE_PRICEWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>AboutDialog</name>
     <message>
         <source>Qtstalker version 0.37-dev (working title)</source>
@@ -141,59 +119,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CANDLE_PATTERNWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>COLORWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>COMPAREWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CUSDialog</name>
-    <message>
-        <source>The interpreter command line and any switches required.
-eg. perl -l -T</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The script location</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -388,17 +313,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Crosshair Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>DOHLCVIWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -694,29 +608,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>IPLOTWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Pen</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>IconButton</name>
     <message>
         <source>Select Icon</source>
@@ -786,50 +677,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>MADialog</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MAXWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MEDIAN_PRICEWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MINWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>NEW_DIALOG</name>
     <message>
         <source>New item name</source>
@@ -837,17 +684,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>New</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>NORMALIZEWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1027,27 +863,11 @@ eg. perl -l -T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Insert Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Enter a unique name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rename Item</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1058,15 +878,60 @@ eg. perl -l -T</source>
         <source>Enter new name</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>PluginTreeWidget</name>
     <message>
-        <source>Add Item</source>
+        <source>Commands</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete Item</source>
+        <source>Command Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Add Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Insert Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Insert Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Remove Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Rename Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rename Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move &amp;Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move Command Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move &amp;Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move Command Down</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1347,17 +1212,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SHIFTWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1804,17 +1658,6 @@ eg. perl -l -T</source>
     </message>
 </context>
 <context>
-    <name>TYPICAL_PRICEWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>TestDialog</name>
     <message>
         <source>Summary</source>
@@ -2137,17 +1980,6 @@ eg. perl -l -T</source>
     </message>
     <message>
         <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>WEIGHTED_CLOSEWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

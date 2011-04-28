@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "Globals.h"
 #include "InputType.h"
-#include "NORMALIZEWidget.h"
 
 #include <QtDebug>
 #include <cmath>

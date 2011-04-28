@@ -23,7 +23,6 @@
 #include "Curve.h"
 #include "ta_libc.h"
 #include "Globals.h"
-#include "MAXWidget.h"
 #include "InputType.h"
 
 #include <QtDebug>
