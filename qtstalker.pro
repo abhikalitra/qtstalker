@@ -3,6 +3,10 @@ exists(.qmake.cache) {
 } else {
   message("Doing automated configuration ...")
 
+  # Determine some obvious lib and include paths
+  # Note: See docs/install.html about using qtstalker.config file for
+  # specifying other locations for your system.
+
   unix {
     MY_OS += "unix"
     exists(/usr/include/qt4/Qt) {
@@ -17,7 +21,7 @@ exists(.qmake.cache) {
     exists(/usr/local/lib) {
       LIBS += -L/usr/local/lib
     }
-    # Determine Qwt for Ubuntu
+    # Determine Qwt for Debian/Ubuntu
     exists(/usr/include/qwt-qt4) {
       INCLUDEPATH += /usr/include/qwt-qt4
     }
@@ -25,6 +29,10 @@ exists(.qmake.cache) {
       LIBS += -lqwt-qt4
     } else {
       LIBS += -lqwt
+    }
+    # Determine Qwt for ArchLinux/others as well
+    exists(/usr/include/qwt) {
+      INCLUDEPATH += /usr/include/qwt
     }
   }
 
@@ -125,8 +133,8 @@ SUBDIRS += plugins/script/BETA
 SUBDIRS += plugins/script/BOP
 SUBDIRS += plugins/script/BUY
 SUBDIRS += plugins/script/Candle
-SUBDIRS += plugins/script/CANDLES
 SUBDIRS += plugins/script/CANDLE_PATTERN
+SUBDIRS += plugins/script/CANDLES
 SUBDIRS += plugins/script/CCI
 SUBDIRS += plugins/script/CMO
 SUBDIRS += plugins/script/COLOR
@@ -154,8 +162,8 @@ SUBDIRS += plugins/script/HT_SINE
 SUBDIRS += plugins/script/INDICATOR
 SUBDIRS += plugins/script/INDICATOR_DATABASE
 SUBDIRS += plugins/script/INDICATOR_EDIT_DIALOG
-SUBDIRS += plugins/script/IPLOT
 SUBDIRS += plugins/script/INPUT_DIALOG
+SUBDIRS += plugins/script/IPLOT
 SUBDIRS += plugins/script/Line
 SUBDIRS += plugins/script/LINEARREG
 SUBDIRS += plugins/script/MA
