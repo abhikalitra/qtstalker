@@ -117,7 +117,6 @@ if Qt or Qwt or TA-Lib is installed at a non-standard location, then edit the
 </p>
 
 <h3 id="qwt-lib">Supporting demos</h3>
-
 <p>
 Ensure that the Qt and Qwt examples and demonstrations can be utilised.
 Unfortunately some package managers do not install these demos.
@@ -125,6 +124,13 @@ Unfortunately some package managers do not install these demos.
 <p>
 The most likely error is that the Qwt libraries cannot be found.
 See <a href="#source">notes</a> above.
+</p>
+
+<h3 id="bit64">Building on 64-bit systems</h3>
+<p>
+First ensure that your Qt has been built for 64-bit systems.
+Then edit the Qtstalker "<code>configure</code>" file to tweak the
+"qmake" invocation to include "CONFIG += qt x86_64"
 </p>
 
 <h3 id="ldconfig">Setting ldconfig</h3>
