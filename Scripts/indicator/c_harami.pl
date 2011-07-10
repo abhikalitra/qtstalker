@@ -19,19 +19,19 @@ $closeName = 'Close';
 
 $|++;
 
-$command = "PLUGIN=DOHLCVI,METHOD=O,NAME=$openName";
+$command = "PLUGIN=DOHLCVI,METHOD=O,NAME_OPEN=$openName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=H,NAME=$highName";
+$command = "PLUGIN=DOHLCVI,METHOD=H,NAME_HIGH=$highName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=L,NAME=$lowName";
+$command = "PLUGIN=DOHLCVI,METHOD=L,NAME_LOW=$lowName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=C,NAME=$closeName";
+$command = "PLUGIN=DOHLCVI,METHOD=C,NAME_CLOSE=$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

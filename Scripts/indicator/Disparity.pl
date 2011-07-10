@@ -28,7 +28,7 @@ $maName = 'sma_13';
 $|++;
 
 # Get the close
-$command = "PLUGIN=DOHLCVI,METHOD=C,NAME=$closeName";
+$command = "PLUGIN=DOHLCVI,METHOD=C,NAME_CLOSE=$closeName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 

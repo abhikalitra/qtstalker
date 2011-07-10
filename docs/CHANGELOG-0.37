@@ -1248,4 +1248,6 @@
            Still working on non-indicator commands and have not tested them yet. Indicators do work
            nicely.
 
-          
+20110710:  Updated Scripts/indicator/*.pl CUS examples to use the new syntax for DOHLCVI, i.e.
+           NAME_OPEN, NAME_CLOSE, etc. Thanks to xley.
+
