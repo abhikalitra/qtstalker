@@ -8,7 +8,7 @@ my $scriptName = basename($0);
 if ($DEBUG) { doDebug('Start'); }
 
 if ($DEBUG) { doDebug('Get close_0'); }
-print STDOUT 'PLUGIN=DOHLCVI,METHOD=C,NAME=close_0';
+print STDOUT 'PLUGIN=DOHLCVI,METHOD=C,NAME_CLOSE=close_0';
 $rc = <STDIN>; chomp($rc); if ($rc ne '0') { exit; }
 
 # set the plot style
