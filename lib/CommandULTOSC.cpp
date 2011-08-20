@@ -1,0 +1,186 @@
+/*
+ *  Qtstalker stock charter
+ *
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  USA.
+ */
+
+#include "CommandULTOSC.h"
+#include "ta_libc.h"
+#include "InputType.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+
+#include <QtDebug>
+
+CommandULTOSC::CommandULTOSC (QObject *p) : Command (p)
+{
+  _type = "ULTOSC";
+
+  TA_RetCode rc = TA_Initialize();
+  if (rc != TA_SUCCESS)
+    qDebug("CommandULTOSC::CommandULTOSC: error on TA_Initialize");
+}
+
+int CommandULTOSC::runScript (void *d)
+{
+  Script *script = (Script *) d;
+
+  SettingGroup *sg = script->settingGroup(script->currentStep());
+  if (! sg)
+    return _ERROR;
+
+  QString name = sg->get("NAME")->getString();
+  Curve *line = script->curve(name);
+  if (line)
+  {
+    qDebug() << _type << "::runScript: duplicate name" << name;
+    return _ERROR;
+  }
+
+  QString key = sg->get("HIGH")->getString();
+  QString s = script->setting(key)->getString();
+  Curve *ihigh = script->curve(s);
+  if (! ihigh)
+  {
+    qDebug() << _type << "::command: invalid HIGH" << s;
+    return 1;
+  }
+
+  key = sg->get("LOW")->getString();
+  s = script->setting(key)->getString();
+  Curve *ilow = script->curve(s);
+  if (! ilow)
+  {
+    qDebug() << _type << "::command: invalid LOW" << s;
+    return 1;
+  }
+
+  key = sg->get("CLOSE")->getString();
+  s = script->setting(key)->getString();
+  Curve *iclose = script->curve(s);
+  if (! iclose)
+  {
+    qDebug() << _type << "::command: invalid CLOSE" << s;
+    return 1;
+  }
+
+  int sp = sg->get("PERIOD_SHORT")->getInteger();
+
+  int mp = sg->get("PERIOD_MED")->getInteger();
+
+  int lp = sg->get("PERIOD_LONG")->getInteger();
+
+  QList<Curve *> list;
+  list << ihigh << ilow << iclose;
+  line = getULTOSC(list, sp, mp, lp);
+  if (! line)
+    return 1;
+
+  line->setLabel(name);
+  script->setCurve(name, line);
+
+  return _OK;
+}
+
+Curve * CommandULTOSC::getULTOSC (QList<Curve *> &list, int sp, int mp, int lp)
+{
+  if (list.count() != 3)
+    return 0;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
+    return 0;
+
+  int size = keys.count();
+  TA_Real out[size];
+  TA_Real high[size];
+  TA_Real low[size];
+  TA_Real close[size];
+  TA_Integer outBeg;
+  TA_Integer outNb;
+
+  size = it.fill(list, keys, &high[0], &low[0], &close[0], &close[0]);
+  if (! size)
+    return 0;
+
+  TA_RetCode rc = TA_ULTOSC(0,
+                            size - 1,
+                            &high[0],
+                            &low[0],
+                            &close[0],
+			    sp,
+			    mp,
+			    lp,
+                            &outBeg,
+                            &outNb,
+                            &out[0]);
+
+  if (rc != TA_SUCCESS)
+  {
+    qDebug() << _type << "::getULTOSC: TA-Lib error" << rc;
+    return 0;
+  }
+
+  QList<Curve *> outs;
+  Curve *c = new Curve;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+  {
+    delete c;
+    return 0;
+  }
+
+  return c;
+}
+
+SettingGroup * CommandULTOSC::settings ()
+{
+  SettingGroup *sg = new SettingGroup;
+  sg->setCommand(_type);
+
+  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
+  ss->setKey("NAME");
+  sg->set(ss);
+
+  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
+  ss->setKey("HIGH");
+  sg->set(ss);
+
+  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
+  ss->setKey("LOW");
+  sg->set(ss);
+
+  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
+  ss->setKey("CLOSE");
+  sg->set(ss);
+
+  SettingInteger *si = new SettingInteger(0, 0, 7, 9999, 2);
+  si->setKey("PERIOD_SHORT");
+  sg->set(si);
+
+  si = new SettingInteger(0, 0, 14, 9999, 2);
+  si->setKey("PERIOD_MED");
+  sg->set(si);
+
+  si = new SettingInteger(0, 0, 28, 9999, 2);
+  si->setKey("PERIOD_LONG");
+  sg->set(si);
+
+  return sg;
+}

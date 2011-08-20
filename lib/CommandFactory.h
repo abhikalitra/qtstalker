@@ -1,0 +1,107 @@
+/*
+ *  Qtstalker stock charter
+ *
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  USA.
+ */
+
+#ifndef COMMAND_FACTORY_HPP
+#define COMMAND_FACTORY_HPP
+
+#include "Command.h"
+
+#include <QStringList>
+
+class CommandFactory
+{
+  public:
+    enum Type
+    {
+      _AD,
+      _ADX,
+      _ARITHMETIC,
+      _AROON,
+      _ATR,
+      _AVERAGE_PRICE,
+      _BBANDS,
+      _BETA,
+      _BOP,
+      _CANDLE_PATTERN,
+      _CCI,
+      _CHART,
+      _CHART_UPDATE,
+      _CMO,
+      _COLOR,
+      _COMPARE,
+      _CORREL,
+      _FI,
+      _HT,
+      _HT_PHASOR,
+      _HT_SINE,
+      _LINEARREG,
+      _MA,
+      _MACD,
+      _MAMA,
+      _MAVP,
+      _MEDIAN_PRICE,
+      _MINMAX,
+      _MFI,
+      _MOM,
+      _NORMALIZE,
+      _PO,
+      _PLOT_CANDLE,
+      _PLOT_DASH,
+      _PLOT_DOT,
+      _PLOT_LINE,
+      _PLOT_HISTOGRAM,
+      _PLOT_HISTOGRAM_BAR,
+      _PLOT_OHLC,
+      _ROC,
+      _RSI,
+      _SAR,
+      _SCRIPT_DONE,
+      _SCRIPT_START,
+      _SELECT_DIALOG,
+      _STDDEV,
+      _STOCH_FAST,
+      _STOCH_RSI,
+      _STOCH_SLOW,
+      _SZ,
+      _SYMBOL,
+      _SYMBOL_CURRENT,
+      _T3,
+      _THERM,
+      _TRIX,
+      _TYPICAL_PRICE,
+      _ULTOSC,
+      _VAR,
+      _VBP,
+      _VFI,
+      _VIDYA,
+      _WEIGHTED_CLOSE,
+      _WILLR
+    };
+
+    CommandFactory ();
+    Command * command (QObject *, QString);
+    QStringList list ();
+
+  protected:
+    QStringList _types;
+};
+
+#endif
