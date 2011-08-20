@@ -31,6 +31,8 @@ DockWidget::DockWidget (QString title, QWidget *p) : QDockWidget (title, p)
 
   _titleBar = titleBarWidget();
   _noTitleBar = new QWidget(this);
+
+//  setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void DockWidget::lock ()

@@ -37,7 +37,7 @@ class Setup
     void setupDefaultScripts ();
     void setupExchanges ();
     void setupFutures ();
-    void scanPlugins ();
+//    void scanPlugins ();
 };
 
 #endif

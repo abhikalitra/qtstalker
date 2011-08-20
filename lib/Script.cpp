@@ -20,211 +20,134 @@
  */
 
 #include "Script.h"
-#include "CommandThread.h"
-#include "DataDataBase.h"
+#include "Globals.h"
+#include "CommandFactory.h"
 
-#include <QByteArray>
-#include <QtDebug>
+#include <QDebug>
+#include <QFile>
+#include <QTextStream>
+#include <QProcess>
 
-Script::Script (QWidget *p) : QObject(p)
+Script::Script (QObject *p) : QObject (p)
 {
-  init();
-}
-
-Script::Script (QObject *p) : QObject(p)
-{
-  init();
-}
-
-Script::Script () : QObject(0)
-{
-  init();
+  clear();
 }
 
 Script::~Script ()
 {
   clear();
-  
-  delete _command;
-
-  if (_indicatorFlag)
-    delete _indicator;
-
-  _proc->terminate();
-
-//qDebug() << "Script::~Script:" << _name << "deleted";
-}
-
-void Script::init ()
-{
-  _killFlag = 0;
-  _barData = 0;
-  _minutes = 0;
-
-  _command = new Command;
-
-  _indicator = new Indicator;
-  _indicatorFlag = 1;
-
-  _proc = new QProcess(this);
-  connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-  connect(_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
-  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
-  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
-  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
 }
 
 void Script::clear ()
 {
-  _proc->terminate();
+  qDeleteAll(_curves);
+  _curves.clear();
 
-  if (_plugins.count())
-    qDeleteAll(_plugins);
-  _plugins.clear();
+  qDeleteAll(_chartObjects);
+  _chartObjects.clear();
 
-  _command->clear();
+  qDeleteAll(_settingGroups);
+  _settingGroups.clear();
 
-  _killFlag = 0;
+  _runOrder.clear();
+  _session.clear();
+  _name.clear();
+  _file.clear();
+  _pid = -1;
 }
 
-void Script::setIndicator (Indicator *d)
+void Script::setCurve (QString key, Curve *d)
 {
-  delete _indicator;
-  _indicatorFlag = 0;
-  
-  _indicator = d;
+  Curve *c = _curves.value(key);
+  if (c)
+    delete c;
+
+  _curves.insert(key, d);
 }
 
-Indicator * Script::indicator ()
+Curve * Script::curve (QString key)
 {
-  return _indicator;
+  return _curves.value(key);
 }
 
-int Script::startScript ()
+void Script::setCurves (QHash<QString, Curve *> l)
 {
-  // clean up if needed
-  clear();
-
-  _killFlag = 0;
-  QString command = _com + " " + _file;
-
-  QStringList l;
-  l << QDateTime::currentDateTime().toString();
-  l << tr("Script");
-  l << _name;
-  l << tr("started");
-  emit signalMessage(l.join(" "));
-
-  // start the process
-  _proc->start(command, QIODevice::ReadWrite);
-
-  // make sure process starts error free
-  if (! _proc->waitForStarted())
-  {
-    qDebug("Script::startScript: %s : error starting script...timed out", qPrintable(command));
-    clear();
-    emit signalDone(_name);
-    return 1;
-  }
-
-  _command->setName(_name);
-  _command->setBarData(_barData);
-  _command->setIndicator(_indicator);
-
-//qDebug() << "Script::startScript:" << _name << "started";
-  
-  return 0;
+  qDeleteAll(_curves);
+  _curves.clear();
+  _curves = l;
 }
 
-void Script::done (int, QProcess::ExitStatus)
+QHash<QString, Curve *>  Script::curves ()
 {
-  QStringList l;
-  l << QDateTime::currentDateTime().toString();
-  l << tr("Script");
-  l << _name;
-
-  if (_killFlag)
-  {
-    l << tr("cancelled");
-    emit signalMessage(l.join(" "));
-    emit signalStopped(_name);
-  }
-  else
-  {
-    l << tr("completed");
-    emit signalMessage(l.join(" "));
-    emit signalDone(_name);
-  }
+  return _curves;
 }
 
-void Script::readFromStdout ()
+void Script::setSettingGroup (SettingGroup *d)
 {
-  QByteArray ba = _proc->readAllStandardOutput();
-  QString s(ba);
+  SettingGroup *sg = _settingGroups.value(d->stepName());
+  if (sg)
+    delete sg;
 
-  _command->parse(s);
-  if (! _command->count())
-  {
-    qDebug() << "Script::readFromStdout: invalid request string " << s;
-    clear();
-    return;
-  }
+  _runOrder << d->stepName();
 
-  if (_killFlag)
-  {
-    qDebug() << "Script::readFromStdout: script terminated";
-    clear();
-    return;
-  }
-
-  Plugin *plug = _plugins.value(_command->plugin());
-  if (! plug)
-  {
-    plug = _factory.plugin(_command->plugin());
-    if (! plug)
-    {
-      qDebug() << "Script::readFromStdout: syntax error, script abend" << s;
-      clear();
-      return;
-    }
-
-    _plugins.insert(_command->plugin(), plug);
-    connect(plug, SIGNAL(signalResume()), this, SLOT(resume()));
-    connect(this, SIGNAL(signalKill()), plug, SIGNAL(signalKill()));
-  }
-
-  if (plug->type() == "DIALOG")
-    plug->command(_command);
-  else
-  {
-    CommandThread *ct = new CommandThread(this, plug, _command);
-    connect(ct, SIGNAL(finished()), ct, SLOT(deleteLater()));
-    connect(ct, SIGNAL(finished()), this, SLOT(resume()), Qt::QueuedConnection);
-    ct->start();
-  }
+  _settingGroups.insert(d->stepName(), d);
 }
 
-void Script::readFromStderr ()
+SettingGroup * Script::settingGroup (QString d)
 {
-  qDebug() << "Script::readFromStderr:" << _proc->readAllStandardError();
+  return _settingGroups.value(d);
 }
 
-void Script::stopScript (QString d)
+Setting * Script::setting (QString k)
 {
-  if (_proc->state() == QProcess::NotRunning)
-    return;
+  QStringList l = k.split(":");
+  if (l.count() != 2)
+    return 0;
 
-  if (_name == d || d.isEmpty())
-  {
-    _killFlag = TRUE;
-    emit signalKill();
-//qDebug() << "Script::stopScript";    
-  }
+  SettingGroup *sg = _settingGroups.value(l.at(0));
+  if (! sg)
+    return 0;
+
+  return sg->get(l.at(1));
 }
 
-void Script::setBarData (BarData *d)
+int Script::chartObjectCount ()
 {
-  _barData = d;
+  return _chartObjects.count();
+}
+
+void Script::setChartObject (QString key, ChartObject *d)
+{
+  ChartObject *c = _chartObjects.value(key);
+  if (c)
+    delete c;
+
+  _chartObjects.insert(key, d);
+}
+
+QHash<QString, ChartObject *>  Script::chartObjects ()
+{
+  return _chartObjects;
+}
+
+void Script::setRunOrder (QStringList d)
+{
+  _runOrder = d;
+}
+
+QStringList Script::runOrder ()
+{
+  return _runOrder;
+}
+
+void Script::setSession (QString d)
+{
+  _session = d;
+}
+
+QString Script::session ()
+{
+  return _session;
 }
 
 void Script::setName (QString d)
@@ -232,19 +155,144 @@ void Script::setName (QString d)
   _name = d;
 }
 
-QString & Script::name ()
+QString Script::name ()
 {
   return _name;
 }
 
-void Script::setCommand (QString d)
+int Script::loadScript ()
 {
-  _com = d;
+  QFile f(_file);
+  if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
+    qDebug() << "Script::load: file error" << _file;
+    return 1;
+  }
+
+  while (! f.atEnd())
+  {
+    QString s = f.readLine();
+    s = s.trimmed();
+
+    if (s != "{")
+      continue;
+
+    // start new command structure
+    QStringList tl;
+    while (! f.atEnd())
+    {
+      s = f.readLine();
+      s = s.trimmed();
+      if (s.isEmpty())
+	continue;
+
+      if (s == "}")
+        break;
+
+      tl << s;
+    }
+
+    SettingGroup tsg;
+    if (tsg.parse(tl))
+    {
+      qDebug() << "Script::load: parse error" << tl;
+      return 1;
+    }
+
+    if (tsg.stepName().isEmpty())
+    {
+      qDebug() << "Script::load: step name missing" << tl;
+      return 1;
+    }
+
+    if (tsg.command().isEmpty())
+    {
+      qDebug() << "Script::load: command missing" << tl;
+      return 1;
+    }
+
+    CommandFactory fac;
+    Command *com = fac.command(this, tsg.command());
+    if (! com)
+    {
+      qDebug() << "Script::load: no command" << tl;
+      return 1;
+    }
+
+    SettingGroup *sg = com->settings();
+    sg->setStepName(tsg.stepName());
+
+    tl = tsg.keys();
+    int loop = 0;
+    for (; loop < tl.count(); loop++)
+    {
+      Setting *set = tsg.get(tl.at(loop));
+      Setting *set2 = sg->get(tl.at(loop));
+      if (! set2)
+	continue;
+
+      if (set2->fromString(set->toString()))
+      {
+        qDebug() << "Script::load: parse error" << tl.at(loop) << set->toString();
+	return 1;
+      }
+    }
+
+    setSettingGroup(sg);
+
+    delete com;
+  }
+
+  return 0;
 }
 
-QString & Script::command ()
+int Script::saveScript ()
 {
-  return _com;
+  QFile f(_file);
+  if (! f.open(QIODevice::WriteOnly | QIODevice::Text))
+  {
+    qDebug() << "Script::save: file error" << _file;
+    return 1;
+  }
+
+  QTextStream out(&f);
+
+  int loop = 0;
+  for (; loop < _runOrder.count(); loop++)
+  {
+    SettingGroup *sg = _settingGroups.value(_runOrder.at(loop));
+    if (! sg)
+      continue;
+
+    out << "{\n";
+    out << "  STEP=" << sg->stepName() << "\n";
+    out << "  COMMAND=" << sg->command() << "\n";
+
+    QStringList l = sg->keys();
+    int loop2 = 0;
+    for (; loop2 < l.count(); loop2++)
+    {
+      Setting *set = sg->get(l.at(loop2));
+      out << "  " << set->key() << "=" << set->toString() << "\n";
+    }
+
+    out << "}\n\n";
+  }
+
+  return 0;
+}
+
+void Script::removeSettingGroup (QString d)
+{
+  SettingGroup *sg = settingGroup(d);
+  if (! sg)
+    return;
+
+  _runOrder.removeAll(d);
+
+  delete sg;
+
+  _settingGroups.remove(d);
 }
 
 void Script::setFile (QString d)
@@ -257,86 +305,70 @@ QString & Script::file ()
   return _file;
 }
 
-void Script::setMinutes (int d)
+int Script::run ()
 {
-  _minutes = d;
-}
+qDebug() << "Script::run" << g_session << _file;
 
-int Script::minutes ()
-{
-  return _minutes;
-}
+  QStringList args;
+  args << g_session << _file;
 
-void Script::setLastRun (QString d)
-{
-  _lastRun = d;
-}
-
-QString & Script::lastRun ()
-{
-  return _lastRun;
-}
-
-void Script::resume ()
-{
-  _proc->write(_command->returnCode());
-}
-
-void Script::setType (QString d)
-{
-  _type = d;
-}
-
-QString & Script::type ()
-{
-  return _type;
-}
-
-void Script::setComment (QString d)
-{
-  _comment = d;
-}
-
-QString & Script::comment ()
-{
-  return _comment;
-}
-
-int Script::load ()
-{
-  if (_name.isEmpty())
+  bool ok = QProcess::startDetached("QtStalkerScript", args, QString(), &_pid);
+  if (! ok)
+  {
+    qDebug() << "Script::run: error starting process";
     return 1;
-
-  DataDataBase db("scripts");
-  Setting set;
-  if (db.load(_name, &set))
-    return 1;
-
-  setCommand(set.data("COMMAND"));
-  setFile(set.data("FILE"));
-  setMinutes(set.getInt("MINUTES"));
-  setLastRun(set.data("LAST_RUN"));
+  }
 
   return 0;
 }
 
-int Script::save ()
+int Script::runWait ()
 {
-  if (_name.isEmpty())
-    return 1;
+qDebug() << "Script::runWait" << g_session << _file;
 
-  Setting set;
-  set.setData("COMMAND", command());
-  set.setData("FILE", file());
-  set.setData("MINUTES", minutes());
-  set.setData("LAST_RUN", lastRun());
+  QStringList args;
+  args << g_session << _file;
 
-  DataDataBase db("scripts");
-  db.transaction();
-  db.removeName(name());  
-  if (db.save(_name, &set))
-    return 1;
-  db.commit();
+  int rc = QProcess::execute("QtStalkerScript", args);
+  if (rc)
+  {
+    qDebug() << "Script::runWait: error";
+    return rc;
+  }
 
   return 0;
 }
+
+int Script::kill ()
+{
+  if (_pid < 0)
+    return 1;
+
+  QStringList args;
+  args << QString::number(_pid);
+
+  bool ok = QProcess::startDetached("kill", args);
+  if (! ok)
+  {
+    qDebug() << "Script::kill: error starting process";
+    return 1;
+  }
+
+  return 0;
+}
+
+qint64 Script::pid ()
+{
+  return _pid;
+}
+
+void Script::setCurrentStep (QString d)
+{
+  _currentStep = d;
+}
+
+QString Script::currentStep ()
+{
+  return _currentStep;
+}
+

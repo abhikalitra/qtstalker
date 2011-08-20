@@ -27,11 +27,7 @@
 #include <QStringList>
 #include <QHash>
 
-#include "InfoPanel.h"
 #include "SidePanel.h"
-#include "Command.h"
-#include "Plot.h"
-#include "ControlPanel.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -39,8 +35,6 @@ class QtstalkerApp : public QMainWindow
 
   signals:
     void signalLoadSettings ();
-    void signalClearPlot ();
-    void signalPlot ();
     void signalShutDown ();
 
   public:
@@ -48,8 +42,6 @@ class QtstalkerApp : public QMainWindow
     void createGUI ();
     void loadSettings ();
     QString getWindowCaption ();
-    void setSliderStart (int);
-    void addPlot (QString);
 
   public slots:
     void loadChart (BarData);
@@ -58,22 +50,15 @@ class QtstalkerApp : public QMainWindow
     void statusMessage (QString);
     void wakeup ();
     void commandLineAsset ();
-    void addNewPlot (QString);
-    void addNewPlot2 ();
-    void deletePlot (int, QStringList);
-    void setPlotTabPosition (int);
-    void fixDockTabs ();
-    void updatePlot (QString);
+//    void fixDockTabs ();
     void shutDown ();
     void afterStartup ();
+    void messageSlot (QString, QString);
+    void actionSlot (QString, QString);
 
   protected:
-    QHash<QString, Plot *> _plots;
-    InfoPanel *_infoPanel;
     QString _clAsset;
     SidePanel *_sidePanel;
-    ControlPanel *_controlPanel;
-    QString _addNewPlot;
 };
 
 #endif

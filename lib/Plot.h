@@ -27,20 +27,21 @@
 #include <QDateTime>
 #include <QColor>
 #include <QFont>
+#include <QMenu>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
-#include <QMainWindow>
+//#include <QGestureEvent>
+//#include <QTapAndHoldGesture>
+//#include <QSwipeGesture>
 
 #include "DateScaleDraw.h"
 #include "PlotScaleDraw.h"
 #include "Curve.h"
 #include "PlotPicker.h"
-#include "Setting.h"
 #include "PlotMenu.h"
-#include "Indicator.h"
-#include "DockWidget.h"
-#include "Plugin.h"
+#include "ChartObject.h"
+#include "Dialog.h"
 
 class Plot : public QwtPlot
 {
@@ -48,30 +49,34 @@ class Plot : public QwtPlot
 
   signals:
     void signalMessage (QString);
-    void signalInfoMessage (Setting);
-    void signalClick (int, QPoint);
-    void signalMove (QPoint);
+    void signalInfoMessage (Message);
     void signalIndex (int);
 
   public:
-    Plot (QString, QMainWindow *);
+    Plot (QString, QWidget *);
     ~Plot ();
     void setDates ();
-//    void addCurve (QString id, Curve *);
-    void addCurves ();
-    void addChartObjects (QHash<QString, Setting> &);
-    void setIndicator ();
-    Indicator * indicator ();
-//    void addCurve2 (Curve *curve, QwtPlotCurve *qcurve);
-//    void addCurve3 (QString id, Curve *curve, QwtPlotCurve *qcurve);
+    void setCurve (Curve *);
+    void setChartObjects (QHash<QString, ChartObject *>);
     void setHighLow ();
     void saveChartObjects ();
     void dates (QList<QDateTime> &);
     int index ();
     PlotMenu * plotMenu ();
-    DockWidget * dockWidget ();
     void setYPoints ();
-    void addChartObject (Setting *);
+    void addChartObject (ChartObject *);
+    void unselect ();
+    void select (QString);
+    void showChartObjectMenu ();
+    void setScriptFile (QString);
+    QString scriptFile ();
+    void setRow (int);
+    int row ();
+    void setCol (int);
+    int col ();
+    void setName (QString);
+    QString name ();
+    QHash<QString, Curve *> curves ();
 
   public slots:
     virtual void clear ();
@@ -87,32 +92,39 @@ class Plot : public QwtPlot
     void showContextMenu ();
     void mouseMove (QPoint);
     void mouseClick (int, QPoint);
+    void mouseDoubleClick (int, QPoint);
     void deleteAllChartObjects ();
     void chartObjectNew (QString);
-    void chartObjectSelected ();
-    void chartObjectUnselected ();
     void setCrossHairs (bool);
     void setCrossHairsColor (QColor);
     void setBarSpacing (int);
-    void lockChanged (bool);
+    void chartObjectDialog ();
+    void deleteChartObject ();
+    void deleteChartObject2 ();
+    void chartObjectDialog2 ();
+    void chartObjectDialog3 ();
 
   private:
     int _spacing;
-    QHash<QString, Plugin *> _qcurves;
-    QHash<QString, Plugin *> _chartObjects;
+    QHash<QString, ChartObject *> _chartObjects;
+    QHash<QString, Curve *> _curves;
     DateScaleDraw *_dateScaleDraw;
     PlotScaleDraw *_plotScaleDraw;
     QwtPlotGrid *_grid;
     PlotPicker *_picker;
-    Indicator *_indicator;
     double _high;
     double _low;
     int _startPos;
     int _endPos;
-    int _selected;
+    ChartObject *_selected;
     PlotMenu *_menu;
-    DockWidget *_dock;
+    QMenu *_chartObjectMenu;
     bool _antiAlias;
+    QString _name;
+    Dialog *_chartObjectDialog;
+    QString _scriptFile;
+    int _row;
+    int _col;
 };
 
 #endif

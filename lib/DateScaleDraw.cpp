@@ -22,6 +22,7 @@
 #include "DateScaleDraw.h"
 #include "BarLength.h"
 #include "Globals.h"
+#include "Setting.h"
 
 #include <QString>
 #include <QDebug>
@@ -31,8 +32,50 @@ DateScaleDraw::DateScaleDraw ()
   _barLength = -1;
 }
 
+void DateScaleDraw::clear ()
+{
+  _dateList.clear();
+  _data.clear();
+  _dates.clear();
+}
+
+void DateScaleDraw::setDates (Curve *curve)
+{
+  int start = 0;
+  int end = 0;
+  curve->keyRange(start, end);
+
+  int loop = start;
+  for (; loop <= end; loop++)
+  {
+    CurveBar *cb = curve->bar(loop);
+    if (! cb)
+      continue;
+
+    Bar bar;
+    bar.setDateRange(cb->dateTime(), (BarLength::Length) g_currentSymbol.barLength());
+    QString s;
+    bar.rangeKey(s);
+
+    _data.insert(s, loop);
+
+    _dates.insert(loop, cb->dateTime());
+  }
+}
+
 void DateScaleDraw::setDates ()
 {
+  QList<int> keys = _dates.keys();
+  qSort(keys);
+
+  _dateList.clear();
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+    _dateList << _dates.value(keys.at(loop));
+
+  _barLength = g_currentSymbol.barLength();
+
+/*
   _dateList.clear();
   _data.clear();
 
@@ -52,16 +95,7 @@ void DateScaleDraw::setDates ()
 
     _dateList.append(bar->date());
   }
-
-//  QwtValueList vlist[3];
-//  vlist[0] << 6 << 18 << 30;
-//  vlist[1] << 12 << 36;
-//  vlist[2] << 0 << 24;
-
-//  QwtScaleDiv sd(0, 300, vlist);
-//  setScaleDiv(sd);
-  
-//  getTicks();
+*/
 }
 
 int DateScaleDraw::count ()
@@ -117,7 +151,7 @@ void DateScaleDraw::date (int x, QDateTime &dt)
 {
   if (x < 0 || x >= _dateList.count())
     return;
-  
+
   dt = _dateList.at(x);
 }
 
@@ -135,14 +169,14 @@ int DateScaleDraw::x (QDateTime d)
   return x;
 }
 
-void DateScaleDraw::info (int index, Setting &set)
+void DateScaleDraw::info (int index, Message &set)
 {
   QDateTime dt;
   date(index, dt);
   if (dt.isValid())
   {
-    set.setData("D", dt.toString("yyyy-MM-dd"));
-    set.setData("T", dt.toString("HH:mm:ss"));
+    set.insert("D", dt.toString("yyyy-MM-dd"));
+    set.insert("T", dt.toString("HH:mm:ss"));
   }
 }
 
@@ -179,7 +213,7 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
   for (; loop < size; loop++)
   {
     _dateString.clear();
-    
+
     switch ((BarLength::Length) _barLength)
     {
       case BarLength::_MINUTE1:
@@ -296,160 +330,3 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
     }
   }
 }
-
-/*
-void DateScaleDraw::getTicks ()
-{
-  if (! _dateList.count())
-    return;
-
-  _tickList.clear();
-  
-  int loop = 0;
-  int size = _dateList.count();
-
-  QDate oldDate = _dateList.at(loop).date();
-  QDate oldWeek = oldDate;
-  oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
-  QDate oldMonth = oldDate;
-  QDate oldYear = oldDate;
-
-  QDateTime nextHour = _dateList.at(loop);
-  QDateTime oldDay = nextHour;
-  nextHour.setTime(QTime(nextHour.time().hour(), 0, 0, 0));
-  if ((BarData::BarLength) _barLength != BarData::Minute1)
-    nextHour = nextHour.addSecs(7200);
-  else
-    nextHour = nextHour.addSecs(3600);
-
-  for (; loop < size; loop++)
-  {
-    switch ((BarData::BarLength) _barLength)
-    {
-      case BarData::Minute1:
-      case BarData::Minute5:
-      case BarData::Minute10:
-      case BarData::Minute15:
-      case BarData::Minute30:
-      case BarData::Minute60:
-      {
-        QDateTime date = _dateList.at(loop);
-        if (date.date().day() != oldDay.date().day())
-        {
-          oldDay = date;
-
-          // big tick
-          Setting tick;
-          tick.setData("TYPE", QString("0"));
-          tick.setData("TEXT", date.toString("d"));
-          _tickList.insert(loop, tick);
-        }
-        else
-        {
-          if (date >= nextHour)
-          {
-            if ((BarData::BarLength) _barLength < BarData::Minute30)
-            {
-              // draw the short tick
-              Setting tick;
-              tick.setData("TYPE", QString("1"));
-              tick.setData("TEXT", date.toString("h:m"));
-              _tickList.insert(loop, tick);
-            }
-          }
-        }
-
-        if (date >= nextHour)
-        {
-          nextHour = date;
-          nextHour.setTime(QTime(date.time().hour(), 0, 0, 0));
-          if ((BarData::BarLength) _barLength != BarData::Minute1)
-            nextHour = nextHour.addSecs(7200);
-          else
-            nextHour = nextHour.addSecs(3600);
-        }
-        break;
-      }
-      case BarData::DailyBar:
-      {
-        QDate date = _dateList.at(loop).date();
-        if (date.month() != oldDate.month())
-        {
-          oldDate = date;
-          oldWeek = date;
-          oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
-
-          // draw the long tick
-          Setting tick;
-          tick.setData("TYPE", QString("0"));
-          if (date.month() == 1)
-            tick.setData("TEXT", date.toString("yy"));
-          else
-            tick.setData("TEXT", date.toString("MMM"));
-          _tickList.insert(loop, tick);
-        }
-        else
-        {
-          // if start of new week make a tick
-          if (date > oldWeek)
-          {
-            oldWeek = date;
-            oldWeek = oldWeek.addDays(7 - oldWeek.dayOfWeek());
-
-            // draw the short week tick
-            Setting tick;
-            tick.setData("TYPE", QString("1"));
-            tick.setData("TEXT", date.toString("d"));
-            _tickList.insert(loop, tick);
-          }
-        }
-        break;
-      }
-      case BarData::WeeklyBar:
-      {
-        QDate date = _dateList.at(loop).date();
-        if (date.month() != oldMonth.month())
-        {
-          oldMonth = date;
-          if (date.month() == 1)
-          {
-            // draw the long tick
-            Setting tick;
-            tick.setData("TYPE", QString("0"));
-            tick.setData("TEXT", date.toString("yy"));
-            _tickList.insert(loop, tick);
-          }
-          else
-          {
-            // draw the short tick
-            Setting tick;
-            tick.setData("TYPE", QString("1"));
-            QString s = date.toString("MMM");
-            s.chop(2);
-            tick.setData("TEXT", s);
-            _tickList.insert(loop, tick);
-          }
-        }
-        break;
-      }
-      case BarData::MonthlyBar:
-      {
-        QDate date = _dateList.at(loop).date();
-        if (date.year() != oldYear.year())
-        {
-          oldYear = date;
-
-          // draw the long tick
-          Setting tick;
-          tick.setData("TYPE", QString("1"));
-          tick.setData("TEXT", date.toString("yy"));
-          _tickList.insert(loop, tick);
-        }
-        break;
-      }
-      default:
-        break;
-    }
-  }
-}
-*/

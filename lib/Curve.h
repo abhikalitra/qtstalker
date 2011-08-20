@@ -25,15 +25,30 @@
 #include <QStringList>
 #include <QHash>
 #include <QColor>
+#include <QPainter>
+#include <QList>
+#include <qwt_plot_curve.h>
+#include <qwt_interval_data.h>
+#include <qwt_text.h>
+#include <qwt_scale_map.h>
 
 #include "CurveBar.h"
-#include "Setting.h"
+#include "Message.h"
 
-class Curve
+class Curve : public QwtPlotCurve
 {
   public:
     Curve ();
     ~Curve ();
+    virtual int highLow (double &h, double &l);
+    virtual int highLowRange (int start, int end, double &h, double &l);
+    virtual int info (int, Message *);
+    virtual void copy (Curve *);
+    virtual QString toString ();
+    virtual int fromString (QString);
+
+    QwtDoubleRect boundingRect () const;
+    int rtti () const;
     void init ();
     void setBar (int index, CurveBar *bar);
     CurveBar * bar (int index);
@@ -42,25 +57,23 @@ class Curve
     void setLabel (QString text);
     QString & label ();
     int count ();
-    int setAllColor (QColor color);
-    void setZ (int);
-    int z ();
     void keys (QList<int> &);
     void keyRange (int &startIndex, int &endIndex);
-    QStringList list ();
+    int setAllColor (QColor color);
     void deleteBar (int);
-    void copy (Curve *);
-    int highLow (double &, double &);
-    void setPen (int);
-    int pen ();
+    void setPenWidth (int);
+    int penWidth ();
+    void setPlotName (QString);
+    QString plotName ();
 
   protected:
     QHash<int, CurveBar *> _data;
     QString _label;
     QString _type;
-    int _z;
-    int _pen;
+    QString _plotName;
+    int _penWidth;
+    double _high;
+    double _low;
 };
 
 #endif
-

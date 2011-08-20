@@ -43,7 +43,8 @@ class Bar
     void timeString (QString &);
     void rangeKey (QString &);
     QDateTime & date ();
-    QString string ();
+    QString toString ();
+    int fromString (QString);
     QDateTime startDate ();
     void setLastDate (QDateTime);
     QDateTime lastDate ();
@@ -53,19 +54,19 @@ class Bar
     int setOpen (QString);
     void setOpen (double);
     double open ();
-    
+
     int setHigh (QString);
     void setHigh (double);
     double high ();
-    
+
     int setLow (QString);
     void setLow (double);
     double low ();
-    
+
     int setClose (QString);
     void setClose (double);
     double close ();
-    
+
     int setVolume (QString);
     void setVolume (double);
     double volume ();

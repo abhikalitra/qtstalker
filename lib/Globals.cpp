@@ -3,6 +3,13 @@
 QString g_session;
 QString g_localSettings;
 QString g_globalSettings;
-BarData * g_barData = 0;
-MiddleMan * g_middleMan = 0;
-QWidget * g_parent = 0;
+QMainWindow * g_parent = 0;
+ControlPanel * g_controlPanel = 0;
+InfoPanel * g_infoPanel = 0;
+ChartPage * g_chartPanel = 0;
+GroupPage * g_groupPanel = 0;
+ScriptPage * g_scriptPanel = 0;
+SidePanel * g_sidePanel = 0;
+BarData g_currentSymbol;
+QSharedMemory g_sharedCurrentSymbol;
+PlotGroup * g_plotGroup = 0;

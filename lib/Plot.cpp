@@ -22,8 +22,13 @@
 #include "Plot.h"
 #include "Strip.h"
 #include "Globals.h"
-#include "DataDataBase.h"
-#include "PluginFactory.h"
+#include "ChartObjectDataBase.h"
+#include "ConfirmDialog.h"
+#include "ChartObjectFactory.h"
+#include "CommandWidget.h"
+
+#include "../pics/delete.xpm"
+#include "../pics/edit.xpm"
 
 #include <QSettings>
 #include <QtDebug>
@@ -34,10 +39,11 @@
 #include <qwt_plot_marker.h>
 #include <qwt_symbol.h>
 #include <qwt_scale_engine.h>
+#include <QMainWindow>
 
-
-Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
+Plot::Plot (QString name, QWidget *mw) : QwtPlot (mw)
 {
+  _name = name;
   _spacing = 8;
   _high = 0;
   _low = 0;
@@ -45,9 +51,12 @@ Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
   _endPos = -1;
   _selected = 0;
   _antiAlias = TRUE;
-  
+  _chartObjectDialog = 0;
+  _row = 0;
+  _col = 0;
+
   setMinimumHeight(20);
-  
+
   setCanvasBackground(QColor(Qt::black));
   setMargin(0);
   enableAxis(QwtPlot::yRight, TRUE);
@@ -78,30 +87,24 @@ Plot::Plot (QString name, QMainWindow *mw) : QwtPlot (mw)
   _picker = new PlotPicker(this);
   connect(_picker, SIGNAL(signalMouseMove(QPoint)), this, SLOT(mouseMove(QPoint)));
   connect(_picker, SIGNAL(signalMouseClick(int, QPoint)), this, SLOT(mouseClick(int, QPoint)));
+  connect(_picker, SIGNAL(signalMouseDoubleClick(int, QPoint)), this, SLOT(mouseDoubleClick(int, QPoint)));
+//  connect(_picker, SIGNAL(signalMouseRelease(int, QPoint)), this, SLOT(mouseRelease(int, QPoint)));
 
   // setup the context menu
   setContextMenuPolicy(Qt::CustomContextMenu);
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
 
-  _indicator = new Indicator(this);
-  _indicator->setName(name);
-  connect(_indicator, SIGNAL(signalPlot()), this, SLOT(updatePlot()));
-  connect(_indicator, SIGNAL(signalClear()), this, SLOT(clear()));
-
   _menu = new PlotMenu(this);
-  connect(_menu, SIGNAL(signalDateStatus(bool)), this, SLOT(showDate(bool)));
-  connect(_menu, SIGNAL(signalLogStatus(bool)), this, SLOT(setLogScaling(bool)));
   connect(_menu, SIGNAL(signalNewChartObject(QString)), this, SLOT(chartObjectNew(QString)));
   connect(_menu, SIGNAL(signalDeleteAllChartObjects()), this, SLOT(deleteAllChartObjects()));
-  connect(_menu, SIGNAL(signalEditIndicator()), _indicator, SLOT(dialog()));
 
-  _dock = new DockWidget(name, mw);
-  _dock->setObjectName(name);
-  _dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-  _dock->setWidget(this);
-  _dock->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-  mw->addDockWidget(Qt::LeftDockWidgetArea, _dock);
-  connect(_menu, SIGNAL(signalLockStatus(bool)), this, SLOT(lockChanged(bool)));
+  // chart object menu
+  _chartObjectMenu = new QMenu(this);
+  _chartObjectMenu->addAction(QIcon(edit_xpm), QObject::tr("&Edit"), this, SLOT(chartObjectDialog()), QKeySequence(Qt::ALT+Qt::Key_E));
+  _chartObjectMenu->addAction(QIcon(delete_xpm), QObject::tr("&Delete"), this, SLOT(deleteChartObject()), QKeySequence(Qt::ALT+Qt::Key_D));
+
+//  grabGesture(Qt::TapAndHoldGesture);
+//  grabGesture(Qt::SwipeGesture);
 }
 
 Plot::~Plot ()
@@ -111,17 +114,21 @@ Plot::~Plot ()
 
 void Plot::clear ()
 {
-  if (_qcurves.count())
-    qDeleteAll(_qcurves);
-  _qcurves.clear();
-
-  _indicator->clear();
+  if (_curves.count())
+    qDeleteAll(_curves);
+  _curves.clear();
 
   if (_chartObjects.count())
     qDeleteAll(_chartObjects);
   _chartObjects.clear();
 
   _selected = 0;
+
+  if (_chartObjectDialog)
+    delete _chartObjectDialog;
+  _chartObjectDialog= 0;
+
+  _dateScaleDraw->clear();
 
   QwtPlot::clear();
 }
@@ -131,35 +138,9 @@ void Plot::setDates ()
   _dateScaleDraw->setDates();
 }
 
-void Plot::setIndicator ()
-{
-  _indicator->load();
-  
-  _menu->setIndicator(_indicator->name());
-
-  _menu->setLock(_indicator->lock());
-  _dock->statusChanged(_indicator->lock());
-  
-  _menu->setDate(_indicator->date());
-  enableAxis(QwtPlot::xBottom, _indicator->date());
-  
-  _menu->setLog(_indicator->log());
-  if (_indicator->log() == TRUE)
-    setAxisScaleEngine(QwtPlot::yRight, new QwtLog10ScaleEngine);
-  else
-    setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
-}
-
-Indicator * Plot::indicator ()
-{
-  return _indicator;
-}
-
 void Plot::updatePlot ()
 {
   setDates();
-  addCurves();
-  addChartObjects(_indicator->chartObjects());
 
   // calculate end of chart pos
   _endPos = _dateScaleDraw->count();
@@ -173,30 +154,14 @@ void Plot::updatePlot ()
   emit signalIndex(_startPos);
 }
 
-void Plot::addCurves ()
+void Plot::setCurve (Curve *curve)
 {
-  QHash<QString, Curve *> l = _indicator->curves();
-  QHashIterator<QString, Curve *> it(l);
-  while (it.hasNext())
-  {
-    it.next();
-    Curve *curve = it.value();
-    Plugin *plug = _qcurves.value(curve->type());
-    if (! plug)
-    {
-      PluginFactory fac;
-      plug = fac.plugin(curve->type());
-      if (! plug)
-      {
-        qDebug() << "Plot::addCurves: no plugin" << curve->type();
-        return;
-      }
+  curve->itemChanged();
+  curve->setYAxis(QwtPlot::yRight);
+  curve->attach(this);
+  _curves.insert(curve->label(), curve);
 
-      plug->setParent((void *) this);
-      _qcurves.insert(curve->type(), plug);
-    }
-    plug->setCurve(curve);
-  }
+  _dateScaleDraw->setDates(curve);
 }
 
 void Plot::dates (QList<QDateTime> &d)
@@ -243,24 +208,12 @@ void Plot::setLogScaling (bool d)
   else
     setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
 
-  _indicator->setLog(d);
-  _indicator->save();
-  
   replot();
 }
 
 void Plot::showDate (bool d)
 {
   enableAxis(QwtPlot::xBottom, d);
-  _indicator->setDate(d);
-  _indicator->save();
-}
-
-void Plot::lockChanged (bool d)
-{
-  _dock->statusChanged(d);
-  _indicator->setLock(d);
-  _indicator->save();
 }
 
 void Plot::setCrossHairs (bool d)
@@ -277,7 +230,7 @@ void Plot::setBarSpacing (int d)
 
 void Plot::setHighLow ()
 {
-  if (! _qcurves.count())
+  if (! _curves.count())
   {
     _high = 0;
     _low = 0;
@@ -288,47 +241,36 @@ void Plot::setHighLow ()
     _low = 999999999.0;
   }
 
-  QHashIterator<QString, Plugin *> it(_qcurves);
+  QHashIterator<QString, Curve *> it(_curves);
   while (it.hasNext())
   {
     it.next();
-    Plugin *plug = it.value();
+    Curve *curve = it.value();
 
-    Setting set, set2;
-    set.setData("REQUEST", QString("HIGH_LOW"));
-    set.setData("START", _startPos);
-    set.setData("END", _endPos);
-    if (plug->request(&set, &set2))
+    double h, l;
+    if (curve->highLowRange(_startPos, _endPos, h, l))
       continue;
 
-    double d = set2.getDouble("HIGH");
-    if (d > _high)
-      _high = d;
+    if (h > _high)
+      _high = h;
 
-    d = set2.getDouble("LOW");
-    if (d < _low)
-      _low = d;
+    if (l < _low)
+      _low = l;
   }
 
-  QHashIterator<QString, Plugin *> it2(_chartObjects);
+  QHashIterator<QString, ChartObject *> it2(_chartObjects);
   while (it2.hasNext())
   {
     it2.next();
-
-    Setting request, data;
-    request.setData("REQUEST", QString("HIGH_LOW"));
-    request.setData("START", _startPos);
-    request.setData("END", _endPos);
-    if (it2.value()->request(&request, &data))
+    double d, d2;
+    if (it2.value()->highLow(_startPos, _endPos, d, d2))
       continue;
 
-    double d = data.getDouble("HIGH");
     if (d > _high)
       _high = d;
-    
-    d = data.getDouble("LOW");
-    if (d < _low)
-      _low = d;
+
+    if (d2 < _low)
+      _low = d2;
   }
 
   setAxisScale(QwtPlot::yRight, _low, _high);
@@ -342,7 +284,7 @@ void Plot::setStartIndex (int index)
   if (_endPos > (_dateScaleDraw->count() + _dateScaleDraw->count()))
     _endPos = _dateScaleDraw->count() + _dateScaleDraw->count();
 
-//qDebug() << "Plot::setStartIndex" << _startPos << width() << _spacing << _endPos;
+//qDebug() << "Plot::setStartIndex" << _startPos << _endPos;
 
   setHighLow();
 
@@ -357,7 +299,7 @@ void Plot::setYPoints ()
 {
   _plotScaleDraw->clearPoints();
 
-  QHashIterator<QString, Curve *> it(_indicator->curves());
+  QHashIterator<QString, Curve *> it(_curves);
   while (it.hasNext())
   {
     it.next();
@@ -375,14 +317,14 @@ void Plot::setYPoints ()
     }
 
     // fix for Y AND X axis misalignment
-    if (curve->type() == "HistogramBar"
+    if (curve->type() == "Histogram Bar"
         || curve->type() == "Candle"
-        || curve->type() == "Bar")
+        || curve->type() == "OHLC")
     {
       if (! flag)
         index--;
     }
-    
+
     CurveBar *bar = curve->bar(index);
     if (! bar)
       continue;
@@ -395,12 +337,12 @@ void Plot::showContextMenu ()
 {
   if (_selected)
     return;
-  
-  if (_qcurves.count())
+
+  if (_curves.count())
     _menu->setCOMenuStatus(TRUE);
   else
     _menu->setCOMenuStatus(FALSE);
-  
+
   _menu->exec(QCursor::pos());
 }
 
@@ -411,50 +353,93 @@ int Plot::index ()
 
 void Plot::mouseClick (int button, QPoint p)
 {
-  emit signalClick(button, p);
+  if (! _dateScaleDraw->count())
+    return;
+
+  if (_chartObjectDialog)
+    return;
+
+  if (_selected)
+  {
+    _selected->click(button, p);
+    return;
+  }
+
+  QHashIterator<QString, ChartObject *> it(_chartObjects);
+  while (it.hasNext())
+  {
+    it.next();
+
+    if (it.value()->readOnly() == TRUE)
+      continue;
+
+    if (! it.value()->isSelected(p))
+      continue;
+
+    _selected = it.value();
+    _selected->click(button, p);
+    return;
+  }
+}
+
+void Plot::mouseDoubleClick (int button, QPoint p)
+{
+  if (! _dateScaleDraw->count())
+    return;
+
+  if (_chartObjectDialog)
+    return;
+
+  if (_selected)
+    return;
+
+  int pos = (int) invTransform(QwtPlot::xBottom, p.x());
+  int page = width() / _spacing;
+  int center = _startPos + (page / 2);
+//  if (pos > center)
+//    nextPage();
+//  else
+//  {
+//    if (pos < center)
+//      previousPage();
+//  }
+//qDebug() << "Plot::mouseDoubleClick:" << pos;
 }
 
 void Plot::mouseMove (QPoint p)
 {
   if (! _dateScaleDraw->count())
     return;
-  
-  emit signalMove(p);
 
-  Setting set;
+  if (_selected)
+    _selected->move(p);
+
   int index = (int) invTransform(QwtPlot::xBottom, p.x());
 
-  QHashIterator<QString, Plugin *> it2(_chartObjects);
+  Message set;
+  QHashIterator<QString, ChartObject *> it2(_chartObjects);
   while (it2.hasNext())
   {
     it2.next();
+    if (! it2.value()->isSelected(p))
+      continue;
 
-    Setting request, data;
-    request.setData("REQUEST", QString("IS_SELECTED"));
-    request.setData("X", p.x());
-    request.setData("Y", p.y());
-    if (it2.value()->request(&request, &data))
+    if (it2.value()->info(set))
       continue;
-    
-    request.setData("REQUEST", QString("INFO"));
-    if (it2.value()->request(&request, &set))
-      continue;
-      
+
     emit signalInfoMessage(set);
+
     return;
   }
 
   _dateScaleDraw->info(index, set);
 
-  QHashIterator<QString, Plugin *> it(_qcurves);
+  QHashIterator<QString, Curve *> it(_curves);
   while (it.hasNext())
   {
     it.next();
-
-    Setting request;
-    request.setData("REQUEST", QString("INFO"));
-    request.setData("INDEX", index);
-    it.value()->request(&request, &set);
+    Curve *curve = it.value();
+    curve->info(index, &set);
   }
 
   emit signalInfoMessage(set);
@@ -463,11 +448,6 @@ void Plot::mouseMove (QPoint p)
 PlotMenu * Plot::plotMenu ()
 {
   return _menu;
-}
-
-DockWidget * Plot::dockWidget ()
-{
-  return _dock;
 }
 
 void Plot::loadSettings ()
@@ -498,119 +478,217 @@ void Plot::loadSettings ()
   _antiAlias = settings.value("antialias", TRUE).toBool();
 }
 
+void Plot::unselect ()
+{
+  _selected = 0;
+}
+
+void Plot::select (QString id)
+{
+  _selected = _chartObjects.value(id);
+}
+
+void Plot::setScriptFile (QString d)
+{
+  _scriptFile = d;
+}
+
+QString Plot::scriptFile ()
+{
+  return _scriptFile;
+}
+
+void Plot::setRow (int d)
+{
+  _row = d;
+}
+
+int Plot::row ()
+{
+  return _row;
+}
+
+void Plot::setCol (int d)
+{
+  _col = d;
+}
+
+int Plot::col ()
+{
+  return _col;
+}
+
+void Plot::setName (QString d)
+{
+  _name = d;
+}
+
+QString Plot::name ()
+{
+  return _name;
+}
+
+QHash<QString, Curve *> Plot::curves ()
+{
+  return _curves;
+}
+
 //********************************************************************
 //***************** CHART OBJECT FUNCTIONS ***************************
 //********************************************************************
 
 void Plot::chartObjectNew (QString type)
 {
-  Plugin *plug = _chartObjects.value(type);
-  if (! plug)
+  ChartObjectFactory fac;
+  _selected = fac.chartObject(type);
+  if (! _selected)
   {
-    PluginFactory fac;
-    plug = fac.plugin(type);
-    if (! plug)
-    {
-      qDebug() << "Plot::chartObjectNew: no plugin";
-      return;
-    }
-
-    plug->setParent((void *) this);
-    connect(plug, SIGNAL(signalSelected()), this, SLOT(chartObjectSelected()));
-    connect(plug, SIGNAL(signalUnselected()), this, SLOT(chartObjectUnselected()));
-    connect(this, SIGNAL(signalClick(int, QPoint)), plug, SLOT(click(int, QPoint)));
-    connect(this, SIGNAL(signalMove(QPoint)), plug, SLOT(move(QPoint)));
-    _chartObjects.insert(type, plug);
-  }
-
-  Setting parms, data;
-  parms.setData("REQUEST", QString("CREATE"));
-
-  QStringList l;
-  l << _indicator->name() << g_barData->exchange() << g_barData->symbol();
-  parms.setData("KEY", l.join("_"));
-  
-  if (plug->request(&parms, &data))
-  {
-    qDebug() << "Plot::chartObjectNew: request error";
+    qDebug() << "Plot::chartObjectNew: invalid type" << type;
     return;
   }
+
+  ChartObjectDataBase db;
+  int t = db.lastId();
+  t++;
+  QString id = QString::number(t);
+  _selected->setID(id);
+
+  _chartObjects.insert(id, _selected);
+
+  _selected->setScript(_scriptFile);
+  _selected->setSymbol(g_currentSymbol.key());
+  _selected->setPlotName(_name);
+
+  _selected->attach(this);
+
+  _selected->setModified(1);
+  _selected->save();
+
+  _selected->create();
 }
 
 void Plot::deleteAllChartObjects ()
 {
-  Setting parms, data;
-  parms.setData("REQUEST", QString("DELETE_ALL"));
-  
-  QHashIterator<QString, Plugin *> it(_chartObjects);
+  QStringList l;
+  QHashIterator<QString, ChartObject *> it(_chartObjects);
   while (it.hasNext())
   {
     it.next();
-    it.value()->request(&parms, &data);  
+    l << it.value()->ID();
+    it.value()->setModified(0);
   }
 
-  setHighLow();
-  setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
+  qDeleteAll(_chartObjects);
+  _chartObjects.clear();
+
+  _selected = 0;
+  _chartObjectDialog = 0;
+
+  ChartObjectDataBase db;
+  db.transaction();
+  db.remove(l);
+  db.commit();
+
+  setStartIndex(_startPos);
+}
+
+void Plot::setChartObjects (QHash<QString, ChartObject *> l)
+{
+  qDeleteAll(_chartObjects);
+  _chartObjects.clear();
+
+  // add the objects
+  QHashIterator<QString, ChartObject *> it(l);
+  while (it.hasNext())
+  {
+    it.next();
+    addChartObject(it.value());
+  }
+}
+
+void Plot::addChartObject (ChartObject *co)
+{
+  _chartObjects.insert(co->ID(), co);
+  co->attach(this);
+}
+
+void Plot::showChartObjectMenu ()
+{
+  if (! _selected)
+    return;
+
+  if (_chartObjectDialog)
+    return;
+
+  _chartObjectMenu->exec(QCursor::pos());
+}
+
+void Plot::chartObjectDialog ()
+{
+  if (! _selected)
+    return;
+
+  if (_chartObjectDialog)
+    return;
+
+  _chartObjectDialog = new Dialog(this);
+  CommandWidget *w = new CommandWidget(_chartObjectDialog, _selected->settings(), 0);
+  _chartObjectDialog->setWidget(w);
+  connect(_chartObjectDialog, SIGNAL(accepted()), w, SLOT(save()));
+  connect(_chartObjectDialog, SIGNAL(accepted()), this, SLOT(chartObjectDialog2()));
+  connect(_chartObjectDialog, SIGNAL(rejected()), this, SLOT(chartObjectDialog3()));
+  _chartObjectDialog->show();
+}
+
+void Plot::chartObjectDialog2 ()
+{
+  if (! _selected)
+    return;
+
+  _selected->setModified(1);
+
+  _chartObjectDialog = 0;
+
   replot();
 }
 
-void Plot::chartObjectSelected ()
+void Plot::chartObjectDialog3 ()
 {
-  _selected = 1;
+  _chartObjectDialog = 0;
 }
 
-void Plot::chartObjectUnselected ()
+void Plot::deleteChartObject ()
 {
+  if (! _selected)
+    return;
+
+  ConfirmDialog *dialog = new ConfirmDialog(g_parent);
+  dialog->setMessage(QObject::tr("Confirm chart object delete"));
+  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteChartObject2()));
+  dialog->show();
+}
+
+void Plot::deleteChartObject2 ()
+{
+  if (! _selected)
+    return;
+
+  QStringList l;
+  l << _selected->ID();
+
+  ChartObjectDataBase db;
+  db.transaction();
+  db.remove(l);
+  db.commit();
+
+  _selected->setModified(0);
+  _chartObjects.remove(_selected->ID());
+  delete _selected;
   _selected = 0;
-}
 
-void Plot::addChartObjects (QHash<QString, Setting> &l)
-{
-  // clear old objects
-  Setting parms, data;
-  parms.setData("REQUEST", QString("CLEAR"));
+  setHighLow();
 
-  QHashIterator<QString, Plugin *> it(_chartObjects);
-  while (it.hasNext())
-  {
-    it.next();
-    it.value()->request(&parms, &data);
-  }
+  setAxisScale(QwtPlot::xBottom, _startPos, _endPos);
 
-  // add the objects
-  QHashIterator<QString, Setting> it2(l);
-  while (it2.hasNext())
-  {
-    it2.next();
-    Setting set = it2.value();
-    addChartObject(&set);
-  }
-}
-
-void Plot::addChartObject (Setting *parms)
-{
-  Plugin *plug = _chartObjects.value(parms->data("PLUGIN"));
-  if (! plug)
-  {
-    PluginFactory fac;
-    plug = fac.plugin(parms->data("PLUGIN"));
-    if (! plug)
-    {
-      qDebug() << "Plot::addChartObject: no plugin" << parms->data("PLUGIN");
-      return;
-    }
-
-    plug->setParent((void *) this);
-    connect(plug, SIGNAL(signalSelected()), this, SLOT(chartObjectSelected()));
-    connect(plug, SIGNAL(signalUnselected()), this, SLOT(chartObjectUnselected()));
-    connect(this, SIGNAL(signalClick(int, QPoint)), plug, SLOT(click(int, QPoint)));
-    connect(this, SIGNAL(signalMove(QPoint)), plug, SLOT(move(QPoint)));
-    _chartObjects.insert(parms->data("PLUGIN"), plug);
-  }
-
-  Setting request;
-  request.setData("REQUEST", QString("ADD"));
-
-  if (plug->request(&request, parms))
-    qDebug() << "Plot::addChartObject: request error";
+  replot();
 }

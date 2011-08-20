@@ -29,8 +29,6 @@
 #include <QFormLayout>
 #include <QLayout>
 
-#include "Command.h"
-
 class Dialog : public QDialog
 {
   Q_OBJECT
@@ -54,7 +52,6 @@ class Dialog : public QDialog
     QPushButton *_cancelButton;
     QString _helpFile;
     QLabel *_message;
-    Command *_command;
     QString _keySize;
     QString _keyPos;
 };

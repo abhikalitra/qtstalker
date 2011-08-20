@@ -48,12 +48,15 @@ class DateRange
       _YEAR50,
       _ALL
     };
-    
+
     DateRange ();
     int dateRange (DateRange::Range, QDateTime &input, QDateTime &output);
-    void list (QStringList &);
+    QStringList list ();
     int toType (QString);
     void dateRangeText (DateRange::Range, QString &);
+
+  private:
+    QStringList _list;
 };
 
 #endif

@@ -35,7 +35,7 @@ class ConfirmDialog : public Dialog
     ConfirmDialog (QWidget *);
     void createGUI ();
     void setMessage (QString);
-    void setCommand (Command *);
+//    void setCommand (Command *);
 };
 
 #endif

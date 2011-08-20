@@ -300,7 +300,7 @@ double Bar::oi ()
   return _oi;
 }
 
-QString Bar::string ()
+QString Bar::toString ()
 {
   QStringList l;
   l << _startDate.toString(Qt::ISODate);
@@ -311,7 +311,28 @@ QString Bar::string ()
   l << QString::number(_close);
   l << QString::number(_volume);
   l << QString::number(_oi);
+  l << QString::number(_length);
+  l << _lastDate.toString(Qt::ISODate);
   return l.join(",");
+}
+
+int Bar::fromString (QString d)
+{
+  QStringList l = d.split(",");
+  if (l.count() != 10)
+    return 1;
+
+  setDates(l.at(0), l.at(1));
+  int pos = 2;
+  setOpen(l.at(pos++));
+  setHigh(l.at(pos++));
+  setLow(l.at(pos++));
+  setClose(l.at(pos++));
+  setVolume(l.at(pos++));
+  setOI(l.at(pos++));
+  setLength(l.at(pos++).toInt());
+  setLastDate(QDateTime::fromString(l.at(pos++), Qt::ISODate));
+  return 0;
 }
 
 QDateTime Bar::startDate ()

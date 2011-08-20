@@ -40,6 +40,7 @@ class SelectDialog : public Dialog
     void setItems (QStringList);
     void setMode (int);
     void setTitle (QString);
+    QStringList selected ();
 
   public slots:
     void done ();
@@ -48,6 +49,7 @@ class SelectDialog : public Dialog
   private:
     QListWidget *_list;
     QLabel *_title;
+    QStringList _selected;
 };
 
 #endif

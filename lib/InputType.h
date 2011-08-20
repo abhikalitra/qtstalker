@@ -27,7 +27,7 @@
 
 #include "BarData.h"
 #include "Curve.h"
-#include "Indicator.h"
+#include "Script.h"
 #include "ta_libc.h"
 
 class InputType
@@ -43,13 +43,13 @@ class InputType
       _VOLUME,
       _OI
     };
-    
+
     InputType ();
     QStringList & list ();
     InputType::Type fromString (QString);
     Curve * input (BarData *, QString);
     Curve * ohlc (BarData *);
-    int inputs (QList<Curve *> &, QStringList &, Indicator *, BarData *);
+    int inputs (QList<Curve *> &, QStringList &, Script *, BarData *);
     int keys (QList<Curve *> &, QList<int> &);
     int fill (QList<Curve *> &, QList<int> &, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[]);
     int outputs (QList<Curve *> &, QList<int> &, int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[]);

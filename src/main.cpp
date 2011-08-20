@@ -24,10 +24,10 @@
 #include <QString>
 #include <QLocale>
 #include <QtDebug>
+#include <QDBusConnection>
 
 #include "Qtstalker.h"
 #include "../lib/qtstalker_defines.h"
-
 
 int main(int argc, char *argv[])
 {
@@ -77,10 +77,15 @@ int main(int argc, char *argv[])
   tor.load(i18nFilename, i18nDir);
   a.installTranslator( &tor );
 
-  QtstalkerApp *qtstalker = new QtstalkerApp(session, asset);
+  if (! QDBusConnection::sessionBus().isConnected())
+  {
+    qWarning("Cannot connect to the D-Bus session bus.\n"
+             "Please check your system settings and try again.\n");
+    return 1;
+  }
 
-  qtstalker->show();
-
+  QtstalkerApp qtstalker(session, asset);
+  qtstalker.show();
   return a.exec();
 }
 

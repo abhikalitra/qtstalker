@@ -32,7 +32,6 @@
 #include <QMetaType>
 
 #include "Bar.h"
-#include "Curve.h"
 
 class BarData
 {
@@ -57,9 +56,6 @@ class BarData
     void setExchange (QString);
     int setKey (QString);
     QString key ();
-//    void parse (QString &);
-//    void stringSettings (QString &);
-//    int setStringSettings (QString &);
     int maxBars ();
     void setMaxBars (int);
     void setStartDate (QDateTime);
@@ -74,6 +70,8 @@ class BarData
     QString type ();
     int range ();
     void setRange (int);
+    QString toString ();
+    int fromString (QString);
 
   protected:
     QList<Bar *> _barList;

@@ -128,3 +128,32 @@ void CurveBar::copy (CurveBar *d)
   d->setColor(_color);
   d->setDateTime(_dateTime);
 }
+
+QString CurveBar::toString ()
+{
+  QStringList l;
+  l << _color.name() << _dateTime.toString(Qt::ISODate);
+
+  int loop = 0;
+  for (; loop < _data.count(); loop++)
+    l << QString::number(_data.value(loop));
+
+  return l.join(",");
+}
+
+int CurveBar::fromString (QString d)
+{
+  QStringList l = d.split(",");
+  if (l.count() < 3)
+    return 1;
+
+  int pos = 0;
+  _color = QColor(l.at(pos++));
+  _dateTime = QDateTime::fromString(l.at(pos++), Qt::ISODate);
+
+  int loop = 0;
+  for (; pos < l.count(); pos++, loop++)
+    setData(loop, l.at(pos).toDouble());
+
+  return 0;
+}

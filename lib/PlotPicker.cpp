@@ -81,7 +81,7 @@ void PlotPicker::widgetMouseMoveEvent (QMouseEvent *event)
   }
 
   QwtPicker::widgetMouseMoveEvent(event);
-  
+
   emit signalMouseMove(event->pos());
 }
 
@@ -90,6 +90,13 @@ void PlotPicker::widgetMousePressEvent (QMouseEvent *event)
   QwtPicker::widgetMousePressEvent(event);
 
   emit signalMouseClick(event->button(), event->pos());
+}
+
+void PlotPicker::widgetMouseReleaseEvent (QMouseEvent *event)
+{
+  QwtPicker::widgetMouseReleaseEvent(event);
+
+  emit signalMouseRelease(event->button(), event->pos());
 }
 
 void PlotPicker::widgetMouseDoubleClickEvent (QMouseEvent *event)

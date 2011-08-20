@@ -29,7 +29,6 @@
 Dialog::Dialog (QWidget *p) : QDialog (p)
 {
   _helpFile = "main.html";
-  _command = 0;
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 
   // main vbox
@@ -72,8 +71,6 @@ Dialog::Dialog (QWidget *p) : QDialog (p)
 // virtual
 void Dialog::done ()
 {
-  if (_command)
-    _command->setReturnCode("0");
   saveSettings();
   accept();
 }
@@ -96,7 +93,7 @@ void Dialog::cancel ()
 void Dialog::loadSettings ()
 {
   QSettings settings(g_globalSettings);
-  
+
   QSize sz = settings.value(_keySize, QSize(200,200)).toSize();
   resize(sz);
 

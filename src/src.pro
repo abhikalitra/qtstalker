@@ -1,59 +1,18 @@
 TEMPLATE = app
 
-CONFIG += qt thread warn_on debug
+CONFIG += qt thread warn_on debug qdbus
 #CONFIG(debug, debug|release): DEFINES += DEBUG _DEBUG
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math
 
-HEADERS += AboutDialog.h
-HEADERS += BarLengthButton.h
-HEADERS += BarSpaceButton.h
-HEADERS += ChartPage.h
-HEADERS += ConfigureButton.h
-HEADERS += ConfigureDialog.h
-HEADERS += ControlPanel.h
-HEADERS += CrossHairsButton.h
-HEADERS += DataWindowButton.h
-HEADERS += DateRangeControl.h
-HEADERS += GridButton.h
-HEADERS += GroupPage.h
-HEADERS += InfoPanel.h
-HEADERS += NewIndicatorDialog.h
+#headers
 HEADERS += Qtstalker.h
-HEADERS += RecentCharts.h
-HEADERS += RefreshButton.h
-HEADERS += ScriptLaunchButton.h
-HEADERS += ScriptLaunchButtonDialog.h
-HEADERS += ScriptPage.h
 HEADERS += Setup.h
-HEADERS += SidePanel.h
-HEADERS += SymbolListWidget.h
 
-
-SOURCES += AboutDialog.cpp
-SOURCES += BarLengthButton.cpp
-SOURCES += BarSpaceButton.cpp
-SOURCES += ChartPage.cpp
-SOURCES += ConfigureButton.cpp
-SOURCES += ConfigureDialog.cpp
-SOURCES += ControlPanel.cpp
-SOURCES += CrossHairsButton.cpp
-SOURCES += DataWindowButton.cpp
-SOURCES += DateRangeControl.cpp
-SOURCES += GridButton.cpp
-SOURCES += GroupPage.cpp
-SOURCES += InfoPanel.cpp
+#sources
 SOURCES += main.cpp
-SOURCES += NewIndicatorDialog.cpp
 SOURCES += Qtstalker.cpp
-SOURCES += RecentCharts.cpp
-SOURCES += RefreshButton.cpp
-SOURCES += ScriptLaunchButton.cpp
-SOURCES += ScriptLaunchButtonDialog.cpp
-SOURCES += ScriptPage.cpp
 SOURCES += Setup.cpp
-SOURCES += SidePanel.cpp
-SOURCES += SymbolListWidget.cpp
 
 
 TARGET = qtstalker
@@ -72,3 +31,4 @@ QT += core
 QT += gui
 QT += sql
 QT += network
+QT += dbus

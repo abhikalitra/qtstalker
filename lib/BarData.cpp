@@ -39,7 +39,7 @@ void BarData::clear ()
 {
   if (_barList.count())
     qDeleteAll(_barList);
-  
+
   _high = -99999999;
   _low = 99999999;
   _length = -1;
@@ -82,7 +82,7 @@ Bar * BarData::bar (int d)
     if (d < 0 || d >= _barList.count())
       return 0;
   }
-  
+
   return _barList.at(d);
 }
 
@@ -146,10 +146,10 @@ int BarData::setKey (QString d)
   QStringList l = d.split(":");
   if (l.count() != 2)
     return 1;
-  
+
   _exchange  = l.at(0);
   _symbol = l.at(1);
-  
+
   return 0;
 }
 
@@ -159,59 +159,54 @@ QString BarData::key ()
   return s;
 }
 
-/*
-void BarData::parse (QString &d)
-{
-  QStringList l = d.split(";", QString::SkipEmptyParts);
-
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    QStringList l2 = l.at(loop).split(",");
-    if (l2.count() != 8)
-      continue;
-    
-    int pos = 2;
-    Bar *bar = new Bar;
-    bar->setDates(l2.at(0), l2.at(1));
-    bar->setOpen(l2.at(pos++));
-    bar->setHigh(l2.at(pos++));
-    bar->setLow(l2.at(pos++));
-    bar->setClose(l2.at(pos++));
-    bar->setVolume(l2.at(pos++));
-    bar->setOI(l2.at(pos++));
-
-    append(bar);
-  }
-}
-*/
-/*
-void BarData::stringSettings (QString &d)
+QString BarData::toString ()
 {
   QStringList l;
   l << _exchange;
   l << _symbol;
   l << QString::number(_length);
   l << QString::number (_range);
-  d = l.join(",");
+
+  int loop = 0;
+  for (; loop < _barList.count(); loop++)
+  {
+    Bar *b = _barList.at(loop);
+    if (! b)
+      continue;
+
+    l << b->toString();
+  }
+
+  return l.join(";");
 }
-*/
-/*
-int BarData::setStringSettings (QString &d)
+
+int BarData::fromString (QString d)
 {
-  QStringList l = d.split(",", QString::SkipEmptyParts);
-  if (l.count() != 4)
+  QStringList l = d.split(";", QString::SkipEmptyParts);
+
+  if (l.count() < 4)
     return 1;
 
-  int pos = 0;
-  _exchange = l.at(pos++);
-  _symbol = l.at(pos++);
-  _length = (BarData::BarLength) l.at(pos++).toInt();
-  _range = l.at(pos++).toInt();
+  int loop = 0;
+  _exchange = l.at(loop++);
+  _symbol = l.at(loop++);
+  _length = l.at(loop++).toInt();
+  _range = l.at(loop++).toInt();
+
+  for (; loop < l.count(); loop++)
+  {
+    Bar *b = new Bar;
+    if (b->fromString(l.at(loop)))
+    {
+      delete b;
+      continue;
+    }
+
+    append(b);
+  }
 
   return 0;
 }
-*/
 
 int BarData::maxBars ()
 {

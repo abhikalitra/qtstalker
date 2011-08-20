@@ -44,6 +44,8 @@ class CurveBar
     int highLow (double &, double &);
     int isDate ();
     void copy (CurveBar *);
+    QString toString ();
+    int fromString (QString);
 
   protected:
     QHash<int, double> _data;

@@ -49,7 +49,7 @@ Curve * InputType::input (BarData *bd, QString t)
     Bar *bar = bd->bar(loop);
     if (! bar)
       continue;
-    
+
     switch ((Type) type)
     {
       case _DATE:
@@ -81,7 +81,7 @@ Curve * InputType::input (BarData *bd, QString t)
 	break;
     }
   }
-  
+
   return line;
 }
 
@@ -106,12 +106,12 @@ Curve * InputType::ohlc (BarData *bd)
   return line;
 }
 
-int InputType::inputs (QList<Curve *> &list, QStringList &order, Indicator *i, BarData *bd)
+int InputType::inputs (QList<Curve *> &list, QStringList &order, Script *i, BarData *bd)
 {
   int loop = 0;
   for (; loop < order.count(); loop++)
   {
-    Curve *c = i->line(order.at(loop));
+    Curve *c = i->curve(order.at(loop));
     if (! c)
     {
       c = input(bd, order.at(loop));
@@ -119,7 +119,7 @@ int InputType::inputs (QList<Curve *> &list, QStringList &order, Indicator *i, B
         return 1;
 
       c->setLabel(order.at(loop));
-      i->setLine(order.at(loop), c);
+      i->setCurve(order.at(loop), c);
       list.append(c);
     }
     else
@@ -132,7 +132,7 @@ int InputType::inputs (QList<Curve *> &list, QStringList &order, Indicator *i, B
 int InputType::keys (QList<Curve *> &list, QList<int> &keys)
 {
   keys.clear();
-  
+
   int loop = 0;
   for (; loop < list.count(); loop++)
   {
@@ -141,14 +141,14 @@ int InputType::keys (QList<Curve *> &list, QList<int> &keys)
       list.at(loop)->keys(keys);
       continue;
     }
-    
+
     if (list.at(loop)->count() < keys.count())
       list.at(loop)->keys(keys);
   }
 
   if (! keys.count())
     return 1;
-  
+
   return 0;
 }
 
@@ -156,7 +156,7 @@ int InputType::fill (QList<Curve *> &list, QList<int> &keys, TA_Real out[], TA_R
 {
   if (! list.count())
     return 0;
-  
+
   int ipos = 0;
   int opos = 0;
   for (; ipos < keys.count(); ipos++)

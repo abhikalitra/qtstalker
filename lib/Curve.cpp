@@ -36,14 +36,99 @@ Curve::~Curve ()
   qDeleteAll(_data);
 }
 
+QwtDoubleRect Curve::boundingRect () const
+{
+  QwtDoubleRect rect(0, 0, 0, 0);
+  rect.setBottom(_low);
+  rect.setTop(_high);
+  return rect;
+}
+
+int Curve::rtti () const
+{
+  return QwtPlotCurve::UserCurve;
+}
+
+int Curve::highLow (double &h, double &l)
+{
+  if (! _data.count())
+    return 1;
+
+  h = _high;
+  l = _low;
+
+  return 0;
+}
+
+int Curve::highLowRange (int start, int end, double &h, double &l)
+{
+  if (! _data.count())
+    return 1;
+
+  int rc = 1;
+  int loop = start;
+  int flag = 0;
+  for (; loop < end; loop++)
+  {
+    CurveBar *r = _data.value(loop);
+    if (! r)
+      continue;
+
+    double th, tl;
+    if (r->highLow(th, tl))
+      continue;
+
+    rc = 0;
+
+    if (! flag)
+    {
+      h = th;
+      l = tl;
+      flag++;
+    }
+    else
+    {
+      if (th > h)
+        h = th;
+      if (tl < l)
+        l = tl;
+    }
+  }
+
+  return rc;
+}
+
+int Curve::info (int index, Message *data)
+{
+  if (! _data.count())
+    return 1;
+
+  CurveBar *b = _data.value(index);
+  if (! b)
+    return 1;
+
+  Strip strip;
+  QString s;
+  strip.strip(b->data(), 4, s);
+  data->insert(_label, s);
+
+  return 0;
+}
+
 void Curve::init ()
 {
-  _z = -1;
-  _pen = 1;
+  _high = 0;
+  _low = 0;
+  setZ(-1);
+  _penWidth = 1;
+  _label.clear();
+//  _type.clear();
+
   qDeleteAll(_data);
   _data.clear();
-  _label.clear();
-  _type.clear();
+
+  setItemAttribute(QwtPlotItem::AutoScale, TRUE);
+  setItemAttribute(QwtPlotItem::Legend, TRUE);
 }
 
 void Curve::setBar (int index, CurveBar *bar)
@@ -103,7 +188,7 @@ void Curve::keyRange (int &startIndex, int &endIndex)
 
   if (! _data.count())
     return;
-  
+
   QList<int> keys;
   keys = _data.keys();
   qSort(keys);
@@ -126,22 +211,6 @@ int Curve::setAllColor (QColor color)
   return 0;
 }
 
-void Curve::setZ (int z)
-{
-  _z = z;
-}
-
-int Curve::z ()
-{
-  return _z;
-}
-
-QStringList Curve::list ()
-{
-  QSettings set(g_globalSettings);
-  return set.value("curve_plugins").toStringList();
-}
-
 void Curve::deleteBar (int d)
 {
   if (_data.contains(d))
@@ -150,6 +219,16 @@ void Curve::deleteBar (int d)
     _data.remove(d);
     delete bar;
   }
+}
+
+void Curve::setPenWidth (int d)
+{
+  _penWidth = d;
+}
+
+int Curve::penWidth ()
+{
+  return _penWidth;
 }
 
 void Curve::copy (Curve *d)
@@ -166,48 +245,58 @@ void Curve::copy (Curve *d)
   }
 
   d->setLabel(_label);
-  d->setType(_type);
-  d->setZ(_z);
+  d->setZ(z());
+  d->setPenWidth(_penWidth);
+  d->setPlotName(_plotName);
 }
 
-int Curve::highLow (double &h, double &l)
+void Curve::setPlotName (QString d)
 {
-  int rc = 1;
-  int flag = 0;
-  h = 0;
-  l = 0;
+  _plotName = d;
+}
+
+QString Curve::plotName ()
+{
+  return _plotName;
+}
+
+QString Curve::toString ()
+{
+  QStringList l;
+  l << _type << _label << _plotName << QString::number(z()) << QString::number(_penWidth);
+
   QHashIterator<int, CurveBar *> it(_data);
   while (it.hasNext())
   {
     it.next();
-    rc = 0;
-
-    if (! flag)
-    {
-      it.value()->highLow(h, l);
-      flag++;
-    }
-    else
-    {
-      double th = 0;
-      double tl = 0;
-      it.value()->highLow(th, tl);
-      if (th > h)
-	h = th;
-      if (tl < l)
-	l = tl;
-    }
+    l << QString::number(it.key()) << it.value()->toString();
   }
 
-  return rc;
+  return l.join(";");
 }
 
-void Curve::setPen (int d)
+int Curve::fromString (QString d)
 {
-  _pen = d;
-}
+  QStringList l = d.split(";");
+  if (l.count() < 5)
+    return 1;
 
-int Curve::pen ()
-{
-  return _pen;
+  int loop = 0;
+  _type = l.at(loop++);
+  _label = l.at(loop++);
+  _plotName = l.at(loop++);
+  setZ(l.at(loop++).toInt());
+  _penWidth = l.at(loop++).toInt();
+
+  for (; loop < l.count(); loop+= 2)
+  {
+    if (loop + 1 >= l.count())
+      return 1;
+
+    CurveBar *b = new CurveBar;
+    b->fromString(l.at(loop + 1));
+    setBar(l.at(loop).toInt(), b);
+  }
+
+  return 0;
 }

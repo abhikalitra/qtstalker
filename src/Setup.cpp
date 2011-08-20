@@ -20,36 +20,38 @@
  */
 
 #include "Setup.h"
-#include "Indicator.h"
+#include "Script.h"
 #include "Globals.h"
 #include "BarData.h"
-#include "MiddleMan.h"
 #include "qtstalker_defines.h"
 #include "ExchangeDataBase.h"
-#include "PluginFactory.h"
 #include "Script.h"
-#include "DataDataBase.h"
+#include "ScriptDataBase.h"
 
 #include <QtDebug>
 #include <QDir>
 #include <QStringList>
 #include <QSettings>
 #include <QtSql>
+#include <QUuid>
 
 Setup::Setup ()
 {
 }
 
-void Setup::setup (QObject *p, QString session)
+void Setup::setup (QObject *, QString session)
 {
   // set the global variables
   g_session = session;
 
   // create a dummy barData
-  g_barData = new BarData;
-  
-  // create a dummy barData
-  g_middleMan = new MiddleMan(p);
+//  g_barData = new BarData;
+
+  // setup shared memory
+//  QUuid uid = QUuid::createUuid();
+//  g_sharedCurrentSymbol.setKey(uid.toString());
+//qDebug() << "Setup::setup:" << g_sharedCurrentSymbol.key();
+  g_sharedCurrentSymbol.setKey("sharedCurrentSymbol1");
 
   // setup the disk environment and init databases
   // order is critical here
@@ -59,10 +61,11 @@ void Setup::setup (QObject *p, QString session)
   setupDefaults();
 
   // scan plugins
-  scanPlugins();
-  
+//  scanPlugins();
+
   // initialize data tables
   setupExchanges();
+//qDebug() << "exchanges ok";
 
 //  setupFutures();
 
@@ -70,9 +73,10 @@ void Setup::setup (QObject *p, QString session)
   int ti = settings.value("default_indicators", 0).toInt();
   if (ti)
     return;
-  
+
 //  setupDefaultIndicators();
   setupDefaultScripts();
+//qDebug() << "default scripts ok";
 
   settings.setValue("default_indicators", 1);
   settings.sync();
@@ -104,7 +108,7 @@ void Setup::setupDefaults ()
   QString sysdir = INSTALL_LIB_DIR;
   sysdir.append("/qtstalker/plugins/script/");
   settings.setValue("plugin_path", sysdir);
-  
+
   // set the db ascii file directory
   sysdir = INSTALL_DATA_DIR;
   sysdir.append("/qtstalker/db/");
@@ -133,22 +137,23 @@ void Setup::setupDefaultIndicators ()
   QString s = set.value("db_data_directory").toString();
   s.append("default_indicators");
 
-  DataDataBase db("indicators");
+  ScriptDataBase db;
   db.transaction();
-  db.import(s);
+//  db.import(s);
   db.commit();
 
-  Indicator i;
-  i.add("OHLC");
-  i.add("VOL");
+//  Indicator i;
+//  i.add("OHLC");
+//  i.add("VOL");
 }
 
 void Setup::setupDefaultScripts ()
 {
+/*
   QString name("Yahoo");
   QString file = INSTALL_DATA_DIR;
   file.append("/qtstalker/quote/YahooHistoryDownload.pl");
-  
+
   Script script;
   script.setName(name);
   script.setCommand("perl");
@@ -161,12 +166,15 @@ void Setup::setupDefaultScripts ()
   settings.setValue("script_launch_button_icon_", QString());
   settings.setValue("script_launch_button_use_icon_", 0);
   settings.sync();
+*/
+
+  // edit procedure
 }
 
 void Setup::setupExchanges ()
 {
   ExchangeDataBase db;
-  db.createExchanges();  
+  db.createExchanges();
 }
 
 void Setup::setupFutures ()
@@ -174,11 +182,12 @@ void Setup::setupFutures ()
 /*
   FuturesDataBase db;
   db.transaction();
-  db.createFutures();  
+  db.createFutures();
   db.commit();
 */
 }
 
+/*
 void Setup::scanPlugins ()
 {
   QSettings settings(g_globalSettings);
@@ -198,7 +207,7 @@ void Setup::scanPlugins ()
     s = s.remove("lib");
     s = s.remove(".so");
     s = s.remove(".dy");
-    
+
     Plugin *plug = fac.plugin(s);
     if (! plug)
     {
@@ -207,14 +216,11 @@ void Setup::scanPlugins ()
     }
 
     pl << s;
-    
+
     if (plug->type() == "INDICATOR")
       il << s;
     else if (plug->type() == "CHART_OBJECT")
-    {
-      il << s;
       col << s;
-    }
     else if (plug->type() == "CURVE")
       cl << s;
 
@@ -227,3 +233,4 @@ void Setup::scanPlugins ()
   settings.setValue("curve_plugins", cl);
   settings.sync();
 }
+*/

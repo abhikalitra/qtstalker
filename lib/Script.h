@@ -19,88 +19,65 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Script interface for qtstalker scripts during runtime. Serves as a IPC between script and
-// qtstalker to route data back and forth. all scripts that run use this to execute.
-// *************************************************************************************************
-
 #ifndef SCRIPT_HPP
 #define SCRIPT_HPP
 
-#include "Indicator.h"
-#include "BarData.h"
-#include "PluginFactory.h"
-#include "Command.h"
-
-#include <QProcess>
-#include <QList>
-#include <QString>
 #include <QStringList>
-#include <QObject>
 #include <QHash>
-#include <QWidget>
+#include <QObject>
+
+#include "Curve.h"
+#include "ChartObject.h"
+#include "SettingGroup.h"
 
 class Script : public QObject
 {
   Q_OBJECT
 
-  signals:
-    void signalDone (QString);
-    void signalMessage (QString);
-    void signalStopped (QString);
-    void signalKill ();
-
   public:
-    Script (QWidget *);
     Script (QObject *);
-    Script ();
     ~Script ();
-    void init ();
     void clear ();
-    void setIndicator (Indicator *);
-    Indicator * indicator ();
-    void setBarData (BarData *);
+    void setCurve (QString key, Curve *);
+    Curve * curve (QString);
+    void setCurves (QHash<QString, Curve *>);
+    QHash<QString, Curve *> curves ();
+    void setSettingGroup (SettingGroup *);
+    SettingGroup * settingGroup (QString);
+    Setting * setting (QString);
+    int chartObjectCount ();
+    void setChartObject (QString key, ChartObject *);
+    QHash<QString, ChartObject *> chartObjects ();
+    void setRunOrder (QStringList);
+    QStringList runOrder ();
+    void setSession (QString);
+    QString session ();
     void setName (QString);
-    QString & name ();
-    void setCommand (QString);
-    QString & command ();
+    QString name ();
+    void removeSettingGroup (QString);
     void setFile (QString);
     QString & file ();
-    void setMinutes (int);
-    int minutes ();
-    void setLastRun (QString);
-    QString & lastRun ();
-    void setType (QString);
-    QString & type ();
-    void setComment (QString);
-    QString & comment ();
-    int load ();
-    int save ();
-    
-  public slots:
-    void readFromStdout ();
-    void readFromStderr ();
-    void done (int, QProcess::ExitStatus);
-    int startScript ();
-    void stopScript (QString);
-    void resume ();
+    qint64 pid ();
+    void setCurrentStep (QString);
+    QString currentStep ();
 
-  private:
-    QProcess *_proc;
-    int _killFlag;
-    Indicator *_indicator;
-    int _indicatorFlag;
-    BarData *_barData;
-    PluginFactory _factory;
+  public slots:
+    int loadScript ();
+    int saveScript ();
+    int run ();
+    int runWait ();
+    int kill ();
+
+  protected:
+    qint64 _pid;
+    QString _session;
     QString _name;
-    QString _com;
     QString _file;
-    QString _type;
-    QString _comment;
-    int _minutes;
-    QString _lastRun;
-    QHash<QString, Plugin *> _plugins;
-    Command *_command;
+    QStringList _runOrder;
+    QString _currentStep;
+    QHash<QString, Curve *> _curves;
+    QHash<QString, ChartObject *> _chartObjects;
+    QHash<QString, SettingGroup *> _settingGroups;
 };
 
 #endif

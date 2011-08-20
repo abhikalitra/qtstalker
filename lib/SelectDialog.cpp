@@ -102,7 +102,8 @@ void SelectDialog::done ()
   saveSettings();
 
   emit signalDone(l);
-  
+  _selected = l;
+
   accept();
 }
 
@@ -121,4 +122,9 @@ void SelectDialog::setMode (int mode)
 void SelectDialog::setTitle (QString d)
 {
   _title->setText(d);
+}
+
+QStringList SelectDialog::selected ()
+{
+  return _selected;
 }

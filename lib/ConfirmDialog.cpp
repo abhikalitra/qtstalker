@@ -51,7 +51,7 @@ void ConfirmDialog::createGUI ()
 
   QMessageBox mb;
   mb.setIcon(QMessageBox::Warning);
-  
+
   QLabel *label = new QLabel;
   label->setPixmap(mb.iconPixmap());
   vbox->addWidget(label);
@@ -69,7 +69,9 @@ void ConfirmDialog::setMessage (QString d)
   _message->setText(d);
 }
 
+/*
 void ConfirmDialog::setCommand (Command *c)
 {
   _command = c;
 }
+*/

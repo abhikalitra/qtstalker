@@ -25,13 +25,15 @@
 
 DateRange::DateRange ()
 {
+  _list << "1 Day" << "1 Week" << "1 Month" << "3 Months" << "6 Months" << "1 Year";
+  _list << "2 Years" << "5 Years" << "10 Years" << "25 Years" << "50 Years" << "All";
 }
 
 int DateRange::dateRange (DateRange::Range type, QDateTime &input, QDateTime &output)
 {
   if (! input.isValid())
     return 1;
-  
+
   switch (type)
   {
     case _DAY:
@@ -78,17 +80,14 @@ int DateRange::dateRange (DateRange::Range type, QDateTime &input, QDateTime &ou
   return 0;
 }
 
-void DateRange::list (QStringList &l)
+QStringList DateRange::list ()
 {
-  l << "1 Day" << "1 Week" << "1 Month" << "3 Months" << "6 Months" << "1 Year";
-  l << "2 Years" << "5 Years" << "10 Years" << "25 Years" << "50 Years" << "All";
+  return _list;
 }
 
 int DateRange::toType (QString d)
 {
-  QStringList l;
-  list(l);
-  return l.indexOf(d);
+  return _list.indexOf(d);
 }
 
 void DateRange::dateRangeText (DateRange::Range k, QString &d)

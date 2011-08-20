@@ -34,12 +34,14 @@
 #include <QCoreApplication>
 #include <QStatusBar>
 #include <QShortcut>
+#include <QBuffer>
+#include <QDataStream>
 
 #include "Qtstalker.h"
 #include "Setup.h"
 #include "Globals.h"
-#include "CommandThread.h"
 #include "QuoteDataBase.h"
+#include "ScriptDataBase.h"
 #include "InfoPanel.h"
 #include "DockWidget.h"
 #include "RefreshButton.h"
@@ -47,14 +49,20 @@
 #include "BarLengthButton.h"
 #include "BarSpaceButton.h"
 #include "DateRangeControl.h"
-#include "IndicatorEditDialog.h"
+#include "ChartObjectDataBase.h"
+#include "CommandAdaptor.h"
+#include "CommandInterface.h"
+#include "CommandFactory.h"
+#include "IPCMessage.h"
+#include "SharedMemory.h"
+#include "PlotGroup.h"
 
 #include "../pics/qtstalker.xpm"
 
 QtstalkerApp::QtstalkerApp (QString session, QString asset)
 {
   _clAsset = asset;
-  
+
   connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(shutDown()));
 
   setWindowIcon(QIcon(qtstalker_xpm));
@@ -66,12 +74,21 @@ QtstalkerApp::QtstalkerApp (QString session, QString asset)
   Setup setup;
   setup.setup(this, session);
   g_parent = this;
-  
+
   createGUI();
 
   loadSettings();
 
   setWindowTitle(getWindowCaption());
+
+  // add our D-Bus interface and connect to D-Bus
+  new CommandAdaptor(this);
+  QDBusConnection::sessionBus().registerObject("/", this);
+
+  com::qtstalker::message *iface;
+  iface = new com::qtstalker::message(QString(), QString(), QDBusConnection::sessionBus(), this);
+  QDBusConnection::sessionBus().connect(QString(), QString(), "com.qtstalker.message", "message", this, SLOT(messageSlot(QString,QString)));
+  connect(iface, SIGNAL(action(QString,QString)), this, SLOT(actionSlot(QString,QString)));
 
   QTimer::singleShot(100, this, SLOT(afterStartup()));
 }
@@ -83,80 +100,68 @@ void QtstalkerApp::shutDown ()
   // shutting down before the destructor is called
   save();
   emit signalShutDown();
-
-  // delete all the non-parented objects
-  delete g_barData;
 }
 
 void QtstalkerApp::createGUI ()
 {
+  g_plotGroup = new PlotGroup(this);
+  setCentralWidget(g_plotGroup);
+  connect(this, SIGNAL(signalLoadSettings()), g_plotGroup, SLOT(loadSettings()));
+  connect(this, SIGNAL(signalShutDown()), g_plotGroup, SLOT(saveSettings()));
+
   setDockNestingEnabled(TRUE);
   setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::East);
-  
-  connect(g_middleMan, SIGNAL(signalIndicatorNew(QString)), this, SLOT(addNewPlot(QString)));
-  connect(g_middleMan, SIGNAL(signalIndicatorDelete(int, QStringList)), this, SLOT(deletePlot(int, QStringList)));
-  connect(g_middleMan, SIGNAL(signalPlotTabPosition(int)), this, SLOT(setPlotTabPosition(int)));
-  connect(g_middleMan, SIGNAL(signalPlotUpdate(QString)), this, SLOT(updatePlot(QString)));
-  connect(g_middleMan, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
-  connect(g_middleMan, SIGNAL(signalLoadChart(BarData)), this, SLOT(loadChart(BarData)));
 
   // side panel dock
-  _sidePanel = new SidePanel(this);
-  connect(_sidePanel, SIGNAL(signalLoadChart(BarData)), this, SLOT(loadChart(BarData)));
-  connect(_sidePanel, SIGNAL(signalReloadChart()), this, SLOT(chartUpdated()));
-  connect(_sidePanel, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
-  connect(this, SIGNAL(signalLoadSettings()), _sidePanel, SLOT(loadSettings()));
-  connect(this, SIGNAL(signalShutDown()), _sidePanel, SLOT(saveSettings()));
+  g_sidePanel = new SidePanel(this);
+  connect(g_sidePanel, SIGNAL(signalLoadChart(BarData)), this, SLOT(loadChart(BarData)));
+  connect(g_sidePanel, SIGNAL(signalReloadChart()), this, SLOT(chartUpdated()));
+  connect(g_sidePanel, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
+  connect(this, SIGNAL(signalLoadSettings()), g_sidePanel, SLOT(loadSettings()));
+  connect(this, SIGNAL(signalShutDown()), g_sidePanel, SLOT(saveSettings()));
 
   DockWidget *dock = new DockWidget(QString(), this);
   dock->setObjectName("sidePanelDock");
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
   dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-  dock->setWidget(_sidePanel);
+  dock->setWidget(g_sidePanel);
   addDockWidget(Qt::RightDockWidgetArea, dock);
-  connect(dock, SIGNAL(signalLockStatus(bool)), _sidePanel, SLOT(setLockStatus(bool)));
-  connect(_sidePanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
+  connect(dock, SIGNAL(signalLockStatus(bool)), g_sidePanel, SLOT(setLockStatus(bool)));
+  connect(g_sidePanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
 
   // control panel dock
-  _controlPanel = new ControlPanel;
-  connect(this, SIGNAL(signalLoadSettings()), _controlPanel, SLOT(loadSettings()));
-  connect(this, SIGNAL(signalShutDown()), _controlPanel, SLOT(saveSettings()));
-  connect(_controlPanel->barLengthButton(), SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
-  connect(_controlPanel->dateRangeControl(), SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
-  connect(_controlPanel->recentCharts(), SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
-  connect(_sidePanel, SIGNAL(signalRecentChart(BarData)), _controlPanel->recentCharts(), SLOT(addRecentChart(BarData)));
-  connect(_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
-  
+  g_controlPanel = new ControlPanel;
+  connect(this, SIGNAL(signalLoadSettings()), g_controlPanel, SLOT(loadSettings()));
+  connect(this, SIGNAL(signalShutDown()), g_controlPanel, SLOT(saveSettings()));
+  connect(g_controlPanel->barLengthButton(), SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
+  connect(g_controlPanel->dateRangeControl(), SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
+  connect(g_controlPanel->recentCharts(), SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
+  connect(g_sidePanel, SIGNAL(signalRecentChart(BarData)), g_controlPanel->recentCharts(), SLOT(addRecentChart(BarData)));
+  connect(g_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
+  connect(g_controlPanel->configureButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
+
   dock = new DockWidget(QString(), this);
   dock->setObjectName("controlPanelDock");
   dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-  dock->setWidget(_controlPanel);
+  dock->setWidget(g_controlPanel);
   addDockWidget(Qt::RightDockWidgetArea, dock);
-  connect(dock, SIGNAL(signalLockStatus(bool)), _controlPanel, SLOT(setLockStatus(bool)));
-  connect(_controlPanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
+  connect(dock, SIGNAL(signalLockStatus(bool)), g_controlPanel, SLOT(setLockStatus(bool)));
+  connect(g_controlPanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
 
   // info panel dock
-  _infoPanel = new InfoPanel;
-  connect(this, SIGNAL(signalLoadSettings()), _infoPanel, SLOT(loadSettings()));
-  connect(this, SIGNAL(signalShutDown()), _infoPanel, SLOT(saveSettings()));
-  
+  g_infoPanel = new InfoPanel;
+  connect(this, SIGNAL(signalLoadSettings()), g_infoPanel, SLOT(loadSettings()));
+  connect(this, SIGNAL(signalShutDown()), g_infoPanel, SLOT(saveSettings()));
+
   dock = new DockWidget(QString(), this);
   dock->setObjectName("infoPanelDock");
   dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
   dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-  dock->setWidget(_infoPanel);
+  dock->setWidget(g_infoPanel);
   addDockWidget(Qt::RightDockWidgetArea, dock);
-  connect(dock, SIGNAL(signalLockStatus(bool)), _infoPanel, SLOT(setLockStatus(bool)));
-  connect(_infoPanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
-
-  // we have to load the plots before app is shown otherwise
-  // dock widgets do not restore properly
-  QSettings set(g_localSettings);
-  QStringList l = set.value("indicators").toStringList();
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-    addPlot(l.at(loop));
+  connect(dock, SIGNAL(signalLockStatus(bool)), g_infoPanel, SLOT(setLockStatus(bool)));
+  connect(g_infoPanel, SIGNAL(signalLockStatus(bool)), dock, SLOT(statusChanged(bool)));
 
   statusBar()->showMessage(tr("Ready"), 2000);
 
@@ -165,18 +170,18 @@ void QtstalkerApp::createGUI ()
   // trap page up key
   QShortcut *sc = new QShortcut(this);
   sc->setKey(QKeySequence(Qt::Key_PageUp));
-  connect(sc, SIGNAL(activated()), _controlPanel, SLOT(pageUp()));
+  connect(sc, SIGNAL(activated()), g_controlPanel, SLOT(pageUp()));
 
   // trap page down key
   sc = new QShortcut(this);
   sc->setKey(QKeySequence(Qt::Key_PageDown));
-  connect(sc, SIGNAL(activated()), _controlPanel, SLOT(pageDown()));
+  connect(sc, SIGNAL(activated()), g_controlPanel, SLOT(pageDown()));
 }
 
 void QtstalkerApp::loadSettings ()
 {
   QSettings settings(g_localSettings);
-  
+
   restoreGeometry(settings.value("main_window_geometry").toByteArray());
   restoreState(settings.value("main_window_state").toByteArray());
 
@@ -197,7 +202,7 @@ void QtstalkerApp::loadSettings ()
   }
 
   // set the last used tab position
-  setPlotTabPosition(settings.value("plot_tab_position", 0).toInt());
+//  setTabPosition(Qt::LeftDockWidgetArea, (QTabWidget::TabPosition) settings.value("plot_tab_position", 0).toInt());
 
   // load gui class settings that need to now
   emit signalLoadSettings();
@@ -210,38 +215,66 @@ void QtstalkerApp::save()
   settings.setValue("main_window_state", saveState());
   settings.setValue("main_window_size", size());
   settings.setValue("main_window_position", pos());
-  settings.setValue("last_symbol_exchange", g_barData->exchange());
-  settings.setValue("last_symbol_symbol", g_barData->symbol());
+  settings.setValue("current_symbol", g_currentSymbol.key());
   settings.sync();
 }
 
 void QtstalkerApp::loadChart (BarData symbol)
 {
   // do all the stuff we need to do to load a chart
-  if (symbol.symbol().length() == 0)
+  if (symbol.key().length() == 0)
     return;
 
-  delete g_barData;
-  g_barData = new BarData;
-  
-  g_barData->setExchange(symbol.exchange());
-  g_barData->setSymbol(symbol.symbol());
-  g_barData->setName(symbol.name());
-  g_barData->setBarLength((BarLength::Length) _controlPanel->barLengthButton()->length());
-  g_barData->setStartDate(QDateTime());
-  g_barData->setEndDate(QDateTime());
-  g_barData->setRange(_controlPanel->dateRangeControl()->dateRange());
+  BarData tsymbol = symbol;
+  tsymbol.setName(symbol.name());
+  tsymbol.setBarLength((BarLength::Length) g_controlPanel->barLengthButton()->length());
+  tsymbol.setStartDate(QDateTime());
+  tsymbol.setEndDate(QDateTime());
+  tsymbol.setRange(g_controlPanel->dateRangeControl()->dateRange());
 
   QuoteDataBase db;
-  db.getBars(g_barData);
+  if (db.getBars(&tsymbol))
+  {
+    qDebug() << "QtstalkerApp::loadChart: QuoteDataBase error";
+    return;
+  }
 
-  emit signalClearPlot();
-  setSliderStart(g_barData->count());
+  SharedMemory sm;
+  if (sm.setData(g_sharedCurrentSymbol, tsymbol.toString()))
+  {
+    qDebug() << "QtstalkerApp::loadChart: error creating shared memory";
+    return;
+  }
+
+  // update g_currentSymbol
+  g_currentSymbol.setKey(tsymbol.key());
+  g_currentSymbol.setName(tsymbol.name());
+  g_currentSymbol.setBarLength((BarLength::Length) g_controlPanel->barLengthButton()->length());
+  g_currentSymbol.setStartDate(QDateTime());
+  g_currentSymbol.setEndDate(QDateTime());
+  g_currentSymbol.setRange(g_controlPanel->dateRangeControl()->dateRange());
+
+  // update settings file
+  QSettings settings(g_localSettings);
+  settings.setValue("current_symbol", g_currentSymbol.key());
+  settings.sync();
+
   setWindowTitle(getWindowCaption());
   statusMessage(QString());
-  emit signalPlot();
 
-  _sidePanel->setBusyFlag(0);
+  g_controlPanel->setStart(tsymbol.count(), 0, 0);
+
+  // run indicators
+  QStringList il = settings.value("indicators").toStringList();
+  int loop = 0;
+  for (; loop < il.count(); loop++)
+  {
+    Script script(this);
+    script.setFile(il.at(loop));
+    script.run();
+  }
+
+  g_sidePanel->setBusyFlag(0);
 }
 
 QString QtstalkerApp::getWindowCaption ()
@@ -249,15 +282,15 @@ QString QtstalkerApp::getWindowCaption ()
   // update the main window text
   QStringList l;
   l << "QtStalker" + g_session + ":";
-  if (! g_barData->name().isEmpty())
-    l << g_barData->name();
-  if (! g_barData->symbol().isEmpty())
-    l << "(" + g_barData->symbol() + ")";
+  if (! g_currentSymbol.name().isEmpty())
+    l << g_currentSymbol.name();
+  if (! g_currentSymbol.symbol().isEmpty())
+    l << "(" + g_currentSymbol.symbol() + ")";
 
   QStringList bl;
   BarLength b;
   bl = b.list();
-  l << bl.at(_controlPanel->barLengthButton()->length());
+  l << bl.at(g_controlPanel->barLengthButton()->length());
 
   return l.join(" ");
 }
@@ -265,12 +298,12 @@ QString QtstalkerApp::getWindowCaption ()
 void QtstalkerApp::chartUpdated ()
 {
   // we are here because something wants us to reload the chart with fresh bars
-  if (g_barData->symbol().isEmpty())
+  if (g_currentSymbol.symbol().isEmpty())
     return;
 
   BarData bd;
-  bd.setExchange(g_barData->exchange());
-  bd.setSymbol(g_barData->symbol());
+  bd.setExchange(g_currentSymbol.exchange());
+  bd.setSymbol(g_currentSymbol.symbol());
   loadChart(bd);
 }
 
@@ -287,30 +320,6 @@ void QtstalkerApp::wakeup ()
   qApp->processEvents();
 }
 
-/**********************************************************************/
-/************************ TOOLBAR FUNCTIONS ***************************/
-/**********************************************************************/
-
-void QtstalkerApp::setSliderStart (int count)
-{
-  // figure out a nice spot to show the most recent bars in the charts
-  if (g_barData->symbol().isEmpty())
-    return;
-
-  // find the best plot width for either < 1 column or > 1 column
-  int width = 0;
-  QHashIterator<QString, Plot *> it(_plots);
-  while (it.hasNext())
-  {
-     it.next();
-     int t = it.value()->width();
-     if (t > width)
-       width = t;
-  }
-
-  _controlPanel->setStart(count, width, 8);
-}
-
 // ******************************************************************************
 // ******************* Command Line Asset ***************************************
 // ******************************************************************************
@@ -325,89 +334,19 @@ void QtstalkerApp::commandLineAsset ()
     qDebug() << "QtstalkerApp::commandLineAsset: invalid command line asset string" << _clAsset;
     return;
   }
-  
+
   BarData bd;
   bd.setExchange(l[0]);
   bd.setSymbol(l[1]);
   loadChart(bd);
 }
 
-void QtstalkerApp::addPlot (QString indicator)
-{
-  Plot *plot = new Plot(indicator, this);
-  plot->setIndicator();
-  plot->setBarSpacing(_controlPanel->barSpaceButton()->getPixelSpace());
-  plot->loadSettings();
-
-  connect(plot, SIGNAL(signalInfoMessage(Setting)), _infoPanel, SLOT(showInfo(Setting)));
-  connect(plot, SIGNAL(signalMessage(QString)), this, SLOT(statusMessage(QString)));
-  connect(_controlPanel->barSpaceButton(), SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
-  connect(_controlPanel, SIGNAL(signalValueChanged(int)), plot, SLOT(setStartIndex(int)));
-  connect(this, SIGNAL(signalClearPlot()), plot, SLOT(clear()));
-//  connect(this, SIGNAL(signalShutDown()), plot, SLOT(clear()));
-  connect(this, SIGNAL(signalPlot()), plot->indicator(), SLOT(calculate()));
-  connect(plot, SIGNAL(signalIndex(int)), _controlPanel, SLOT(setStartValue(int)));
-  connect(plot->plotMenu(), SIGNAL(signalDeleteIndicator(int, QStringList)), this, SLOT(deletePlot(int, QStringList)));
-  
-  connect(g_middleMan, SIGNAL(signalPlotBackgroundColor(QColor)), plot, SLOT(setBackgroundColor(QColor)));
-  connect(g_middleMan, SIGNAL(signalGridColor(QColor)), plot, SLOT(setGridColor(QColor)));
-  connect(g_middleMan, SIGNAL(signalGrid(bool)), plot, SLOT(setGrid(bool)));
-  connect(g_middleMan, SIGNAL(signalCrosshairsColor(QColor)), plot, SLOT(setCrossHairsColor(QColor)));
-  connect(g_middleMan, SIGNAL(signalCrosshairs(bool)), plot, SLOT(setCrossHairs(bool)));
-  connect(g_middleMan, SIGNAL(signalPlotFont(QFont)), plot, SLOT(setFont(QFont)));
-
-  _plots.insert(indicator, plot);
-}
-
-void QtstalkerApp::addNewPlot (QString indicator)
-{
-  addPlot(indicator);
-  _addNewPlot = indicator;
-
-  // we need to make sure plot widget has shown before we start drawing
-  QTimer::singleShot(100, this, SLOT(addNewPlot2()));
-}
-
-void QtstalkerApp::addNewPlot2 ()
-{
-  Plot *p = _plots.value(_addNewPlot);
-  if (! p)
-    return;
-  p->indicator()->calculate();
-  p->setStartIndex(_controlPanel->getValue());
-}
-
-void QtstalkerApp::deletePlot (int flag, QStringList l)
-{
-  Indicator i;
-  i.remove(flag, l);
-  
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    if (! _plots.contains(l.at(loop)))
-      continue;
-    
-    Plot *plot = _plots.value(l.at(loop));
-
-    removeDockWidget(plot->dockWidget());
-    
-    delete plot;
-    
-    _plots.remove(l.at(loop));
-  }
-}
-
-void QtstalkerApp::setPlotTabPosition (int position)
-{
-  setTabPosition(Qt::LeftDockWidgetArea, (QTabWidget::TabPosition) position);
-}
-
+/*
 void QtstalkerApp::fixDockTabs ()
 {
   // we have to expose the non-visible docked tabs before we can draw plots
   // this is just a hack to expose each tab before user notices on startup
-  
+
   int loop = 0;
   QList<QTabBar *> tabList = findChildren<QTabBar *>();
   for (; loop < tabList.count(); loop++)
@@ -422,29 +361,17 @@ void QtstalkerApp::fixDockTabs ()
     int loop2 = 0;
     for (; loop2 < tabBar->count(); loop2++)
       tabBar->setCurrentIndex(loop2);
-    
+
     tabBar->setCurrentIndex(currentIndex);
   }
 }
-
-void QtstalkerApp::updatePlot (QString d)
-{
-  Plot *p = _plots.value(d);
-  if (! p)
-    return;
-
-  p->clear();
-  
-  Indicator *i = p->indicator();
-  i->load();
-  i->calculate();
-}
+*/
 
 void QtstalkerApp::afterStartup ()
 {
   // expose hidden charts so they plot properly (simple hack)
-  fixDockTabs();
-  
+//  fixDockTabs();
+
   // check if we are going to display a chart from the command line
   if (! _clAsset.isEmpty())
     commandLineAsset();
@@ -453,8 +380,40 @@ void QtstalkerApp::afterStartup ()
     // display last viewed chart
     QSettings settings(g_localSettings);
     BarData bd;
-    bd.setExchange(settings.value("last_symbol_exchange").toString());
-    bd.setSymbol(settings.value("last_symbol_symbol").toString());
+    bd.setKey(settings.value("current_symbol").toString());
     loadChart(bd);
   }
+}
+
+void QtstalkerApp::messageSlot (QString m, QString d)
+{
+  qDebug() << "QtstalkerApp::messageSlot:" << m;
+
+  IPCMessage ipcm;
+  if (ipcm.fromString(m))
+  {
+    qDebug() << "QtstalkerApp::messageSlot: invalid message" << m;
+    return;
+  }
+
+  // ignore message from another session
+  if (ipcm.session() != g_session)
+    return;
+
+  CommandFactory fac;
+  Command *com = fac.command(this, ipcm.command());
+  if (! com)
+  {
+    qDebug() << "QtstalkerApp::messageSlot: invalid command" << ipcm.command();
+    return;
+  }
+
+  com->message(ipcm, d);
+
+  delete com;
+}
+
+void QtstalkerApp::actionSlot (QString command, QString d)
+{
+  qDebug() << "QtstalkerApp::actionSlot:" << command << d;
 }

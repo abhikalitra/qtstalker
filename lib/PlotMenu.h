@@ -32,14 +32,8 @@ class PlotMenu : public QMenu
   Q_OBJECT
 
   signals:
-    void signalLockStatus (bool);
-    void signalDateStatus (bool);
-    void signalLogStatus (bool);
     void signalNewChartObject (QString);
     void signalDeleteAllChartObjects ();
-    void signalEditIndicator ();
-    void signalNewIndicator (QString);
-    void signalDeleteIndicator (int, QStringList);
 
   public:
     enum Action
@@ -51,43 +45,23 @@ class PlotMenu : public QMenu
       _TEXT_CHART_OBJECT,
       _TLINE_CHART_OBJECT,
       _VLINE_CHART_OBJECT,
-      _NEW_INDICATOR,
-      _EDIT_INDICATOR,
-      _DELETE_INDICATOR,
-      _DATE_AXIS,
-      _LOG_SCALING,
-      _LOCK,
       _DELETE_ALL_CHART_OBJECTS,
-      _ADD_INDICATOR,
-      _REMOVE_INDICATOR
+      _EDIT_INDICATOR,
     };
-    
+
     PlotMenu (QWidget *);
     void createActions ();
     void createMenus ();
     void setCOMenuStatus (bool);
-    void setLog (bool);
-    bool log ();
-    void setDate (bool);
-    bool date ();
-    void setLock (bool);
-    bool lock ();
-    void setIndicator (QString);
 
   public slots:
     void chartObjectMenuSelected (QAction *);
-    void editIndicator ();
-    void deleteIndicator ();
     void deleteAllChartObjects ();
     void deleteAllChartObjects2 ();
-    void newIndicator ();
-    void addIndicator ();
-    void addIndicator2 (QString);
-    void removeIndicator ();
+    void editIndicator ();
 
   private:
     QMenu *_coListMenu;
-    QString _indicator;
     QHash<int, QAction *> _actions;
 };
 

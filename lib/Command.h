@@ -19,50 +19,41 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// *************************************************************************************************
-
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-#include <QStringList>
-#include <QByteArray>
-#include <QHash>
+#include <QWidget>
 
-#include "Indicator.h"
-#include "BarData.h"
+#include "Message.h"
+#include "SettingGroup.h"
+#include "CommandWidget.h"
+#include "IPCMessage.h"
 
-class Command
+class Command : public QObject
 {
-  public:
-    Command ();
-    Command (QString);
-    void clear ();
-    void parse (QString);
-    void setParm (QString, QString);
-    QString plugin ();
-    void setReturnData (QString, QString);
-    QString returnData (QString);
-    QByteArray arrayReturnData (QString);
-    Indicator * indicator ();
-    void setIndicator (Indicator *);
-    BarData * barData ();
-    void setBarData (BarData *);
-    void strip (QString &);
-    int count ();
-    QString parm (QString);
-    void setReturnCode (QString);
-    QByteArray returnCode ();
-    void setName (QString);
-    QString name ();
+  Q_OBJECT
 
-  private:
-    QHash<QString, QString> _parms;
-    QHash<QString, QString> _returnData;
-    Indicator *_indicator;
-    BarData *_barData;
-    QString _returnCode;
-    QString _name;
+  public:
+    enum ReturnCode
+    {
+      _OK,
+      _ERROR,
+      _WAIT
+    };
+
+    Command (QObject *);
+    virtual int request (Message *, Message *);
+//    virtual CommandWidget * dialog (QWidget *);
+    virtual int runScript (void *);
+    virtual int message (IPCMessage &, QString &);
+    virtual SettingGroup * settings ();
+
+    QString type ();
+    int isDialog ();
+
+  protected:
+    QString _type;
+    int _isDialog;
 };
 
 #endif

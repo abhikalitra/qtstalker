@@ -21,225 +21,144 @@
 
 #include "Setting.h"
 
-#include <QObject>
+#include <QtDebug>
 
 Setting::Setting ()
 {
 }
 
-void Setting::setData (QString k, QString d)
+QString Setting::getString ()
 {
-  QString s = k;
-  strip(s);
-  
-  QString s2 = d;
-  strip(s2);
-  
-  dict.insert(s, s2);
+  return QString();
 }
 
-void Setting::setData (int k, QString d)
+void Setting::setString (QString)
 {
-  QString s = QString::number(k);
-  QString s2 = d;
-  strip(s2);
-  dict.insert(s, s2);
 }
 
-void Setting::setData (QString k, int d)
+QStringList Setting::getList ()
 {
-  QString s = k;
-  strip(s);
-  
-  QString s2 = QString::number(d);
-  
-  dict.insert(s, s2);
+  return QStringList();
 }
 
-void Setting::setData (int k, int d)
+void Setting::setList (QStringList)
 {
-  QString s = QString::number(k);
-  QString s2 = QString::number(d);
-  dict.insert(s, s2);
 }
 
-void Setting::setData (QString k, double d)
+QColor Setting::getColor ()
 {
-  QString s = k;
-  strip(s);
-  
-  QString s2 = QString::number(d);
-  
-  dict.insert(s, s2);
+  return QColor();
 }
 
-void Setting::setData (int k, double d)
+void Setting::setColor (QColor)
 {
-  QString s = QString::number(k);
-  QString s2 = QString::number(d);
-  dict.insert(s, s2);
 }
 
-void Setting::setData (QString k, QDateTime d)
+QFont Setting::getFont ()
 {
-  QString s = k;
-  strip(s);
-
-  QString s2 = d.toString(Qt::ISODate);
-
-  dict.insert(s, s2);
+  return QFont();
 }
 
-void Setting::setData (QString k, QColor d)
+void Setting::setFont (QFont)
 {
-  QString s = k;
-  strip(s);
-
-  QString s2 = d.name();
-
-  dict.insert(s, s2);
 }
 
-void Setting::setData (QString k, QFont d)
+int Setting::getInteger ()
 {
-  QString s = k;
-  strip(s);
-
-  QString s2 = d.toString();
-
-  dict.insert(s, s2);
+  return 0;
 }
 
-QString Setting::data (QString k)
+void Setting::setInteger (int)
 {
-  return dict.value(k);
 }
 
-QString Setting::data (int k)
+double Setting::getDouble ()
 {
-  return dict.value(QString::number(k));
+  return 0;
 }
 
-double Setting::getDouble (QString k)
+void Setting::setDouble (double)
 {
-  if (dict.contains(k))
-    return dict.value(k).toDouble();
-  else
-    return 0;
 }
 
-double Setting::getDouble (int d)
+QDateTime Setting::getDateTime ()
 {
-  QString k = QString::number(d);
-  if (dict.contains(k))
-    return dict.value(k).toDouble();
-  else
-    return 0;
+  return QDateTime();
 }
 
-int Setting::getInt (QString k)
+void Setting::setDateTime (QDateTime)
 {
-  if (dict.contains(k))
-    return dict.value(k).toInt();
-  else
-    return 0;
 }
 
-int Setting::getInt (int d)
+QString Setting::toString ()
 {
-  QString k = QString::number(d);
-  if (dict.contains(k))
-    return dict.value(k).toInt();
-  else
-    return 0;
+  return QString();
 }
 
-QDateTime Setting::dateTime (QString k)
+int Setting::fromString (QString)
 {
-  return QDateTime::fromString(dict.value(k), Qt::ISODate);
 }
 
-QColor Setting::color (QString k)
+bool Setting::getBool ()
 {
-  return QColor(dict.value(k));
+  return FALSE;
 }
 
-QFont Setting::font (QString k)
+void Setting::setBool (bool)
 {
-  QFont font;
-  font.fromString(dict.value(k));
-  return font;
 }
 
-void Setting::keyList (QStringList &l)
+int Setting::getIntegerHigh ()
 {
-  l.clear();
-  QHashIterator<QString, QString> it(dict);
-  while (it.hasNext())
-  {
-    it.next();
-    l.append(it.key());
-  }
+  return 0;
 }
 
-void Setting::remove (QString k)
+int Setting::getIntegerLow ()
 {
-  dict.remove(k);
+  return 0;
 }
 
-void Setting::string (QString &s)
+double Setting::getDoubleHigh ()
 {
-  s.clear();
-  QStringList l;
-  QHashIterator<QString, QString> it(dict);
-  while (it.hasNext())
-  {
-    it.next();
-    l.append(it.key() + "=" + it.value());
-  }
-  s = l.join("|");
+  return 0;
 }
 
-void Setting::parse (QString d)
+double Setting::getDoubleLow ()
 {
-  dict.clear();
-
-  QStringList l = d.split("|", QString::SkipEmptyParts);
-
-  int loop;
-  for (loop = 0; loop < l.count(); loop++)
-  {
-    QStringList l2 = l.at(loop).split("=", QString::SkipEmptyParts);
-    if (l2.count() > 1)
-      dict.insert(l2.at(0), l2.at(1));
-  }
+  return 0;
 }
 
-void Setting::clear ()
+int Setting::type ()
 {
-  dict.clear();
+  return _type;
 }
 
-int Setting::count ()
+int Setting::inputType ()
 {
-  return dict.count();
+  return _inputType;
 }
 
-void Setting::strip (QString &d)
+int Setting::outputType ()
 {
-  d = d.remove(QString("="), Qt::CaseSensitive);
-  d = d.remove(QString("|"), Qt::CaseSensitive);
-  d = d.remove(QString("'"), Qt::CaseSensitive);
+  return _outputType;
 }
 
-void Setting::copy (Setting *d)
+void Setting::setTip (QString d)
 {
-  d->clear();
-  
-  QHashIterator<QString, QString> it(dict);
-  while (it.hasNext())
-  {
-    it.next();
-    d->setData(it.key(), it.value());
-  }
+  _tip = d;
+}
+
+QString Setting::tip ()
+{
+  return _tip;
+}
+
+void Setting::setKey (QString d)
+{
+  _key = d;
+}
+
+QString Setting::key ()
+{
+  return _key;
 }

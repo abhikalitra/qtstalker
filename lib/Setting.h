@@ -22,52 +22,67 @@
 #ifndef SETTING_HPP
 #define SETTING_HPP
 
-#include <QString>
 #include <QStringList>
-#include <QHash>
 #include <QDateTime>
 #include <QColor>
 #include <QFont>
-#include <QMetaType>
 
 class Setting
 {
   public:
+    enum Type
+    {
+      _NONE,
+      _CURVE,
+      _LIST,
+      _STRING,
+      _COLOR,
+      _INTEGER,
+      _DOUBLE,
+      _DATETIME,
+      _BOOL,
+      _CHART,
+      _FONT
+    };
+
     Setting ();
-    void setData (QString, QString);
-    void setData (int, QString);
-    void setData (QString, int);
-    void setData (int, int);
-    void setData (QString, double);
-    void setData (int, double);
-    void setData (QString, QColor);
-    void setData (QString, QDateTime);
-    void setData (QString, QFont);
-    
-    QString data (QString);
-    QString data (int);
-    double getDouble (QString);
-    double getDouble (int);
-    int getInt (QString);
-    int getInt (int);
-    QDateTime dateTime (QString);
-    QColor color (QString);
-    QFont font (QString);
-    
-    void keyList (QStringList &);
-    void remove (QString);
-    void string (QString &);
-    void parse (QString);
-    void clear ();
-    int count ();
-    void strip (QString &);
-    void copy (Setting *);
+    virtual QString getString ();
+    virtual void setString (QString);
+    virtual QStringList getList ();
+    virtual void setList (QStringList);
+    virtual QColor getColor ();
+    virtual void setColor (QColor);
+    virtual QFont getFont ();
+    virtual void setFont (QFont);
+    virtual int getInteger ();
+    virtual void setInteger (int);
+    virtual double getDouble ();
+    virtual void setDouble (double);
+    virtual QDateTime getDateTime ();
+    virtual void setDateTime (QDateTime);
+    virtual QString toString ();
+    virtual int fromString (QString);
+    virtual bool getBool ();
+    virtual void setBool (bool);
+    virtual int getIntegerHigh ();
+    virtual int getIntegerLow ();
+    virtual double getDoubleHigh ();
+    virtual double getDoubleLow ();
+
+    int type ();
+    int inputType ();
+    int outputType ();
+    void setTip (QString);
+    QString tip ();
+    void setKey (QString);
+    QString key ();
 
   protected:
-    QHash<QString, QString> dict;
+    int _type;
+    int _inputType;
+    int _outputType;
+    QString _tip;
+    QString _key;
 };
-
-// this is for passing Indicator data between threads
-Q_DECLARE_METATYPE(Setting)
 
 #endif

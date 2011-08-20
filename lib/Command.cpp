@@ -21,134 +21,47 @@
 
 #include "Command.h"
 
-#include <QtDebug>
+#include <QDebug>
 
-Command::Command ()
+Command::Command (QObject *p) : QObject (p)
 {
-  clear();
+  _isDialog = 0;
 }
 
-Command::Command (QString d)
+int Command::runScript (void *)
 {
-  parse(d);
+  return 0;
 }
 
-void Command::clear ()
+int Command::message (IPCMessage &, QString &)
 {
-  _parms.clear();
-  _returnData.clear();
-  _returnCode = "ERROR";
-  _indicator = 0;
-  _barData = 0;
+  return 0;
 }
 
-void Command::parse (QString d)
+int Command::request (Message *, Message *)
 {
-  _parms.clear();
-  _returnCode = "ERROR";
-  
-  QStringList l = d.split(",", QString::SkipEmptyParts);
-
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    QStringList l2 = l.at(loop).split("=", QString::SkipEmptyParts);
-    if (l2.count() != 2)
-      continue;
-
-    strip(l2[0]);
-    strip(l2[1]);
-
-    _parms.insert(l2.at(0), l2.at(1));
-  }
+  return 0;
 }
 
-void Command::setParm (QString k, QString d)
+SettingGroup * Command::settings ()
 {
-  strip(k);
-  strip(d);
-  _parms.insert(k, d);
+  return 0;
 }
 
-QString Command::plugin ()
+QString Command::type ()
 {
-  return _parms.value("PLUGIN");
+  return _type;
 }
 
-void Command::setReturnData (QString k, QString d)
+/*
+CommandWidget * Command::dialog (QWidget *p)
 {
-  _returnData.insert(k, d);
+  CommandWidget *w = new CommandWidget(p, _settings);
+  return w;
 }
+*/
 
-QString Command::returnData (QString k)
+int Command::isDialog ()
 {
-  return _returnData.value(k);
-}
-
-QByteArray Command::arrayReturnData (QString k)
-{
-  QByteArray ba;
-  ba.append(_returnData.value(k));
-  ba.append('\n');
-  return ba;
-}
-
-Indicator * Command::indicator ()
-{
-  return _indicator;
-}
-
-void Command::setIndicator (Indicator *i)
-{
-  _indicator = i;
-}
-
-BarData * Command::barData ()
-{
-  return _barData;
-}
-
-void Command::setBarData (BarData *d)
-{
-  _barData = d;
-}
-
-void Command::strip (QString &d)
-{
-  d = d.remove(QString("="), Qt::CaseSensitive);
-  d = d.remove(QString("|"), Qt::CaseSensitive);
-  d = d.remove(QString("'"), Qt::CaseSensitive);
-}
-
-int Command::count ()
-{
-  return _parms.count();
-}
-
-QString Command::parm (QString k)
-{
-  return _parms.value(k);
-}
-
-void Command::setReturnCode (QString d)
-{
-  _returnCode = d;
-}
-
-QByteArray Command::returnCode ()
-{
-  QByteArray ba;
-  ba.append(_returnCode);
-  ba.append('\n');
-  return ba;
-}
-
-void Command::setName (QString d)
-{
-  _name = d;
-}
-
-QString Command::name ()
-{
-  return _name;
+  return _isDialog;
 }
