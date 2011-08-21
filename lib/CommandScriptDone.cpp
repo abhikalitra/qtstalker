@@ -24,10 +24,10 @@
 #include "Script.h"
 #include "IPCMessage.h"
 #include "SettingString.h"
+#include "MessageSend.h"
 
 #include <QtDebug>
 #include <QSettings>
-#include <QtDBus>
 
 CommandScriptDone::CommandScriptDone (QObject *p) : Command (p)
 {
@@ -42,14 +42,10 @@ int CommandScriptDone::runScript (void *d)
   if (! sg)
     return _ERROR;
 
-  QStringList data;
-  data << sg->get("SCRIPT")->getString();
-
   IPCMessage ipcm(script->session(), _type, "*", script->file());
 
-  QDBusMessage msg = QDBusMessage::createSignal("/", "com.qtstalker.message", "message");
-  msg << ipcm.toString() << data.join(",");
-  QDBusConnection::sessionBus().send(msg);
+  MessageSend ms(this);
+  ms.send(ipcm, sg->get("SCRIPT")->getString());
 
   return _OK;
 }

@@ -38,6 +38,7 @@
 #include "CommandColor.h"
 #include "CommandCompare.h"
 #include "CommandCORREL.h"
+#include "CommandCSV.h"
 #include "CommandFI.h"
 #include "CommandHT.h"
 #include "CommandPHASOR.h"
@@ -62,6 +63,7 @@
 #include "CommandROC.h"
 #include "CommandRSI.h"
 #include "CommandSAR.h"
+#include "CommandScriptDebug.h"
 #include "CommandScriptDone.h"
 #include "CommandScriptStart.h"
 //#include "CommandSelectDialog.h"
@@ -84,6 +86,7 @@
 #include "CommandVIDYA.h"
 #include "CommandWeightedClose.h"
 #include "CommandWILLR.h"
+#include "CommandYahooHistory.h"
 
 #include <QDebug>
 
@@ -92,7 +95,8 @@ CommandFactory::CommandFactory ()
   _types << "AD" << "ADX" << "ARITHMETIC" << "AROON" << "ATR" << "AVERAGE_PRICE";
   _types << "BBANDS" << "BETA" << "BOP";
   _types << "CANDLE_PATTERN" << "CCI" << "CHART" << "CHART_UPDATE";
-  _types << "CMO" << "COLOR" << "COMPARE" << "CORREL";
+  _types << "CMO" << "COLOR" << "COMPARE" << "CORREL" << "CSV";
+  _types << "DEBUG";
   _types << "FI";
   _types << "HT" << "HT_PHASOR" << "HT_SINE";
   _types << "LINEARREG";
@@ -108,6 +112,7 @@ CommandFactory::CommandFactory ()
   _types << "ULTOSC";
   _types << "VAR" << "VBP" << "VFI" << "VIDYA";
   _types << "WEIGHTED_CLOSE" << "WILLR";
+  _types << "YAHOO_HISTORY";
 }
 
 Command * CommandFactory::command (QObject *p, QString type)
@@ -166,6 +171,12 @@ Command * CommandFactory::command (QObject *p, QString type)
       break;
     case _CORREL:
       c = new CommandCORREL(p);
+      break;
+    case _CSV:
+      c = new CommandCSV(p);
+      break;
+    case _DEBUG:
+      c = new CommandScriptDebug(p);
       break;
     case _FI:
       c = new CommandFI(p);
@@ -304,6 +315,9 @@ Command * CommandFactory::command (QObject *p, QString type)
       break;
     case _WILLR:
       c = new CommandWILLR(p);
+      break;
+    case _YAHOO_HISTORY:
+      c = new CommandYahooHistory(p);
       break;
     default:
       break;

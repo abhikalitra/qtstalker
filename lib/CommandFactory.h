@@ -48,6 +48,8 @@ class CommandFactory
       _COLOR,
       _COMPARE,
       _CORREL,
+      _CSV,
+      _DEBUG,
       _FI,
       _HT,
       _HT_PHASOR,
@@ -93,7 +95,8 @@ class CommandFactory
       _VFI,
       _VIDYA,
       _WEIGHTED_CLOSE,
-      _WILLR
+      _WILLR,
+      _YAHOO_HISTORY
     };
 
     CommandFactory ();

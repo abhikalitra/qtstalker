@@ -35,37 +35,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>BUY</name>
-    <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Buy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Place Buy object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>BarLengthButton</name>
     <message>
         <source>Bar Length</source>
@@ -96,29 +65,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Decrease space between bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>BuyDialog</name>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -178,6 +124,43 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>CommandSelectDialog</name>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CommandWidget</name>
+    <message>
+        <source>Variables...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Command Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CommandYahooHistory</name>
+    <message>
+        <source>line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source># of bar fields, record skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid adjusted close, record skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ConfigureButton</name>
     <message>
         <source>Configure / Options</source>
@@ -192,19 +175,11 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;About</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;New Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -225,6 +200,14 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>&amp;Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit &amp;Indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Indicators</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -319,10 +302,6 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>DataWindow</name>
     <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
@@ -386,6 +365,14 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>ExchangeSearchDialog</name>
     <message>
+        <source>Exchange Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Country</source>
         <translation type="unfinished"></translation>
     </message>
@@ -394,7 +381,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Exchange</source>
+        <source>Perform Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -404,14 +391,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>No items found</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Perform Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exchange Search</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -539,75 +518,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>HLINE</name>
-    <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Place HLine object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>HLINEWidget</name>
-    <message>
-        <source>Add Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Item</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>HLineDialog</name>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>IconButton</name>
     <message>
         <source>Select Icon</source>
@@ -615,49 +525,29 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>IndicatorEditDialog</name>
+    <name>IndicatorDialog</name>
     <message>
-        <source>Script command</source>
+        <source>Indicators</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command</source>
+        <source>Add Indicators</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script File</source>
+        <source>Delete Indicators</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Invalid script command.</source>
+        <source>Select All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Editing Indicator</source>
+        <source>Unselect All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter new indicator name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Apply Changes</source>
+        <source>Select Indicator Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -695,32 +585,9 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>NewIndicatorDialog</name>
-    <message>
-        <source>New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>already exists</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>PlotMenu</name>
     <message>
         <source>New Chart Object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Log &amp;Scaling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -752,30 +619,6 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle Date Axis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle Log Scaling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Loc&amp;ked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Toggle Indicator Drag and Drop Lock</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Buy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -804,22 +647,6 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;New Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete Indicator(s)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date A&amp;xis</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Delete All &amp;Chart Objects</source>
         <translation type="unfinished"></translation>
     </message>
@@ -832,106 +659,11 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Permanantly Delete Indicator</source>
+        <source>&amp;Edit Indicators</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Add Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Remove Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>PluginEditDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter a unique name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Apply Changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter new name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Commands</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Add Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Insert Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Insert Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Remove Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Rename Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rename Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Move &amp;Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Move Command Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Move &amp;Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Move Command Down</source>
+        <source>Edit Indicators</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -955,6 +687,98 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Unable to launch Qt Assistant (%1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place Buy object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place HLine object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select lowest ending point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select highest starting point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place Sell object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select TLine ending point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select TLine starting point...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place Text object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place VLine object...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -998,81 +822,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>RETRACEMENT</name>
-    <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ST</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ED</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ET</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select lowest ending point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select highest starting point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>RecentCharts</name>
     <message>
         <source>Recent Charts</source>
@@ -1107,73 +856,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>RetracementDialog</name>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Line 6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Levels</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>SELECT_DIALOG</name>
     <message>
         <source>Items</source>
@@ -1185,63 +867,103 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>SELL</name>
+    <name>SHIFT</name>
     <message>
-        <source>&amp;Edit</source>
+        <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Delete</source>
+        <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Type</source>
+        <source>Period</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sell</source>
+        <source>Color</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Price</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Place Sell object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm chart object delete</source>
+        <source>Plot</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>Script</name>
+    <name>ScriptDialog</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Commands</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply Changes</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>started</source>
+        <source>&amp;Insert Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>cancelled</source>
+        <source>Insert Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>completed</source>
+        <source>&amp;Remove Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move &amp;Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move Command Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move &amp;Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move Command Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save Script As...</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>ScriptEditDialog</name>
+    <name>ScriptInsertDialog</name>
     <message>
-        <source>Edit Script</source>
+        <source>Insert Plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Interpreter command and switches eg. perl -l -T</source>
+        <source>New Step</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Step Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1249,27 +971,11 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The script location</source>
+        <source>Step name missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid command.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run this script every X minutes.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run every X minutes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Database error. Script not saved.</source>
+        <source>Duplicate name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1318,27 +1024,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Delete Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Cancel Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&amp;Run Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1355,18 +1041,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Configure Launch Button Columns</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run E&amp;xternal Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run external script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select External Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1390,15 +1064,66 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter new script name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Scripts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Script Timer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Script Timer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Script Timer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter script timer name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select script timer to edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select script timer to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScriptTimerDialog</name>
+    <message>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launch at application start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launch every X seconds</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1414,29 +1139,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Unselect All</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SellDialog</name>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1533,134 +1235,37 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>TEXT</name>
-    <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Buy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Place Text object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TLINE</name>
-    <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>TLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SD</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ST</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ED</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ET</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>SP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>EP</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select TLine ending point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select TLine starting point...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TLineDialog</name>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>TestDialog</name>
     <message>
-        <source>Summary</source>
+        <source>Tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Long Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Long Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Short Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Short Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Short Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1668,43 +1273,59 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Trades</source>
+        <source>Enter Commision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Commision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trade Delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Loss Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trailing Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Profit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1764,15 +1385,31 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Name</source>
+        <source>Trades</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Refresh Summary</source>
+        <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Tag</source>
+        <source>Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Price</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1780,71 +1417,11 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Tester</source>
+        <source>Profit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter Long Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Long Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Short Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Short Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Long Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Short Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Commision</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Commision</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume %</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Trade Delay</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum Loss Stop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Trailing Stop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
+        <source>Signal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1853,37 +1430,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Enter new rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TestRuleDialog</name>
-    <message>
-        <source>Test Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Offset</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Op</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1911,79 +1457,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>TextDialog</name>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>VLINE</name>
-    <message>
-        <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Place VLine object...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm chart object delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>VLineDialog</name>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set as default</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Order</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>YahooAddSymbolDialog</name>
     <message>
         <source>Add Symbols</source>
@@ -2001,6 +1474,10 @@ qtstalker.sourceforge.net</source>
 <context>
     <name>YahooDialog</name>
     <message>
+        <source>Auto Dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Start Date</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2009,27 +1486,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Adjust for splits</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download finished</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Starting history download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select All Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Uses the yahoo adjusted close instead of the actual close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2037,11 +1494,19 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Message Log</source>
+        <source>Select Symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Auto Dates</source>
+        <source>Uses the yahoo adjusted close instead of the actual close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjust for splits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Message Log</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2053,7 +1518,15 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Starting history download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download finished</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

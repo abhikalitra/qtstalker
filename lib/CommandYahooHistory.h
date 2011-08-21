@@ -19,34 +19,29 @@
  *  USA.
  */
 
-#ifndef QTSTALKER_SCRIPT_HPP
-#define QTSTALKER_SCRIPT_HPP
+#ifndef COMMAND_YAHOO_HISTORY_HPP
+#define COMMAND_YAHOO_HISTORY_HPP
 
-#include <QObject>
+#include <QDateTime>
 #include <QStringList>
+#include <QTextStream>
 
-#include "Script.h"
+#include "Command.h"
 
-class QtStalkerScript : public QObject
+class CommandYahooHistory : public Command
 {
   Q_OBJECT
 
   signals:
+    void signalMessage (QString);
 
   public:
-    QtStalkerScript (QString session, QString file);
-    ~QtStalkerScript ();
-    void done ();
-
-  public slots:
-    void run ();
-    void message (QString);
-
-  private:
-    int _dummyFlag;
-    Script *_script;
-    QStringList _messages;
+    CommandYahooHistory (QObject *);
+    int runScript (void *);
+    SettingGroup * settings ();
+    void getUrl (QDateTime &, QDateTime &, QString &symbol, QString &url);
+    void parse (QByteArray &ba, QString &symbol, QString &name, QTextStream &out, bool adjusted);
+    int downloadName (QString symbol, QString &name);
 };
 
 #endif
-

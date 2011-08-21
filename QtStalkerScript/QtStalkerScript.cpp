@@ -25,10 +25,8 @@
 
 #include <QtDebug>
 #include <QCoreApplication>
-#include <QStringList>
 #include <QWidget>
 #include <QTimer>
-#include <QFile>
 #include <QFileInfo>
 
 QtStalkerScript::QtStalkerScript (QString session, QString file)
@@ -80,6 +78,8 @@ void QtStalkerScript::run ()
       return;
     }
 
+    connect(com, SIGNAL(signalMessage(QString)), this, SLOT(message(QString)));
+
     if (com->isDialog())
     {
       // we need to create the parent gui thread and keep it running
@@ -130,12 +130,23 @@ void QtStalkerScript::done ()
     sg->setStepName("XXX123");
     Setting *v = sg->get("SCRIPT");
     v->setString(_script->file());
-
     tscript.setSettingGroup(sg);
   }
 
-  tscript.setCurrentStep("XXX123");
+/*
+  com = fac.command(this, "DEBUG");
+  if (com)
+  {
+    SettingGroup *sg = com->settings();
+    sg->setStepName("XXX1234");
+    Setting *v = sg->get("MESSAGE");
+    v->setString(_messages.join("\n"));
+    tscript.setSettingGroup(sg);
+  }
+  delete com;
+*/
 
+  tscript.setCurrentStep("XXX123");
   com->runScript(&tscript);
   delete com;
 
@@ -147,4 +158,9 @@ void QtStalkerScript::done ()
 qDebug() << l.join(" ");
 
   QCoreApplication::exit(0);
+}
+
+void QtStalkerScript::message (QString d)
+{
+  _messages << d;
 }

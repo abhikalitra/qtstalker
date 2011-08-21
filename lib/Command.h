@@ -33,6 +33,9 @@ class Command : public QObject
 {
   Q_OBJECT
 
+  signals:
+    void signalMessage(QString);
+
   public:
     enum ReturnCode
     {

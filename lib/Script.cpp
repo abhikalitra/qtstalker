@@ -174,6 +174,9 @@ int Script::loadScript ()
     QString s = f.readLine();
     s = s.trimmed();
 
+    if (s.contains("#"))
+      continue;
+
     if (s != "{")
       continue;
 

@@ -19,34 +19,35 @@
  *  USA.
  */
 
-#ifndef QTSTALKER_SCRIPT_HPP
-#define QTSTALKER_SCRIPT_HPP
+#ifndef COMMAND_CSV_HPP
+#define COMMAND_CSV_HPP
 
-#include <QObject>
-#include <QStringList>
+#include "Command.h"
 
-#include "Script.h"
-
-class QtStalkerScript : public QObject
+class CommandCSV : public Command
 {
   Q_OBJECT
 
-  signals:
-
   public:
-    QtStalkerScript (QString session, QString file);
-    ~QtStalkerScript ();
-    void done ();
+    enum FormatType
+    {
+      _SYMBOL,
+      _NAME,
+      _DATE,
+      _OPEN,
+      _HIGH,
+      _LOW,
+      _CLOSE,
+      _VOLUME,
+      _OI
+    };
 
-  public slots:
-    void run ();
-    void message (QString);
+    CommandCSV (QObject *);
+    int runScript (void *);
+    SettingGroup * settings ();
 
   private:
-    int _dummyFlag;
-    Script *_script;
-    QStringList _messages;
+    QStringList _formatType;
 };
 
 #endif
-

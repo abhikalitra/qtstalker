@@ -19,6 +19,7 @@
  *  USA.
  */
 
+
 #include "QuoteDataBase.h"
 #include "Strip.h"
 #include "Bar.h"
