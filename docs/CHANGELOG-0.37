@@ -331,7 +331,7 @@
 
 20100321:  Added an active script list to the script panel. Scripts can now be run on a timer that will
            repeat every X seconds. Also, you are able to run as many scripts simultaneously as desired.
-           
+
 20100323:  Chart objects now appear in all bar lengths. Before, they were locked to the original bar length
            and would not plot on charts of differing bar lengths.
 
@@ -429,7 +429,7 @@
            WARNING: This means any indicator scripts need to be revised. I would wait until I mention that
            tweaking is completed, otherwise you will need additional revising at a later time. Save yourself
            the hassle and wait until it is completed.
-           ************************************************************************************************           
+           ************************************************************************************************
 
            Made changes to all the script formats for indicators. Each indicator now has a PLOT TYPE and COLOR
            parameters. This is due to the PLOT command changes. See docs for details.
@@ -688,7 +688,7 @@
 
 20100906:  ************************** BIG CHANGES *********************************************
            Qtstalker now uses the Qwt charting library for all charting functions. http://qwt.sourceforge.net
-           Please install the most recent version before compiling qtstalker. 
+           Please install the most recent version before compiling qtstalker.
 
            ChartObjectDataBase format has changed. Please delete the chartObjectIndex table from the
            ~/.qtstalker/data.sqlite file before starting qtstalker. NOTE: There have been so many changes
@@ -974,7 +974,7 @@
            Added a plot font setting CONFIGURE_DIALOG.
 
            Fixed Text chart object now displays proper font.
-          
+
            Added yahoo download script as a default for script launch button 1.
 
 20110222:  Fixed yahoo date bug. Was not downloading correct dates.
@@ -1119,7 +1119,7 @@
 
 20110329:  Added an antialias configure option to help speed up slow displays. An app restart is required
            once the option is changed.
- 
+
            Managed to finally create a flexible database schema for groups, scripts, indicators and chart objects.
            Folded all the seperate classes into one generic class DataDataBase. As a result of these changes,
            groups, scripts, indicators and chart objects will be lost. Using key/data pairs now we can be more
@@ -1251,3 +1251,19 @@
 20110710:  Updated Scripts/indicator/*.pl CUS examples to use the new syntax for DOHLCVI, i.e.
            NAME_OPEN, NAME_CLOSE, etc. Thanks to xley.
 
+*****************************************************************************************************************************
+
+20110820:  After some downtime I have almost completed the new code. I have decided to drop the plugins as they were
+           becoming too tedious to maintain and compile. For the sake of simplicity and speed I have dumped all but a
+           few classes into the library.
+
+           Another big change was the move from threads to using processes. There were too many threads and race conditions
+           were becoming a headache. Now we avoid all that grief and just run each script in its own process and use DBUS and
+           shared memory for IPC. Works very well. Although there is currently a little lag for indicator updates, however
+           I hope to improve this over time once the code is stable we can start to optimize.
+
+           I had to drop the non-native scripting interface for now due to QProcess limitations.
+
+           Basically, almost anything a user wants to do will be done by running a script. I have completed the script builder
+           GUI to aid making scripts simple and quick. Scripts are basically a sequence of commands run one after another in
+           sequence. Docs and script examples have not been updated yet.
