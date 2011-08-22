@@ -23,6 +23,7 @@
 #define COMMAND_STOCH_SLOW_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandStochSlow : public Command
 {

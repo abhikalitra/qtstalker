@@ -97,6 +97,7 @@ QString Setting::toString ()
 
 int Setting::fromString (QString)
 {
+  return 0;
 }
 
 bool Setting::getBool ()

@@ -23,6 +23,7 @@
 #define COMMAND_ULTOSC_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandULTOSC : public Command
 {

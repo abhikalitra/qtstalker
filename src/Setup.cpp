@@ -44,15 +44,6 @@ void Setup::setup (QObject *, QString session)
   // set the global variables
   g_session = session;
 
-  // create a dummy barData
-//  g_barData = new BarData;
-
-  // setup shared memory
-//  QUuid uid = QUuid::createUuid();
-//  g_sharedCurrentSymbol.setKey(uid.toString());
-//qDebug() << "Setup::setup:" << g_sharedCurrentSymbol.key();
-  g_sharedCurrentSymbol.setKey("sharedCurrentSymbol1");
-
   // setup the disk environment and init databases
   // order is critical here
   setupDirectories(); // initialize directory structure
@@ -60,26 +51,33 @@ void Setup::setup (QObject *, QString session)
   // setup the system scripts
   setupDefaults();
 
-  // scan plugins
-//  scanPlugins();
-
   // initialize data tables
   setupExchanges();
-//qDebug() << "exchanges ok";
 
 //  setupFutures();
 
   QSettings settings(g_localSettings);
   int ti = settings.value("default_indicators", 0).toInt();
-  if (ti)
-    return;
+  if (! ti)
+  {
+    //setupDefaultIndicators();
+    setupDefaultScripts();
+    //qDebug() << "default scripts ok";
 
-//  setupDefaultIndicators();
-  setupDefaultScripts();
-//qDebug() << "default scripts ok";
+    settings.setValue("default_indicators", 1);
+    settings.sync();
+  }
 
-  settings.setValue("default_indicators", 1);
-  settings.sync();
+  // setup shared memory
+  QUuid uid = QUuid::createUuid();
+  g_sharedCurrentSymbol.setKey(uid.toString());
+//qDebug() << "Setup::setup:" << g_sharedCurrentSymbol.key();
+//  g_sharedCurrentSymbol.setKey("sharedCurrentSymbol1");
+
+  // save shared memory key
+  QSettings settings2(g_globalSettings);
+  settings2.setValue("shared_memory_key", g_sharedCurrentSymbol.key());
+  settings2.sync();
 }
 
 void Setup::setupDirectories ()

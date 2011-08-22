@@ -23,6 +23,7 @@
 #define COMMAND_BETA_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandBETA : public Command
 {

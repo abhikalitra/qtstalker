@@ -40,7 +40,8 @@ class ConfigureButton : public QToolButton
     void configureDialog ();
     void startDocumentation ();
     void aboutDialog ();
-    void editIndicator ();
+    void addIndicator ();
+    void addIndicator2 (QString);
 
   private:
     QMenu *_menu;

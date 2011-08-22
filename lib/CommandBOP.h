@@ -23,6 +23,7 @@
 #define COMMAND_BOP_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandBOP : public Command
 {

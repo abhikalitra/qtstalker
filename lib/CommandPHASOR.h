@@ -23,6 +23,7 @@
 #define COMMAND_PHASOR_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandPHASOR : public Command
 {

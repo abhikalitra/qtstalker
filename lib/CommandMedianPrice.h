@@ -23,6 +23,7 @@
 #define COMMAND_MEDIAN_PRICE_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandMedianPrice : public Command
 {

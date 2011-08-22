@@ -31,9 +31,11 @@
 
 QtStalkerScript::QtStalkerScript (QString session, QString file)
 {
+  _dummyFlag = 0;
+  _stop = 0;
+
   QFileInfo fi(file);
 
-  _dummyFlag = 0;
   _script = new Script(this);
   _script->setSession(session);
   _script->setFile(file);
@@ -46,6 +48,96 @@ QtStalkerScript::~QtStalkerScript ()
 {
 }
 
+void QtStalkerScript::run ()
+{
+  QProcess pro;
+  connect(&pro, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(scriptFinished(int, QProcess::ExitStatus)));
+
+  QString s = "perl " + _script->file();
+  pro.start(s);
+  if (! pro.waitForStarted())
+  {
+    qDebug() << "QtStalkerScript::run: process not started";
+    done();
+    return;
+  }
+
+  _stop = 0;
+  CommandFactory fac;
+
+  while (1)
+  {
+    if (_stop)
+      break;
+
+    pro.waitForReadyRead(-1);
+    QByteArray ba = pro.readAllStandardOutput();
+    qDebug() << ba;
+
+    SettingGroup tsg;
+    QString s(ba);
+    QStringList l = s.split(";");
+    if (tsg.parse(l))
+    {
+      pro.kill();
+      done();
+      return;
+    }
+
+    Command *com = fac.command(this, tsg.command());
+    if (! com)
+    {
+      qDebug() << "QtStalkerScript::run: command not found" << tsg.command();
+      pro.kill();
+      done();
+      return;
+    }
+
+    SettingGroup *sg = com->settings();
+    sg->setStepName(tsg.stepName());
+    sg->merge(&tsg);
+
+    _script->setSettingGroup(sg);
+    _script->setCurrentStep(sg->stepName());
+
+    if (com->isDialog())
+    {
+      // we need to create the parent gui thread and keep it running
+      // or else after the first dialog is deleted, the qt gui thread
+      // will terminate.
+      // we create a hidden window and keep it for the remainder of the
+      // script.
+      if (! _dummyFlag)
+      {
+        QWidget *w = new QWidget(0,
+                                 Qt::WindowStaysOnBottomHint
+                                 | Qt::FramelessWindowHint
+                                 | Qt::X11BypassWindowManagerHint);
+        w->setFixedSize(0, 0);
+        w->show();
+        _dummyFlag++;
+      }
+    }
+
+    s = "OK\n";
+    if (com->runScript(_script))
+      s = "ERROR\n";
+
+    delete com;
+
+    // deal with it
+    ba.clear();
+    ba.append(s);
+    pro.write(ba);
+    pro.waitForBytesWritten(-1);
+  }
+
+  pro.kill();
+
+  done();
+}
+
+/*
 void QtStalkerScript::run ()
 {
   if (_script->loadScript())
@@ -114,6 +206,7 @@ void QtStalkerScript::run ()
 
   done();
 }
+*/
 
 void QtStalkerScript::done ()
 {
@@ -163,4 +256,10 @@ qDebug() << l.join(" ");
 void QtStalkerScript::message (QString d)
 {
   _messages << d;
+}
+
+void QtStalkerScript::scriptFinished (int code, QProcess::ExitStatus status)
+{
+  qDebug() << "CommandScript::scriptFinished" << code << status;
+  _stop = 1;
 }

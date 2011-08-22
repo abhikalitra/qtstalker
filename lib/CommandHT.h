@@ -23,6 +23,7 @@
 #define COMMAND_HT_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandHT : public Command
 {

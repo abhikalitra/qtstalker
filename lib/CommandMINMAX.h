@@ -23,6 +23,7 @@
 #define COMMAND_MINMAX_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandMINMAX : public Command
 {

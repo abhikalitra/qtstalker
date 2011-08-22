@@ -23,6 +23,7 @@
 #define COMMAND_VFI_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandVFI : public Command
 {

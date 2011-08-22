@@ -25,7 +25,6 @@
 #include "NewDialog.h"
 #include "SelectDialog.h"
 #include "ScriptDataBase.h"
-#include "ScriptDialog.h"
 #include "Script.h"
 #include "ScriptTimerDialog.h"
 
@@ -105,20 +104,7 @@ void ScriptPage::createGUI ()
 
 void ScriptPage::createActions ()
 {
-  QAction *action = new QAction(QIcon(new_xpm), tr("&New Script") + "...", this);
-  action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
-  action->setToolTip(tr("New Script") + "...");
-  action->setStatusTip(tr("New Script") + "...");
-  connect(action, SIGNAL(activated()), this, SLOT(newScript()));
-  _actions.insert(_NewScript, action);
-
-  action = new QAction(QIcon(edit_xpm), tr("&Edit Script") + "...", this);
-  action->setToolTip(tr("Edit Script") + "...");
-  action->setStatusTip(tr("Edit Script") + "...");
-  connect(action, SIGNAL(activated()), this, SLOT(editScript()));
-  _actions.insert(_EditScript, action);
-
-  action = new QAction(QIcon(new_xpm), tr("New Script Timer") + "...", this);
+  QAction *action = new QAction(QIcon(new_xpm), tr("New Script Timer") + "...", this);
   action->setToolTip(tr("New Script Timer") + "...");
   action->setStatusTip(tr("New Script Timer") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(newScriptTimer()));
@@ -168,39 +154,12 @@ void ScriptPage::createButtonMenu ()
   _queMenu->addAction(_actions.value(_RunScript));
   _queMenu->addAction(_actions.value(_Cancel));
   _queMenu->addSeparator();
-  _queMenu->addAction(_actions.value(_NewScript));
-  _queMenu->addAction(_actions.value(_EditScript));
-  _queMenu->addSeparator();
   _queMenu->addAction(_actions.value(_NewScriptTimer));
   _queMenu->addAction(_actions.value(_EditScriptTimer));
   _queMenu->addAction(_actions.value(_DeleteScriptTimer));
   _queMenu->addSeparator();
   _queMenu->addAction(_actions.value(_LaunchButtonRows));
   _queMenu->addAction(_actions.value(_LaunchButtonCols));
-}
-
-void ScriptPage::newScript ()
-{
-  ScriptDialog *dialog = new ScriptDialog(this, QString());
-  dialog->show();
-}
-
-void ScriptPage::editScript ()
-{
-  QSettings settings(g_localSettings);
-
-  QFileDialog *dialog = new QFileDialog(this);
-  dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("Select Script"));
-  dialog->setDirectory(settings.value("script_panel_last_external_script").toString());
-  connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(editScript(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-}
-
-void ScriptPage::editScript (QString d)
-{
-  ScriptDialog *dialog = new ScriptDialog(this, d);
-  dialog->show();
 }
 
 void ScriptPage::queRightClick (const QPoint &)

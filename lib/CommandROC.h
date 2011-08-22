@@ -23,6 +23,7 @@
 #define COMMAND_ROC_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandROC : public Command
 {

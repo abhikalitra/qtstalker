@@ -23,6 +23,7 @@
 #define COMMAND_ARITHMETIC_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandArithmetic : public Command
 {

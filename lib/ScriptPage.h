@@ -46,8 +46,6 @@ class ScriptPage : public QWidget
     enum Action
     {
       _RunScript,
-      _NewScript,
-      _EditScript,
       _Cancel,
       _LaunchButtonRows,
       _LaunchButtonCols,
@@ -69,9 +67,6 @@ class ScriptPage : public QWidget
     void queStatus ();
     void runScript ();
     void runScript (QString);
-    void newScript ();
-    void editScript ();
-    void editScript (QString);
     void done (QString);
     void cancel ();
     void cancel (QString);

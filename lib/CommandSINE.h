@@ -23,6 +23,7 @@
 #define COMMAND_SINE_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandSINE : public Command
 {

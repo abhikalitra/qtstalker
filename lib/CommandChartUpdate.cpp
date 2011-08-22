@@ -78,10 +78,14 @@ int CommandChartUpdate::runScript (void *d)
     if (co->z() == -1)
       continue;
 
-    IPCMessage ipcm(script->session(), _type, "CHART_OBJECT", script->file());
+    QStringList data;
+    data << "TYPE=" + co->type();
+    data << "CHART=" + co->plotName();
+    data << co->settings()->toString();
 
+    IPCMessage ipcm(script->session(), _type, "CHART_OBJECT", script->file());
     MessageSend ms(this);
-    ms.send(ipcm, co->settings()->toString());
+    ms.send(ipcm, data.join(","));
   }
 
   // send the update command
@@ -130,8 +134,15 @@ int CommandChartUpdate::message (IPCMessage &mess, QString &d)
 
   if (mess.type() == "CHART_OBJECT")
   {
-    int pos = d.indexOf(";");
-    QString type = d.left(pos);
+    QStringList l = d.split(",");
+    SettingGroup sg;
+    if (sg.parse(l))
+    {
+      qDebug() << _type << "::message: invalid chart object data" << d;
+      return _ERROR;
+    }
+
+    QString type = sg.get("TYPE")->getString();
 
     ChartObjectFactory fac;
     ChartObject *co = fac.chartObject(type);
@@ -142,21 +153,16 @@ int CommandChartUpdate::message (IPCMessage &mess, QString &d)
     }
 
     SettingGroup *settings = co->settings();
-
-    SettingGroup sg;
-    if (sg.fromString(d))
-    {
-      delete co;
-      qDebug() << _type << "::message: invalid chart object data";
-      return _ERROR;
-    }
-
     settings->merge(&sg);
+
+    co->setPlotName(sg.get("CHART")->getString());
+    co->setReadOnly(TRUE);
 
     Plot *plot = g_plotGroup->plot(co->plotName());
     if (! plot)
     {
       qDebug() << _type << "::message: chart not found" << co->plotName();
+      delete co;
       return 1;
     }
 

@@ -23,6 +23,7 @@
 #define COMMAND_VIDYA_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandVIDYA : public Command
 {

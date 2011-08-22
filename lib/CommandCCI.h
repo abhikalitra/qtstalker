@@ -23,6 +23,7 @@
 #define COMMAND_CCI_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandCCI : public Command
 {

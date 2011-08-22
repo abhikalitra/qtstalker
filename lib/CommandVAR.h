@@ -23,6 +23,7 @@
 #define COMMAND_VAR_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandVAR : public Command
 {

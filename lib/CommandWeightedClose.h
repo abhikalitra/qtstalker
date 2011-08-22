@@ -23,6 +23,7 @@
 #define COMMAND_WEIGHTED_CLOSE_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandWeightedClose : public Command
 {

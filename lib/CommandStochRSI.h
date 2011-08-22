@@ -23,6 +23,7 @@
 #define COMMAND_STOCH_RSI_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandStochRSI : public Command
 {

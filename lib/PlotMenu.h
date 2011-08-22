@@ -46,10 +46,11 @@ class PlotMenu : public QMenu
       _TLINE_CHART_OBJECT,
       _VLINE_CHART_OBJECT,
       _DELETE_ALL_CHART_OBJECTS,
-      _EDIT_INDICATOR,
+      _ADD_INDICATOR,
+      _REMOVE_INDICATOR
     };
 
-    PlotMenu (QWidget *);
+    PlotMenu (QWidget *, QString);
     void createActions ();
     void createMenus ();
     void setCOMenuStatus (bool);
@@ -58,9 +59,12 @@ class PlotMenu : public QMenu
     void chartObjectMenuSelected (QAction *);
     void deleteAllChartObjects ();
     void deleteAllChartObjects2 ();
-    void editIndicator ();
+    void addIndicator ();
+    void removeIndicator ();
+    void removeIndicator2 ();
 
   private:
+    QString _plotName;
     QMenu *_coListMenu;
     QHash<int, QAction *> _actions;
 };

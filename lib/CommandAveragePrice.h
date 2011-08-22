@@ -23,6 +23,7 @@
 #define COMMAND_AVERAGE_PRICE_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandAveragePrice : public Command
 {

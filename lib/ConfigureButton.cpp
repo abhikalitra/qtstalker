@@ -23,19 +23,21 @@
 #include "Doc.h"
 #include "AboutDialog.h"
 #include "ConfigureDialog.h"
-#include "IndicatorDialog.h"
+#include "Globals.h"
 
 #include "../pics/about.xpm"
 #include "../pics/help.xpm"
 #include "../pics/configure.xpm"
 #include "../pics/quit.xpm"
-#include "../pics/indicator.xpm"
+#include "../pics/add.xpm"
 
 #include <QDebug>
 #include <QString>
 #include <QApplication>
 #include <QDesktopServices>
 #include <QAction>
+#include <QFileDialog>
+#include <QSettings>
 
 ConfigureButton::ConfigureButton ()
 {
@@ -54,13 +56,13 @@ void ConfigureButton::createMenu ()
   _menu->setTitle(tr("Configure / Options"));
   setMenu(_menu);
 
-  // edit indicator
-  QAction *a = _menu->addAction(tr("Edit &Indicators") + "...");
+  // add indicator
+  QAction *a = _menu->addAction(tr("Add &Indicator") + "...");
   a->setShortcut(QKeySequence(QKeySequence::New));
-  a->setIcon(QIcon(indicator_xpm));
-  a->setToolTip(tr("Edit Indicators") + "...");
-  a->setStatusTip(tr("Edit Indicators") + "...");
-  connect(a, SIGNAL(triggered(bool)), this, SLOT(editIndicator()));
+  a->setIcon(QIcon(add_xpm));
+  a->setToolTip(tr("Add Indicator") + "...");
+  a->setStatusTip(tr("Add Indicator") + "...");
+  connect(a, SIGNAL(triggered(bool)), this, SLOT(addIndicator()));
 
   _menu->addSeparator();
 
@@ -122,8 +124,26 @@ void ConfigureButton::configureDialog ()
   dialog->show();
 }
 
-void ConfigureButton::editIndicator ()
+void ConfigureButton::addIndicator ()
 {
-  IndicatorDialog *dialog = new IndicatorDialog(this);
+  QSettings settings(g_localSettings);
+
+  QFileDialog *dialog = new QFileDialog(this);
+  dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("Select Indicator Script"));
+  dialog->setDirectory(settings.value("indicator_dialog_last_script").toString());
+  connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(addIndicator2(QString)));
+  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
+}
+
+void ConfigureButton::addIndicator2 (QString d)
+{
+  QSettings settings(g_localSettings);
+  QStringList l = settings.value("indicators").toStringList();
+  l << d;
+  settings.setValue("indicators", l);
+  settings.setValue("indicator_dialog_last_script", d);
+  settings.sync();
+
+  g_sidePanel->reloadChart();
 }

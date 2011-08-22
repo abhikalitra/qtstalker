@@ -23,6 +23,7 @@
 #define COMMAND_SZ_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandSZ : public Command
 {

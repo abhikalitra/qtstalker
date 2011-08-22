@@ -30,6 +30,7 @@
 #include "CommandBBANDS.h"
 #include "CommandBETA.h"
 #include "CommandBOP.h"
+#include "CommandBuy.h"
 #include "CommandCandlePattern.h"
 #include "CommandCCI.h"
 #include "CommandChart.h"
@@ -40,6 +41,7 @@
 #include "CommandCORREL.h"
 #include "CommandCSV.h"
 #include "CommandFI.h"
+#include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandPHASOR.h"
 #include "CommandLINEARREG.h"
@@ -60,6 +62,7 @@
 #include "CommandPlotLine.h"
 #include "CommandPlotHistogram.h"
 #include "CommandPlotHistogramBar.h"
+//#include "CommandRetracement.h"
 #include "CommandROC.h"
 #include "CommandRSI.h"
 #include "CommandSAR.h"
@@ -67,6 +70,7 @@
 #include "CommandScriptDone.h"
 #include "CommandScriptStart.h"
 //#include "CommandSelectDialog.h"
+//#include "CommandSell.h"
 #include "CommandSINE.h"
 #include "CommandSTDDEV.h"
 #include "CommandStochFast.h"
@@ -76,7 +80,9 @@
 #include "CommandSymbol.h"
 #include "CommandSymbolCurrent.h"
 #include "CommandT3.h"
+//#include "CommandText.h"
 #include "CommandTHERM.h"
+//#include "CommandTLine.h"
 #include "CommandTRIX.h"
 #include "CommandTypicalPrice.h"
 #include "CommandULTOSC.h"
@@ -84,6 +90,7 @@
 #include "CommandVBP.h"
 #include "CommandVFI.h"
 #include "CommandVIDYA.h"
+//#include "CommandVLine.h"
 #include "CommandWeightedClose.h"
 #include "CommandWILLR.h"
 #include "CommandYahooHistory.h"
@@ -94,7 +101,10 @@ CommandFactory::CommandFactory ()
 {
   _types << "AD" << "ADX" << "ARITHMETIC" << "AROON" << "ATR" << "AVERAGE_PRICE";
   _types << "BBANDS" << "BETA" << "BOP";
-  _types << "CANDLE_PATTERN" << "CCI" << "CHART" << "CHART_UPDATE";
+  _types << "CANDLE_PATTERN" << "CCI" << "CHART";
+  _types << "CHART_OBJECT_BUY" << "CHART_OBJECT_HLINE" << "CHART_OBJECT_RETRACEMENT" << "CHART_OBJECT_SELL";
+  _types << "CHART_OBJECT_TEXT" << "CHART_OBJECT_TLINE" << "CHART_OBJECT_VLINE";
+  _types << "CHART_UPDATE";
   _types << "CMO" << "COLOR" << "COMPARE" << "CORREL" << "CSV";
   _types << "DEBUG";
   _types << "FI";
@@ -156,6 +166,27 @@ Command * CommandFactory::command (QObject *p, QString type)
       break;
     case _CHART:
       c = new CommandChart(p);
+      break;
+    case _CHART_OBJECT_BUY:
+      c = new CommandBuy(p);
+      break;
+    case _CHART_OBJECT_HLINE:
+      c = new CommandHLine(p);
+      break;
+    case _CHART_OBJECT_RETRACEMENT:
+//      c = new CommandRetracement(p);
+      break;
+    case _CHART_OBJECT_SELL:
+//      c = new CommandSell(p);
+      break;
+    case _CHART_OBJECT_TEXT:
+//      c = new CommandText(p);
+      break;
+    case _CHART_OBJECT_TLINE:
+//      c = new CommandTLine(p);
+      break;
+    case _CHART_OBJECT_VLINE:
+//      c = new CommandVLine(p);
       break;
     case _CHART_UPDATE:
       c = new CommandChartUpdate(p);

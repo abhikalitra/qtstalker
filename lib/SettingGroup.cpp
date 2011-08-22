@@ -142,7 +142,8 @@ int SettingGroup::parse (QStringList &l)
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    QStringList tl = l.at(loop).split("=");
+    QString s = l.at(loop).trimmed();
+    QStringList tl = s.split("=");
     if (tl.count() != 2)
       return 1;
 

@@ -23,6 +23,7 @@
 #define COMMAND_THERM_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandTHERM : public Command
 {

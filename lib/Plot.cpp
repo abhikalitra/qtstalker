@@ -25,7 +25,6 @@
 #include "ChartObjectDataBase.h"
 #include "ConfirmDialog.h"
 #include "ChartObjectFactory.h"
-#include "CommandWidget.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
@@ -94,7 +93,7 @@ Plot::Plot (QString name, QWidget *mw) : QwtPlot (mw)
   setContextMenuPolicy(Qt::CustomContextMenu);
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu()));
 
-  _menu = new PlotMenu(this);
+  _menu = new PlotMenu(this, _name);
   connect(_menu, SIGNAL(signalNewChartObject(QString)), this, SLOT(chartObjectNew(QString)));
   connect(_menu, SIGNAL(signalDeleteAllChartObjects()), this, SLOT(deleteAllChartObjects()));
 
@@ -382,8 +381,9 @@ void Plot::mouseClick (int button, QPoint p)
   }
 }
 
-void Plot::mouseDoubleClick (int button, QPoint p)
+void Plot::mouseDoubleClick (int, QPoint)
 {
+/*
   if (! _dateScaleDraw->count())
     return;
 
@@ -404,6 +404,7 @@ void Plot::mouseDoubleClick (int button, QPoint p)
 //      previousPage();
 //  }
 //qDebug() << "Plot::mouseDoubleClick:" << pos;
+*/
 }
 
 void Plot::mouseMove (QPoint p)
@@ -574,12 +575,18 @@ void Plot::deleteAllChartObjects ()
   while (it.hasNext())
   {
     it.next();
-    l << it.value()->ID();
-    it.value()->setModified(0);
-  }
+    ChartObject *co = it.value();
 
-  qDeleteAll(_chartObjects);
-  _chartObjects.clear();
+    if (co->readOnly())
+      continue;
+
+    QString id = co->ID();
+    l << id;
+    co->setModified(0);
+
+    delete co;
+    _chartObjects.remove(id);
+  }
 
   _selected = 0;
   _chartObjectDialog = 0;
@@ -631,10 +638,8 @@ void Plot::chartObjectDialog ()
   if (_chartObjectDialog)
     return;
 
-  _chartObjectDialog = new Dialog(this);
-  CommandWidget *w = new CommandWidget(_chartObjectDialog, _selected->settings(), 0);
-  _chartObjectDialog->setWidget(w);
-  connect(_chartObjectDialog, SIGNAL(accepted()), w, SLOT(save()));
+  _chartObjectDialog = new CommandDialog(this);
+  _chartObjectDialog->setWidgets(_selected->settings());
   connect(_chartObjectDialog, SIGNAL(accepted()), this, SLOT(chartObjectDialog2()));
   connect(_chartObjectDialog, SIGNAL(rejected()), this, SLOT(chartObjectDialog3()));
   _chartObjectDialog->show();

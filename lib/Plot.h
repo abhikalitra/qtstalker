@@ -41,7 +41,7 @@
 #include "PlotPicker.h"
 #include "PlotMenu.h"
 #include "ChartObject.h"
-#include "Dialog.h"
+#include "CommandDialog.h"
 
 class Plot : public QwtPlot
 {
@@ -121,7 +121,7 @@ class Plot : public QwtPlot
     QMenu *_chartObjectMenu;
     bool _antiAlias;
     QString _name;
-    Dialog *_chartObjectDialog;
+    CommandDialog *_chartObjectDialog;
     QString _scriptFile;
     int _row;
     int _col;

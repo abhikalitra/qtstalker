@@ -23,6 +23,7 @@
 #define COMMAND_AROON_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandAROON : public Command
 {

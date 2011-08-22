@@ -23,6 +23,7 @@
 #define COMMAND_CORREL_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandCORREL : public Command
 {

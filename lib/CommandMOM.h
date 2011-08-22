@@ -23,6 +23,7 @@
 #define COMMAND_MOM_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandMOM : public Command
 {

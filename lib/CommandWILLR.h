@@ -23,6 +23,7 @@
 #define COMMAND_WILLR_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandWILLR : public Command
 {

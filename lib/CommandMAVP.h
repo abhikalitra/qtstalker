@@ -23,6 +23,7 @@
 #define COMMAND_MAVP_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandMAVP : public Command
 {

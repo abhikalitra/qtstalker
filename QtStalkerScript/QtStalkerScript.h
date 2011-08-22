@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QProcess>
 
 #include "Script.h"
 
@@ -41,11 +42,13 @@ class QtStalkerScript : public QObject
   public slots:
     void run ();
     void message (QString);
+    void scriptFinished (int, QProcess::ExitStatus);
 
   private:
     int _dummyFlag;
     Script *_script;
     QStringList _messages;
+    int _stop;
 };
 
 #endif

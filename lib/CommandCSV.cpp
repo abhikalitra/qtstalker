@@ -23,6 +23,7 @@
 #include "SettingString.h"
 #include "QuoteDataBase.h"
 #include "BarData.h"
+#include "Script.h"
 
 #include <QtDebug>
 #include <QFile>

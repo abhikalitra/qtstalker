@@ -23,6 +23,7 @@
 #define COMMAND_T3_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandT3 : public Command
 {

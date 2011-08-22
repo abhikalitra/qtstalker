@@ -23,6 +23,7 @@
 #define COMMAND_ADX_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandADX : public Command
 {

@@ -23,6 +23,7 @@
 #define COMMAND_RSI_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandRSI : public Command
 {

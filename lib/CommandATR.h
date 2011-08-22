@@ -23,6 +23,7 @@
 #define COMMAND_ATR_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandATR : public Command
 {

@@ -23,6 +23,7 @@
 #define COMMAND_PO_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandPO : public Command
 {

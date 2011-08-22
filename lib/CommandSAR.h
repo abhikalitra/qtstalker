@@ -23,6 +23,7 @@
 #define COMMAND_SAR_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandSAR : public Command
 {

@@ -23,6 +23,7 @@
 #define COMMAND_MFI_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandMFI : public Command
 {

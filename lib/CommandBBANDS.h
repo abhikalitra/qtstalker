@@ -23,6 +23,7 @@
 #define COMMAND_BBANDS_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandBBANDS : public Command
 {

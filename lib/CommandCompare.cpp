@@ -24,6 +24,7 @@
 #include "SettingString.h"
 #include "SettingInteger.h"
 #include "SettingList.h"
+#include "Script.h"
 
 #include <QtDebug>
 

@@ -23,6 +23,7 @@
 #define COMMAND_MACD_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandMACD : public Command
 {

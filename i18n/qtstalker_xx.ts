@@ -124,24 +124,20 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>CommandSelectDialog</name>
+    <name>CommandDialog</name>
     <message>
-        <source>Select</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CommandWidget</name>
-    <message>
-        <source>Variables...</source>
+        <source>Insert Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>CommandSelectDialog</name>
     <message>
-        <source>Select Command Setting</source>
+        <source>Select</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -203,11 +199,15 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit &amp;Indicators</source>
+        <source>Add &amp;Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit Indicators</source>
+        <source>Add Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select Indicator Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -363,38 +363,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>ExchangeSearchDialog</name>
-    <message>
-        <source>Exchange Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exchange</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Country</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>City</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Perform Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid search pattern
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No items found</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>FileButton</name>
     <message>
         <source>Select Files</source>
@@ -525,33 +493,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>IndicatorDialog</name>
-    <message>
-        <source>Indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unselect All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Indicator Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>InfoPanel</name>
     <message>
         <source>Info Panel Number Precision</source>
@@ -563,17 +504,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Set Number &amp;Precision</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>NEW_DIALOG</name>
-    <message>
-        <source>New item name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -659,11 +589,23 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&amp;Edit Indicators</source>
+        <source>&amp;Add Indicator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Edit Indicators</source>
+        <source>Add Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Remove Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm indicator removal</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -781,38 +723,6 @@ qtstalker.sourceforge.net</source>
         <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>None</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Long</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Short</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Test End</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum Loss</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Profit Target</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Trailing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -856,130 +766,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>SELECT_DIALOG</name>
-    <message>
-        <source>Items</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SHIFT</name>
-    <message>
-        <source>Output</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Input</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Style</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ScriptDialog</name>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Commands</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Apply Changes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Insert Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Insert Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Remove Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Remove Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Move &amp;Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Move Command Up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Move &amp;Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Move Command Down</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Save Script As...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ScriptInsertDialog</name>
-    <message>
-        <source>Insert Plugin</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Step</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Step Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Step name missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Duplicate name</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ScriptLaunchButton</name>
     <message>
         <source>&amp;Configure</source>
@@ -1007,22 +793,6 @@ qtstalker.sourceforge.net</source>
 </context>
 <context>
     <name>ScriptPage</name>
-    <message>
-        <source>&amp;New Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Edit Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Script</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>&amp;Run Script</source>
         <translation type="unfinished"></translation>
@@ -1231,384 +1001,6 @@ qtstalker.sourceforge.net</source>
     <name>SymbolListWidget</name>
     <message>
         <source>Name: </source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TestDialog</name>
-    <message>
-        <source>Tester</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Long Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Long Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Short Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Short Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Long Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Short Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Equity</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Commision</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Commision</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume %</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Trade Delay</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Maximum Loss Stop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Trailing Stop</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh Summary</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Summary</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tag</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>% Gain</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>T Profit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>% P Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>T Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Win Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Loss Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Draw</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Avg P/L</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>T Win Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>T Loss Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Avg Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Min Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>T Comm.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Trades</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Type</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exit Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Profit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Signal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter new rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TestRuleWidget</name>
-    <message>
-        <source>Add Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Indicator Rules</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>YahooAddSymbolDialog</name>
-    <message>
-        <source>Add Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter Yahoo symbols separated by a space</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Yahoo Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>YahooDialog</name>
-    <message>
-        <source>Auto Dates</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select All Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Selected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Uses the yahoo adjusted close instead of the actual close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjust for splits</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Message Log</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Starting history download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download finished</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>YahooHistory</name>
-    <message>
-        <source>line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source># of bar fields, record skipped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>invalid adjusted close, record skipped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>invalid date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>record skipped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>invalid open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>invalid high</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>invalid low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>invalid close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>invalid volume</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>records imported</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>data error</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>YahooSymbolDialog</name>
-    <message>
-        <source>Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search Pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Perform Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add Symbol...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unselect All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

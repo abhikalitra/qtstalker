@@ -23,6 +23,7 @@
 #define COMMAND_LINEARREG_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandLINEARREG : public Command
 {

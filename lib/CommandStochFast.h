@@ -23,6 +23,7 @@
 #define COMMAND_STOCH_FAST_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandStochFast : public Command
 {

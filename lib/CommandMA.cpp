@@ -20,11 +20,11 @@
  */
 
 #include "CommandMA.h"
-#include "Curve.h"
 #include "MAType.h"
 #include "SettingInteger.h"
 #include "SettingString.h"
 #include "SettingList.h"
+#include "Script.h"
 
 #include <QtDebug>
 

@@ -26,7 +26,6 @@
 
 #include "Message.h"
 #include "SettingGroup.h"
-#include "CommandWidget.h"
 #include "IPCMessage.h"
 
 class Command : public QObject

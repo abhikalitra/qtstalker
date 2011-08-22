@@ -23,6 +23,7 @@
 #define COMMAND_VBP_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandVBP : public Command
 {

@@ -48,8 +48,6 @@ class Script : public QObject
     int chartObjectCount ();
     void setChartObject (QString key, ChartObject *);
     QHash<QString, ChartObject *> chartObjects ();
-    void setRunOrder (QStringList);
-    QStringList runOrder ();
     void setSession (QString);
     QString session ();
     void setName (QString);
@@ -60,10 +58,9 @@ class Script : public QObject
     qint64 pid ();
     void setCurrentStep (QString);
     QString currentStep ();
+    QString nextROID ();
 
   public slots:
-    int loadScript ();
-    int saveScript ();
     int run ();
     int runWait ();
     int kill ();
@@ -73,7 +70,6 @@ class Script : public QObject
     QString _session;
     QString _name;
     QString _file;
-    QStringList _runOrder;
     QString _currentStep;
     QHash<QString, Curve *> _curves;
     QHash<QString, ChartObject *> _chartObjects;

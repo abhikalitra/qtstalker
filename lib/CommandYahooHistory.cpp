@@ -23,6 +23,7 @@
 #include "SettingString.h"
 #include "SettingDateTime.h"
 #include "SettingBool.h"
+#include "Script.h"
 
 #include <QDebug>
 #include <QtNetwork>

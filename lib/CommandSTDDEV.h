@@ -23,6 +23,7 @@
 #define COMMAND_STDDEV_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandSTDDEV : public Command
 {

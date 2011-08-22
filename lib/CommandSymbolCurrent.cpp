@@ -28,6 +28,7 @@
 
 #include <QtDebug>
 #include <QSharedMemory>
+#include <QSettings>
 
 CommandSymbolCurrent::CommandSymbolCurrent (QObject *p) : Command (p)
 {
@@ -43,8 +44,9 @@ int CommandSymbolCurrent::runScript (void *d)
     return _ERROR;
 
   BarData bd;
-  QSharedMemory sm("sharedCurrentSymbol1");
-//  QSharedMemory sm(g_sharedCurrentSymbol.key());
+
+  QSettings settings("QtStalker/qtstalkerrc");
+  QSharedMemory sm(settings.value("shared_memory_key").toString());
 
   SharedMemory smd;
   QString s;

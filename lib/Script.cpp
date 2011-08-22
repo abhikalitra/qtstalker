@@ -21,7 +21,6 @@
 
 #include "Script.h"
 #include "Globals.h"
-#include "CommandFactory.h"
 
 #include <QDebug>
 #include <QFile>
@@ -49,7 +48,6 @@ void Script::clear ()
   qDeleteAll(_settingGroups);
   _settingGroups.clear();
 
-  _runOrder.clear();
   _session.clear();
   _name.clear();
   _file.clear();
@@ -87,8 +85,6 @@ void Script::setSettingGroup (SettingGroup *d)
   SettingGroup *sg = _settingGroups.value(d->stepName());
   if (sg)
     delete sg;
-
-  _runOrder << d->stepName();
 
   _settingGroups.insert(d->stepName(), d);
 }
@@ -130,16 +126,6 @@ QHash<QString, ChartObject *>  Script::chartObjects ()
   return _chartObjects;
 }
 
-void Script::setRunOrder (QStringList d)
-{
-  _runOrder = d;
-}
-
-QStringList Script::runOrder ()
-{
-  return _runOrder;
-}
-
 void Script::setSession (QString d)
 {
   _session = d;
@@ -160,138 +146,11 @@ QString Script::name ()
   return _name;
 }
 
-int Script::loadScript ()
-{
-  QFile f(_file);
-  if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
-  {
-    qDebug() << "Script::load: file error" << _file;
-    return 1;
-  }
-
-  while (! f.atEnd())
-  {
-    QString s = f.readLine();
-    s = s.trimmed();
-
-    if (s.contains("#"))
-      continue;
-
-    if (s != "{")
-      continue;
-
-    // start new command structure
-    QStringList tl;
-    while (! f.atEnd())
-    {
-      s = f.readLine();
-      s = s.trimmed();
-      if (s.isEmpty())
-	continue;
-
-      if (s == "}")
-        break;
-
-      tl << s;
-    }
-
-    SettingGroup tsg;
-    if (tsg.parse(tl))
-    {
-      qDebug() << "Script::load: parse error" << tl;
-      return 1;
-    }
-
-    if (tsg.stepName().isEmpty())
-    {
-      qDebug() << "Script::load: step name missing" << tl;
-      return 1;
-    }
-
-    if (tsg.command().isEmpty())
-    {
-      qDebug() << "Script::load: command missing" << tl;
-      return 1;
-    }
-
-    CommandFactory fac;
-    Command *com = fac.command(this, tsg.command());
-    if (! com)
-    {
-      qDebug() << "Script::load: no command" << tl;
-      return 1;
-    }
-
-    SettingGroup *sg = com->settings();
-    sg->setStepName(tsg.stepName());
-
-    tl = tsg.keys();
-    int loop = 0;
-    for (; loop < tl.count(); loop++)
-    {
-      Setting *set = tsg.get(tl.at(loop));
-      Setting *set2 = sg->get(tl.at(loop));
-      if (! set2)
-	continue;
-
-      if (set2->fromString(set->toString()))
-      {
-        qDebug() << "Script::load: parse error" << tl.at(loop) << set->toString();
-	return 1;
-      }
-    }
-
-    setSettingGroup(sg);
-
-    delete com;
-  }
-
-  return 0;
-}
-
-int Script::saveScript ()
-{
-  QFile f(_file);
-  if (! f.open(QIODevice::WriteOnly | QIODevice::Text))
-  {
-    qDebug() << "Script::save: file error" << _file;
-    return 1;
-  }
-
-  QTextStream out(&f);
-
-  int loop = 0;
-  for (; loop < _runOrder.count(); loop++)
-  {
-    SettingGroup *sg = _settingGroups.value(_runOrder.at(loop));
-    if (! sg)
-      continue;
-
-    out << "{\n";
-    out << "  STEP=" << sg->stepName() << "\n";
-    out << "  COMMAND=" << sg->command() << "\n";
-
-    QStringList l = sg->keys();
-    int loop2 = 0;
-    for (; loop2 < l.count(); loop2++)
-    {
-      Setting *set = sg->get(l.at(loop2));
-      out << "  " << set->key() << "=" << set->toString() << "\n";
-    }
-
-    out << "}\n\n";
-  }
-
-  return 0;
-}
-
 void Script::removeSettingGroup (QString d)
 {
   SettingGroup *sg = settingGroup(d);
   if (! sg)
     return;
-
-  _runOrder.removeAll(d);
 
   delete sg;
 
@@ -375,3 +234,17 @@ QString Script::currentStep ()
   return _currentStep;
 }
 
+QString Script::nextROID ()
+{
+  int low = -1;
+  QHashIterator<QString, ChartObject *> it(_chartObjects);
+  while (it.hasNext())
+  {
+    it.next();
+    if (it.key().toInt() < low)
+      low = it.key().toInt();
+  }
+  low--;
+
+  return QString::number(low);
+}

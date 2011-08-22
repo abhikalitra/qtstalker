@@ -23,6 +23,7 @@
 #define COMMAND_TRIX_HPP
 
 #include "Command.h"
+#include "Curve.h"
 
 class CommandTRIX : public Command
 {
