@@ -66,7 +66,6 @@
 #include "CommandROC.h"
 #include "CommandRSI.h"
 #include "CommandSAR.h"
-#include "CommandScriptDebug.h"
 #include "CommandScriptDone.h"
 #include "CommandScriptStart.h"
 //#include "CommandSelectDialog.h"
@@ -106,7 +105,6 @@ CommandFactory::CommandFactory ()
   _types << "CHART_OBJECT_TEXT" << "CHART_OBJECT_TLINE" << "CHART_OBJECT_VLINE";
   _types << "CHART_UPDATE";
   _types << "CMO" << "COLOR" << "COMPARE" << "CORREL" << "CSV";
-  _types << "DEBUG";
   _types << "FI";
   _types << "HT" << "HT_PHASOR" << "HT_SINE";
   _types << "LINEARREG";
@@ -205,9 +203,6 @@ Command * CommandFactory::command (QObject *p, QString type)
       break;
     case _CSV:
       c = new CommandCSV(p);
-      break;
-    case _DEBUG:
-      c = new CommandScriptDebug(p);
       break;
     case _FI:
       c = new CommandFI(p);

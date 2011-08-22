@@ -56,7 +56,6 @@ class CommandFactory
       _COMPARE,
       _CORREL,
       _CSV,
-      _DEBUG,
       _FI,
       _HT,
       _HT_PHASOR,
