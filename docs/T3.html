@@ -36,7 +36,8 @@ Average</a><br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = T3<br>
+      <td style="vertical-align: top;">COMMAND = T3<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
 PERIOD = &lt;INTEGER&gt;<br>
@@ -46,7 +47,7 @@ VFACTOR = &lt;DECIMAL&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -54,7 +55,12 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=T3,NAME=t3,INPUT=close,PERIOD=5,VFACTOR=0.7<br>
+      <td style="vertical-align: top;">COMMAND=T3;<br>
+STEP=t3;<br>
+NAME=t3;<br>
+INPUT=close;<br>
+PERIOD=5;<br>
+VFACTOR=0.7<br>
       <br>
       </td>
     </tr>

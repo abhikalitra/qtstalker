@@ -34,13 +34,16 @@
 #include "CommandCandlePattern.h"
 #include "CommandCCI.h"
 #include "CommandChart.h"
+#include "CommandChartPanelRefresh.h"
 #include "CommandChartUpdate.h"
 #include "CommandCMO.h"
 #include "CommandColor.h"
 #include "CommandCompare.h"
 #include "CommandCORREL.h"
 #include "CommandCSV.h"
+#include "CommandExchangeSearchDialog.h"
 #include "CommandFI.h"
+#include "CommandFileDialog.h"
 #include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandPHASOR.h"
@@ -103,9 +106,10 @@ CommandFactory::CommandFactory ()
   _types << "CANDLE_PATTERN" << "CCI" << "CHART";
   _types << "CHART_OBJECT_BUY" << "CHART_OBJECT_HLINE" << "CHART_OBJECT_RETRACEMENT" << "CHART_OBJECT_SELL";
   _types << "CHART_OBJECT_TEXT" << "CHART_OBJECT_TLINE" << "CHART_OBJECT_VLINE";
-  _types << "CHART_UPDATE";
+  _types << "CHART_PANEL_REFRESH" << "CHART_UPDATE";
   _types << "CMO" << "COLOR" << "COMPARE" << "CORREL" << "CSV";
-  _types << "FI";
+  _types << "EXCHANGE_SEARCH_DIALOG";
+  _types << "FI" << "FILE_DIALOG";
   _types << "HT" << "HT_PHASOR" << "HT_SINE";
   _types << "LINEARREG";
   _types << "MA" << "MACD" << "MAMA" << "MAVP" << "MEDIAN_PRICE" << "MINMAX" << "MFI" << "MOM";
@@ -186,6 +190,9 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _CHART_OBJECT_VLINE:
 //      c = new CommandVLine(p);
       break;
+    case _CHART_PANEL_REFRESH:
+      c = new CommandChartPanelRefresh(p);
+      break;
     case _CHART_UPDATE:
       c = new CommandChartUpdate(p);
       break;
@@ -204,8 +211,14 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _CSV:
       c = new CommandCSV(p);
       break;
+    case _EXCHANGE_SEARCH_DIALOG:
+      c = new CommandExchangeSearchDialog(p);
+      break;
     case _FI:
       c = new CommandFI(p);
+      break;
+    case _FILE_DIALOG:
+      c = new CommandFileDialog(p);
       break;
     case _HT:
       c = new CommandHT(p);

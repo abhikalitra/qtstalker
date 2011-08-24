@@ -28,30 +28,44 @@
   <tbody>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
-      <td style="vertical-align: top;">Returns the current symbol.
-Result stored in KEY.<br>
+      <td style="vertical-align: top;">Loads the current DOHLCVI bars
+from QtStalker application.<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = SYMBOL_CURRENT<br>
+      <td style="vertical-align: top;">COMMAND = SYMBOL_CURRENT<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
+DATE = &lt;VARIABLE NAME&gt;<br>
+OPEN = &lt;VARIABLE NAME&gt;<br>
+HIGH = &lt;VARIABLE NAME&gt;<br>
+LOW = &lt;VARIABLE NAME&gt;<br>
+CLOSE = &lt;VARIABLE NAME&gt;<br>
+VOLUME = &lt;VARIABLE NAME&gt;<br>
+OI = &lt;VARIABLE NAME&gt;<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
-KEY = SYMBOL_CURRENT_EXCHANGE<br>
-KEY = SYMBOL_CURRENT_SYMBOL<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=SYMBOL_CURRENT<br>
+      <td style="vertical-align: top;">COMMAND=SYMBOL_CURRENT;<br>
+STEP=bars;<br>
+DATE=date;<br>
+OPEN=open;<br>
+HIGH=high;<br>
+LOW=low;<br>
+CLOSE=close;<br>
+VOLUME=volume;<br>
+OI=oi<br>
       <br>
       </td>
     </tr>

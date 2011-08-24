@@ -42,7 +42,8 @@ class Setting
       _DATETIME,
       _BOOL,
       _CHART,
-      _FONT
+      _FONT,
+      _FILE
     };
 
     Setting ();
@@ -68,6 +69,8 @@ class Setting
     virtual int getIntegerLow ();
     virtual double getDoubleHigh ();
     virtual double getDoubleLow ();
+    virtual QStringList getFile ();
+    virtual void setFile (QStringList);
 
     int type ();
     int inputType ();

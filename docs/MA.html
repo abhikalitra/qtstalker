@@ -35,7 +35,8 @@
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = MA<br>
+      <td style="vertical-align: top;">COMMAND = MA<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 METHOD = &lt;<a href="MATypes.html">MA TYPE</a>&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
@@ -45,7 +46,7 @@ PERIOD = &lt;INTEGER&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -53,8 +54,12 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=MA, METHOD=EMA, NAME=ema,
-INPUT=close, PERIOD=20<br>
+      <td style="vertical-align: top;">COMMAND=MA;<br>
+STEP=ma;<br>
+METHOD=EMA;<br>
+NAME=ema;<br>
+INPUT=close;<br>
+PERIOD=20<br>
       <br>
       </td>
     </tr>

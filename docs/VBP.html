@@ -30,16 +30,18 @@
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
       <td style="vertical-align: top;"><a
  href="http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:volume_by_price">Volume
-By Price. </a><br>
+By
+Price. </a><br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = VBP<br>
+      <td style="vertical-align: top;">COMMAND = VBP<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
-INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
-INPUT_VOLUME = &lt;VARIABLE NAME&gt;<br>
+CLOSE = &lt;VARIABLE NAME&gt;<br>
+VOLUME = &lt;VARIABLE NAME&gt;<br>
 COLOR_UP = &lt;COLOR&gt;<br>
 COLOR_DOWN = &lt;COLOR&gt;<br>
       <br>
@@ -47,7 +49,7 @@ COLOR_DOWN = &lt;COLOR&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -55,8 +57,13 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=VBP, NAME=vbp,
-INPUT_CLOSE=Close, INPUT_VOLUME=Volume, COLOR_UP=green, COLOR_DOWN=red<br>
+      <td style="vertical-align: top;">COMMAND=VBP;<br>
+STEP=vbp;<br>
+NAME=vbp;<br>
+CLOSE=Close;<br>
+VOLUME=Volume;<br>
+COLOR_UP=green;<br>
+COLOR_DOWN=red<br>
       <br>
       </td>
     </tr>

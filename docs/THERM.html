@@ -36,16 +36,17 @@ Elder's book Come Into My Trading Room, p.162 <br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = THERM<br>
-INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
-INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
+      <td style="vertical-align: top;">COMMAND = THERM<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
+HIGH = &lt;VARIABLE NAME&gt;<br>
+LOW = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -53,8 +54,11 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=THERM, INPUT_HIGH=high,
-INPUT_LOW=low, NAME=therm<br>
+      <td style="vertical-align: top;">COMMAND=THERM;<br>
+STEP=therm;<br>
+HIGH=high;<br>
+LOW=low;<br>
+NAME=therm<br>
       <br>
       </td>
     </tr>

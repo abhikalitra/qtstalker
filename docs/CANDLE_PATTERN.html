@@ -37,11 +37,12 @@ penetration used for certain METHOD types.<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = CANDLE_PATTERN<br>
-INPUT_OPEN = &lt;VARIABLE NAME&gt;<br>
-INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
-INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
-INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
+      <td style="vertical-align: top;">COMMAND = CANDLE_PATTERN<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
+OPEN = &lt;VARIABLE NAME&gt;<br>
+HIGH = &lt;VARIABLE NAME&gt;<br>
+LOW = &lt;VARIABLE NAME&gt;<br>
+CLOSE = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 METHOD = <br>
       <ol>
@@ -109,13 +110,13 @@ METHOD = <br>
         <li>XSIDEGAP3METHODS<br>
         </li>
       </ol>
-PENETRATION = &lt;DECIMAL&gt; - default is 0<br>
+PENETRATION = &lt;DECIMAL&gt;<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -123,12 +124,12 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=CANDLE_PATTERN,
-INPUT_OPEN=open, INPUT_HIGH=high, INPUT_LOW=low, INPUT_CLOSE=close,
-NAME=harami, METHOD=HARAMI<br>
+      <td style="vertical-align: top;">COMMAND=CANDLE_PATTERN; STEP=cp;
+OPEN=open; HIGH=high; LOW=low; CLOSE=close;
+NAME=harami; METHOD=HARAMI<br>
       <br>
-PLUGIN=CANDLE_PATTERN, INPUT_OPEN=open, INPUT_HIGH=high, INPUT_LOW=low,
-INPUT_CLOSE=close, NAME=dcc, METHOD=DARKCLOUDCOVER, PENETRATION=0<br>
+COMMAND=CANDLE_PATTERN; STEP=cp; OPEN=open; HIGH=high; LOW=low;
+CLOSE=close; NAME=dcc; METHOD=DARKCLOUDCOVER; PENETRATION=0<br>
       <br>
       </td>
     </tr>

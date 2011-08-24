@@ -37,11 +37,12 @@ Indicator</a> - simple version.<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = VFI<br>
-INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
-INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
-INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
-INPUT_VOLUME = &lt;VARIABLE NAME&gt;<br>
+      <td style="vertical-align: top;">COMMAND = VFI<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
+HIGH = &lt;VARIABLE NAME&gt;<br>
+LOW = &lt;VARIABLE NAME&gt;<br>
+CLOSE = &lt;VARIABLE NAME&gt;<br>
+VOLUME = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 PERIOD = &lt;INTEGER&gt;<br>
       <br>
@@ -49,7 +50,7 @@ PERIOD = &lt;INTEGER&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -57,8 +58,13 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=VFI, INPUT_HIGH=high,
-INPUT_LOW=low, INPUT_CLOSE=close, INPUT_VOLUME=volume, NAME=vfi,
+      <td style="vertical-align: top;">COMMAND=VFI;<br>
+STEP=vfi;<br>
+HIGH=high;<br>
+LOW=low;<br>
+CLOSE=close;<br>
+VOLUME=volume;<br>
+NAME=vfi;<br>
 PERIOD=130<br>
       <br>
       </td>

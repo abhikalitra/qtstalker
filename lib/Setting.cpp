@@ -129,6 +129,15 @@ double Setting::getDoubleLow ()
   return 0;
 }
 
+void Setting::setFile(QStringList)
+{
+}
+
+QStringList Setting::getFile ()
+{
+  return QStringList();
+}
+
 int Setting::type ()
 {
   return _type;

@@ -35,11 +35,12 @@ described in Dr. Alexander Elder's book Come Into My Trading Room, p.173<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = SZ<br>
-INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
-INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
+      <td style="vertical-align: top;">COMMAND = SZ<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
+HIGH = &lt;VARIABLE NAME&gt;<br>
+LOW = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
-METHOD = &lt;TYPE&gt;<br>
+METHOD =<br>
       <div style="margin-left: 40px;">
       <ol>
         <li>LONG</li>
@@ -48,14 +49,14 @@ METHOD = &lt;TYPE&gt;<br>
       </ol>
       </div>
 PERIOD = &lt;INTEGER&gt;<br>
-NO_DECLINE_PERIOD = &lt;INTEGER&gt;<br>
+PERIOD_NO_DECLINE = &lt;INTEGER&gt;<br>
 COEFFICIENT = &lt;DECIMAL&gt;<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -63,8 +64,14 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=SZ, INPUT_HIGH=high,
-INPUT_LOW=low, NAME=sz, METHOD=SHORT, PERIOD=10, NO_DECLINE_PERIOD=2,
+      <td style="vertical-align: top;">COMMAND=SZ;<br>
+STEP=sz;<br>
+HIGH=high;<br>
+LOW=low;<br>
+NAME=sz;<br>
+METHOD=LONG;<br>
+PERIOD=10;<br>
+PERIOD_NO_DECLINE=2;<br>
 COEFFICIENT=2<br>
       <br>
       </td>

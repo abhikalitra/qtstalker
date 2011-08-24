@@ -10,61 +10,105 @@
 # @par Legend
 # - green = positive disparity
 # - red = negative disparity
-
-$closeName = 'cl';
-$upColor = 'green';
-$downColor = 'red';
-
-$name = 'Disparity';
-$style = 'HistogramBar';
-$color = 'yellow';
-$period = 13;
-
-$maType = 'EMA';
-$maName = 'sma_13';
-
+#
 ########################################################################
 
 $|++;
 
-# Get the close
-$command = "PLUGIN=DOHLCVI,METHOD=C,NAME_CLOSE=$closeName";
+# create the chart
+$command = "COMMAND=CHART;
+            STEP=createChart;
+            NAME=Disparity;
+            DATE=false;
+            LOG=false;
+            ROW=1;
+            COL=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# Get the 13-bar MA
-$command = "PLUGIN=MA,METHOD=$maType,NAME=$maName,INPUT=$closeName,PERIOD=$period";
+# load current bars
+$command = "COMMAND=SYMBOL_CURRENT;
+            STEP=loadBars;
+            DATE=date;
+            OPEN=open;
+            HIGH=high;
+            LOW=low;
+            CLOSE=close;
+            VOLUME=volume;
+            OI=oi";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# difference of close - ma
-$command = "PLUGIN=ARITHMETIC,METHOD=SUB,NAME=sub,INPUT=$closeName,INPUT2=$maName";
+# create the 13 period MA
+$command = "COMMAND=MA;
+            STEP=createMA13;
+            NAME=ma13;
+            INPUT=loadBars:CLOSE;
+            PERIOD=13;
+            METHOD=EMA";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# copy array and fill with '100' value
-$command = "PLUGIN=COPY_ARRAY,NAME=val100,INPUT=$maName,VALUE=100";
+# close - 13 period MA
+$command = "COMMAND=ARITHMETIC;
+            STEP=close-MA13;
+            NAME=diff;
+            INPUT=loadBars:CLOSE;
+            INPUT_2=createMA13:NAME;
+            METHOD=SUB";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# multiply 100 * sub
-$command = "PLUGIN=ARITHMETIC,METHOD=MULT,NAME=mult,INPUT=val100,INPUT2=sub";
+# (close - 13 period MA) * 100
+$command = "COMMAND=ARITHMETIC;
+            STEP=100*diff;
+            NAME=mult;
+            INPUT=close-MA13:NAME;
+            INPUT_2=100;
+            METHOD=MULT";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-# calculate disparity (mult / close)
-$command = "PLUGIN=ARITHMETIC,METHOD=DIV,NAME=$name,INPUT=mult,INPUT2=$closeName";
+# mult / close
+$command = "COMMAND=ARITHMETIC;
+            STEP=mult/close;
+            NAME=disparity;
+            INPUT=100*diff:NAME;
+            INPUT_2=loadBars:CLOSE;
+            METHOD=DIV";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$name,STYLE=$style,COLOR=$color,Z=0";
+# plot disparity as a histogram bar
+$command = "COMMAND=PLOT_HISTOGRAM_BAR;
+            STEP=plotDisparity;
+            CHART=createChart:NAME;
+            DATE=loadBars:DATE;
+            INPUT=mult/close:NAME;
+            NAME=Disparity;
+            COLOR=#ff0000;
+            Z=0;
+            PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=COLOR,NAME=$name,OP=GT,NAME2=0,NAME3=$name,COLOR=$upColor";
+# color positive disparity
+$command = "STEP=colorPositive;
+            COMMAND=COLOR;
+            NAME=plotDisparity:NAME;
+            NAME_OFFSET=0;
+            NAME_2=0;
+            NAME_2_OFFSET=0;
+            OP=GT;
+            NAME_3=plotDisparity:NAME;
+            NAME_3_OFFSET=0;
+            COLOR=#00FF00";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=COLOR,NAME=$name,OP=LT,NAME2=0,NAME3=$name,COLOR=$downColor";
+# update the chart
+$command = "COMMAND=CHART_UPDATE;
+            STEP=updateChart;
+            CHART=createChart:NAME";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }

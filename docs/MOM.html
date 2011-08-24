@@ -35,7 +35,8 @@
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = MOM<br>
+      <td style="vertical-align: top;">COMMAND = MOM<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
 PERIOD = &lt;INTEGER&gt;<br>
@@ -44,7 +45,7 @@ PERIOD = &lt;INTEGER&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -52,7 +53,11 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=MOM,NAME=mom,INPUT=close,PERIOD=10<br>
+      <td style="vertical-align: top;">COMMAND=MOM;<br>
+STEP=mom;<br>
+NAME=mom;<br>
+INPUT=close;<br>
+PERIOD=10<br>
       <br>
       </td>
     </tr>

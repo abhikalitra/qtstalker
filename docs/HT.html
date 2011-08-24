@@ -35,9 +35,10 @@
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = HT<br>
+      <td style="vertical-align: top;">COMMAND = HT<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
-METHOD = &lt;TYPE&gt;<br>
+METHOD =<br>
       <div style="margin-left: 40px;">
       <ol>
         <li>DCPERIOD</li>
@@ -53,7 +54,7 @@ INPUT = &lt;VARIABLE NAME&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -61,7 +62,11 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=HT,NAME=ht,METHOD=TRENDLINE,INPUT=close<br>
+      <td style="vertical-align: top;">COMMAND=HT;<br>
+STEP=ht;<br>
+NAME=ht;<br>
+METHOD=TRENDLINE;<br>
+INPUT=close<br>
       <br>
       </td>
     </tr>

@@ -36,7 +36,8 @@ Wave Indicator</a><br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = HT_SINE<br>
+      <td style="vertical-align: top;">COMMAND = HT_SINE<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
 NAME_SINE = &lt;VARIABLE NAME&gt;<br>
 NAME_LEAD = &lt;VARIABLE NAME&gt;<br>
@@ -45,7 +46,7 @@ NAME_LEAD = &lt;VARIABLE NAME&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -53,7 +54,11 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=HT_SINE,INPUT=close,NAME_SINE=sine,NAME_LEAD=lead<br>
+      <td style="vertical-align: top;">COMMAND=HT_SINE;<br>
+STEP=sine;<br>
+INPUT=close;<br>
+NAME_SINE=sine;<br>
+NAME_LEAD=lead<br>
       <br>
       </td>
     </tr>

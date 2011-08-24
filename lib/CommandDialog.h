@@ -35,6 +35,7 @@
 #include "SettingGroup.h"
 #include "LineEdit.h"
 #include "ColorButton.h"
+#include "FileButton.h"
 
 class CommandDialog : public Dialog
 {
@@ -59,6 +60,7 @@ class CommandDialog : public Dialog
     QHash<QString, QCheckBox *> _checkBox;
     QHash<QString, QDateTimeEdit *> _dateTimeEdit;
     QHash<QString, QComboBox *> _comboBox;
+    QHash<QString, FileButton *> _fileButton;
     SettingGroup *_settings;
     QTabWidget *_tabs;
 };

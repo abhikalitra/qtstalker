@@ -36,7 +36,8 @@ Oscillator</a><br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = CMO<br>
+      <td style="vertical-align: top;">COMMAND = CMO<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
 PERIOD = &lt;DECIMAL&gt;<br>
@@ -45,7 +46,7 @@ PERIOD = &lt;DECIMAL&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -53,7 +54,11 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=CMO,NAME=cmo,INPUT=close,PERIOD=20<br>
+      <td style="vertical-align: top;">COMMAND=CMO;<br>
+STEP=cmo;<br>
+NAME=cmo;<br>
+INPUT=close;<br>
+PERIOD=20<br>
       <br>
       </td>
     </tr>

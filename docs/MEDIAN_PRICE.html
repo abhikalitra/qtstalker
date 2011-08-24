@@ -34,16 +34,17 @@
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = MEDIAN_PRICE<br>
+      <td style="vertical-align: top;">COMMAND = MEDIAN_PRICE<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
-INPUT2 = &lt;VARIABLE NAME&gt;<br>
+INPUT_2 = &lt;VARIABLE NAME&gt;<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -51,7 +52,11 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=MEDIAN_PRICE,NAME=mp,INPUT=high,INPUT2=low<br>
+      <td style="vertical-align: top;">COMMAND=MEDIAN_PRICE;<br>
+STEP=mp;<br>
+NAME=mp;<br>
+INPUT=high;<br>
+INPUT_2=low<br>
       <br>
       </td>
     </tr>

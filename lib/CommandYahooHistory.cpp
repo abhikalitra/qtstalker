@@ -23,7 +23,9 @@
 #include "SettingString.h"
 #include "SettingDateTime.h"
 #include "SettingBool.h"
+#include "SettingFile.h"
 #include "Script.h"
+#include "CommandDialog.h"
 
 #include <QDebug>
 #include <QtNetwork>
@@ -32,6 +34,7 @@
 CommandYahooHistory::CommandYahooHistory (QObject *p) : Command (p)
 {
   _type = "YAHOO_HISTORY";
+  _isDialog = 1;
 }
 
 int CommandYahooHistory::runScript (void *d)
@@ -42,18 +45,25 @@ int CommandYahooHistory::runScript (void *d)
   if (! sg)
     return _ERROR;
 
+  CommandDialog *dialog = new CommandDialog(0);
+  dialog->setWidgets(sg);
+  int rc = dialog->exec();
+  if (rc == QDialog::Rejected)
+  {
+    delete dialog;
+    return _ERROR;
+  }
+
   QDateTime sd = sg->get("DATE_START")->getDateTime();
 
   QDateTime ed = sg->get("DATE_END")->getDateTime();
 
   bool adjusted = sg->get("ADJUSTED")->getBool();
 
-  QString symbolFile = sg->get("SYMBOL_FILE")->getString();
-
-  QFile f(symbolFile);
-  if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
+  QStringList symbolFiles = sg->get("SYMBOL_FILE")->getFile();
+  if (! symbolFiles.count())
   {
-    qDebug() << _type << "::runScript: file error" << symbolFile;
+    qDebug() << _type << "::runScript: SYMBOL_FILE missing";
     return _ERROR;
   }
 
@@ -65,35 +75,47 @@ int CommandYahooHistory::runScript (void *d)
     qDebug() << _type << "::runScript: file error" << outFile;
     return _ERROR;
   }
-
   QTextStream out(&f2);
 
   QNetworkAccessManager manager;
 
-  while (! f.atEnd())
+  int loop = 0;
+  for (; loop < symbolFiles.count(); loop++)
   {
-    QString symbol = f.readLine();
-    symbol = symbol.trimmed();
-    if (symbol.isEmpty())
-      continue;
+    QFile f(symbolFiles.at(loop));
+    if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+      qDebug() << _type << "::runScript: file error" << symbolFiles.at(loop);
+      return _ERROR;
+    }
 
-    // get name
-    QString name;
-    downloadName(symbol, name);
+    while (! f.atEnd())
+    {
+      QString symbol = f.readLine();
+      symbol = symbol.trimmed();
+      if (symbol.isEmpty())
+        continue;
 
-    // get the url
-    QString url;
-    getUrl(sd, ed, symbol, url);
+      // get name
+      QString name;
+      downloadName(symbol, name);
 
-    // download the data
-    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
-    QEventLoop e;
-    connect(&manager, SIGNAL(finished(QNetworkReply *)), &e, SLOT(quit()));
-    e.exec();
+      // get the url
+      QString url;
+      getUrl(sd, ed, symbol, url);
 
-    // parse the data and save quotes
-    QByteArray ba = reply->readAll();
-    parse(ba, symbol, name, out, adjusted);
+      // download the data
+      QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
+      QEventLoop e;
+      connect(&manager, SIGNAL(finished(QNetworkReply *)), &e, SLOT(quit()));
+      e.exec();
+
+      // parse the data and save quotes
+      QByteArray ba = reply->readAll();
+      parse(ba, symbol, name, out, adjusted);
+    }
+
+    f.close();
   }
 
   return _OK;
@@ -215,11 +237,11 @@ SettingGroup * CommandYahooHistory::settings ()
   sdt->setKey("DATE_END");
   sg->set(sdt);
 
-  SettingString *ss = new SettingString(QString());
-  ss->setKey("SYMBOL_FILE");
-  sg->set(ss);
+  SettingFile *sf = new SettingFile(QStringList());
+  sf->setKey("SYMBOL_FILE");
+  sg->set(sf);
 
-  ss = new SettingString(QString());
+  SettingString *ss = new SettingString(QString());
   ss->setKey("CSV_FILE");
   sg->set(ss);
 

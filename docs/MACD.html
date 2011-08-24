@@ -36,7 +36,8 @@ Divergence</a><br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = MACD<br>
+      <td style="vertical-align: top;">COMMAND = MACD<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
 NAME_MACD = &lt;VARIABLE NAME&gt;<br>
 NAME_SIGNAL = &lt;VARIABLE NAME&gt;<br>
@@ -52,7 +53,7 @@ MA_TYPE_SIGNAL = &lt;<a href="MATypes.html">MA TYPE</a>&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -60,8 +61,18 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=MACD,INPUT=close,NAME_MACD=macd,NAME_SIGNAL=sig,NAME_HIST=hist,PERIOD_FAST=12,MA_TYPE_FAST=EMA,
-PERIOD_SLOW=26,MA_TYPE_SLOW=EMA,PERIOD_SIGNAL=9,MA_TYPE_SIGNAL=EMA<br>
+      <td style="vertical-align: top;">COMMAND=MACD;<br>
+STEP=macd;<br>
+INPUT=close;<br>
+NAME_MACD=macd;<br>
+NAME_SIGNAL=sig;<br>
+NAME_HIST=hist;<br>
+PERIOD_FAST=12;<br>
+MA_TYPE_FAST=EMA;<br>
+PERIOD_SLOW=26;<br>
+MA_TYPE_SLOW=EMA;<br>
+PERIOD_SIGNAL=9;<br>
+MA_TYPE_SIGNAL=EMA<br>
       <br>
       </td>
     </tr>

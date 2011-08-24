@@ -34,10 +34,11 @@
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = MAVP<br>
+      <td style="vertical-align: top;">COMMAND = MAVP<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
-INPUT2 = &lt;VARIABLE NAME&gt;<br>
+INPUT_2 = &lt;VARIABLE NAME&gt;<br>
 PERIOD_MIN = &lt;INTEGER&gt;<br>
 PERIOD_MAX = &lt;INTEGER&gt;<br>
 MA_TYPE = &lt;<a href="MATypes.html">MA TYPE</a>&gt;<br>
@@ -46,7 +47,7 @@ MA_TYPE = &lt;<a href="MATypes.html">MA TYPE</a>&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -54,7 +55,14 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=MAVP,NAME=mavp,INPUT=close,INPUT2=close,PERIOD_MIN=2,PERIOD_MAX=30,MA_TYPE=EMA<br>
+      <td style="vertical-align: top;">COMMAND=MAVP;<br>
+STEP=mavp;<br>
+NAME=mavp;<br>
+INPUT=close;<br>
+INPUT_2=close;<br>
+PERIOD_MIN=2;<br>
+PERIOD_MAX=30;<br>
+MA_TYPE=EMA<br>
       <br>
       </td>
     </tr>

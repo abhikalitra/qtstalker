@@ -28,29 +28,41 @@
   <tbody>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
-      <td style="vertical-align: top;">Compares NAME2 and NAME3 using
-OP. If the compare is TRUE, then NAME = NAME4, else NAME = NAME5.<br>
+      <td style="vertical-align: top;">Compares INPUT with INPUT_2
+using
+OP. If the result is TRUE, then NAME = INPUT_3, else NAME = INPUT_4. An
+OFFSET
+is provided for each INPUT so previous values can be used for
+comparison. The OFFSET is relative to the current position. e.g. an
+OFFSET value of 2 would use the value 2 positions previous, 0 would use
+the current posiiton. Decimal constant values can be used for INPUT_2,
+INPUT_3, INPUT_4 e.g. '24.627'<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = COMPARE<br>
+      <td style="vertical-align: top;">COMMAND = COMPARE<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 OP = &lt;OPERATOR&gt;<br>
-NAME2 = &lt;VARIABLE NAME&gt;<br>
-NAME3 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
+INPUT = &lt;VARIABLE NAME&gt;<br>
+OFFSET = &lt;INTEGER&gt;<br>
+INPUT_2 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
 value<br>
-NAME4 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
+OFFSET_2 = &lt;INTEGER&gt;<br>
+INPUT_3 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
 value<br>
-NAME5 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
+OFFSET_3 = &lt;INTEGER&gt;<br>
+INPUT_4 = &lt;VARIABLE NAME&gt; - can be an array or decimal constant
 value<br>
+OFFSET_4 = &lt;INTEGER&gt;<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -58,9 +70,18 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=COMPARE, NAME=comp,
-NAME2=Close, OP=GT,
-NAME3=Open, NAME4=1, NAME5=0<br>
+      <td style="vertical-align: top;">COMMAND=COMPARE;<br>
+STEP=compare1;<br>
+NAME=comp;<br>
+INPUT=Close;<br>
+OFFSET=0;<br>
+OP=GT;<br>
+INPUT_2=Open;<br>
+OFFSET_2=0;<br>
+INPUT_3=1;<br>
+OFFSET_3=0;<br>
+INPUT_4=0<br>
+OFFSET_4=0;<br>
       <br>
       </td>
     </tr>

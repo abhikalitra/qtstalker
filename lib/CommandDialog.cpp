@@ -135,6 +135,15 @@ void CommandDialog::setWidgets (SettingGroup *settings)
         form->addRow(set->key(), w);
         _checkBox.insert(set->key(), w);
       }
+      case Setting::_FILE:
+      {
+        FileButton *w = new FileButton(base);
+        w->setFiles(set->getFile());
+        w->setToolTip(set->tip());
+        form->addRow(set->key(), w);
+        _fileButton.insert(set->key(), w);
+        break;
+      }
       default:
 	break;
     }
@@ -193,6 +202,12 @@ void CommandDialog::done ()
       {
         QComboBox *w = _comboBox.value(keys.at(loop));
         v->setString(w->currentText());
+        break;
+      }
+      case Setting::_FILE:
+      {
+        FileButton *w = _fileButton.value(keys.at(loop));
+        v->setFile(w->files());
         break;
       }
       default:

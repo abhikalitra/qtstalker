@@ -36,16 +36,18 @@ step which is to apply a square root to the variance number.<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = VAR<br>
+      <td style="vertical-align: top;">COMMAND = VAR<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
 PERIOD = &lt;INTEGER&gt;<br>
+DEVIATION = &lt;DECIMAL&gt;<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -53,7 +55,12 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=VAR,NAME=var,INPUT=close,PERIOD=10<br>
+      <td style="vertical-align: top;">COMMAND=VAR;<br>
+STEP=var;<br>
+NAME=var;<br>
+INPUT=close;<br>
+PERIOD=10;<br>
+DEVIATION=2<br>
       <br>
       </td>
     </tr>

@@ -36,7 +36,8 @@ Stochastic</a><br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = STOCH_RSI<br>
+      <td style="vertical-align: top;">COMMAND = STOCH_RSI<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
 PERIOD = &lt;INTEGER&gt;<br>
@@ -45,7 +46,7 @@ PERIOD = &lt;INTEGER&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -53,7 +54,11 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=STOCH_RSI,NAME=stochrsi,INPUT=close,PERIOD=14<br>
+      <td style="vertical-align: top;">COMMAND=STOCH_RSI;<br>
+STEP=stoch_rsi;<br>
+NAME=stochrsi;<br>
+INPUT=close;<br>
+PERIOD=14<br>
       <br>
       </td>
     </tr>

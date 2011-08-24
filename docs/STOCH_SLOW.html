@@ -36,10 +36,11 @@ Stochastic Oscillator</a><br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = STOCH_SLOW<br>
-INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
-INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
-INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
+      <td style="vertical-align: top;">COMMAND = STOCH_SLOW<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
+HIGH = &lt;VARIABLE NAME&gt;<br>
+LOW = &lt;VARIABLE NAME&gt;<br>
+CLOSE = &lt;VARIABLE NAME&gt;<br>
 NAME_SLOWK = &lt;VARIABLE NAME&gt;<br>
 NAME_SLOWD = &lt;VARIABLE NAME&gt;<br>
 PERIOD_FASTK = &lt;INTEGER&gt;<br>
@@ -52,7 +53,7 @@ MA_TYPE_SLOWD = &lt;<a href="MATypes.html">MA TYPE</a>&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -60,10 +61,18 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=STOCH_SLOW,
-INPUT_HIGH=high, INPUT_LOW=low, INPUT_CLOSE=close, NAME_SLOWK=%K,
-NAME_SLOWD=%D, PERIOD_FASTK=3, PERIOD_SLOWK=3, MA_TYPE_SLOWK=EMA,
-PERIOD_SLOWD=3, MA_TYPE_SLOWD=EMA<br>
+      <td style="vertical-align: top;">COMMAND=STOCH_SLOW;<br>
+STEP=stochs;<br>
+HIGH=high;<br>
+LOW=low;<br>
+CLOSE=close;<br>
+NAME_SLOWK=%K;<br>
+NAME_SLOWD=%D;<br>
+PERIOD_FASTK=5;<br>
+PERIOD_SLOWK=3;<br>
+MA_TYPE_SLOWK=EMA;<br>
+PERIOD_SLOWD=3;<br>
+MA_TYPE_SLOWD=EMA<br>
       <br>
       </td>
     </tr>

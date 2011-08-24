@@ -36,7 +36,8 @@ Phase Indicator</a><br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = HT_PHASOR<br>
+      <td style="vertical-align: top;">COMMAND = HT_PHASOR<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
 NAME_PHASE = &lt;VARIABLE NAME&gt;<br>
 NAME_QUAD = &lt;VARIABLE NAME&gt;<br>
@@ -45,7 +46,7 @@ NAME_QUAD = &lt;VARIABLE NAME&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -53,7 +54,11 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=HT_PHASOR,INPUT=close,NAME_PHASE=phase,NAME_QUAD=qaud<br>
+      <td style="vertical-align: top;">COMMAND=HT_PHASOR;<br>
+STEP=phasor;<br>
+INPUT=close;<br>
+NAME_PHASE=phase;<br>
+NAME_QUAD=qaud<br>
       <br>
       </td>
     </tr>

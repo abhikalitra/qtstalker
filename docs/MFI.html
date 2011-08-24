@@ -35,11 +35,12 @@
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = MFI<br>
-INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
-INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
-INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
-INPUT_VOLUME = &lt;VARIABLE NAME&gt;<br>
+      <td style="vertical-align: top;">COMMAND = MFI<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
+HIGH = &lt;VARIABLE NAME&gt;<br>
+LOW = &lt;VARIABLE NAME&gt;<br>
+CLOSE = &lt;VARIABLE NAME&gt;<br>
+VOLUME = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
 PERIOD = &lt;INTEGER&gt;<br>
       <br>
@@ -47,7 +48,7 @@ PERIOD = &lt;INTEGER&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -55,8 +56,13 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=MFI, INPUT_HIGH=high,
-INPUT_LOW=low, INPUT_CLOSE=close, INPUT_VOLUME=volume, NAME=mfi,
+      <td style="vertical-align: top;">COMMAND=MFI;<br>
+STEP=mfi;<br>
+HIGH=high;<br>
+LOW=low;<br>
+CLOSE=close;<br>
+VOLUME=volume;<br>
+NAME=mfi;<br>
 PERIOD=10<br>
       <br>
       </td>

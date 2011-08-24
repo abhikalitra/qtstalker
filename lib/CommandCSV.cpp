@@ -21,6 +21,8 @@
 
 #include "CommandCSV.h"
 #include "SettingString.h"
+#include "SettingList.h"
+#include "SettingBool.h"
 #include "QuoteDataBase.h"
 #include "BarData.h"
 #include "Script.h"
@@ -33,6 +35,8 @@ CommandCSV::CommandCSV (QObject *p) : Command (p)
   _type = "CSV";
 
   _formatType << "SYMBOL" << "NAME" << "DATE" << "OPEN" << "HIGH" << "LOW" << "CLOSE" << "VOLUME" << "OI";
+
+  _delimiterType << tr("Comma") << tr("Semicolon");
 }
 
 int CommandCSV::runScript (void *d)
@@ -43,181 +47,190 @@ int CommandCSV::runScript (void *d)
   if (! sg)
     return _ERROR;
 
-  QString file = sg->get("CSV_FILE")->getString();
-  QFile f(file);
-  if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
-  {
-    QStringList tl;
-    tl << _type << "::runScript: CSV_FILE error" << file;
-    emit signalMessage(tl.join(" "));
-    qDebug() << tl;
-    return _ERROR;
-  }
+  QStringList files;
+  QString key = sg->get("CSV_FILE")->getString();
+  Setting *set = script->setting(key);
+  if (set)
+    files = set->getFile();
+  else
+    files << key;
 
-  QStringList format = sg->get("FORMAT")->getString().split(";");
+  QStringList format = sg->get("FORMAT")->getString().split(",");
 
   QString dateFormat = sg->get("DATE_FORMAT")->getString();
 
-  QString delimiter = sg->get("DELIMITER")->getString();
+  QString delimiter;
+  QString s = sg->get("DELIMITER")->getString();
+  switch ((DelimiterType) _delimiterType.indexOf(s))
+  {
+    case _COMMA:
+      delimiter = ",";
+      break;
+    case _SEMICOLON:
+      delimiter = ";";
+      break;
+    default:
+      qDebug() << _type << "::runScript: invalid DELIMITER" << s;
+      return _ERROR;
+      break;
+  }
 
   QString typ = sg->get("TYPE")->getString();
 
+  bool fileNameFlag = sg->get("FILENAME_AS_SYMBOL")->getBool();
+
   QHash<QString, BarData *> symbols;
 
-  while (! f.atEnd())
+  int loop = 0;
+  for (; loop < files.count(); loop++)
   {
-    QString s = f.readLine();
-    s = s.trimmed();
-    if (s.isEmpty())
-      continue;
-
-    QStringList data = s.split(delimiter);
-
-    if (format.count() != data.count())
+    QFile f(files.at(loop));
+    if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      QStringList tl;
-      tl << _type << "::runScript: invalid number of fields" << s;
-      emit signalMessage(tl.join(" "));
-      qDebug() << tl;
-      continue;
+      qDebug() << _type << "::runScript: CSV_FILE error" << files.at(loop);
+      return _ERROR;
     }
 
-    QString symbol, name;
-    Bar *bar = new Bar;
-
-    int loop = 0;
-    int flag = 0;
-    for (; loop < format.count(); loop++)
+    QString fileNameSymbol;
+    if (fileNameFlag)
     {
-      switch ((FormatType) _formatType.indexOf(format.at(loop)))
+      QFileInfo fi(files.at(loop));
+      fileNameSymbol = fi.baseName();
+    }
+
+    while (! f.atEnd())
+    {
+      s = f.readLine();
+      s = s.trimmed();
+      if (s.isEmpty())
+        continue;
+
+      QStringList data = s.split(delimiter);
+
+      if (format.count() != data.count())
       {
-        case _SYMBOL:
-          symbol = data.at(loop).trimmed();
-          break;
-        case _NAME:
-          name = data.at(loop).trimmed();
-          break;
-        case _DATE:
+        qDebug() << _type << "::runScript: invalid number of fields" << s;
+        continue;
+      }
+
+      QString symbol, name;
+      if (fileNameFlag)
+      {
+        symbol = fileNameSymbol;
+        name = fileNameSymbol;
+      }
+
+      Bar *bar = new Bar;
+
+      int loop2 = 0;
+      int flag = 0;
+      for (; loop2 < format.count(); loop2++)
+      {
+        switch ((FormatType) _formatType.indexOf(format.at(loop2)))
         {
-          QDateTime dt = QDateTime::fromString(data.at(loop).trimmed(), dateFormat);
-          if (! dt.isValid())
+          case _SYMBOL:
+            symbol = data.at(loop2).trimmed();
+            break;
+          case _NAME:
+            name = data.at(loop2).trimmed();
+            break;
+          case _DATE:
           {
-            QStringList tl;
-            tl << _type << "::runScript: invalid DATE" << data.at(loop);
-            emit signalMessage(tl.join(" "));
-            qDebug() << tl;
-            flag++;
+            QDateTime dt = QDateTime::fromString(data.at(loop2).trimmed(), dateFormat);
+            if (! dt.isValid())
+            {
+              qDebug() << _type << "::runScript: invalid DATE" << data.at(loop2);
+              flag++;
+            }
+            else
+              bar->setDates(dt, dt);
+            break;
           }
-          else
-            bar->setDates(dt, dt);
-          break;
+          case _OPEN:
+            if (bar->setOpen(data.at(loop2).trimmed()))
+            {
+              qDebug() << _type << "::runScript: invalid OPEN" << data.at(loop2);
+              flag++;
+            }
+            break;
+          case _HIGH:
+            if (bar->setHigh(data.at(loop2).trimmed()))
+            {
+              qDebug() << _type << "::runScript: invalid HIGH" << data.at(loop2);
+              flag++;
+            }
+            break;
+          case _LOW:
+            if (bar->setLow(data.at(loop2).trimmed()))
+            {
+              qDebug() << _type << "::runScript: invalid LOW" << data.at(loop2);
+              flag++;
+            }
+            break;
+          case _CLOSE:
+            if (bar->setClose(data.at(loop2).trimmed()))
+            {
+              qDebug() << _type << "::runScript: invalid CLOSE" << data.at(loop2);
+              flag++;
+            }
+            break;
+          case _VOLUME:
+            if (bar->setVolume(data.at(loop2).trimmed()))
+            {
+              qDebug() << _type << "::runScript: invalid VOLUME" << data.at(loop2);
+              flag++;
+            }
+            break;
+          case _OI:
+            if (bar->setOI(data.at(loop2).trimmed()))
+            {
+              qDebug() << _type << "::runScript: invalid OI" << data.at(loop2);
+              flag++;
+            }
+            break;
+          default:
+          {
+            qDebug() << _type << "::runScript: invalid format";
+            delete bar;
+            qDeleteAll(symbols);
+            return _ERROR;
+            break;
+          }
         }
-        case _OPEN:
-          if (bar->setOpen(data.at(loop).trimmed()))
-          {
-            QStringList tl;
-            tl << _type << "::runScript: invalid OPEN" << data.at(loop);
-            emit signalMessage(tl.join(" "));
-            qDebug() << tl;
-            flag++;
-          }
+
+        if (flag)
           break;
-        case _HIGH:
-          if (bar->setHigh(data.at(loop).trimmed()))
-          {
-            QStringList tl;
-            tl << _type << "::runScript: invalid HIGH" << data.at(loop);
-            emit signalMessage(tl.join(" "));
-            qDebug() << tl;
-            flag++;
-          }
-          break;
-        case _LOW:
-          if (bar->setLow(data.at(loop).trimmed()))
-          {
-            QStringList tl;
-            tl << _type << "::runScript: invalid LOW" << data.at(loop);
-            emit signalMessage(tl.join(" "));
-            qDebug() << tl;
-            flag++;
-          }
-          break;
-        case _CLOSE:
-          if (bar->setClose(data.at(loop).trimmed()))
-          {
-            QStringList tl;
-            tl << _type << "::runScript: invalid CLOSE" << data.at(loop);
-            emit signalMessage(tl.join(" "));
-            qDebug() << tl;
-            flag++;
-          }
-          break;
-        case _VOLUME:
-          if (bar->setVolume(data.at(loop).trimmed()))
-          {
-            QStringList tl;
-            tl << _type << "::runScript: invalid VOLUME" << data.at(loop);
-            emit signalMessage(tl.join(" "));
-            qDebug() << tl;
-            flag++;
-          }
-          break;
-        case _OI:
-          if (bar->setOI(data.at(loop).trimmed()))
-          {
-            QStringList tl;
-            tl << _type << "::runScript: invalid OI" << data.at(loop);
-            emit signalMessage(tl.join(" "));
-            qDebug() << tl;
-            flag++;
-          }
-          break;
-        default:
-        {
-          QStringList tl;
-          tl << _type << "::runScript: invalid format";
-          emit signalMessage(tl.join(" "));
-          qDebug() << tl;
-          delete bar;
-          qDeleteAll(symbols);
-          return _ERROR;
-          break;
-        }
       }
 
       if (flag)
-        break;
+      {
+        delete bar;
+        continue;
+      }
+
+      if (symbol.isEmpty())
+      {
+        qDebug() << _type << "::runScript: empty SYMBOL" << s;
+        delete bar;
+        continue;
+      }
+
+      BarData *bd = symbols.value(symbol);
+      if (! bd)
+      {
+        bd = new BarData;
+        bd->setKey(symbol);
+        bd->setType(typ);
+        if (! name.isEmpty())
+          bd->setName(name);
+
+        symbols.insert(symbol, bd);
+      }
+
+      bd->append(bar);
     }
 
-    if (flag)
-    {
-      delete bar;
-      continue;
-    }
-
-    if (symbol.isEmpty())
-    {
-      QStringList tl;
-      tl << _type << "::runScript: empty SYMBOL" << s;
-      emit signalMessage(tl.join(" "));
-      qDebug() << tl;
-      delete bar;
-      continue;
-    }
-
-    BarData *bd = symbols.value(symbol);
-    if (! bd)
-    {
-      bd = new BarData;
-      bd->setKey(symbol);
-      bd->setType(typ);
-      if (! name.isEmpty())
-        bd->setName(name);
-
-      symbols.insert(symbol, bd);
-    }
-
-    bd->append(bar);
+    f.close();
   }
 
   QuoteDataBase db;
@@ -254,13 +267,17 @@ SettingGroup * CommandCSV::settings ()
   ss->setKey("DATE_FORMAT");
   sg->set(ss);
 
-  ss = new SettingString(QString(","));
-  ss->setKey("DELIMITER");
-  sg->set(ss);
+  SettingList *sl = new SettingList(_delimiterType, tr("Comma"));
+  sl->setKey("DELIMITER");
+  sg->set(sl);
 
   ss = new SettingString(QString("Stock"));
   ss->setKey("TYPE");
   sg->set(ss);
+
+  SettingBool *sb = new SettingBool(FALSE);
+  sb->setKey("FILENAME_AS_SYMBOL");
+  sg->set(sb);
 
   return sg;
 }

@@ -29,13 +29,14 @@
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
       <td style="vertical-align: top;">Normalizes (Scales values
-between 0 and 100) INPUT to NAME.<br>
+between 0 and 100) INPUT into NAME.<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = NORMALIZE<br>
+      <td style="vertical-align: top;">COMMAND = NORMALIZE<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
       <br>
@@ -43,7 +44,7 @@ NAME = &lt;VARIABLE NAME&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -51,7 +52,10 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=NORMALIZE,INPUT=close,NAME=norm<br>
+      <td style="vertical-align: top;">COMMAND=NORMALIZE;<br>
+STEP=normalize;<br>
+INPUT=close;<br>
+NAME=norm<br>
       <br>
       </td>
     </tr>

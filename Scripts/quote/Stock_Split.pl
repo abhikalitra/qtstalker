@@ -1,8 +1,8 @@
-########################################################################################################
 # adjusts quotes in the database for a stock split
 # dialog propmts for a symbol, date and split ratio e.g. 2:1, 3:1, 1:10 etc.
-# 
-########################################################################################################
+#
+
+$|++;
 
 $dateName = 'Date';
 $openName = 'Open';
@@ -12,8 +12,6 @@ $closeName = 'Close';
 $closeName = 'Volume';
 
 ###############################################################################################################
-
-$|++;
 
 # display input dialog
 $s1 = "PLUGIN=INPUT_DIALOG,INPUT1_LABEL=Symbol,INPUT1_TYPE=SYMBOL";

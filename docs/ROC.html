@@ -30,15 +30,17 @@
       <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
       <td style="vertical-align: top;"><a
  href="http://en.wikipedia.org/wiki/Rate_of_change_%28technical_analysis%29">Rate
-Of Change</a><br>
+Of
+Change</a><br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = ROC<br>
+      <td style="vertical-align: top;">COMMAND = ROC<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
-METHOD = &lt;METHOD&gt;<br>
+METHOD =<br>
       <div style="margin-left: 40px;">
       <ol>
         <li>ROC</li>
@@ -55,7 +57,7 @@ PERIOD = &lt;INTEGER&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -63,7 +65,12 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=ROC,METHOD=ROC,NAME=roc,INPUT=close,PERIOD=10<br>
+      <td style="vertical-align: top;">COMMAND=ROC;<br>
+STEP=roc;<br>
+METHOD=ROC;<br>
+NAME=roc;<br>
+INPUT=close;<br>
+PERIOD=10<br>
       <br>
       </td>
     </tr>

@@ -35,7 +35,8 @@
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = BBANDS<br>
+      <td style="vertical-align: top;">COMMAND = BBANDS<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
 INPUT = &lt;VARIABLE NAME&gt;<br>
 NAME_UPPER = &lt;VARIABLE NAME&gt;<br>
 NAME_MIDDLE = &lt;VARIABLE NAME&gt;<br>
@@ -52,7 +53,7 @@ DEV_DOWN = &lt;DECIMAL&gt;<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -60,7 +61,9 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=BBANDS,INPUT=close,NAME_UPPER=bbu,NAME_MIDDLE=bbm,NAME_LOWER=bbl,PERIOD=20,MA_TYPE=EMA,DEV_UP=2,DEV_DOWN=2<br>
+      <td style="vertical-align: top;">COMMAND=BBANDS; STEP=bbands;
+INPUT=close; NAME_UPPER=bbu; NAME_MIDDLE=bbm; NAME_LOWER=bbl;
+PERIOD=20; MA_TYPE=EMA; DEV_UP=2; DEV_DOWN=2<br>
       <br>
       </td>
     </tr>

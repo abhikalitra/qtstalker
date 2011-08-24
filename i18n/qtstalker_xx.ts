@@ -124,6 +124,17 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>CommandCSV</name>
+    <message>
+        <source>Comma</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Semicolon</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CommandDialog</name>
     <message>
         <source>Insert Command</source>

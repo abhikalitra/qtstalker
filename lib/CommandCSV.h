@@ -42,12 +42,19 @@ class CommandCSV : public Command
       _OI
     };
 
+    enum DelimiterType
+    {
+      _COMMA,
+      _SEMICOLON
+    };
+
     CommandCSV (QObject *);
     int runScript (void *);
     SettingGroup * settings ();
 
   private:
     QStringList _formatType;
+    QStringList _delimiterType;
 };
 
 #endif

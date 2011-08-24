@@ -33,24 +33,26 @@
  class="Apple-style-span"
  style="font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 14px;"></span></span>Average
 Price
-calculation is ((Open + High + Low + Close) / 4)<br>
+calculation
+is ((Open + High + Low + Close) / 4)<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
-      <td style="vertical-align: top;">PLUGIN = AVERAGE_PRICE<br>
-INPUT_OPEN = &lt;VARIABLE NAME&gt;<br>
-INPUT_HIGH = &lt;VARIABLE NAME&gt;<br>
-INPUT_LOW = &lt;VARIABLE NAME&gt;<br>
-INPUT_CLOSE = &lt;VARIABLE NAME&gt;<br>
+      <td style="vertical-align: top;">COMMAND = AVERAGE_PRICE<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
+OPEN = &lt;VARIABLE NAME&gt;<br>
+HIGH = &lt;VARIABLE NAME&gt;<br>
+LOW = &lt;VARIABLE NAME&gt;<br>
+CLOSE = &lt;VARIABLE NAME&gt;<br>
 NAME = &lt;VARIABLE NAME&gt;<br>
       <br>
       </td>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
-      <td style="vertical-align: top;">'0' = Success<br>
+      <td style="vertical-align: top;">'OK' = Success<br>
 'ERROR' =
 Failure<br>
       <br>
@@ -58,8 +60,8 @@ Failure<br>
     </tr>
     <tr>
       <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
-      <td style="vertical-align: top;">PLUGIN=AVERAGE_PRICE,
-INPUT_OPEN=open, INPUT_HIGH=high, INPUT_LOW=low, INPUT_CLOSE=close,
+      <td style="vertical-align: top;">COMMAND=AVERAGE_PRICE;
+STEP=ap; OPEN=open; HIGH=high; LOW=low; CLOSE=close;
 NAME=ap<br>
       <br>
       </td>
