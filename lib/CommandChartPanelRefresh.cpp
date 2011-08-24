@@ -1,0 +1,64 @@
+/*
+ *  Qtstalker stock charter
+ *
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+ *  USA.
+ */
+
+#include "CommandChartPanelRefresh.h"
+#include "Globals.h"
+#include "Script.h"
+#include "IPCMessage.h"
+#include "MessageSend.h"
+
+#include <QtDebug>
+
+CommandChartPanelRefresh::CommandChartPanelRefresh (QObject *p) : Command (p)
+{
+  _type = "CHART_PANEL_REFRESH";
+}
+
+int CommandChartPanelRefresh::runScript (void *d)
+{
+  Script *script = (Script *) d;
+
+  SettingGroup *sg = script->settingGroup(script->currentStep());
+  if (! sg)
+    return _ERROR;
+
+  IPCMessage ipcm(script->session(), _type, "*", script->file());
+
+  MessageSend ms(this);
+  ms.send(ipcm, QString());
+
+  return _OK;
+}
+
+int CommandChartPanelRefresh::message (IPCMessage &, QString &)
+{
+  g_chartPanel->updateList();
+
+  return _OK;
+}
+
+SettingGroup * CommandChartPanelRefresh::settings ()
+{
+  SettingGroup *sg = new SettingGroup;
+  sg->setCommand(_type);
+
+  return sg;
+}

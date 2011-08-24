@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="Content-Type">
+  <title>Qtstalker: YAHOO_HISTORY</title>
+  <link rel="stylesheet" type="text/css" href="qtstalker.css"
+ media="screen">
+  <script src="qtstalker.js" type="text/javascript"> </script>
+</head>
+<body>
+<div id="content">
+<div id="rightPanel">
+<div id="toc">
+<hr>
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="toc.html">Table of Contents</a></li>
+</ul>
+</div>
+</div>
+<!-- Content -->
+<h1>YAHOO_HISTORY<br>
+</h1>
+<br>
+<table style="text-align: left; width: 1336px; height: 153px;"
+ border="1" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">DESCRIPTION:</span></td>
+      <td style="vertical-align: top;">Downloads CSV quotes from Yahoo
+Finance and stores them in a CSV_FILE text file. DATE_START and
+DATE_END are the date ranges to download. The symbols to download are
+read from SYMBOL_FILE user managed file. The ADJUSTED setting selects
+using split adjusted data rather than the actual trading values.<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">SYNTAX:</span></td>
+      <td style="vertical-align: top;">COMMAND = YAHOO_HISTORY<br>
+STEP = &lt;VARIABLE NAME&gt;<br>
+DATE_START = &lt;yyyy-MM-dd HH:mm:ss&gt;<br>
+DATE_END = &lt;yyyy-MM-dd HH:mm:ss&gt;<br>
+SYMBOL_FILE = &lt;FILE_PATH&gt;<br>
+CSV_FILE = &lt;FILE_PATH&gt;<br>
+ADJUSTED = &lt;BOOLEAN&gt;<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">RETURNS:</span></td>
+      <td style="vertical-align: top;">'0' = Success<br>
+'ERROR' =
+Failure<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;"><span style="font-weight: bold;">EXAMPLE:</span></td>
+      <td style="vertical-align: top;">COMMAND=YAHOO_HISTORY;<br>
+STEP=yh;<br>
+DATE_START=2000-01-01 09:30:00;<br>
+DATE_END=2011-08-22 16:30:00;<br>
+SYMBOL_FILE=/home/user/qtstalker_stuff/yahoo.symbols<br>
+CSV_FILE=/home/user/qtstalker_stuff/yahoo.csv<br>
+ADJUSTED=false<br>
+      <br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<span style="font-weight: bold;"></span><br>
+</div>
+</body>
+</html>
