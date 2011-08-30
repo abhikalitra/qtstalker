@@ -145,6 +145,19 @@ Then edit the Qtstalker "<code>configure</code>" file to tweak the
     to your <code>/etc/ld.so.conf</code> file and run <code>ldconfig -v</code>
     (as root).</p>
 
+<h3 id="dbus-monitor">Monitor D-Bus</h3>
+<p>
+If you suspect problems with D-Bus, then in another shell window run: <code>dbus-monitor</code>
+</p>
+<p>
+Then start <code>qtstalker</code> and you should see startup messages through D-Bus and
+messages when each Qtstalker script is run.
+</p>
+<p>
+For further information, start Qtstalker with the debug environment variable:
+<code>QDBUS_DEBUG=1 qtstalker</code>
+</p>
+
 <h3 id="clean">Clean build</h3>
 <p>
 If you have troubles, then clean up and start again. Do this:
