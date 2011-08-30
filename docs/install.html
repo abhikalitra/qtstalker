@@ -31,6 +31,7 @@
 <h2 id="requirements">Requirements and dependencies</h2>
 <ul>
   <li>A Linux or FreeBSD compatible or Mac OS X operating system.</li>
+  <li><a href="http://dbus.freedesktop.org/">D-Bus</a> message bus system.</li>
   <li><a href="http://qt.nokia.com/">Qt</a> development library. At least Qt
     4.6 version.</li>
   <li><a href="http://qwt.sourceforge.net/">Qwt</a> graphics extension library.
@@ -72,7 +73,8 @@ href="http://en.wikipedia.org/wiki/Environment_variable">environment
 variable</a>).
 Do '<code>which qmake</code>' and '<code>which lupdate</code>' etc. to ensure
 that these are properly installed.
-Ensure that its '<code>qtdemo</code>' application can be started.
+Ensure that the Qt '<code>qtdemo</code>' application can be started.
+Ensure that the Qt '<code>examples/dbus/remotecontrolledcar</code>' applications can be operated.
 </p>
 
 <p><strong>Important (Qwt):</strong> Ensure that Qwt is installed properly.
@@ -118,11 +120,11 @@ if Qt or Qwt or TA-Lib is installed at a non-standard location, then edit the
 
 <h3 id="qwt-lib">Supporting demos</h3>
 <p>
-Ensure that the Qt and Qwt examples and demonstrations can be utilised.
+Ensure that the Qt examples (especially D-Bus) and Qwt examples and demonstrations can be utilised.
 Unfortunately some package managers do not install these demos.
 </p>
 <p>
-The most likely error is that the Qwt libraries cannot be found.
+The most likely errors are that the Qt is not compiled for D-Bus, or that Qwt libraries cannot be found.
 See <a href="#source">notes</a> above.
 </p>
 

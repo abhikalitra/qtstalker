@@ -23,9 +23,9 @@
 <h1>Qtstalker: Installing on Mac OS X</h1>
 <h2 id="requirements">Requirements and dependencies</h2>
 <ul>
-  <li>Mac OS X Leopard (10.5) or Snow Leopard (10.6)</li>
+  <li>Mac OS X Leopard (10.5) or Snow Leopard (10.6) or newer</li>
   <li>Apple Xcode Tools. To build Qtstalker from sources.</li>
-  <li>Dependencies: Qt and Qwt and TA-Lib</li>
+  <li>Dependencies: D-Bus and Qt and Qwt and TA-Lib</li>
 </ul>
 <h2 id="install">Installation</h2>
 <p> See the general <a href="install.html">Installation</a>
@@ -51,18 +51,20 @@ sudo make install
 <p> This will install TA-Lib at <code>/usr/local</code> ... See
 important <a href="install.html#source">notes</a> about ensuring
 proper installation and configuration if at a non-standard location. </p>
+<h3 id="dbus">Install D-Bus</h3>
+<p> Install D-Bus and follow its instructions to start it. </p>
 <h3 id="qt">Install Qt</h3>
 <p> Install Qt 4.6 or newer from source. </p>
-<p> For Leopard this is straight-forward: </p>
+<p> For Leopard use this configuration: </p>
 <pre>./configure
-make
-sudo make install
 </pre>
 <p> For Snow Leopard use this configuration: </p>
 <pre>./configure -cocoa -arch x86_64
-make
-sudo make install
 </pre>
+<p>
+NOTE: If the Qt <code>examples/dbus/remotecontrolledcar</code> applications do not operate,
+then use the "<code>-dbus-linked</code>" option for Qt configure.
+</p>
 <p> See important <a href="install.html#source">notes</a> about
 ensuring proper installation and adding to your <code>$PATH</code>
 <a href="http://en.wikipedia.org/wiki/Environment_variable">environment
@@ -92,9 +94,18 @@ invocation to include "CONFIG += qt x86_64" </p>
 make
 sudo make install
 </pre>
+<h3 id="symlink">Post-install steps</h3>
+<p>
+At runtime, the "<code>qtstalker</code>" program will need to find its companion program
+"<code>QtStalkerScript</code>", so create symbolic links:
+</p>
+<pre>cd /usr/local/bin
+sudo ln -s qtstalker.app/Contents/MacOS/qtstalker qtstalker
+sudo ln -s QtStalkerScript.app/Contents/MacOS/QtStalkerScript QtStalkerScript
+</pre>
 <h2 id="start">Start Qtstalker</h2>
-<p>In a Terminal window, do this:</p>
-<pre>/usr/local/bin/qtstalker.app/Contents/MacOS/qtstalker</pre>
+<p>In a Terminal window, as a normal user, do this:</p>
+<pre>qtstalker</pre>
 <h2 id="where">Where does stuff get installed</h2>
 <p>See the main <a href="install.html#where">notes</a> about this topic.</p>
 <p>Mac OS X stores user preferences information at:</p>
