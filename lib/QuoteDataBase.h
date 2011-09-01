@@ -26,25 +26,25 @@
 #include <QStringList>
 #include <QList>
 
-#include "BarData.h"
+#include "Data.h"
 
 class QuoteDataBase
 {
   public:
     QuoteDataBase ();
     void init ();
-    int getBars (BarData *);
-    int setBars (BarData *);
-    int newSymbol (BarData *);
-    int getSymbol (BarData *);
+    int getBars (Data *);
+    int setBars (Data *);
+    int newSymbol (Data *);
+    int getSymbol (Data *);
     int transaction ();
     int commit ();
-    int deleteSymbol (BarData *);
+    int deleteSymbol (Data *);
     int getExchange (QStringList &);
-    int rename (BarData *osymbol, BarData *nsymbol);
-    int search (BarData *bd, QList<BarData> &l);
-    int setName (BarData *);
-    int dump (BarData *, QString);
+    int rename (Data *osymbol, Data *nsymbol);
+    int search (Data *bd, QList<Data *> &l);
+    int setName (Data *);
+//    int dump (DataGroup *, QString);
 
   private:
     QSqlDatabase _db;

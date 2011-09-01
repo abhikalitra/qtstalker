@@ -22,8 +22,8 @@
 #include "CommandCORREL.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -36,55 +36,46 @@ CommandCORREL::CommandCORREL (QObject *p) : Command (p)
     qDebug("CommandCORREL::CommandCORREL: error on TA_Initialize");
 }
 
-int CommandCORREL::runScript (void *d)
+int CommandCORREL::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: INPUT missing" << s;
     return _ERROR;
   }
 
-  key = sg->get("INDEX")->getString();
-  s = script->setting(key)->getString();
-  Curve *in2 = script->curve(s);
+  s = sg->get("INDEX");
+  Data *in2 = script->data(s);
   if (! in2)
   {
     qDebug() << _type << "::runScript: INDEX missing" << s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
+  int period = sg->getInteger("PERIOD");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in << in2;
   line = getCORREL(list, period);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandCORREL::getCORREL (QList<Curve *> &list, int period)
+Data * CommandCORREL::getCORREL (QList<Data *> &list, int period)
 {
   if (list.count() != 2)
     return 0;
@@ -120,8 +111,8 @@ Curve * CommandCORREL::getCORREL (QList<Curve *> &list, int period)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -132,26 +123,12 @@ Curve * CommandCORREL::getCORREL (QList<Curve *> &list, int period)
   return c;
 }
 
-SettingGroup * CommandCORREL::settings ()
+Data * CommandCORREL::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INDEX");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 30, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("INPUT", QString());
+  sg->set("INDEX", QString());
+  sg->set("PERIOD", 30);
   return sg;
 }

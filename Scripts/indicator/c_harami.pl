@@ -10,59 +10,132 @@ $bullHaramiCrossColor = 'cyan';
 $bearHaramiColor = 'red';
 $bearHaramiCrossColor = 'magenta';
 
+$dateName = 'Date';
 $openName = 'Open';
 $highName = 'High';
 $lowName = 'Low';
 $closeName = 'Close';
 
+$chartName = 'c_harami';
+
 ###########################################################
 
 $|++;
 
-$command = "PLUGIN=DOHLCVI,METHOD=O,NAME_OPEN=$openName";
+# create the chart
+$command = "COMMAND=CHART;
+            NAME=$chartName;
+            DATE=1;
+            LOG=0;
+            ROW=0;
+            COL=99";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=H,NAME_HIGH=$highName";
+# load current bars
+$command = "COMMAND=SYMBOL_CURRENT;
+            DATE=$dateName;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            VOLUME=volume;
+            OI=oi";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=L,NAME_LOW=$lowName";
+# get the harami pattern
+$command = "COMMAND=CANDLE_PATTERN;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            OUTPUT=$haramiName;
+            METHOD=HARAMI";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=C,NAME_CLOSE=$closeName";
+# create the candles
+$command = "COMMAND=PLOT_OHLC;
+            CHART=$chartName;
+            NAME=$candleName;
+            STYLE=Candle;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            COLOR=$candleColor;
+            Z=0;
+            PEN=1";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# color bear harami
+$command = "COMMAND=COLOR;
+            INPUT_1=$haramiName;
+            INPUT_1_OFFSET=0;
+            OP=LT;
+            INPUT_2=0;
+            INPUT_2_OFFSET=0;
+            INPUT_3=$candleName;
+            INPUT_3_OFFSET=0;
+            COLOR=$bearHaramiColor";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# color bull harami
+$command = "COMMAND=COLOR;
+            INPUT_1=$haramiName;
+            INPUT_1_OFFSET=0;
+            OP=GT;
+            INPUT_2=0;
+            INPUT_2_OFFSET=0;
+            INPUT_3=$candleName;
+            INPUT_3_OFFSET=0;
+            COLOR=$bullHaramiColor";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# get the harami cross pattern
+$command = "COMMAND=CANDLE_PATTERN;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            OUTPUT=$haramiCrossName;
+            METHOD=HARAMICROSS";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLES,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME=$candleName,COLOR_UP=$candleColor,COLOR_DOWN=$candleColor,COLOR_NEUTRAL=$candleColor";
+# color bear harami cross
+$command = "COMMAND=COLOR;
+            INPUT_1=$haramiCrossName;
+            INPUT_1_OFFSET=0;
+            OP=LT;
+            INPUT_2=0;
+            INPUT_2_OFFSET=0;
+            INPUT_3=$candleName;
+            INPUT_3_OFFSET=0;
+            COLOR=$bearHaramiCrossColor";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_PATTERN,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,METHOD=HARAMI,NAME=$haramiName";
+# color bull harami cross
+$command = "COMMAND=COLOR;
+            INPUT_1=$haramiCrossName;
+            INPUT_1_OFFSET=0;
+            OP=GT;
+            INPUT_2=0;
+            INPUT_2_OFFSET=0;
+            INPUT_3=$candleName;
+            INPUT_3_OFFSET=0;
+            COLOR=$bullHaramiCrossColor";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=COLOR,NAME=$haramiName,OP=LT,NAME2=0,NAME3=$candleName,COLOR=$bearHaramiColor";
+# update chart
+$command = "COMMAND=CHART_UPDATE;
+            CHART=$chartName;
+            DATE=$dateName";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "PLUGIN=COLOR,NAME=$haramiName,OP=GT,NAME2=0,NAME3=$candleName,COLOR=$bullHaramiColor";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "PLUGIN=CANDLE_PATTERN,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,METHOD=HARAMICROSS,NAME=$haramiCrossName";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "PLUGIN=COLOR,NAME=$haramiCrossName,OP=LT,NAME2=0,NAME3=$candleName,COLOR=$bearHaramiCrossColor";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "PLUGIN=COLOR,NAME=$haramiCrossName,OP=GT,NAME2=0,NAME3=$candleName,COLOR=$bullHaramiCrossColor";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "PLUGIN=INDICATOR,METHOD=PLOT,NAME=$candleName,Z=0";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

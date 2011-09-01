@@ -20,11 +20,9 @@
  */
 
 #include "Script.h"
-#include "Globals.h"
+#include "ChartObjectData.h"
 
 #include <QDebug>
-#include <QFile>
-#include <QTextStream>
 #include <QProcess>
 
 Script::Script (QObject *p) : QObject (p)
@@ -39,14 +37,8 @@ Script::~Script ()
 
 void Script::clear ()
 {
-  qDeleteAll(_curves);
-  _curves.clear();
-
-  qDeleteAll(_chartObjects);
-  _chartObjects.clear();
-
-  qDeleteAll(_settingGroups);
-  _settingGroups.clear();
+  qDeleteAll(_data);
+  _data.clear();
 
   _session.clear();
   _name.clear();
@@ -54,76 +46,18 @@ void Script::clear ()
   _pid = -1;
 }
 
-void Script::setCurve (QString key, Curve *d)
+void Script::setData (QString key, Data *d)
 {
-  Curve *c = _curves.value(key);
-  if (c)
-    delete c;
-
-  _curves.insert(key, d);
-}
-
-Curve * Script::curve (QString key)
-{
-  return _curves.value(key);
-}
-
-void Script::setCurves (QHash<QString, Curve *> l)
-{
-  qDeleteAll(_curves);
-  _curves.clear();
-  _curves = l;
-}
-
-QHash<QString, Curve *>  Script::curves ()
-{
-  return _curves;
-}
-
-void Script::setSettingGroup (SettingGroup *d)
-{
-  SettingGroup *sg = _settingGroups.value(d->stepName());
+  Data *sg = _data.value(key);
   if (sg)
     delete sg;
 
-  _settingGroups.insert(d->stepName(), d);
+  _data.insert(key, d);
 }
 
-SettingGroup * Script::settingGroup (QString d)
+Data * Script::data (QString d)
 {
-  return _settingGroups.value(d);
-}
-
-Setting * Script::setting (QString k)
-{
-  QStringList l = k.split(":");
-  if (l.count() != 2)
-    return 0;
-
-  SettingGroup *sg = _settingGroups.value(l.at(0));
-  if (! sg)
-    return 0;
-
-  return sg->get(l.at(1));
-}
-
-int Script::chartObjectCount ()
-{
-  return _chartObjects.count();
-}
-
-void Script::setChartObject (QString key, ChartObject *d)
-{
-  ChartObject *c = _chartObjects.value(key);
-  if (c)
-    delete c;
-
-  _chartObjects.insert(key, d);
-}
-
-QHash<QString, ChartObject *>  Script::chartObjects ()
-{
-  return _chartObjects;
+  return _data.value(d);
 }
 
 void Script::setSession (QString d)
@@ -146,17 +80,6 @@ QString Script::name ()
   return _name;
 }
 
-void Script::removeSettingGroup (QString d)
-{
-  SettingGroup *sg = settingGroup(d);
-  if (! sg)
-    return;
-
-  delete sg;
-
-  _settingGroups.remove(d);
-}
-
 void Script::setFile (QString d)
 {
   _file = d;
@@ -169,10 +92,10 @@ QString & Script::file ()
 
 int Script::run ()
 {
-qDebug() << "Script::run" << g_session << _file;
+qDebug() << "Script::run" << _session << _file;
 
   QStringList args;
-  args << g_session << _file;
+  args << _session << _file;
 
   bool ok = QProcess::startDetached("QtStalkerScript", args, QString(), &_pid);
   if (! ok)
@@ -186,10 +109,10 @@ qDebug() << "Script::run" << g_session << _file;
 
 int Script::runWait ()
 {
-qDebug() << "Script::runWait" << g_session << _file;
+qDebug() << "Script::runWait" << _session << _file;
 
   QStringList args;
-  args << g_session << _file;
+  args << _session << _file;
 
   int rc = QProcess::execute("QtStalkerScript", args);
   if (rc)
@@ -224,27 +147,33 @@ qint64 Script::pid ()
   return _pid;
 }
 
-void Script::setCurrentStep (QString d)
+int Script::count ()
 {
-  _currentStep = d;
+  return _data.count();
 }
 
-QString Script::currentStep ()
+QList<QString> Script::dataKeys ()
 {
-  return _currentStep;
+  return _data.keys();
 }
 
-QString Script::nextROID ()
+int Script::nextROID ()
 {
-  int low = -1;
-  QHashIterator<QString, ChartObject *> it(_chartObjects);
+  int low = 0;
+  QHashIterator<QString, Data *> it(_data);
   while (it.hasNext())
   {
     it.next();
-    if (it.key().toInt() < low)
-      low = it.key().toInt();
+    Data *dg = it.value();
+    if (dg->type() != "CHART_OBJECT")
+      continue;
+
+    int t = dg->getInteger(ChartObjectData::_ID);
+    if (t < low)
+      low = t;
   }
+
   low--;
 
-  return QString::number(low);
+  return low;
 }

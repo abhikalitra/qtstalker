@@ -23,7 +23,6 @@
 #define COMMAND_CCI_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandCCI : public Command
 {
@@ -31,9 +30,9 @@ class CommandCCI : public Command
 
   public:
     CommandCCI (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getCCI (QList<Curve *> &, int period);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getCCI (QList<Data *> &, int period);
 };
 
 #endif

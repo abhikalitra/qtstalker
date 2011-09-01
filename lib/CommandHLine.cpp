@@ -20,12 +20,8 @@
  */
 
 #include "CommandHLine.h"
-#include "SettingColor.h"
-#include "SettingDouble.h"
-#include "SettingInteger.h"
-#include "SettingString.h"
-#include "ChartObjectHLine.h"
 #include "Script.h"
+#include "ChartObjectData.h"
 
 #include <QtDebug>
 
@@ -34,64 +30,61 @@ CommandHLine::CommandHLine (QObject *p) : Command (p)
   _type = "CHART_OBJECT_HLINE";
 }
 
-int CommandHLine::runScript (void *d)
+int CommandHLine::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
+  // verify COLOR
+  QString s = sg->get("COLOR");
+  QColor color(s);
+  if (! color.isValid())
+  {
+    qDebug() << _type << "::runScript: invalid COLOR" << s;
     return _ERROR;
+  }
 
-  QColor color = sg->get("COLOR")->getColor();
+  // verify PRICE
+  s = sg->get("PRICE");
+  bool ok;
+  double price = s.toDouble(&ok);
+  if (! ok)
+  {
+    qDebug() << _type << "::runScript: invalid PRICE" << s;
+    return _ERROR;
+  }
 
-  double price = sg->get("PRICE")->getDouble();
+  // CHART
+  QString chart = sg->get("CHART");
 
-  QString key = sg->get("CHART")->getString();
-  QString chart = script->setting(key)->getString();
+  // verify Z
+  s = sg->get("Z");
+  int z = s.toInt(&ok);
+  if (! ok)
+  {
+    qDebug() << _type << "::runScript: invalid Z" << s;
+    return _ERROR;
+  }
 
-  int z = sg->get("Z")->getInteger();
+  int id = script->nextROID();
 
-  QString id = script->nextROID();
+  Data *co = new ChartObjectData;
+  co->set(ChartObjectData::_COLOR, color);
+  co->set(ChartObjectData::_PRICE, price);
+  co->set(ChartObjectData::_CHART, chart);
+  co->set(ChartObjectData::_Z, z);
+  co->set(ChartObjectData::_ID, id);
+  co->set(ChartObjectData::_RO, 1);
+  co->set(ChartObjectData::_TYPE, QString("HLine"));
 
-  ChartObjectHLine *co = new ChartObjectHLine;
-  co->setID(id);
-  co->setPlotName(chart);
-  co->setReadOnly(TRUE);
-  co->setZ(z);
-
-  SettingGroup *coset = co->settings();
-
-  Setting *set = coset->get("PRICE");
-  set->setDouble(price);
-
-  set = coset->get("COLOR");
-  set->setColor(color);
-
-  script->setChartObject(id, co);
+  script->setData(QString::number(id), co);
 
   return _OK;
 }
 
-SettingGroup * CommandHLine::settings ()
+Data * CommandHLine::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_CHART, Setting::_NONE, QString());
-  ss->setKey("CHART");
-  sg->set(ss);
-
-  SettingDouble *sd = new SettingDouble(0);
-  sd->setKey("PRICE");
-  sg->set(sd);
-
-  SettingColor *sc = new SettingColor(QColor(Qt::red));
-  sc->setKey("COLOR");
-  sg->set(sc);
-
-  SettingInteger *si = new SettingInteger(0, 0, 1, 99, 0);
-  si->setKey("Z");
-  sg->set(si);
-
+  Data *sg = new Data;
+  sg->set("CHART", QString());
+  sg->set("PRICE", 0);
+  sg->set("COLOR", QColor(Qt::red));
+  sg->set("Z", 1);
   return sg;
 }

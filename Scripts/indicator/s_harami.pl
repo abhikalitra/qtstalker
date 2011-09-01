@@ -6,50 +6,103 @@
 # Positive values are bullish, negative values are bearish.
 
 $haramiName = 'Harami';
-$haramiStyle = 'HistogramBar';
+$haramiData = 'harami';
+$haramiStyle = 'Histogram Bar';
 $haramiColor = 'yellow';
+$haramiZ = '0';
 
+$haramiCrossData = 'haramicross';
 $haramiCrossName = 'Harami Cross';
-$haramiCrossStyle = 'HistogramBar';
+$haramiCrossStyle = 'Histogram Bar';
 $haramiCrossColor = 'orange';
+$haramiCrossZ = '0';
 
-$openName = 'Open';
-$highName = 'High';
-$lowName = 'Low';
-$closeName = 'Close';
+$dateName = 'date';
+$openName = 'open';
+$highName = 'high';
+$lowName = 'low';
+$closeName = 'close';
+$volumeName = 'volume';
+$oiName = 'oi';
+$chartName = 's_harami';
 
 ###################################################################
 
 $|++;
 
-$command = "PLUGIN=DOHLCVI,METHOD=O,NAME_OPEN=$openName";
+# create the chart
+$command = "COMMAND=CHART;
+            NAME=$chartName;
+            DATE=1;
+            LOG=0;
+            ROW=0;
+            COL=99";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=H,NAME_HIGH=$highName";
+# load current bars
+$command = "COMMAND=SYMBOL_CURRENT;
+            DATE=$dateName;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            VOLUME=volume;
+            OI=oi";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=L,NAME_LOW=$lowName";
+# get harami pattern
+$command = "COMMAND=CANDLE_PATTERN;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            OUTPUT=$haramiData;
+            METHOD=HARAMI";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=C,NAME_CLOSE=$closeName";
+# plot harami
+$command = "COMMAND=PLOT_HISTOGRAM;
+            CHART=$chartName;
+            HIGH=$haramiData;
+            LOW=0;
+            NAME=$haramiName;
+            STYLE=$haramiStyle;
+            COLOR=$haramiColor;
+            Z=$haramiZ;
+            PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_PATTERN,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,METHOD=HARAMI,NAME=$haramiName";
+# get haramicross pattern
+$command = "COMMAND=CANDLE_PATTERN;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            OUTPUT=$haramiCrossData;
+            METHOD=HARAMICROSS";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$haramiName,STYLE=$haramiStyle,COLOR=$haramiColor,Z=0";
+# plot haramicross
+$command = "COMMAND=PLOT_HISTOGRAM;
+            CHART=$chartName;
+            HIGH=$haramiCrossData;
+            LOW=0;
+            NAME=$haramiCrossName;
+            STYLE=$haramiCrossStyle;
+            COLOR=$haramiCrossColor;
+            Z=$haramiCrossZ;
+            PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLE_PATTERN,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,METHOD=HARAMICROSS,NAME=$haramiCrossName";
+# update chart
+$command = "COMMAND=CHART_UPDATE;
+            CHART=$chartName;
+            DATE=$dateName";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$haramiCrossName,STYLE=$haramiCrossStyle,COLOR=$haramiCrossColor,Z=1";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

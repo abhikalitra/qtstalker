@@ -2,13 +2,14 @@
 
 #include <QStringList>
 
-IPCMessage::IPCMessage (QString session, QString command, QString type, QString file)
+IPCMessage::IPCMessage (QString session, QString command, QString type, QString file, QString dataType)
 {
   init();
   _session = session;
   _command = command;
   _type = type;
   _scriptFile = file;
+  _dataType = dataType;
 }
 
 IPCMessage::IPCMessage ()
@@ -18,19 +19,19 @@ IPCMessage::IPCMessage ()
 
 void IPCMessage::init ()
 {
-  _parmCount = 4;
+  _parmCount = 5;
 }
 
 QString IPCMessage::toString ()
 {
   QStringList l;
-  l << _session << _command << _type << _scriptFile;
-  return l.join(",");
+  l << _session << _command << _type << _scriptFile << _dataType;
+  return l.join(";");
 }
 
 int IPCMessage::fromString (QString d)
 {
-  QStringList l = d.split(",");
+  QStringList l = d.split(";");
   if (l.count() != _parmCount)
     return 1;
 
@@ -39,6 +40,7 @@ int IPCMessage::fromString (QString d)
   _command = l.at(pos++);
   _type = l.at(pos++);
   _scriptFile = l.at(pos++);
+  _dataType = l.at(pos++);
 
   return 0;
 }
@@ -81,4 +83,14 @@ void IPCMessage::setScriptFile (QString d)
 QString IPCMessage::scriptFile ()
 {
   return _scriptFile;
+}
+
+void IPCMessage::setDataType (QString d)
+{
+  _dataType = d;
+}
+
+QString IPCMessage::dataType ()
+{
+  return _dataType;
 }

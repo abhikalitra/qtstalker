@@ -20,9 +20,8 @@
  */
 
 #include "SymbolDialog.h"
-#include "Globals.h"
 #include "QuoteDataBase.h"
-#include "BarData.h"
+#include "Symbol.h"
 #include "../pics/search.xpm"
 
 #include <QtDebug>
@@ -34,7 +33,7 @@ SymbolDialog::SymbolDialog (QWidget *p) : Dialog (p)
   _keySize = "symbol_dialog_window_size";
   _keyPos = "symbol_dialog_window_position";
 
-  setWindowTitle("Qtstalker" + g_session + ": " + tr("Select Symbols"));
+  setWindowTitle("Qtstalker: " + tr("Select Symbols"));
 
   createGUI();
 
@@ -164,9 +163,12 @@ void SymbolDialog::done ()
 {
   saveSettings();
 
-  QStringList l;
-  symbols(l);
-  emit signalDone(_exchanges->currentText(), _search->text(), l);
+  _symbols.clear();
+  int loop = 0;
+  for (; loop < _symbolList->topLevelItemCount(); loop++)
+    _symbols << _symbolList->topLevelItem(loop)->text(0);
+
+  emit signalDone(_exchanges->currentText(), _search->text(), _symbols);
 
   accept();
 }
@@ -208,27 +210,30 @@ void SymbolDialog::deleteButtonPressed ()
 
 void SymbolDialog::searchButtonPressed ()
 {
-  BarData symbol;
-  symbol.setExchange(_exchanges->currentText());
+  Data *symbol = new Symbol;
+  symbol->set(Symbol::_EXCHANGE, _exchanges->currentText());
   QString s = _search->text();
   if (s.isEmpty())
     s = "*";
-  symbol.setSymbol(s);
+  symbol->set(Symbol::_SYMBOL, s);
 
   QuoteDataBase db;
-  QList<BarData> l;
-  db.search(&symbol, l);
+  QList<Data *> l;
+  db.search(symbol, l);
+  delete symbol;
 
   _searchList->clear();
 
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    BarData bd = l.at(loop);
+    Data *bd = l.at(loop);
     QTreeWidgetItem *item = new QTreeWidgetItem(_searchList);
-    item->setText(0, bd.exchange() + ":" + bd.symbol());
-    item->setText(1, bd.name());
+    item->setText(0, bd->get(Symbol::_EXCHANGE) + ":" + bd->get(Symbol::_SYMBOL));
+    item->setText(1, bd->get(Symbol::_NAME));
   }
+
+  qDeleteAll(l);
 
   for (loop = 0; loop < _searchList->columnCount(); loop++)
     _searchList->resizeColumnToContents(loop);
@@ -247,11 +252,7 @@ void SymbolDialog::loadExchanges ()
   _exchanges->setCurrentIndex(0);
 }
 
-void SymbolDialog::symbols (QStringList &l)
+QStringList SymbolDialog::symbols ()
 {
-  l.clear();
-
-  int loop = 0;
-  for (; loop < _symbolList->topLevelItemCount(); loop++)
-    l << _symbolList->topLevelItem(loop)->text(0);
+  return _symbols;
 }

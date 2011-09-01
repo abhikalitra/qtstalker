@@ -23,7 +23,6 @@
 #define COMMAND_AD_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandAD : public Command
 {
@@ -31,9 +30,9 @@ class CommandAD : public Command
 
   public:
     CommandAD (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getAD (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getAD (QList<Data *> &);
 };
 
 #endif

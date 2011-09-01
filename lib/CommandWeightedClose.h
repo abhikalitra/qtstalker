@@ -23,7 +23,6 @@
 #define COMMAND_WEIGHTED_CLOSE_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandWeightedClose : public Command
 {
@@ -31,9 +30,9 @@ class CommandWeightedClose : public Command
 
   public:
     CommandWeightedClose (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getWC (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getWC (QList<Data *> &);
 };
 
 #endif

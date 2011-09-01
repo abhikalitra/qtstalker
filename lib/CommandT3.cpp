@@ -22,9 +22,8 @@
 #include "CommandT3.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingDouble.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -37,48 +36,40 @@ CommandT3::CommandT3 (QObject *p) : Command (p)
     qDebug("CommandT3::CommandT3: error on TA_Initialize");
 }
 
-int CommandT3::runScript (void *d)
+int CommandT3::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: invalid INPUT" << s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
+  int period = sg->getInteger("PERIOD");
 
-  double vfactor = sg->get("VFACTOR")->getDouble();
+  double vfactor = sg->getDouble("VFACTOR");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in;
   line = getT3(list, period, vfactor);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandT3::getT3 (QList<Curve *> &list, int period, double vfactor)
+Data * CommandT3::getT3 (QList<Data *> &list, int period, double vfactor)
 {
   if (! list.count())
     return 0;
@@ -113,8 +104,8 @@ Curve * CommandT3::getT3 (QList<Curve *> &list, int period, double vfactor)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -125,26 +116,12 @@ Curve * CommandT3::getT3 (QList<Curve *> &list, int period, double vfactor)
   return c;
 }
 
-SettingGroup * CommandT3::settings ()
+Data * CommandT3::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 5, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
-  SettingDouble *sd = new SettingDouble(0, 0, 0.7, 1, 0);
-  sd->setKey("VFACTOR");
-  sg->set(sd);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("INPUT", QString());
+  sg->set("PERIOD", 5);
+  sg->set("VFACTOR", 0.7);
   return sg;
 }

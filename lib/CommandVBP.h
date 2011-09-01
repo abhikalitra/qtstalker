@@ -23,7 +23,6 @@
 #define COMMAND_VBP_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandVBP : public Command
 {
@@ -31,9 +30,9 @@ class CommandVBP : public Command
 
   public:
     CommandVBP (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getVBP (QList<Curve *> &, QColor, QColor);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getVBP (QList<Data *> &, QColor, QColor);
 };
 
 #endif

@@ -21,11 +21,9 @@
 
 #include "CommandPlotLine.h"
 #include "Script.h"
-#include "CurveLine.h"
 #include "InputType.h"
-#include "SettingInteger.h"
-#include "SettingString.h"
-#include "SettingColor.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -34,55 +32,40 @@ CommandPlotLine::CommandPlotLine (QObject *p) : Command (p)
   _type = "PLOT_LINE";
 }
 
-int CommandPlotLine::runScript (void *d)
+int CommandPlotLine::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  // date
-  QString key = sg->get("DATE")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *idate = script->curve(s);
-  if (! idate)
-  {
-    qDebug() << _type << "::runScript: invalid DATE" << s;
-    return _ERROR;
-  }
-
   // input
-  key = sg->get("INPUT")->getString();
-  s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
-    qDebug() << _type << "::run: INPUT not found" << s;
+    qDebug() << _type << "::runScript: INPUT not found" << s;
     return _ERROR;
   }
 
   // chart
-  key = sg->get("CHART")->getString();
-  QString chart = script->setting(key)->getString();
+  QString chart = sg->get("CHART");
+
+  // style
+  QString style = sg->get("STYLE");
 
   // label
-  QString label = sg->get("NAME")->getString();
+  QString label = sg->get("NAME");
   if (label.isEmpty())
   {
-    qDebug() << _type << "::run: invalid NAME" << label;
+    qDebug() << _type << "::runScript: invalid NAME" << label;
     return _ERROR;
   }
 
-  Curve *tline = script->curve(label);
-  if (tline)
+  Data *line = script->data(label);
+  if (line)
   {
-    qDebug() << _type << "::run: duplicate LABEL" << label;
+    qDebug() << _type << "::runScript: duplicate LABEL" << label;
     return _ERROR;
   }
 
-  QList<Curve *> list;
-  list << idate << in;
+  QList<Data *> list;
+  list << in;
   InputType it;
   QList<int> keys;
   if (it.keys(list, keys))
@@ -92,75 +75,49 @@ int CommandPlotLine::runScript (void *d)
   }
 
   // color
-  QColor color = sg->get("COLOR")->getColor();
-
-  Curve *line = new CurveLine(Qt::SolidLine);
+  QColor color = sg->getColor("COLOR");
 
   // Z
-  line->setZ(sg->get("Z")->getInteger());
+  int z = sg->getInteger("Z");
 
   // PEN
-  line->setPenWidth(sg->get("PEN")->getInteger());
+  int pen = sg->getInteger("PEN");
 
-  line->setLabel(label);
-  line->setPlotName(chart);
+  line = new CurveData;
+  line->set(CurveData::_TYPE, QString("Line"));
+  line->set(CurveData::_Z, z);
+  line->set(CurveData::_PEN, pen);
+  line->set(CurveData::_LABEL, label);
+  line->set(CurveData::_CHART, chart);
+  line->set(CurveData::_STYLE, style);
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    CurveBar *dbar = idate->bar(keys.at(loop));
-    if (! dbar)
-      continue;
-
-    CurveBar *ibar = in->bar(keys.at(loop));
+    Data *ibar = in->getData(keys.at(loop));
     if (! ibar)
       continue;
 
-    CurveBar *bar = new CurveBar;
-    bar->setData(ibar->data());
-    bar->setColor(color);
-    bar->setDateTime(dbar->dateTime());
-
-    line->setBar(keys.at(loop), bar);
+    Data *bar = new CurveBar;
+    bar->set(CurveBar::_VALUE, ibar->getDouble(CurveBar::_VALUE));
+    bar->set(CurveBar::_COLOR, color);
+    line->set(keys.at(loop), bar);
   }
 
-  script->setCurve(label, line);
+  script->setData(label, line);
 
   return _OK;
 }
 
-SettingGroup * CommandPlotLine::settings ()
+Data * CommandPlotLine::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_CHART, Setting::_NONE, QString());
-  ss->setKey("CHART");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("DATE");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString());
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  SettingColor *sc = new SettingColor(QColor(Qt::red));
-  sc->setKey("COLOR");
-  sg->set(sc);
-
-  SettingInteger *si = new SettingInteger(0, 0, 0, 99, 0);
-  si->setKey("Z");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 1, 99, 1);
-  si->setKey("PEN");
-  sg->set(si);
-
+  Data *sg = new Data;
+  sg->set("CHART", QString());
+  sg->set("NAME", QString("Line"));
+  sg->set("INPUT", QString("close"));
+  sg->set("STYLE", QString("Line"));
+  sg->set("COLOR", QColor(Qt::red));
+  sg->set("Z", -1);
+  sg->set("PEN", 1);
   return sg;
 }

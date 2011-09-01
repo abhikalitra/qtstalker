@@ -20,7 +20,6 @@
  */
 
 #include "DataBase.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -33,7 +32,7 @@ void DataBase::open ()
   _db = QSqlDatabase::database("data");
   if (_db.isOpen())
     return;
-  
+
   QString s = QDir::homePath() + "/.qtstalker/data.sqlite";
   _db = QSqlDatabase::addDatabase("QSQLITE", "data");
   _db.setHostName("QtStalker");

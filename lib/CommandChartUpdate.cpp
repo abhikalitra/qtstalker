@@ -20,14 +20,10 @@
  */
 
 #include "CommandChartUpdate.h"
-#include "Globals.h"
-#include "Script.h"
 #include "IPCMessage.h"
-#include "CurveFactory.h"
 #include "MessageSend.h"
-#include "ChartObjectDataBase.h"
-#include "ChartObjectFactory.h"
-#include "SettingString.h"
+#include "CurveData.h"
+#include "ChartObjectData.h"
 
 #include <QtDebug>
 #include <QHash>
@@ -37,174 +33,75 @@ CommandChartUpdate::CommandChartUpdate (QObject *p) : Command (p)
   _type = "CHART_UPDATE";
 }
 
-int CommandChartUpdate::runScript (void *d)
+int CommandChartUpdate::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
+  QString name = sg->get("CHART");
+  QString date = sg->get("DATE");
 
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
+  QList<QString> keys = script->dataKeys();
 
-  QString key = sg->get("CHART")->getString();
-  QString name = script->setting(key)->getString();
-
-  QHashIterator<QString, Curve *> it(script->curves());
-  while (it.hasNext())
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    it.next();
-    Curve *curve = it.value();
-    if (curve->z() == -1)
+    Data *dg = script->data(keys.at(loop));
+
+    if (dg->type() == "CURVE")
+    {
+      // send dates to chart
+      if (keys.at(loop) == date)
+      {
+        // specify which chart to set
+        dg->set(CurveData::_CHART, name);
+
+        IPCMessage ipcm(script->session(), _type, "CHART_DATE", script->file(), dg->type());
+        MessageSend ms(this);
+        ms.send(ipcm, dg->toString());
+        continue;
+      }
+
+      if (dg->getInteger(CurveData::_Z) < 0)
+        continue;
+
+      if (dg->get(CurveData::_CHART) != name)
+        continue;
+
+      QString type = dg->get(CurveData::_TYPE);
+
+      IPCMessage ipcm(script->session(), _type, "CURVE", script->file(), dg->type());
+      MessageSend ms(this);
+      ms.send(ipcm, dg->toString());
       continue;
+    }
 
-    if (curve->plotName() != name)
-      continue;
+    if (dg->type() == "CHART_OBJECT")
+    {
+      if (dg->getInteger(ChartObjectData::_Z) < 0)
+        continue;
 
-    IPCMessage ipcm(script->session(), _type, "CURVE", script->file());
+      if (dg->get(ChartObjectData::_CHART) != name)
+        continue;
 
-    MessageSend ms(this);
-    ms.send(ipcm, curve->toString());
-  }
+      QString type = dg->get(ChartObjectData::_TYPE);
 
-  // set any chart objects
-  QHashIterator<QString, ChartObject *> it2(script->chartObjects());
-  while (it2.hasNext())
-  {
-    it2.next();
-    ChartObject *co = it2.value();
-
-    if (co->plotName() != name)
-      continue;
-
-    if (co->z() == -1)
-      continue;
-
-    QStringList data;
-    data << "TYPE=" + co->type();
-    data << "CHART=" + co->plotName();
-    data << co->settings()->toString();
-
-    IPCMessage ipcm(script->session(), _type, "CHART_OBJECT", script->file());
-    MessageSend ms(this);
-    ms.send(ipcm, data.join(","));
+      IPCMessage ipcm(script->session(), _type, "CHART_OBJECT", script->file(), dg->type());
+      MessageSend ms(this);
+      ms.send(ipcm, dg->toString());
+    }
   }
 
   // send the update command
-  IPCMessage ipcm(script->session(), _type, "UPDATE", script->file());
-
-  QStringList data;
-  data << name;
+  IPCMessage ipcm(script->session(), _type, "UPDATE", script->file(), sg->type());
 
   MessageSend ms(this);
-  ms.send(ipcm, data);
+  ms.send(ipcm, sg->toString());
 
   return _OK;
 }
 
-int CommandChartUpdate::message (IPCMessage &mess, QString &d)
+Data * CommandChartUpdate::settings ()
 {
-  if (mess.type() == "CURVE")
-  {
-    int pos = d.indexOf(";");
-    QString type = d.left(pos);
-
-    CurveFactory fac;
-    Curve *curve = fac.curve(type);
-    if (! curve)
-    {
-      qDebug() << "CommandChartUpdate::message: no curve type" << type;
-      return _ERROR;
-    }
-
-    if (curve->fromString(d))
-    {
-      delete curve;
-      qDebug() << _type << "::message: invalid curve data";
-      return _ERROR;
-    }
-
-    Plot *plot = g_plotGroup->plot(curve->plotName());
-    if (! plot)
-    {
-      qDebug() << _type << "::message: chart not found" << curve->plotName();
-      return 1;
-    }
-
-    plot->setCurve(curve);
-  }
-
-  if (mess.type() == "CHART_OBJECT")
-  {
-    QStringList l = d.split(",");
-    SettingGroup sg;
-    if (sg.parse(l))
-    {
-      qDebug() << _type << "::message: invalid chart object data" << d;
-      return _ERROR;
-    }
-
-    QString type = sg.get("TYPE")->getString();
-
-    ChartObjectFactory fac;
-    ChartObject *co = fac.chartObject(type);
-    if (! co)
-    {
-      qDebug() << "CommandChartUpdate::message: no chart object type" << type;
-      return _ERROR;
-    }
-
-    SettingGroup *settings = co->settings();
-    settings->merge(&sg);
-
-    co->setPlotName(sg.get("CHART")->getString());
-    co->setReadOnly(TRUE);
-
-    Plot *plot = g_plotGroup->plot(co->plotName());
-    if (! plot)
-    {
-      qDebug() << _type << "::message: chart not found" << co->plotName();
-      delete co;
-      return 1;
-    }
-
-    plot->addChartObject(co);
-  }
-
-  if (mess.type() == "UPDATE")
-  {
-    Plot *plot = g_plotGroup->plot(d);
-    if (! plot)
-    {
-      qDebug() << _type << "::message: chart not found" << d;
-      return _ERROR;
-    }
-
-    // load chart objects from database
-    ChartObjectDataBase codb;
-    QHash<QString, ChartObject *> chartObjects;
-    if (! codb.load(d, g_currentSymbol.key(), chartObjects))
-    {
-      QHashIterator<QString, ChartObject *> it(chartObjects);
-      while (it.hasNext())
-      {
-        it.next();
-        plot->addChartObject(it.value());
-      }
-    }
-
-    plot->updatePlot();
-  }
-
-  return _OK;
-}
-
-SettingGroup * CommandChartUpdate::settings ()
-{
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_CHART, Setting::_NONE, QString());
-  ss->setKey("CHART");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("CHART", QString());
+  sg->set("DATE", QString("date"));
   return sg;
 }

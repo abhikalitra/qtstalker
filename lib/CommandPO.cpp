@@ -23,9 +23,8 @@
 #include "ta_libc.h"
 #include "InputType.h"
 #include "MAType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingList.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -39,32 +38,25 @@ CommandPO::CommandPO (QObject *p) : Command (p)
     qDebug("CommandPO::CommandPO: error on TA_Initialize");
 }
 
-int CommandPO::runScript (void *d)
+int CommandPO::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: INPUT missing" << s;
     return _ERROR;
   }
 
-  s = sg->get("METHOD")->getString();
+  s = sg->get("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -72,12 +64,12 @@ int CommandPO::runScript (void *d)
     return _ERROR;
   }
 
-  int fast = sg->get("PERIOD_FAST")->getInteger();
+  int fast = sg->getInteger("PERIOD_FAST");
 
-  int slow = sg->get("PERIOD_SLOW")->getInteger();
+  int slow = sg->getInteger("PERIOD_SLOW");
 
   MAType mat;
-  s = sg->get("MA_TYPE")->getString();
+  s = sg->get("MA_TYPE");
   int type = mat.fromString(s);
   if (type == -1)
   {
@@ -85,19 +77,18 @@ int CommandPO::runScript (void *d)
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in;
   line = getPO(list, fast, slow, type, method);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandPO::getPO (QList<Curve *> &list, int fast, int slow, int type, int method)
+Data * CommandPO::getPO (QList<Data *> &list, int fast, int slow, int type, int method)
 {
   if (! list.count())
     return 0;
@@ -136,8 +127,8 @@ Curve * CommandPO::getPO (QList<Curve *> &list, int fast, int slow, int type, in
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -148,35 +139,14 @@ Curve * CommandPO::getPO (QList<Curve *> &list, int fast, int slow, int type, in
   return c;
 }
 
-SettingGroup * CommandPO::settings ()
+Data * CommandPO::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 12, 9999, 2);
-  si->setKey("PERIOD_FAST");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 26, 9999, 2);
-  si->setKey("PERIOD_SLOW");
-  sg->set(si);
-
-  MAType mat;
-  SettingList *sl = new SettingList(mat.list(), QString("EMA"));
-  sl->setKey("MA_TYPE");
-  sg->set(sl);
-
-  sl = new SettingList(_method, _method.at(0));
-  sl->setKey("METHOD");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("INPUT", QString());
+  sg->set("PERIOD_FAST", 12);
+  sg->set("PERIOD_SLOW", 26);
+  sg->set("METHOD", _method.at(0));
+  sg->set("MA_TYPE", QString("EMA"));
   return sg;
 }

@@ -22,7 +22,8 @@
 #include "CommandPHASOR.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -35,62 +36,53 @@ CommandPHASOR::CommandPHASOR (QObject *p) : Command (p)
     qDebug("CommandPHASOR::CommandPHASOR: error on TA_Initialize");
 }
 
-int CommandPHASOR::runScript (void *d)
+int CommandPHASOR::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString pname = sg->get("NAME_PHASE")->getString();
-  Curve *line = script->curve(pname);
+  QString pname = sg->get("OUTPUT_PHASE");
+  Data *line = script->data(pname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate PHASE" << pname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_PHASE" << pname;
     return _ERROR;
   }
 
-  QString qname = sg->get("NAME_QUAD")->getString();
-  line = script->curve(qname);
+  QString qname = sg->get("OUTPUT_QUAD");
+  line = script->data(qname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_QUAD" << qname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_QUAD" << qname;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: INPUT missing" << s;
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in;
-  QList<Curve *> lines = getPHASOR(list);
+  QList<Data *> lines = getPHASOR(list);
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Curve *pline = lines.at(0);
-  pline->setLabel(pname);
-  script->setCurve(pname, pline);
+  Data *pline = lines.at(0);
+  script->setData(pname, pline);
 
-  Curve *qline = lines.at(1);
-  qline->setLabel(qname);
-  script->setCurve(qname, qline);
+  Data *qline = lines.at(1);
+  script->setData(qname, qline);
 
   return _OK;
 }
 
-QList<Curve *> CommandPHASOR::getPHASOR (QList<Curve *> &list)
+QList<Data *> CommandPHASOR::getPHASOR (QList<Data *> &list)
 {
-  QList<Curve *> lines;
+  QList<Data *> lines;
   if (! list.count())
     return lines;
 
@@ -124,10 +116,12 @@ QList<Curve *> CommandPHASOR::getPHASOR (QList<Curve *> &list)
     return lines;
   }
 
-  Curve *c = new Curve;
-  lines.append(c);
-  c = new Curve;
-  lines.append(c);
+  lines.clear();
+
+  Data *c = new CurveData;
+  lines << c;
+  c = new CurveData;
+  lines << c;
   if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
   {
     qDeleteAll(lines);
@@ -138,22 +132,11 @@ QList<Curve *> CommandPHASOR::getPHASOR (QList<Curve *> &list)
   return lines;
 }
 
-SettingGroup * CommandPHASOR::settings ()
+Data * CommandPHASOR::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME_PHASE");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME_QUAD");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT_PHASE", QString());
+  sg->set("OUTPUT_QUAD", QString());
+  sg->set("INPUT", QString());
   return sg;
 }

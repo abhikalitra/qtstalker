@@ -22,7 +22,8 @@
 #include "CommandSINE.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -35,62 +36,53 @@ CommandSINE::CommandSINE (QObject *p) : Command (p)
     qDebug("CommandSINE::CommandSINE: error on TA_Initialize");
 }
 
-int CommandSINE::runScript (void *d)
+int CommandSINE::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString sname = sg->get("NAME_SINE")->getString();
-  Curve *line = script->curve(sname);
+  QString sname = sg->get("OUTPUT_SINE");
+  Data *line = script->data(sname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate SINE" << sname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_SINE" << sname;
     return _ERROR;
   }
 
-  QString lname = sg->get("NAME_LEAD")->getString();
-  line = script->curve(lname);
+  QString lname = sg->get("OUTPUT_LEAD");
+  line = script->data(lname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_LEAD" << lname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_LEAD" << lname;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: INPUT missing" << s;
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in;
-  QList<Curve *> lines = getSINE(list);
+  QList<Data *> lines = getSINE(list);
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Curve *sline = lines.at(0);
-  sline->setLabel(sname);
-  script->setCurve(sname, sline);
+  Data *sline = lines.at(0);
+  script->setData(sname, sline);
 
-  Curve *lline = lines.at(1);
-  lline->setLabel(lname);
-  script->setCurve(lname, lline);
+  Data *lline = lines.at(1);
+  script->setData(lname, lline);
 
   return _OK;
 }
 
-QList<Curve *> CommandSINE::getSINE (QList<Curve *> &list)
+QList<Data *> CommandSINE::getSINE (QList<Data *> &list)
 {
-  QList<Curve *> lines;
+  QList<Data *> lines;
   if (! list.count())
     return lines;
 
@@ -124,10 +116,11 @@ QList<Curve *> CommandSINE::getSINE (QList<Curve *> &list)
     return lines;
   }
 
-  Curve *c = new Curve;
-  lines.append(c);
-  c = new Curve;
-  lines.append(c);
+  lines.clear();
+  Data *c = new CurveData;
+  lines << c;
+  c = new CurveData;
+  lines << c;
   if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
   {
     qDeleteAll(lines);
@@ -138,22 +131,11 @@ QList<Curve *> CommandSINE::getSINE (QList<Curve *> &list)
   return lines;
 }
 
-SettingGroup * CommandSINE::settings ()
+Data * CommandSINE::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME_SINE");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME_LEAD");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT_SINE", QString());
+  sg->set("OUTPUT_LEAD", QString());
+  sg->set("INPUT", QString());
   return sg;
 }

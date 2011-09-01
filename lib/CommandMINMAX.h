@@ -23,7 +23,6 @@
 #define COMMAND_MINMAX_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandMINMAX : public Command
 {
@@ -31,9 +30,9 @@ class CommandMINMAX : public Command
 
   public:
     CommandMINMAX (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getMINMAX (QList<Curve *> &, int, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getMINMAX (Data *, int, int);
 
   protected:
     QStringList _method;

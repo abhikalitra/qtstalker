@@ -32,7 +32,7 @@
 #include <QTabWidget>
 
 #include "Dialog.h"
-#include "SettingGroup.h"
+#include "Data.h"
 #include "LineEdit.h"
 #include "ColorButton.h"
 #include "FileButton.h"
@@ -47,7 +47,7 @@ class CommandDialog : public Dialog
   public:
     CommandDialog (QWidget *);
     void createGUI ();
-    void setWidgets (SettingGroup *);
+    void setWidgets (Data *);
 
   public slots:
     void done ();
@@ -61,7 +61,7 @@ class CommandDialog : public Dialog
     QHash<QString, QDateTimeEdit *> _dateTimeEdit;
     QHash<QString, QComboBox *> _comboBox;
     QHash<QString, FileButton *> _fileButton;
-    SettingGroup *_settings;
+    Data *_settings;
     QTabWidget *_tabs;
 };
 

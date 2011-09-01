@@ -23,7 +23,6 @@
 #define COMMAND_NORMALIZE_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandNormalize : public Command
 {
@@ -31,9 +30,9 @@ class CommandNormalize : public Command
 
   public:
     CommandNormalize (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getNORM (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getNORM (QList<Data *> &);
 };
 
 #endif

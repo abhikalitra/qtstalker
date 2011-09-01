@@ -23,7 +23,6 @@
 #define COMMAND_ATR_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandATR : public Command
 {
@@ -31,9 +30,9 @@ class CommandATR : public Command
 
   public:
     CommandATR (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getATR (QList<Curve *> &, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getATR (QList<Data *> &, int);
 };
 
 #endif

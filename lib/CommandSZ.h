@@ -23,7 +23,6 @@
 #define COMMAND_SZ_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandSZ : public Command
 {
@@ -37,9 +36,9 @@ class CommandSZ : public Command
     };
 
     CommandSZ (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getSZ (QList<Curve *> &, int type, int period, int ndp, double coeff);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getSZ (QList<Data *> &, int type, int period, int ndp, double coeff);
 
   private:
     QStringList _method;

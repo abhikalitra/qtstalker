@@ -60,7 +60,7 @@ int CommandYahooHistory::runScript (void *d)
 
   bool adjusted = sg->get("ADJUSTED")->getBool();
 
-  QStringList symbolFiles = sg->get("SYMBOL_FILE")->getFile();
+  QStringList symbolFiles = sg->get("SYMBOL_FILE")->getList();
   if (! symbolFiles.count())
   {
     qDebug() << _type << "::runScript: SYMBOL_FILE missing";

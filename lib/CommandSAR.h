@@ -23,7 +23,6 @@
 #define COMMAND_SAR_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandSAR : public Command
 {
@@ -31,9 +30,9 @@ class CommandSAR : public Command
 
   public:
     CommandSAR (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getSAR (QList<Curve *> &, double, double);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getSAR (QList<Data *> &, double, double);
 };
 
 #endif

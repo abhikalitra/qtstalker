@@ -23,7 +23,6 @@
 #define COMMAND_LINEARREG_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandLINEARREG : public Command
 {
@@ -40,9 +39,9 @@ class CommandLINEARREG : public Command
     };
 
     CommandLINEARREG (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getLR (QList<Curve *> &, int, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getLR (QList<Data *> &, int, int);
 
   protected:
     QStringList _method;

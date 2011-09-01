@@ -23,7 +23,6 @@
 #define COMMAND_AVERAGE_PRICE_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandAveragePrice : public Command
 {
@@ -31,9 +30,9 @@ class CommandAveragePrice : public Command
 
   public:
     CommandAveragePrice (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getAP (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getAP (QList<Data *> &);
 };
 
 #endif

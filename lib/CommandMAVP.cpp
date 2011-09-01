@@ -23,9 +23,8 @@
 #include "ta_libc.h"
 #include "InputType.h"
 #include "MAType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingList.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -38,46 +37,38 @@ CommandMAVP::CommandMAVP (QObject *p) : Command (p)
     qDebug("CommandMAVP::CommandMAVP: error on TA_Initialize");
 }
 
-int CommandMAVP::runScript (void *d)
+int CommandMAVP::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT_1");
+  Data *in = script->data(s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    qDebug() << _type << "::runScript: INPUT_1 missing" << s;
     return _ERROR;
   }
 
-  key = sg->get("INPUT_2")->getString();
-  s = script->setting(key)->getString();
-  Curve *in2 = script->curve(s);
+  s = sg->get("INPUT_2");
+  Data *in2 = script->data(s);
   if (! in2)
   {
     qDebug() << _type << "::runScript: INPUT_2 missing" << s;
     return _ERROR;
   }
 
-  int min = sg->get("PERIOD_MIN")->getInteger();
+  int min = sg->getInteger("PERIOD_MIN");
 
-  int max = sg->get("PERIOD_MAX")->getInteger();
+  int max = sg->getInteger("PERIOD_MAX");
 
   MAType mat;
-  s = sg->get("MA_TYPE")->getString();
+  s = sg->get("MA_TYPE");
   int type = mat.fromString(s);
   if (type == -1)
   {
@@ -85,19 +76,18 @@ int CommandMAVP::runScript (void *d)
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in << in2;
   line = getMAVP(list, min, max, type);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandMAVP::getMAVP (QList<Curve *> &list, int min, int max, int type)
+Data * CommandMAVP::getMAVP (QList<Data *> &list, int min, int max, int type)
 {
   if (list.count() != 2)
     return 0;
@@ -135,8 +125,8 @@ Curve * CommandMAVP::getMAVP (QList<Curve *> &list, int min, int max, int type)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -147,35 +137,14 @@ Curve * CommandMAVP::getMAVP (QList<Curve *> &list, int min, int max, int type)
   return c;
 }
 
-SettingGroup * CommandMAVP::settings ()
+Data * CommandMAVP::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT_2");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 2, 9999, 2);
-  si->setKey("PERIOD_MIN");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 30, 9999, 2);
-  si->setKey("PERIOD_MAX");
-  sg->set(si);
-
-  MAType mat;
-  SettingList *sl = new SettingList(mat.list(), QString("EMA"));
-  sl->setKey("MA_TYPE");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("INPUT_1", QString());
+  sg->set("INPUT_2", QString());
+  sg->set("PERIOD_MIN", 2);
+  sg->set("PERIOD_MAX", 30);
+  sg->set("MA_TYPE", QString("EMA"));
   return sg;
 }

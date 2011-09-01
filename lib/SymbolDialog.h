@@ -39,7 +39,7 @@ class SymbolDialog : public Dialog
     SymbolDialog (QWidget *);
     void createGUI ();
     void loadExchanges ();
-    void symbols (QStringList &);
+    QStringList symbols ();
 
   public slots:
     void done ();
@@ -57,6 +57,7 @@ class SymbolDialog : public Dialog
     QPushButton *_searchButton;
     QPushButton *_addButton;
     QPushButton *_deleteButton;
+    QStringList _symbols;
 };
 
 #endif

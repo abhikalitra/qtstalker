@@ -20,7 +20,6 @@
  */
 
 #include "ExchangeSearchDialog.h"
-#include "Globals.h"
 #include "../pics/search.xpm"
 
 #include <QtDebug>
@@ -31,7 +30,7 @@ ExchangeSearchDialog::ExchangeSearchDialog (QWidget *p) : Dialog (p)
   _keySize = "exchange_search_dialog_window_size";
   _keyPos = "exchange_search_dialog_window_position";
 
-  setWindowTitle("QtStalker" + g_session + ": " + tr("Exchange Search"));
+  setWindowTitle("QtStalker: " + tr("Exchange Search"));
 
   createGUI();
 
@@ -126,7 +125,7 @@ void ExchangeSearchDialog::loadSettings ()
 {
   Dialog::loadSettings();
 
-  QSettings settings(g_globalSettings);
+  QSettings settings("QtStalker/qtstalkerrc");
 
   // exchange
   QStringList l;
@@ -154,7 +153,7 @@ void ExchangeSearchDialog::saveSettings ()
 {
   Dialog::saveSettings();
 
-  QSettings settings(g_globalSettings);
+  QSettings settings("QtStalker/qtstalkerrc");
   settings.setValue("exchange_search_dialog_last_selection", _exchange->currentText());
   settings.sync();
 }

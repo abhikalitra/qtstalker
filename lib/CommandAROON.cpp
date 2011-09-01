@@ -22,8 +22,8 @@
 #include "CommandAROON.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -36,73 +36,63 @@ CommandAROON::CommandAROON (QObject *p) : Command (p)
     qDebug("CommandAROON::CommandAROON: error on TA_Initialize");
 }
 
-int CommandAROON::runScript (void *d)
+int CommandAROON::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString uname = sg->get("NAME_UPPER")->getString();
-  Curve *line = script->curve(uname);
+  QString uname = sg->get("OUTPUT_UPPER");
+  Data *line = script->data(uname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_UPPER" << uname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_UPPER" << uname;
     return _ERROR;
   }
 
-  QString lname = sg->get("NAME_LOWER")->getString();
-  line = script->curve(lname);
+  QString lname = sg->get("OUTPUT_LOWER");
+  line = script->data(lname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_LOWER" << lname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_LOWER" << lname;
     return _ERROR;
   }
 
-  QString key = sg->get("HIGH")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  QString s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::runScript: invalid HIGH" << s;
     return _ERROR;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::runScript: invalid LOW" << s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
+  int period = sg->getInteger("PERIOD");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << ihigh << ilow;
-  QList<Curve *> lines = getAROON(list, period);
+  QList<Data *> lines = getAROON(list, period);
   if (! lines.count())
     return _ERROR;
 
-  Curve *upper = lines.at(0);
-  upper->setLabel(uname);
-  script->setCurve(uname, upper);
+  Data *upper = lines.at(0);
+  script->setData(uname, upper);
 
   if (lines.count() == 2)
   {
-    Curve *lower = lines.at(1);
-    lower->setLabel(lname);
-    script->setCurve(lname, lower);
+    Data *lower = lines.at(1);
+    script->setData(lname, lower);
   }
 
   return _OK;
 }
 
-QList<Curve *> CommandAROON::getAROON (QList<Curve *> &list, int period)
+QList<Data *> CommandAROON::getAROON (QList<Data *> &list, int period)
 {
-  QList<Curve *> lines;
+  QList<Data *> lines;
   InputType it;
   QList<int> keys;
   if (it.keys(list, keys))
@@ -136,9 +126,9 @@ QList<Curve *> CommandAROON::getAROON (QList<Curve *> &list, int period)
     return lines;
   }
 
-  Curve *c = new Curve;
+  Data *c = new Data;
   lines.append(c);
-  c = new Curve;
+  c = new Data;
   lines.append(c);
   if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
   {
@@ -150,30 +140,13 @@ QList<Curve *> CommandAROON::getAROON (QList<Curve *> &list, int period)
   return lines;
 }
 
-SettingGroup * CommandAROON::settings ()
+Data * CommandAROON::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("AROONU"));
-  ss->setKey("NAME_UPPER");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("AROONL"));
-  ss->setKey("NAME_LOWER");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 14, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT_UPPER", QString());
+  sg->set("OUTPUT_LOWER", QString());
+  sg->set("HIGH", QString());
+  sg->set("LOW", QString());
+  sg->set("PERIOD", 14);
   return sg;
 }

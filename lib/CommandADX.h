@@ -23,7 +23,6 @@
 #define COMMAND_ADX_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandADX : public Command
 {
@@ -31,9 +30,9 @@ class CommandADX : public Command
 
   public:
     CommandADX (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getADX (QList<Curve *> &, int period, int method);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getADX (QList<Data *> &, int period, int method);
 
   private:
     QStringList _method;

@@ -23,7 +23,6 @@
 #define COMMAND_VAR_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandVAR : public Command
 {
@@ -31,9 +30,9 @@ class CommandVAR : public Command
 
   public:
     CommandVAR (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getVAR (QList<Curve *> &, int, double);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getVAR (QList<Data *> &, int, double);
 };
 
 #endif

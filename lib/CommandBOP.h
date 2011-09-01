@@ -23,7 +23,6 @@
 #define COMMAND_BOP_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandBOP : public Command
 {
@@ -31,9 +30,9 @@ class CommandBOP : public Command
 
   public:
     CommandBOP (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getBOP (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getBOP (QList<Data *> &);
 };
 
 #endif

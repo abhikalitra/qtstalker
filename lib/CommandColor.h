@@ -32,8 +32,8 @@ class CommandColor : public Command
 
   public:
     CommandColor (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
+    int runScript (Data *, Script *);
+    Data * settings ();
 };
 
 #endif

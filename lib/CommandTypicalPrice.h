@@ -23,7 +23,6 @@
 #define COMMAND_TYPICAL_PRICE_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandTypicalPrice : public Command
 {
@@ -31,9 +30,9 @@ class CommandTypicalPrice : public Command
 
   public:
     CommandTypicalPrice (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getTP (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getTP (QList<Data *> &);
 };
 
 #endif

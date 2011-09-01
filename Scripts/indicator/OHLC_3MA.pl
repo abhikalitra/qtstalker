@@ -1,149 +1,180 @@
-# qtstalker OHLC indicator
+# qtstalker OHLC + 3 MA indicator
+
+# general parms
+$chartName = 'OHLC';
+$dateName = 'date';
+$openName = 'open';
+$highName = 'high';
+$lowName = 'low';
+$closeName = 'close';
+$volumeName = 'volume';
+$oiName = 'oi';
+
+# OHLC parms
+$ohlcName = 'OHLC';
+$ohlcColor = 'blue';
+$ohlcZ = '0';
+$ohlcUpColor = 'green';
+$ohlcDownColor = 'red';
+
+# MA1 parms
+$ma1Data = 'ma1';
+$ma1Name = 'MA20';
+$ma1Color = 'yellow';
+$ma1Z = '1';
+$ma1Period = '20';
+$ma1Type = 'EMA';
+$ma1Style = 'Line';
+
+# MA2 parms
+$ma2Data = 'ma2';
+$ma2Name = 'MA50';
+$ma2Color = 'red';
+$ma2Z = '1';
+$ma2Period = '50';
+$ma2Type = 'EMA';
+
+# MA3 parms
+$ma3Data = 'ma3';
+$ma3Name = 'MA200';
+$ma3Color = 'blue';
+$ma3Z = '1';
+$ma3Period = '200';
+$ma3Type = 'EMA';
 
 ###################################################################
 
 $|++;
 
 # create the chart
-$command = "STEP=create chart;
-            COMMAND=CHART;
-            NAME=OHLC;
-            DATE=true;
-            LOG=false;
+$command = "COMMAND=CHART;
+            NAME=$chartName;
+            DATE=1;
+            LOG=0;
             ROW=0;
             COL=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # load current bars
-$command = "STEP=load current symbol;
-            COMMAND=SYMBOL_CURRENT;
-            DATE=date;
-            OPEN=open;
-            HIGH=high;
-            LOW=low;
-            CLOSE=close;
-            VOLUME=volume;
-            OI=oi";
+$command = "COMMAND=SYMBOL_CURRENT;
+            DATE=$dateName;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            VOLUME=$volumeName;
+            OI=$oiName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot OHLC bars
-$command = "STEP=create and plot ohlc;
-            COMMAND=PLOT_OHLC;
-            CHART=create chart:NAME;
-            NAME=ohlc;
-            DATE=load current symbol:DATE;
-            OPEN=load current symbol:OPEN;
-            HIGH=load current symbol:HIGH;
-            LOW=load current symbol:LOW;
-            CLOSE=load current symbol:CLOSE;
-            COLOR=#0000ff;
-            Z=0;
+$command = "COMMAND=PLOT_OHLC;
+            CHART=$chartName;
+            NAME=$ohlcName;
+            STYLE=OHLC;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            COLOR=$ohlcColor;
+            Z=$ohlcZ;
             PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # color up bars
-$command = "STEP=color up ohlc;
-            COMMAND=COLOR;
-            NAME=load current symbol:CLOSE;
-            NAME_OFFSET=0;
-            NAME_2=load current symbol:CLOSE;
-            NAME_2_OFFSET=1;
+$command = "COMMAND=COLOR;
+            INPUT_1=$closeName;
+            INPUT_1_OFFSET=0;
             OP=GT;
-            NAME_3=create and plot ohlc:NAME;
-            NAME_3_OFFSET=0;
-            COLOR=#00ff00";
+            INPUT_2=$closeName;
+            INPUT_2_OFFSET=1;
+            INPUT_3=$ohlcName;
+            INPUT_3_OFFSET=0;
+            COLOR=$ohlcUpColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # color down bars
-$command = "STEP=color down ohlc;
-            COMMAND=COLOR;
-            NAME=load current symbol:CLOSE;
-            NAME_OFFSET=0;
-            NAME_2=load current symbol:CLOSE;
-            NAME_2_OFFSET=1;
+$command = "COMMAND=COLOR;
+            INPUT_1=$closeName;
+            INPUT_1_OFFSET=0;
             OP=LT;
-            NAME_3=create and plot ohlc:NAME;
-            NAME_3_OFFSET=0;
-            COLOR=#ff0000";
+            INPUT_2=$closeName;
+            INPUT_2_OFFSET=1;
+            INPUT_3=$ohlcName;
+            INPUT_3_OFFSET=0;
+            COLOR=$ohlcDownColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create MA1
-$command = "STEP=create MA1;
-            COMMAND=MA;
-            NAME=ma1;
-            INPUT=load current symbol:CLOSE;
-            PERIOD=20;
-            METHOD=EMA";
+$command = "COMMAND=MA;
+            OUTPUT=$ma1Data;
+            INPUT=$closeName;
+            PERIOD=$ma1Period;
+            METHOD=$ma1Type";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create MA2
-$command = "STEP=create MA2;
-            COMMAND=MA;
-            NAME=ma2;
-            INPUT=load current symbol:CLOSE;
-            PERIOD=50;
-            METHOD=EMA";
+$command = "COMMAND=MA;
+            OUTPUT=$ma2Data;
+            INPUT=$closeName;
+            PERIOD=$ma2Period;
+            METHOD=$ma2Type";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create MA3
-$command = "STEP=create MA3;
-            COMMAND=MA;
-            NAME=ma3;
-            INPUT=load current symbol:CLOSE;
-            PERIOD=200;
-            METHOD=EMA";
+$command = "COMMAND=MA;
+            OUTPUT=$ma3Data;
+            INPUT=$closeName;
+            PERIOD=$ma3Period;
+            METHOD=$ma3Type";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot MA1
-$command = "STEP=plot MA1;
-            COMMAND=PLOT_LINE;
-            CHART=create chart:NAME;
-            DATE=load current symbol:DATE;
-            INPUT=create MA1:NAME;
-            NAME=MA20;
-            COLOR=#ff0000;
-            Z=1;
+$command = "COMMAND=PLOT_LINE;
+            CHART=$chartName;
+            NAME=$ma1Name;
+            INPUT=$ma1Data;
+            STYLE=$ma1Style;
+            COLOR=$ma1Color;
+            Z=$ma1Z;
             PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot MA2
-$command = "STEP=plot MA2;
-            COMMAND=PLOT_LINE;
-            CHART=create chart:NAME;
-            DATE=load current symbol:DATE;
-            INPUT=create MA2:NAME;
-            NAME=MA50;
-            COLOR=#ffff00;
-            Z=1;
+$command = "COMMAND=PLOT_LINE;
+            CHART=$chartName;
+            NAME=$ma2Name;
+            INPUT=$ma2Data;
+            STYLE=$ma2Style;
+            COLOR=$ma2Color;
+            Z=$ma2Z;
             PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot MA3
-$command = "STEP=plot MA3;
-            COMMAND=PLOT_LINE;
-            CHART=create chart:NAME;
-            DATE=load current symbol:DATE;
-            INPUT=create MA3:NAME;
-            NAME=MA200;
-            COLOR=#0000ff;
-            Z=1;
+$command = "COMMAND=PLOT_LINE;
+            CHART=$chartName;
+            NAME=$ma3Name;
+            INPUT=$ma3Data;
+            STYLE=$ma3Style;
+            COLOR=$ma3Color;
+            Z=$ma3Z;
             PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # update chart
-$command = "STEP=update chart;
-            COMMAND=CHART_UPDATE;
-            CHART=create chart:NAME";
+$command = "COMMAND=CHART_UPDATE;
+            CHART=$chartName;
+            DATE=$dateName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

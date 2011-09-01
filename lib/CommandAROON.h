@@ -23,7 +23,6 @@
 #define COMMAND_AROON_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandAROON : public Command
 {
@@ -31,9 +30,9 @@ class CommandAROON : public Command
 
   public:
     CommandAROON (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    QList<Curve *> getAROON (QList<Curve *> &, int period);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    QList<Data *> getAROON (QList<Data *> &, int period);
 };
 
 #endif

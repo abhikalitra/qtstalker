@@ -22,8 +22,8 @@
 #include "CommandULTOSC.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -36,68 +36,58 @@ CommandULTOSC::CommandULTOSC (QObject *p) : Command (p)
     qDebug("CommandULTOSC::CommandULTOSC: error on TA_Initialize");
 }
 
-int CommandULTOSC::runScript (void *d)
+int CommandULTOSC::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("HIGH")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  QString s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::command: invalid HIGH" << s;
     return 1;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::command: invalid LOW" << s;
     return 1;
   }
 
-  key = sg->get("CLOSE")->getString();
-  s = script->setting(key)->getString();
-  Curve *iclose = script->curve(s);
+  s = sg->get("CLOSE");
+  Data *iclose = script->data(s);
   if (! iclose)
   {
     qDebug() << _type << "::command: invalid CLOSE" << s;
     return 1;
   }
 
-  int sp = sg->get("PERIOD_SHORT")->getInteger();
+  int sp = sg->getInteger("PERIOD_SHORT");
 
-  int mp = sg->get("PERIOD_MED")->getInteger();
+  int mp = sg->getInteger("PERIOD_MED");
 
-  int lp = sg->get("PERIOD_LONG")->getInteger();
+  int lp = sg->getInteger("PERIOD_LONG");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << ihigh << ilow << iclose;
   line = getULTOSC(list, sp, mp, lp);
   if (! line)
     return 1;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandULTOSC::getULTOSC (QList<Curve *> &list, int sp, int mp, int lp)
+Data * CommandULTOSC::getULTOSC (QList<Data *> &list, int sp, int mp, int lp)
 {
   if (list.count() != 3)
     return 0;
@@ -137,8 +127,8 @@ Curve * CommandULTOSC::getULTOSC (QList<Curve *> &list, int sp, int mp, int lp)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -149,38 +139,15 @@ Curve * CommandULTOSC::getULTOSC (QList<Curve *> &list, int sp, int mp, int lp)
   return c;
 }
 
-SettingGroup * CommandULTOSC::settings ()
+Data * CommandULTOSC::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("CLOSE");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 7, 9999, 2);
-  si->setKey("PERIOD_SHORT");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 14, 9999, 2);
-  si->setKey("PERIOD_MED");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 28, 9999, 2);
-  si->setKey("PERIOD_LONG");
-  sg->set(si);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("HIGH", QString());
+  sg->set("LOW", QString());
+  sg->set("CLOSE", QString());
+  sg->set("PERIOD_SHORT", 7);
+  sg->set("PERIOD_MED", 14);
+  sg->set("PERIOD_LONG", 28);
   return sg;
 }

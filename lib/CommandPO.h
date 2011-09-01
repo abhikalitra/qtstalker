@@ -23,7 +23,6 @@
 #define COMMAND_PO_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandPO : public Command
 {
@@ -37,9 +36,9 @@ class CommandPO : public Command
     };
 
     CommandPO (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getPO (QList<Curve *> &, int, int, int, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getPO (QList<Data *> &, int, int, int, int);
 
   private:
     QStringList _method;

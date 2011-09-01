@@ -22,8 +22,8 @@
 #include "CommandHT.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingList.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -37,32 +37,25 @@ CommandHT::CommandHT (QObject *p) : Command (p)
     qDebug("CommandHT::CommandHT: error on TA_Initialize");
 }
 
-int CommandHT::runScript (void *d)
+int CommandHT::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: INPUT missing" << s;
     return _ERROR;
   }
 
-  s = sg->get("METHOD")->getString();
+  s = sg->get("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -70,19 +63,18 @@ int CommandHT::runScript (void *d)
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in;
   line = getHT(list, method);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandHT::getHT (QList<Curve *> &list, int method)
+Data * CommandHT::getHT (QList<Data *> &list, int method)
 {
   if (! list.count())
     return 0;
@@ -124,12 +116,15 @@ Curve * CommandHT::getHT (QList<Curve *> &list, int method)
         return 0;
       }
 
-      Curve *line = new Curve;
+      Data *line = new CurveData;
       int keyLoop = keys.count() - 1;
       int outLoop = outNb - 1;
       while (keyLoop > -1 && outLoop > -1)
       {
-        line->setBar(keys.at(keyLoop), new CurveBar((double) iout[outLoop]));
+        Data *b = new CurveBar;
+        b->set(CurveBar::_VALUE, (double) iout[outLoop]);
+        line->set(keys.at(keyLoop), b);
+
         keyLoop--;
         outLoop--;
       }
@@ -146,8 +141,8 @@ Curve * CommandHT::getHT (QList<Curve *> &list, int method)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -158,22 +153,11 @@ Curve * CommandHT::getHT (QList<Curve *> &list, int method)
   return c;
 }
 
-SettingGroup * CommandHT::settings ()
+Data * CommandHT::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  SettingList *sl = new SettingList(_method, _method.at(0));
-  sl->setKey("METHOD");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("INPUT", QString());
+  sg->set("METHOD", _method.at(0));
   return sg;
 }

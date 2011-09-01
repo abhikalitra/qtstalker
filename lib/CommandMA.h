@@ -30,8 +30,8 @@ class CommandMA : public Command
 
   public:
     CommandMA (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
+    int runScript (Data *, Script *);
+    Data * settings ();
 };
 
 #endif

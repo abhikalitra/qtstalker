@@ -24,9 +24,6 @@
 
 #include <QStringList>
 
-#include "Curve.h"
-#include "BarData.h"
-
 class CandleType
 {
   public:
@@ -97,9 +94,6 @@ class CandleType
 
     CandleType ();
     int fromString (QString);
-    Curve * getPattern (BarData *, int, double);
-    Curve * getCandles (BarData *, int);
-    Curve * getCandlesPen (BarData *, int, double);
     QStringList list ();
 
   private:

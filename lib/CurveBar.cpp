@@ -21,62 +21,18 @@
 
 #include "CurveBar.h"
 
+#include <QtDebug>
+
 CurveBar::CurveBar ()
 {
-  _color.setNamedColor("red");
+  clear();
 }
 
-CurveBar::CurveBar (double d)
+void CurveBar::clear ()
 {
-  _color.setNamedColor("red");
-  setData(0, d);
-}
+  Data::clear();
 
-CurveBar::CurveBar (QColor c, double d)
-{
-  _color = c;
-  setData(0, d);
-}
-
-double CurveBar::data (int i)
-{
-  return _data.value(i);
-}
-
-double CurveBar::data ()
-{
-  if (count() == 4)
-    return _data.value(3);
-  else
-    return _data.value(0);
-}
-
-void CurveBar::setData (int i, double d)
-{
-  _data.insert(i, d);
-}
-
-void CurveBar::setData (double d)
-{
-  if (count() == 4)
-    setData(3, d);
-  else
-    setData(0, d);
-}
-
-void CurveBar::setColor (QColor d)
-{
-  _color = d;
-}
-
-QColor CurveBar::color ()
-{
-  return _color;
-}
-
-int CurveBar::count ()
-{
-  return (int) _data.count();
+  _type = "CURVE_BAR";
 }
 
 int CurveBar::highLow (double &h, double &l)
@@ -84,76 +40,44 @@ int CurveBar::highLow (double &h, double &l)
   int rc = 1;
   h = -99999999;
   l = 99999999;
-  QHashIterator<int, double> it(_data);
 
+  QHashIterator<QString, QString> it(_data);
   while (it.hasNext())
   {
     it.next();
-    rc = 0;
 
-    if (it.value() > h)
-      h = it.value();
+    int k = it.key().toInt();
 
-    if (it.value() < l)
-      l = it.value();
+    switch ((Parm) k)
+    {
+      case _OPEN:
+      case _HIGH:
+      case _LOW:
+      case _CLOSE:
+      case _VOLUME:
+      case _OI:
+      case _VALUE:
+      {
+        double t = it.value().toDouble();
+
+        if (t > h)
+        {
+          h = t;
+          rc = 0;
+        }
+
+        if (t < l)
+        {
+          l = t;
+          rc = 0;
+        }
+
+        break;
+      }
+      default:
+        break;
+    }
   }
 
   return rc;
-}
-
-void CurveBar::setDateTime (QDateTime d)
-{
-  _dateTime = d;
-}
-
-QDateTime CurveBar::dateTime ()
-{
-  return _dateTime;
-}
-
-int CurveBar::isDate ()
-{
-  return (int) _dateTime.isValid();
-}
-
-void CurveBar::copy (CurveBar *d)
-{
-  QHashIterator<int, double> it(_data);
-  while (it.hasNext())
-  {
-    it.next();
-    d->setData(it.key(), it.value());
-  }
-
-  d->setColor(_color);
-  d->setDateTime(_dateTime);
-}
-
-QString CurveBar::toString ()
-{
-  QStringList l;
-  l << _color.name() << _dateTime.toString(Qt::ISODate);
-
-  int loop = 0;
-  for (; loop < _data.count(); loop++)
-    l << QString::number(_data.value(loop));
-
-  return l.join(",");
-}
-
-int CurveBar::fromString (QString d)
-{
-  QStringList l = d.split(",");
-  if (l.count() < 3)
-    return 1;
-
-  int pos = 0;
-  _color = QColor(l.at(pos++));
-  _dateTime = QDateTime::fromString(l.at(pos++), Qt::ISODate);
-
-  int loop = 0;
-  for (; pos < l.count(); pos++, loop++)
-    setData(loop, l.at(pos).toDouble());
-
-  return 0;
 }

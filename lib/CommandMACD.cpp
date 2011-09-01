@@ -23,9 +23,8 @@
 #include "ta_libc.h"
 #include "InputType.h"
 #include "MAType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingList.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -38,51 +37,44 @@ CommandMACD::CommandMACD (QObject *p) : Command (p)
     qDebug("CommandMACD::CommandMACD: error on TA_Initialize");
 }
 
-int CommandMACD::runScript (void *d)
+int CommandMACD::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString mname = sg->get("NAME_MACD")->getString();
-  Curve *line = script->curve(mname);
+  QString mname = sg->get("OUTPUT_MACD");
+  Data *line = script->data(mname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_MACD" << mname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_MACD" << mname;
     return _ERROR;
   }
 
-  QString sname = sg->get("NAME_SIGNAL")->getString();
-  line = script->curve(sname);
+  QString sname = sg->get("OUTPUT_SIGNAL");
+  line = script->data(sname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_SIGNAL" << sname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_SIGNAL" << sname;
     return _ERROR;
   }
 
-  QString hname = sg->get("NAME_HIST")->getString();
-  line = script->curve(hname);
+  QString hname = sg->get("OUTPUT_HIST");
+  line = script->data(hname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_HIST" << hname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_HIST" << hname;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: INPUT missing" << s;
     return _ERROR;
   }
 
-  int fperiod = sg->get("PERIOD_FAST")->getInteger();
+  int fperiod = sg->getInteger("PERIOD_FAST");
 
   MAType mat;
-  s = sg->get("MA_TYPE_FAST")->getString();
+  s = sg->get("MA_TYPE_FAST");
   int ftype = mat.fromString(s);
   if (ftype == -1)
   {
@@ -90,9 +82,9 @@ int CommandMACD::runScript (void *d)
     return _ERROR;
   }
 
-  int speriod = sg->get("PERIOD_SLOW")->getInteger();
+  int speriod = sg->getInteger("PERIOD_SLOW");
 
-  s = sg->get("MA_TYPE_SLOW")->getString();
+  s = sg->get("MA_TYPE_SLOW");
   int stype = mat.fromString(s);
   if (stype == -1)
   {
@@ -100,9 +92,9 @@ int CommandMACD::runScript (void *d)
     return _ERROR;
   }
 
-  int sigperiod = sg->get("PERIOD_SIGNAL")->getInteger();
+  int sigperiod = sg->getInteger("PERIOD_SIGNAL");
 
-  s = sg->get("MA_TYPE_SIGNAL")->getString();
+  s = sg->get("MA_TYPE_SIGNAL");
   int sigtype = mat.fromString(s);
   if (sigtype == -1)
   {
@@ -110,33 +102,30 @@ int CommandMACD::runScript (void *d)
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in;
-  QList<Curve *> lines = getMACD(list, fperiod, speriod, sigperiod, ftype, stype, sigtype);
+  QList<Data *> lines = getMACD(list, fperiod, speriod, sigperiod, ftype, stype, sigtype);
   if (lines.count() != 3)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Curve *macd = lines.at(0);
-  macd->setLabel(mname);
-  script->setCurve(mname, macd);
+  Data *macd = lines.at(0);
+  script->setData(mname, macd);
 
-  Curve *signal = lines.at(1);
-  signal->setLabel(sname);
-  script->setCurve(sname, signal);
+  Data *signal = lines.at(1);
+  script->setData(sname, signal);
 
-  Curve *hist = lines.at(2);
-  hist->setLabel(hname);
-  script->setCurve(hname, hist);
+  Data *hist = lines.at(2);
+  script->setData(hname, hist);
 
   return _OK;
 }
 
-QList<Curve *> CommandMACD::getMACD (QList<Curve *> &list, int fp, int sp, int sigp, int fma, int sma, int sigma)
+QList<Data *> CommandMACD::getMACD (QList<Data *> &list, int fp, int sp, int sigp, int fma, int sma, int sigma)
 {
-  QList<Curve *> lines;
+  QList<Data *> lines;
   if (! list.count())
     return lines;
 
@@ -178,12 +167,14 @@ QList<Curve *> CommandMACD::getMACD (QList<Curve *> &list, int fp, int sp, int s
     return lines;
   }
 
-  Curve *c = new Curve;
-  lines.append(c);
-  c = new Curve;
-  lines.append(c);
-  c = new Curve;
-  lines.append(c);
+  lines.clear();
+
+  Data *c = new CurveData;
+  lines << c;
+  c = new CurveData;
+  lines << c;
+  c = new CurveData;
+  lines << c;
   if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
   {
     qDeleteAll(lines);
@@ -194,51 +185,18 @@ QList<Curve *> CommandMACD::getMACD (QList<Curve *> &list, int fp, int sp, int s
   return lines;
 }
 
-SettingGroup * CommandMACD::settings ()
+Data * CommandMACD::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME_MACD");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME_SIGNAL");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME_HIST");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 12, 9999, 2);
-  si->setKey("PERIOD_FAST");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 26, 9999, 2);
-  si->setKey("PERIOD_SLOW");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 9, 9999, 2);
-  si->setKey("PERIOD_SIGNAL");
-  sg->set(si);
-
-  MAType mat;
-  SettingList *sl = new SettingList(mat.list(), QString("EMA"));
-  sl->setKey("MA_TYPE_FAST");
-  sg->set(sl);
-
-  sl = new SettingList(mat.list(), QString("EMA"));
-  sl->setKey("MA_TYPE_SLOW");
-  sg->set(sl);
-
-  sl = new SettingList(mat.list(), QString("EMA"));
-  sl->setKey("MA_TYPE_SIGNAL");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT_MACD", QString());
+  sg->set("OUTPUT_SIGNAL", QString());
+  sg->set("OUTPUT_HIST", QString());
+  sg->set("INPUT", QString());
+  sg->set("PERIOD_FAST", 12);
+  sg->set("PERIOD_SLOW", 26);
+  sg->set("PERIOD_SIGNAL", 9);
+  sg->set("MA_TYPE_FAST", QString("EMA"));
+  sg->set("MA_TYPE_SLOW", QString("EMA"));
+  sg->set("MA_TYPE_SIGNAL", QString("EMA"));
   return sg;
 }

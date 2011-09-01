@@ -20,13 +20,10 @@
  */
 
 #include "CommandColor.h"
-#include "Globals.h"
 #include "Script.h"
 #include "Operator.h"
-#include "SettingString.h"
-#include "SettingList.h"
-#include "SettingColor.h"
-#include "SettingInteger.h"
+#include "InputType.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -35,30 +32,23 @@ CommandColor::CommandColor (QObject *p) : Command (p)
   _type = "COLOR";
 }
 
-int CommandColor::runScript (void *d)
+int CommandColor::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  // verify NAME
-  QString key = sg->get("NAME")->getString();
-  QString name = script->setting(key)->getString();
-  Curve *line = script->curve(name);
+  // verify INPUT_1
+  QString s = sg->get("INPUT_1");
+  Data *line = script->data(s);
   if (! line)
   {
-    qDebug() << _type << "::runScript: NAME not found" << name;
+    qDebug() << _type << "::runScript: INPUT_1 not found" << s;
     return _ERROR;
   }
 
   // get NAME_OFFSET
-  int offset = sg->get("NAME_OFFSET")->getInteger();
+  int offset = sg->getInteger("INPUT_1_OFFSET");
 
   // verify OP
   Operator top;
-  QString s = sg->get("OP")->getString();
+  s = sg->get("OP");
   Operator::Type op = top.stringToOperator(s);
   if (op == -1)
   {
@@ -66,64 +56,63 @@ int CommandColor::runScript (void *d)
     return _ERROR;
   }
 
-  // verify NAME2
+  // verify INPUT_2
   int valueFlag2 = FALSE;
   double value2 = 0;
-  Curve *line2 = 0;
-  key = sg->get("NAME_2")->getString();
+  Data *line2 = 0;
+  s = sg->get("INPUT_2");
   bool ok;
-  value2 = key.toDouble(&ok);
+  value2 = s.toDouble(&ok);
   if (ok)
     valueFlag2++;
   else
   {
-    s = script->setting(key)->getString();
-    line2 = script->curve(s);
+    line2 = script->data(s);
     if (! line2)
     {
-      qDebug() << _type << "::runScript: invalid NAME_2" << s;
+      qDebug() << _type << "::runScript: invalid INPUT_2" << s;
       return _ERROR;
     }
   }
 
   // get NAME_2_OFFSET
-  int offset2 = sg->get("NAME_2_OFFSET")->getInteger();
+  int offset2 = sg->getInteger("INPUT_2_OFFSET");
 
-  // verify NAME3
-  key = sg->get("NAME_3")->getString();
-  s = script->setting(key)->getString();
-  Curve *line3 = script->curve(s);
+  // verify INPUT_3
+  s = sg->get("INPUT_3");
+  Data *line3 = script->data(s);
   if (! line3)
   {
-    qDebug() << _type << "::runScript: NAME_3 not found" << s;
+    qDebug() << _type << "::runScript: INPUT_3 not found" << s;
     return _ERROR;
   }
 
   // get NAME_3_OFFSET
-  int offset3 = sg->get("NAME_3_OFFSET")->getInteger();
+  int offset3 = sg->getInteger("INPUT_3_OFFSET");
 
-  QColor color = sg->get("COLOR")->getColor();
+  QColor color = sg->getColor("COLOR");
 
-  // find lowest and highest index values
-  int high = 0;
-  int low = 0;
-  line->keyRange(low, high);
-
+  QList<Data *> list;
+  list << line << line3;
   if (! valueFlag2)
+    list << line2;
+
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
   {
-    int tlow = 0;
-    int thigh = 0;
-    line2->keyRange(tlow, thigh);
-    if (tlow < low)
-      low = tlow;
-    if (thigh > high)
-      high = thigh;
+    qDebug() << _type << "::runScript: invalid keys";
+    return _ERROR;
   }
 
-  int loop = low;
-  for (; loop <= high; loop++)
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
   {
-    CurveBar *bar = line->bar(loop - offset);
+    int tloop = loop - offset;
+    if (tloop < 0)
+      continue;
+
+    Data *bar = line->getData(keys.at(tloop));
     if (! bar)
       continue;
 
@@ -132,60 +121,42 @@ int CommandColor::runScript (void *d)
       v2 = value2;
     else
     {
-      CurveBar *bar2 = line2->bar(loop - offset2);
+      tloop = loop - offset2;
+      if (tloop < 0)
+        continue;
+
+      Data *bar2 = line2->getData(keys.at(tloop));
       if (! bar2)
         continue;
-      v2 = bar2->data();
+
+      v2 = bar2->getDouble(CurveBar::_VALUE);
     }
 
-    CurveBar *bar3 = line3->bar(loop - offset3);
+    tloop = loop - offset3;
+    if (tloop < 0)
+      continue;
+
+    Data *bar3 = line3->getData(keys.at(tloop));
     if (! bar3)
       continue;
 
-    if (top.test(bar->data(), op, v2))
-      bar3->setColor(color);
+    if (top.test(bar->getDouble(CurveBar::_VALUE), op, v2))
+      bar3->set(CurveBar::_COLOR, color);
   }
 
   return _OK;
 }
 
-SettingGroup * CommandColor::settings ()
+Data * CommandColor::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 0, 999999, 0);
-  si->setKey("NAME_OFFSET");
-  sg->set(si);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("NAME_2");
-  sg->set(ss);
-
-  si = new SettingInteger(0, 0, 0, 999999, 0);
-  si->setKey("NAME_2_OFFSET");
-  sg->set(si);
-
-  Operator op;
-  SettingList *sl = new SettingList(Setting::_NONE, Setting::_NONE, op.list(), QString("EQ"));
-  sl->setKey("OP");
-  sg->set(sl);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("NAME_3");
-  sg->set(ss);
-
-  si = new SettingInteger(0, 0, 0, 999999, 0);
-  si->setKey("NAME_3_OFFSET");
-  sg->set(si);
-
-  SettingColor *sc = new SettingColor(QColor(Qt::red));
-  sc->setKey("COLOR");
-  sg->set(sc);
-
+  Data *sg = new Data;
+  sg->set("INPUT_1", QString());
+  sg->set("INPUT_1_OFFSET", 0);
+  sg->set("INPUT_2", QString());
+  sg->set("INPUT_2_OFFSET", 0);
+  sg->set("INPUT_3", QString());
+  sg->set("INPUT_3_OFFSET", 0);
+  sg->set("OP", QString("EQ"));
+  sg->set("COLOR", QColor(Qt::red));
   return sg;
 }

@@ -23,7 +23,6 @@
 #define COMMAND_STOCH_SLOW_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandStochSlow : public Command
 {
@@ -31,9 +30,9 @@ class CommandStochSlow : public Command
 
   public:
     CommandStochSlow (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    QList<Curve *> getSTOCHS (QList<Curve *> &, int fkperiod, int skperiod, int sdperiod, int kma, int dma);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    QList<Data *> getSTOCHS (QList<Data *> &, int fkperiod, int skperiod, int sdperiod, int kma, int dma);
 };
 
 #endif

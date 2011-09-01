@@ -21,10 +21,8 @@
 
 #include "CommandMA.h"
 #include "MAType.h"
-#include "SettingInteger.h"
-#include "SettingString.h"
-#include "SettingList.h"
 #include "Script.h"
+#include "CurveData.h"
 
 #include <QtDebug>
 
@@ -33,16 +31,10 @@ CommandMA::CommandMA (QObject *p) : Command (p)
   _type = "MA";
 }
 
-int CommandMA::runScript (void *d)
+int CommandMA::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
   MAType mat;
-  QString s = sg->get("METHOD")->getString();
+  QString s = sg->get("METHOD");
   int method = mat.fromString(s);
   if (method == -1)
   {
@@ -50,56 +42,41 @@ int CommandMA::runScript (void *d)
     return _ERROR;
   }
 
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: INPUT missing" << s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
+  int period = sg->getInteger("PERIOD");
 
   line = mat.getMA(in, period, method);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  line->set(CurveData::_LABEL, name);
+
+  script->setData(name, line);
 
   return _OK;
 }
 
-SettingGroup * CommandMA::settings ()
+Data * CommandMA::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 10, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
-  MAType mat;
-  SettingList *sl = new SettingList(mat.list(), QString("EMA"));
-  sl->setKey("METHOD");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("INPUT", QString("close"));
+  sg->set("PERIOD", 10);
+  sg->set("METHOD", QString("EMA"));
   return sg;
 }

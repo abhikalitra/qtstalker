@@ -30,8 +30,8 @@ class CommandPlotOHLC : public Command
 
   public:
     CommandPlotOHLC (QObject *);
-    SettingGroup * settings ();
-    int runScript (void *);
+    Data * settings ();
+    int runScript (Data *, Script *);
 };
 
 #endif

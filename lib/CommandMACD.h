@@ -23,7 +23,6 @@
 #define COMMAND_MACD_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandMACD : public Command
 {
@@ -31,9 +30,9 @@ class CommandMACD : public Command
 
   public:
     CommandMACD (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    QList<Curve *> getMACD (QList<Curve *> &, int fp, int sp, int sigp, int fma, int sma, int sigma);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    QList<Data *> getMACD (QList<Data *> &, int fp, int sp, int sigp, int fma, int sma, int sigma);
 };
 
 #endif

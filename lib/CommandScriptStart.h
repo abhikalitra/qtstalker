@@ -30,9 +30,8 @@ class CommandScriptStart : public Command
 
   public:
     CommandScriptStart (QObject *);
-    int runScript (void *);
-    int message (IPCMessage &, QString &);
-    SettingGroup * settings ();
+    int runScript (Data *, Script *);
+    Data * settings ();
 };
 
 #endif

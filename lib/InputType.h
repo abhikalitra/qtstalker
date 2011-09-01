@@ -25,37 +25,16 @@
 #include <QStringList>
 #include <QList>
 
-#include "BarData.h"
-#include "Curve.h"
-#include "Script.h"
 #include "ta_libc.h"
+#include "Data.h"
 
 class InputType
 {
   public:
-    enum Type
-    {
-      _DATE,
-      _OPEN,
-      _HIGH,
-      _LOW,
-      _CLOSE,
-      _VOLUME,
-      _OI
-    };
-
     InputType ();
-    QStringList & list ();
-    InputType::Type fromString (QString);
-    Curve * input (BarData *, QString);
-    Curve * ohlc (BarData *);
-    int inputs (QList<Curve *> &, QStringList &, Script *, BarData *);
-    int keys (QList<Curve *> &, QList<int> &);
-    int fill (QList<Curve *> &, QList<int> &, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[]);
-    int outputs (QList<Curve *> &, QList<int> &, int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[]);
-
-  private:
-    QStringList _list;
+    int keys (QList<Data *> &, QList<int> &);
+    int fill (QList<Data *> &, QList<int> &, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[]);
+    int outputs (QList<Data *> &, QList<int> &, int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[]);
 };
 
 #endif

@@ -20,11 +20,8 @@
  */
 
 #include "CommandDialog.h"
-#include "Globals.h"
 
 #include <QtDebug>
-#include <QSettings>
-#include <QFormLayout>
 
 CommandDialog::CommandDialog (QWidget *p) : Dialog (p)
 {
@@ -34,7 +31,8 @@ CommandDialog::CommandDialog (QWidget *p) : Dialog (p)
   _keyPos = "command_dialog_window_position";
 
   QStringList l;
-  l << "QtStalker" + g_session + ":" << tr("Insert Command");
+//  l << "QtStalker" + g_session + ":" << tr("Insert Command");
+  l << "QtStalker" << ":" << tr("Insert Command");
   setWindowTitle(l.join(" "));
 
   createGUI();
@@ -50,7 +48,7 @@ void CommandDialog::createGUI ()
   _message->hide();
 }
 
-void CommandDialog::setWidgets (SettingGroup *settings)
+void CommandDialog::setWidgets (Data *settings)
 {
   _settings = settings;
 
@@ -60,66 +58,66 @@ void CommandDialog::setWidgets (SettingGroup *settings)
   form->setSpacing(2);
   base->setLayout(form);
 
-  QList<QString> keys = settings->keys();
+  QList<QString> keys = settings->keys(Data::_ALL);
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    Setting *set = settings->get(keys.at(loop));
+    Data *set = settings->get(keys.at(loop));
 
-    switch ((Setting::Type) set->type())
+    switch ((Data::Type) set->type())
     {
-      case Setting::_LIST:
+      case Data::_LIST:
       {
         QComboBox *w = new QComboBox;
-        w->setToolTip(set->tip());
+//        w->setToolTip(set->tip());
         w->addItems(set->getList());
         w->setCurrentIndex(w->findText(set->getString()));
         form->addRow(set->key(), w);
         _comboBox.insert(set->key(), w);
         break;
       }
-      case Setting::_STRING:
+      case Data::_STRING:
       {
         LineEdit *w = new LineEdit(0);
         w->setText(set->getString());
-        w->setToolTip(set->tip());
+//        w->setToolTip(set->tip());
         form->addRow(set->key(), w);
         _lineEdit.insert(set->key(), w);
         break;
       }
-      case Setting::_COLOR:
+      case Data::_COLOR:
       {
         ColorButton *w = new ColorButton(base, set->getColor());
-        w->setToolTip(set->tip());
+//        w->setToolTip(set->tip());
         form->addRow(set->key(), w);
         _colorButton.insert(set->key(), w);
         break;
       }
-      case Setting::_INTEGER:
+      case Data::_INTEGER:
       {
         QSpinBox *w = new QSpinBox;
-        w->setToolTip(set->tip());
-        w->setRange(set->getIntegerLow(), set->getIntegerHigh());
+//        w->setToolTip(set->tip());
+//        w->setRange(set->getIntegerLow(), set->getIntegerHigh());
         w->setValue(set->getInteger());
         form->addRow(set->key(), w);
         _spinBox.insert(set->key(), w);
         break;
       }
-      case Setting::_DOUBLE:
+      case Data::_DOUBLE:
       {
         QDoubleSpinBox *w = new QDoubleSpinBox;
-        w->setToolTip(set->tip());
-        w->setRange(set->getDoubleLow(), set->getDoubleHigh());
+//        w->setToolTip(set->tip());
+//        w->setRange(set->getDoubleLow(), set->getDoubleHigh());
         w->setValue(set->getDouble());
         form->addRow(set->key(), w);
         _doubleSpinBox.insert(set->key(), w);
         break;
       }
-      case Setting::_DATETIME:
+      case Data::_DATETIME:
       {
         QDateTimeEdit *w = new QDateTimeEdit;
-        w->setToolTip(set->tip());
+//        w->setToolTip(set->tip());
         w->setCalendarPopup(TRUE);
         w->setDisplayFormat("yyyy.MM.dd HH:mm:ss");
         w->setDateTime(set->getDateTime());
@@ -127,23 +125,25 @@ void CommandDialog::setWidgets (SettingGroup *settings)
         _dateTimeEdit.insert(set->key(), w);
         break;
       }
-      case Setting::_BOOL:
+      case Data::_BOOL:
       {
         QCheckBox *w = new QCheckBox;
         w->setChecked(set->getBool());
-        w->setToolTip(set->tip());
+//        w->setToolTip(set->tip());
         form->addRow(set->key(), w);
         _checkBox.insert(set->key(), w);
       }
-      case Setting::_FILE:
+/*
+      case Data::_FILE:
       {
         FileButton *w = new FileButton(base);
-        w->setFiles(set->getFile());
-        w->setToolTip(set->tip());
+        w->setFiles(set->getList());
+//        w->setToolTip(set->tip());
         form->addRow(set->key(), w);
         _fileButton.insert(set->key(), w);
         break;
       }
+*/
       default:
 	break;
     }
@@ -154,62 +154,64 @@ void CommandDialog::setWidgets (SettingGroup *settings)
 
 void CommandDialog::done ()
 {
-  QStringList keys = _settings->keys();
+  QStringList keys = _settings->keys(Data::_ALL);
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    Setting *v = _settings->get(keys.at(loop));
+    Data *v = _settings->get(keys.at(loop));
 
-    switch ((Setting::Type) v->type())
+    switch ((Data::Type) v->type())
     {
-      case Setting::_STRING:
+      case Data::_STRING:
       {
         LineEdit *w = _lineEdit.value(keys.at(loop));
 	v->setString(w->text());
 	break;
       }
-      case Setting::_COLOR:
+      case Data::_COLOR:
       {
         ColorButton *w = _colorButton.value(keys.at(loop));
 	v->setColor(w->color());
 	break;
       }
-      case Setting::_INTEGER:
+      case Data::_INTEGER:
       {
         QSpinBox *w = _spinBox.value(keys.at(loop));
 	v->setInteger(w->value());
 	break;
       }
-      case Setting::_DOUBLE:
+      case Data::_DOUBLE:
       {
         QDoubleSpinBox *w = _doubleSpinBox.value(keys.at(loop));
 	v->setDouble(w->value());
 	break;
       }
-      case Setting::_BOOL:
+      case Data::_BOOL:
       {
         QCheckBox *w = _checkBox.value(keys.at(loop));
 	v->setBool(w->isChecked());
 	break;
       }
-      case Setting::_DATETIME:
+      case Data::_DATETIME:
       {
         QDateTimeEdit *w = _dateTimeEdit.value(keys.at(loop));
 	v->setDateTime(w->dateTime());
 	break;
       }
-      case Setting::_LIST:
+      case Data::_LIST:
       {
         QComboBox *w = _comboBox.value(keys.at(loop));
         v->setString(w->currentText());
         break;
       }
-      case Setting::_FILE:
+/*
+      case Data::_FILE:
       {
         FileButton *w = _fileButton.value(keys.at(loop));
-        v->setFile(w->files());
+        v->setList(w->files());
         break;
       }
+*/
       default:
 	break;
     }

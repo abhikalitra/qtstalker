@@ -20,7 +20,6 @@
  */
 
 #include "ExchangeDataBase.h"
-#include "Globals.h"
 //#include "qtstalker_defines.h"
 
 #include <QFile>
@@ -58,11 +57,11 @@ int ExchangeDataBase::createExchanges ()
   getExchanges(l);
   if (! l.count())
     return create();
-    
+
   // check if last modification date matches current one
   // if they match then no changes, no need to re-create the table
   // if not, new data is in file so re-create the table
-  QSettings settings(g_globalSettings);
+  QSettings settings("QtStalker/qtstalkerrc");
   QDateTime dt = settings.value("exchange_database_file_date", QDateTime::currentDateTime()).toDateTime();
   if (! dt.isValid())
   {
@@ -76,7 +75,7 @@ int ExchangeDataBase::createExchanges ()
 
   if (dt == dt2)
     return 0;
-  
+
   settings.setValue("exchange_database_file_date", dt2);
   settings.sync();
 
@@ -85,10 +84,10 @@ int ExchangeDataBase::createExchanges ()
 
 int ExchangeDataBase::create ()
 {
-  QSettings settings(g_globalSettings);
-  
+  QSettings settings("QtStalker/qtstalkerrc");
+
   QString inputFile = settings.value("db_data_directory").toString() + "exchanges.csv";
-  
+
   QFile file(inputFile);
   if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
     return 1;
@@ -100,7 +99,7 @@ int ExchangeDataBase::create ()
 
   if (deleteTable())
     return 1;
-  
+
   if (createTable())
     return 1;
 
@@ -185,7 +184,7 @@ int ExchangeDataBase::verifyExchangeName (QString &exchange)
 void ExchangeDataBase::getExchanges (QStringList &l)
 {
   l.clear();
-  
+
   QSqlQuery q(_db);
   QString s = "SELECT code FROM exchangeIndex ORDER BY code ASC";
   q.exec(s);
@@ -213,10 +212,10 @@ void ExchangeDataBase::getFieldList (QString &field, QStringList &rl)
 int ExchangeDataBase::search (QString &country, QString &city, QString &pat, QStringList &rl)
 {
   rl.clear();
-  
+
   QString s;
   int whereFlag = FALSE;
-  
+
   if (pat.isEmpty())
     s = "SELECT name FROM exchangeIndex";
   else
@@ -235,7 +234,7 @@ int ExchangeDataBase::search (QString &country, QString &city, QString &pat, QSt
       whereFlag = TRUE;
     }
   }
-  
+
   if (! city.isEmpty())
   {
     if (whereFlag)

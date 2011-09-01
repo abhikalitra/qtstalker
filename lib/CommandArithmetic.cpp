@@ -21,8 +21,8 @@
 
 #include "CommandArithmetic.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingList.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -32,119 +32,139 @@ CommandArithmetic::CommandArithmetic (QObject *p) : Command (p)
   _method << "ADD" << "DIV" << "MULT" << "SUB";
 }
 
-int CommandArithmetic::runScript (void *d)
+int CommandArithmetic::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
   // verify NAME
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME" << name;
+    message(script->session(), _type, "::runScript: duplicate OUTPUT", name);
     return _ERROR;
   }
 
-  // verify INPUT
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  // verify INPUT_1
+  QString s = sg->get("INPUT_1");
+  Data *in = script->data(s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT not found" << s;
+    message(script->session(), _type, "::runScript: invalid INPUT_1", s);
     return _ERROR;
   }
 
-  // verify INPUT2
-  Curve *in2 = 0;
-  key = sg->get("INPUT_2")->getString();
+  // verify INPUT_2
+  Data *in2 = 0;
+  int delFlag = 0;
+  s = sg->get("INPUT_2");
   bool ok;
-  double value = key.toDouble(&ok);
+  double value = s.toDouble(&ok);
   if (ok)
   {
-    in2 = new Curve;
-    QList<int> keys;
-    in->keys(keys);
-    int loop2 = 0;
-    for (; loop2 < keys.count(); loop2++)
-      in2->setBar(keys.at(loop2), new CurveBar(value));
-    in2->setLabel(QString::number(value));
-    script->setCurve(QString::number(value), in2);
+    in2 = new CurveData;
+    QList<int> keys = in->barKeys();
+    int loop = 0;
+    for (; loop < keys.count(); loop++)
+    {
+      Data *b = new CurveBar;
+      b->set(CurveBar::_VALUE, value);
+      in2->set(keys.at(loop), b);
+    }
+    delFlag++;
   }
   else
   {
-    s = script->setting(key)->getString();
-    in2 = script->curve(s);
+    in2 = script->data(s);
     if (! in2)
     {
-      qDebug() << _type << "::runScript: invalid INPUT_2" << s;
+      message(script->session(), _type, "::runScript: invalid INPUT_2", s);
       return _ERROR;
     }
   }
 
-  s = sg->get("METHOD")->getString();
+  s = sg->get("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    qDebug() << _type << "::runScript: invalid METHOD" << s;
+    message(script->session(), _type, "::runScript: invalid METHOD", s);
     return _ERROR;
   }
 
   line = getArithmetic(in, in2, method);
   if (! line)
   {
-    qDebug() << _type << "::runScript: getArithmetic error" << name;
+    message(script->session(), _type, "::runScript: getArithmetic error", name);
+    if (delFlag)
+      delete in2;
     return _ERROR;
   }
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  if (delFlag)
+    delete in2;
+
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandArithmetic::getArithmetic (Curve *in, Curve *in2, int method)
+Data * CommandArithmetic::getArithmetic (Data *in, Data *in2, int method)
 {
-  QList<int> keys;
-  int size = in->count();
-  in->keys(keys);
+  QList<Data *> list;
+  list << in << in2;
 
-  if (in2->count() < size)
+  InputType it;
+  QList<int> keys;
+  if (it.keys(list, keys))
   {
-    size = in2->count();
-    in2->keys(keys);
+    message(QString(), _type, "::getArithmetic", "invalid keys");
+    return 0;
   }
 
-  Curve *line = new Curve;
+  Data *line = new CurveData;
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    CurveBar *bar = in->bar(keys.at(loop));
+    Data *bar = in->getData(keys.at(loop));
     if (! bar)
       continue;
 
-    CurveBar *bar2 = in2->bar(keys.at(loop));
+    Data *bar2 = in2->getData(keys.at(loop));
     if (! bar2)
       continue;
 
     switch (method)
     {
       case 0: // add
-        line->setBar(keys.at(loop), new CurveBar(bar->data() + bar2->data()));
+      {
+        double v = bar->getDouble(CurveBar::_VALUE) + bar2->getDouble(CurveBar::_VALUE);
+        Data *b = new CurveBar;
+        b->set(CurveBar::_VALUE, v);
+        line->set(keys.at(loop), b);
 	break;
+      }
       case 1: // div
-        line->setBar(keys.at(loop), new CurveBar(bar->data() / bar2->data()));
+      {
+        double v = bar->getDouble(CurveBar::_VALUE) / bar2->getDouble(CurveBar::_VALUE);
+        Data *b = new CurveBar;
+        b->set(CurveBar::_VALUE, v);
+        line->set(keys.at(loop), b);
 	break;
+      }
       case 2: // mult
-        line->setBar(keys.at(loop), new CurveBar(bar->data() * bar2->data()));
+      {
+        double v = bar->getDouble(CurveBar::_VALUE) * bar2->getDouble(CurveBar::_VALUE);
+        Data *b = new CurveBar;
+        b->set(CurveBar::_VALUE, v);
+        line->set(keys.at(loop), b);
 	break;
+      }
       case 3: // sub
-        line->setBar(keys.at(loop), new CurveBar(bar->data() - bar2->data()));
+      {
+        double v = bar->getDouble(CurveBar::_VALUE) - bar2->getDouble(CurveBar::_VALUE);
+        Data *b = new CurveBar;
+        b->set(CurveBar::_VALUE, v);
+        line->set(keys.at(loop), b);
 	break;
+      }
       default:
 	break;
     }
@@ -153,26 +173,12 @@ Curve * CommandArithmetic::getArithmetic (Curve *in, Curve *in2, int method)
   return line;
 }
 
-SettingGroup * CommandArithmetic::settings ()
+Data * CommandArithmetic::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString());
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT_2");
-  sg->set(ss);
-
-  SettingList *sl = new SettingList(_method, QString("ADD"));
-  sl->setKey("METHOD");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("METHOD", QString());
+  sg->set("INPUT_1", QString());
+  sg->set("INPUT_2", QString());
   return sg;
 }

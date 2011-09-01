@@ -23,7 +23,6 @@
 #define COMMAND_VIDYA_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandVIDYA : public Command
 {
@@ -31,10 +30,10 @@ class CommandVIDYA : public Command
 
   public:
     CommandVIDYA (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getVIDYA (QList<Curve *> &, int, int);
-    Curve * getCMO (QList<Curve *> &list, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getVIDYA (QList<Data *> &, int, int);
+    Data * getCMO (QList<Data *> &list, int);
 };
 
 #endif

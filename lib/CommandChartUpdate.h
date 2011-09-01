@@ -30,9 +30,8 @@ class CommandChartUpdate : public Command
 
   public:
     CommandChartUpdate (QObject *);
-    int runScript (void *);
-    int message (IPCMessage &, QString &);
-    SettingGroup * settings ();
+    int runScript (Data *, Script *);
+    Data * settings ();
 };
 
 #endif

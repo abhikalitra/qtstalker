@@ -30,6 +30,8 @@
 #include <QDateTime>
 #include <QStringList>
 
+#include "BarLength.h"
+
 class DateRange
 {
   public:
@@ -54,6 +56,8 @@ class DateRange
     QStringList list ();
     int toType (QString);
     void dateRangeText (DateRange::Range, QString &);
+    void dateInterval (QDateTime dt, BarLength::Length length, QDateTime &startDate, QDateTime &endDate);
+    QString rangeKey (QDateTime sd, QDateTime ed);
 
   private:
     QStringList _list;

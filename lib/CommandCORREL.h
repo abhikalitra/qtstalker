@@ -23,7 +23,6 @@
 #define COMMAND_CORREL_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandCORREL : public Command
 {
@@ -31,9 +30,9 @@ class CommandCORREL : public Command
 
   public:
     CommandCORREL (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getCORREL (QList<Curve *> &, int period);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getCORREL (QList<Data *> &, int period);
 };
 
 #endif

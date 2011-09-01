@@ -30,8 +30,11 @@ class CommandCandlePattern : public Command
 
   public:
     CommandCandlePattern (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getPattern (Data *iopen, Data *ihigh, Data *ilow, Data *iclose, int type, double pen);
+    Data * getCandles (Data *iopen, Data *ihigh, Data *ilow, Data *iclose, int type);
+    Data * getCandlesPen (Data *iopen, Data *ihigh, Data *ilow, Data *iclose, int type, double pen);
 };
 
 #endif

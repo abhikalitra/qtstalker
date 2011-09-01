@@ -83,7 +83,7 @@ SettingGroup * CommandBuy::settings ()
   SettingGroup *sg = new SettingGroup;
   sg->setCommand(_type);
 
-  SettingString *ss = new SettingString(Setting::_CHART, Setting::_NONE, QString());
+  SettingString *ss = new SettingString(QString());
   ss->setKey("CHART");
   sg->set(ss);
 
@@ -99,7 +99,7 @@ SettingGroup * CommandBuy::settings ()
   sc->setKey("COLOR");
   sg->set(sc);
 
-  SettingInteger *si = new SettingInteger(0, 0, 1, 99, 0);
+  SettingInteger *si = new SettingInteger(1, 99, 0);
   si->setKey("Z");
   sg->set(si);
 

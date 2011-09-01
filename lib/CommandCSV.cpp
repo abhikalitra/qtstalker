@@ -21,6 +21,7 @@
 
 #include "CommandCSV.h"
 #include "SettingString.h"
+#include "SettingFile.h"
 #include "SettingList.h"
 #include "SettingBool.h"
 #include "QuoteDataBase.h"
@@ -51,7 +52,7 @@ int CommandCSV::runScript (void *d)
   QString key = sg->get("CSV_FILE")->getString();
   Setting *set = script->setting(key);
   if (set)
-    files = set->getFile();
+    files = set->getList();
   else
     files << key;
 
@@ -255,11 +256,11 @@ SettingGroup * CommandCSV::settings ()
   SettingGroup *sg = new SettingGroup;
   sg->setCommand(_type);
 
-  SettingString *ss = new SettingString(QString());
-  ss->setKey("CSV_FILE");
-  sg->set(ss);
+  SettingFile *sf = new SettingFile(QStringList());
+  sf->setKey("CSV_FILE");
+  sg->set(sf);
 
-  ss = new SettingString(QString());
+  SettingString *ss = new SettingString(QString());
   ss->setKey("FORMAT");
   sg->set(ss);
 

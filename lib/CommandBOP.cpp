@@ -22,7 +22,8 @@
 #include "CommandBOP.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -35,71 +36,60 @@ CommandBOP::CommandBOP (QObject *p) : Command (p)
     qDebug("CommandBOP::CommandBOP: error on TA_Initialize");
 }
 
-int CommandBOP::runScript (void *d)
+int CommandBOP::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("OPEN")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *iopen = script->curve(s);
+  QString s = sg->get("OPEN");
+  Data *iopen = script->data(s);
   if (! iopen)
   {
     qDebug() << _type << "::runScript: invalid OPEN" << s;
     return _ERROR;
   }
 
-  key = sg->get("HIGH")->getString();
-  s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::runScript: invalid HIGH" << s;
     return _ERROR;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::runScript: invalid LOW" << s;
     return _ERROR;
   }
 
-  key = sg->get("CLOSE")->getString();
-  s = script->setting(key)->getString();
-  Curve *iclose = script->curve(s);
+  s = sg->get("CLOSE");
+  Data *iclose = script->data(s);
   if (! iclose)
   {
     qDebug() << _type << "::runScript: invalid CLOSE" << s;
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << iopen << ihigh << ilow << iclose;
   line = getBOP(list);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandBOP::getBOP (QList<Curve *> &list)
+Data * CommandBOP::getBOP (QList<Data *> &list)
 {
   if (list.count() != 4)
     return 0;
@@ -138,8 +128,8 @@ Curve * CommandBOP::getBOP (QList<Curve *> &list)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -150,30 +140,13 @@ Curve * CommandBOP::getBOP (QList<Curve *> &list)
   return c;
 }
 
-SettingGroup * CommandBOP::settings ()
+Data * CommandBOP::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("ATR"));
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("OPEN");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("CLOSE");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("OPEN", QString());
+  sg->set("HIGH", QString());
+  sg->set("LOW", QString());
+  sg->set("CLOSE", QString());
   return sg;
 }

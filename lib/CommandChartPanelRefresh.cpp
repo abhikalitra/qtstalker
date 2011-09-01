@@ -20,8 +20,6 @@
  */
 
 #include "CommandChartPanelRefresh.h"
-#include "Globals.h"
-#include "Script.h"
 #include "IPCMessage.h"
 #include "MessageSend.h"
 
@@ -32,15 +30,9 @@ CommandChartPanelRefresh::CommandChartPanelRefresh (QObject *p) : Command (p)
   _type = "CHART_PANEL_REFRESH";
 }
 
-int CommandChartPanelRefresh::runScript (void *d)
+int CommandChartPanelRefresh::runScript (Data *, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  IPCMessage ipcm(script->session(), _type, "*", script->file());
+  IPCMessage ipcm(script->session(), _type, "*", script->file(), QString());
 
   MessageSend ms(this);
   ms.send(ipcm, QString());
@@ -48,17 +40,8 @@ int CommandChartPanelRefresh::runScript (void *d)
   return _OK;
 }
 
-int CommandChartPanelRefresh::message (IPCMessage &, QString &)
+Data * CommandChartPanelRefresh::settings ()
 {
-  g_chartPanel->updateList();
-
-  return _OK;
-}
-
-SettingGroup * CommandChartPanelRefresh::settings ()
-{
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
+  Data *sg = new Data;
   return sg;
 }

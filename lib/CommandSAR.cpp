@@ -22,8 +22,8 @@
 #include "CommandSAR.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingDouble.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -36,57 +36,48 @@ CommandSAR::CommandSAR (QObject *p) : Command (p)
     qDebug("CommandSAR::CommandSAR: error on TA_Initialize");
 }
 
-int CommandSAR::runScript (void *d)
+int CommandSAR::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("HIGH")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  QString s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::runScript: invalid HIGH" << s;
     return _ERROR;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::runScript: invalid LOW" << s;
     return _ERROR;
   }
 
-  double init = sg->get("STEP_INITIAL")->getDouble();
+  double init = sg->getDouble("STEP_INITIAL");
 
-  double max = sg->get("STEP_MAX")->getDouble();
+  double max = sg->getDouble("STEP_MAX");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << ihigh << ilow;
   line = getSAR(list, init, max);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandSAR::getSAR (QList<Curve *> &list, double init, double max)
+Data * CommandSAR::getSAR (QList<Data *> &list, double init, double max)
 {
   if (list.count() != 2)
     return 0;
@@ -123,9 +114,8 @@ Curve * CommandSAR::getSAR (QList<Curve *> &list, double init, double max)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
-  c->setType("Dot");
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -136,30 +126,13 @@ Curve * CommandSAR::getSAR (QList<Curve *> &list, double init, double max)
   return c;
 }
 
-SettingGroup * CommandSAR::settings ()
+Data * CommandSAR::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
-  SettingDouble *sd = new SettingDouble(0, 0, 0.02, 1, 0);
-  sd->setKey("STEP_INITIAL");
-  sg->set(sd);
-
-  sd = new SettingDouble(0, 0, 0.2, 1, 0);
-  sd->setKey("STEP_MAX");
-  sg->set(sd);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("HIGH", QString());
+  sg->set("LOW", QString());
+  sg->set("STEP_INITIAL", 0.02);
+  sg->set("STEP_MAX", 0.2);
   return sg;
 }

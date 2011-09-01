@@ -22,9 +22,8 @@
 #include "CommandVAR.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingDouble.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -37,48 +36,40 @@ CommandVAR::CommandVAR (QObject *p) : Command (p)
     qDebug("CommandVAR::CommandVAR: error on TA_Initialize");
 }
 
-int CommandVAR::runScript (void *d)
+int CommandVAR::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: invalid INPUT" << s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
+  int period = sg->getInteger("PERIOD");
 
-  double dev = sg->get("DEVIATION")->getDouble();
+  double dev = sg->getDouble("DEVIATION");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in;
   line = getVAR(list, period, dev);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandVAR::getVAR (QList<Curve *> &list, int period, double dev)
+Data * CommandVAR::getVAR (QList<Data *> &list, int period, double dev)
 {
   if (! list.count())
     return 0;
@@ -113,8 +104,8 @@ Curve * CommandVAR::getVAR (QList<Curve *> &list, int period, double dev)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -125,26 +116,12 @@ Curve * CommandVAR::getVAR (QList<Curve *> &list, int period, double dev)
   return c;
 }
 
-SettingGroup * CommandVAR::settings ()
+Data * CommandVAR::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 20, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
-  SettingDouble *sd = new SettingDouble(0, 0, 2.0, 9999.0, -9999.0);
-  sd->setKey("DEVIATION");
-  sg->set(sd);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("INPUT", QString());
+  sg->set("PERIOD", 20);
+  sg->set("DEVIATION", 2.0);
   return sg;
 }

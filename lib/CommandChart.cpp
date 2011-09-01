@@ -20,107 +20,33 @@
  */
 
 #include "CommandChart.h"
-#include "Globals.h"
-#include "Script.h"
 #include "IPCMessage.h"
 #include "MessageSend.h"
-#include "SettingString.h"
-#include "SettingBool.h"
-#include "SettingInteger.h"
 
 #include <QtDebug>
-#include <QSettings>
 
 CommandChart::CommandChart (QObject *p) : Command (p)
 {
   _type = "CHART";
 }
 
-int CommandChart::runScript (void *d)
+int CommandChart::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QStringList data;
-  data << sg->get("NAME")->toString() << sg->get("DATE")->toString();
-  data << sg->get("LOG")->toString() << sg->get("ROW")->toString() << sg->get("COL")->toString();
-
-  IPCMessage ipcm(script->session(), _type, "*", script->file());
+  IPCMessage ipcm(script->session(), _type, "*", script->file(), sg->type());
 
   MessageSend ms(this);
-  ms.send(ipcm, data);
+  ms.send(ipcm, sg->toString());
 
   return _OK;
 }
 
-int CommandChart::message (IPCMessage &mess, QString &d)
+Data * CommandChart::settings ()
 {
-  QStringList l = d.split(",");
-  if (l.count() != 5)
-  {
-    qDebug() << "CommandChart::message: invalid # parms" << l;
-    return _ERROR;
-  }
-
-  Plot *plot = g_plotGroup->plot(l.at(0));
-  if (! plot)
-  {
-    plot = new Plot(l.at(0), g_plotGroup);
-    plot->setBarSpacing(g_controlPanel->barSpaceButton()->getPixelSpace());
-    plot->loadSettings();
-    plot->setScriptFile(mess.scriptFile());
-    plot->setRow(l.at(3).toInt());
-    plot->setCol(l.at(4).toInt());
-
-    connect(plot, SIGNAL(signalInfoMessage(Message)), g_infoPanel, SLOT(showInfo(Message)));
-    connect(g_controlPanel->barSpaceButton(), SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
-    connect(g_controlPanel, SIGNAL(signalValueChanged(int)), plot, SLOT(setStartIndex(int)));
-    connect(plot, SIGNAL(signalIndex(int)), g_controlPanel, SLOT(setStartValue(int)));
-
-    g_plotGroup->setPlot(plot);
-  }
-
-  plot->clear();
-
-  SettingBool v(FALSE);
-  v.fromString(l.at(1));
-  plot->showDate(v.getBool());
-
-  v.fromString(l.at(2));
-  plot->setLogScaling(v.getBool());
-
-  plot->update();
-
-  return _OK;
-}
-
-SettingGroup * CommandChart::settings ()
-{
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CHART, QString("chart1"));
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  SettingBool *sb = new SettingBool(Setting::_NONE, Setting::_BOOL, TRUE);
-  sb->setKey("DATE");
-  sg->set(sb);
-
-  sb = new SettingBool(Setting::_NONE, Setting::_BOOL, FALSE);
-  sb->setKey("LOG");
-  sg->set(sb);
-
-  SettingInteger *si = new SettingInteger(0, 0, 0, 2, 0);
-  si->setKey("ROW");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 0, 99, 0);
-  si->setKey("COL");
-  sg->set(si);
-
+  Data *sg = new Data;
+  sg->set("NAME", QString());
+  sg->set("DATE", "1");
+  sg->set("LOG", "0");
+  sg->set("ROW", "0");
+  sg->set("COL", "0");
   return sg;
 }

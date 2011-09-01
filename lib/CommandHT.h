@@ -23,7 +23,6 @@
 #define COMMAND_HT_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandHT : public Command
 {
@@ -39,9 +38,9 @@ class CommandHT : public Command
     };
 
     CommandHT (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getHT (QList<Curve *> &, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getHT (QList<Data *> &, int);
 
   protected:
     QStringList _method;

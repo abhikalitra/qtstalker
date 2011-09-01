@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QStringList>
 #include <QProcess>
+#include <QTextStream>
 
 #include "Script.h"
 
@@ -49,6 +50,7 @@ class QtStalkerScript : public QObject
     Script *_script;
     QStringList _messages;
     int _stop;
+    QTextStream _msg;
 };
 
 #endif

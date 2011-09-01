@@ -23,7 +23,6 @@
 #define COMMAND_MEDIAN_PRICE_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandMedianPrice : public Command
 {
@@ -31,9 +30,9 @@ class CommandMedianPrice : public Command
 
   public:
     CommandMedianPrice (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getMP (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getMP (QList<Data *> &);
 };
 
 #endif

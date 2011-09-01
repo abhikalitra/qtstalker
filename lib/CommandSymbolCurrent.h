@@ -32,8 +32,8 @@ class CommandSymbolCurrent : public Command
 
   public:
     CommandSymbolCurrent (QObject *);
-    SettingGroup * settings ();
-    int runScript (void *);
+    int runScript (Data *, Script *);
+    Data * settings ();
 };
 
 #endif

@@ -23,7 +23,6 @@
 #define COMMAND_MOM_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandMOM : public Command
 {
@@ -31,9 +30,9 @@ class CommandMOM : public Command
 
   public:
     CommandMOM (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getMOM (QList<Curve *> &, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getMOM (QList<Data *> &, int);
 };
 
 #endif

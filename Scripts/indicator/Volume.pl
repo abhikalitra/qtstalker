@@ -1,78 +1,121 @@
 # qtstalker VOL indicator
 
+# general parms
+$chartName = 'VOL';
+$dateName = 'date';
+$openName = 'open';
+$highName = 'high';
+$lowName = 'low';
+$closeName = 'close';
+$volumeName = 'volume';
+$oiName = 'oi';
+
+#vol parms
+$volName = 'VOL';
+$volColor = 'blue';
+$volZ = '0';
+$volUpColor = 'green';
+$volDownColor = 'red';
+$volStyle = 'Histogram Bar';
+
+# MA parms
+$maData = 'ma';
+$maName = 'MA20';
+$maColor = 'yellow';
+$maZ = '1';
+$maPeriod = '20';
+$maType = 'EMA';
+$maStyle = 'Line';
+
 ###################################################################
 
 $|++;
 
 # create the chart
-$command = "STEP=create chart;
-            COMMAND=CHART;
-            NAME=VOL2;
-            DATE=false;
-            LOG=false;
+$command = "COMMAND=CHART;
+            NAME=$chartName;
+            DATE=0;
+            LOG=0;
             ROW=1;
-            COL=2";
+            COL=0";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # load current bars
-$command = "STEP=load current symbol;
-            COMMAND=SYMBOL_CURRENT;
-            DATE=date;
-            OPEN=open;
-            HIGH=high;
-            LOW=low;
-            CLOSE=close;
-            VOLUME=volume;
-            OI=oi";
+$command = "COMMAND=SYMBOL_CURRENT;
+            DATE=$dateName;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            VOLUME=$volumeName;
+            OI=$oiName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot the histogram
-$command = "STEP=create vol;
-            COMMAND=PLOT_HISTOGRAM_BAR;
-            CHART=create chart:NAME;
-            DATE=load current symbol:DATE;
-            INPUT=load current symbol:VOLUME;
-            NAME=VOL;
-            COLOR=#0000ff;
-            Z=0;
+$command = "COMMAND=PLOT_HISTOGRAM;
+            CHART=$chartName;
+            HIGH=$volumeName;
+            LOW=0;
+            NAME=$volName;
+            STYLE=$volStyle;
+            COLOR=$volColor;
+            Z=$volZ;
             PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # color up bars
-$command = "STEP=color up vol;
-            COMMAND=COLOR;
-            NAME=load current symbol:CLOSE;
-            NAME_OFFSET=0;
-            NAME_2=load current symbol:CLOSE;
-            NAME_2_OFFSET=1;
+$command = "COMMAND=COLOR;
+            INPUT_1=$closeName;
+            INPUT_1_OFFSET=0;
             OP=GT;
-            NAME_3=create vol:NAME;
-            NAME_3_OFFSET=0;
-            COLOR=#00FF00";
+            INPUT_2=$closeName;
+            INPUT_2_OFFSET=1;
+            INPUT_3=$volName;
+            INPUT_3_OFFSET=0;
+            COLOR=$volUpColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # color down bars
-$command = "STEP=color down vol;
-            COMMAND=COLOR;
-            NAME=load current symbol:CLOSE;
-            NAME_OFFSET=0;
-            NAME_2=load current symbol:CLOSE;
-            NAME_2_OFFSET=1;
+$command = "COMMAND=COLOR;
+            INPUT_1=$closeName;
+            INPUT_1_OFFSET=0;
             OP=LT;
-            NAME_3=create vol:NAME;
-            NAME_3_OFFSET=0;
-            COLOR=#FF0000";
+            INPUT_2=$closeName;
+            INPUT_2_OFFSET=1;
+            INPUT_3=$volName;
+            INPUT_3_OFFSET=0;
+            COLOR=$volDownColor";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# MA
+$command = "COMMAND=MA;
+            OUTPUT=$maData;
+            INPUT=$volumeName;
+            PERIOD=$maPeriod;
+            METHOD=$maType";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# plot the MA
+$command = "COMMAND=PLOT_LINE;
+            CHART=$chartName;
+            NAME=$maName;
+            INPUT=$maData;
+            STYLE=$maStyle;
+            COLOR=$maColor;
+            Z=$maZ;
+            PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # update chart
-$command = "STEP=update chart;
-            COMMAND=CHART_UPDATE;
-            CHART=create chart:NAME";
+$command = "COMMAND=CHART_UPDATE;
+            CHART=$chartName;
+            DATE=$dateName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
-

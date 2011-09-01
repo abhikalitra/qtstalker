@@ -23,7 +23,6 @@
 #define COMMAND_SINE_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandSINE : public Command
 {
@@ -31,9 +30,9 @@ class CommandSINE : public Command
 
   public:
     CommandSINE (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    QList<Curve *> getSINE (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    QList<Data *> getSINE (QList<Data *> &);
 };
 
 #endif

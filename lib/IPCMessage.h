@@ -27,7 +27,7 @@
 class IPCMessage
 {
   public:
-     IPCMessage (QString, QString, QString, QString);
+     IPCMessage (QString, QString, QString, QString, QString);
      IPCMessage ();
      void init ();
      QString toString ();
@@ -40,6 +40,8 @@ class IPCMessage
      QString type ();
      void setScriptFile (QString);
      QString scriptFile ();
+     void setDataType (QString);
+     QString dataType ();
 
   private:
     int _parmCount;
@@ -47,6 +49,7 @@ class IPCMessage
     QString _command;
     QString _type;
     QString _scriptFile;
+    QString _dataType;
 };
 
 #endif

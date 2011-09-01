@@ -21,8 +21,8 @@
 
 #include "CommandFI.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -31,53 +31,44 @@ CommandFI::CommandFI (QObject *p) : Command (p)
   _type = "FI";
 }
 
-int CommandFI::runScript (void *d)
+int CommandFI::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("CLOSE")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *iclose = script->curve(s);
+  QString s = sg->get("CLOSE");
+  Data *iclose = script->data(s);
   if (! iclose)
   {
     qDebug() << _type << "::runScript: invalid CLOSE" << s;
     return _ERROR;
   }
 
-  key = sg->get("VOLUME")->getString();
-  s = script->setting(key)->getString();
-  Curve *ivol = script->curve(s);
+  s = sg->get("VOLUME");
+  Data *ivol = script->data(s);
   if (! ivol)
   {
     qDebug() << _type << "::runScript: invalid VOLUME" << s;
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << iclose << ivol;
   line = getFI(list);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandFI::getFI (QList<Curve *> &list)
+Data * CommandFI::getFI (QList<Data *> &list)
 {
   if (list.count() != 2)
     return 0;
@@ -87,50 +78,41 @@ Curve * CommandFI::getFI (QList<Curve *> &list)
   if (it.keys(list, keys))
     return 0;
 
-  Curve *line = new Curve;
-  Curve *close = list.at(0);
-  Curve *vol = list.at(1);
+  Data *line = new CurveData;
+  Data *close = list.at(0);
+  Data *vol = list.at(1);
   int loop = 1;
   double force = 0;
   for (; loop < keys.count(); loop++)
   {
-    CurveBar *cbar = close->bar(keys.at(loop));
+    Data *cbar = close->getData(keys.at(loop));
     if (! cbar)
       continue;
 
-    CurveBar *ycbar = close->bar(keys.at(loop - 1));
+    Data *ycbar = close->getData(keys.at(loop - 1));
     if (! ycbar)
       continue;
 
-    CurveBar *vbar = vol->bar(keys.at(loop));
+    Data *vbar = vol->getData(keys.at(loop));
     if (! vbar)
       continue;
 
-    double cdiff = cbar->data() - ycbar->data();
-    force = vbar->data() * cdiff;
+    double cdiff = cbar->getDouble(CurveBar::_VALUE) - ycbar->getDouble(CurveBar::_VALUE);
+    force = vbar->getDouble(CurveBar::_VALUE) * cdiff;
 
-    line->setBar(keys.at(loop), new CurveBar(force));
+    Data *b = new CurveBar;
+    b->set(CurveBar::_VALUE, force);
+    line->set(keys.at(loop), b);
   }
 
   return line;
 }
 
-SettingGroup * CommandFI::settings ()
+Data * CommandFI::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("CLOSE");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("VOLUME");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("CLOSE", QString());
+  sg->set("VOLUME", QString());
   return sg;
 }

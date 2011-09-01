@@ -20,8 +20,7 @@
  */
 
 #include "ChartObjectDataBase.h"
-#include "SettingGroup.h"
-#include "ChartObjectFactory.h"
+#include "ChartObjectData.h"
 
 #include <QtDebug>
 
@@ -36,12 +35,9 @@ void ChartObjectDataBase::init ()
 {
   QSqlQuery q(_db);
   QString s = "CREATE TABLE IF NOT EXISTS " + _table + " (";
-  s.append("a INT PRIMARY KEY");
-  s.append(", id INT");
-  s.append(", type TEXT");
+  s.append("id INT PRIMARY KEY");
   s.append(", symbol TEXT");
   s.append(", chart TEXT");
-  s.append(", key TEXT");
   s.append(", data TEXT");
   s.append(")");
   q.exec(s);
@@ -49,7 +45,7 @@ void ChartObjectDataBase::init ()
     qDebug() << "ChartObjectDataBase::init: " << q.lastError().text();
 }
 
-int ChartObjectDataBase::load (QString chart, QString symbol, QHash<QString, ChartObject *> &l)
+int ChartObjectDataBase::load (QString chart, QString symbol, QHash<QString, Data *> &l)
 {
   qDeleteAll(l);
   l.clear();
@@ -61,7 +57,7 @@ int ChartObjectDataBase::load (QString chart, QString symbol, QHash<QString, Cha
     return 1;
 
   QSqlQuery q(_db);
-  QString s = "SELECT id,type,key,data FROM " + _table + " WHERE chart='" + chart + "' AND symbol='" + symbol + "'";
+  QString s = "SELECT id,data FROM " + _table + " WHERE chart='" + chart + "' AND symbol='" + symbol + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -69,44 +65,31 @@ int ChartObjectDataBase::load (QString chart, QString symbol, QHash<QString, Cha
     return 1;
   }
 
-  ChartObjectFactory fac;
-
   while (q.next())
   {
-    ChartObject *co = l.value(q.value(0).toString());
-    if (! co)
+    Data *co = new ChartObjectData;
+    if (co->fromString(q.value(1).toString()))
     {
-      co = fac.chartObject(q.value(1).toString());
-      if (! co)
-        continue;
-
-      co->setID(q.value(0).toString());
-      co->setPlotName(chart);
-      co->setSymbol(symbol);
-
-      l.insert(q.value(0).toString(), co);
+      delete co;
+      qDebug() << "ChartObjectDataBase::load: Data::fromString error";
+      continue;
     }
 
-    SettingGroup *settings = co->settings();
-
-    Setting *set = settings->get(q.value(2).toString());
-    if (! set)
-      continue;
-
-    set->fromString(q.value(3).toString());
+    l.insert(q.value(0).toString(), co);
   }
 
   return 0;
 }
 
-int ChartObjectDataBase::load (ChartObject *co)
+int ChartObjectDataBase::load (Data *co)
 {
-  if (co->ID().isEmpty())
+  QString id = co->get(ChartObjectData::_ID);
+  if (id.isEmpty())
     return 1;
 
   QSqlQuery q(_db);
 
-  QString s = "SELECT key,data FROM " + _table + " WHERE id='" + co->ID() + "'";
+  QString s = "SELECT data FROM " + _table + " WHERE id='" + id + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -114,51 +97,40 @@ int ChartObjectDataBase::load (ChartObject *co)
     return 1;
   }
 
-  SettingGroup *settings = co->settings();
-
   while (q.next())
   {
-    Setting *set = settings->get(q.value(0).toString());
-    if (! set)
-      continue;
-
-    set->fromString(q.value(1).toString());
+    co->clear();
+    if (co->fromString(q.value(0).toString()))
+    {
+      qDebug() << "ChartObjectDataBase::load: Data::fromString error";
+      return 1;
+    }
   }
 
   return 0;
 }
 
-int ChartObjectDataBase::save (ChartObject *co)
+int ChartObjectDataBase::save (Data *co)
 {
   QStringList l;
-  l << co->ID();
+  l << co->get(ChartObjectData::_ID);
   if (remove(l))
     return 1;
 
   QSqlQuery q(_db);
-  SettingGroup *settings = co->settings();
-  QList<QString> keys = settings->keys();
 
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
+  QString s = "INSERT OR REPLACE INTO " + _table + " VALUES (";
+  s.append(co->get(ChartObjectData::_ID));
+  s.append(",'" + co->get(ChartObjectData::_SYMBOL) + "'");
+  s.append(",'" + co->get(ChartObjectData::_CHART) + "'");
+  s.append(",'" + co->toString() + "'");
+  s.append(")");
+  q.exec(s);
+  if (q.lastError().isValid())
   {
-    Setting *set = settings->get(keys.at(loop));
-
-    QString s = "INSERT OR REPLACE INTO " + _table + " VALUES (";
-    s.append("NULL"); // auto increment
-    s.append("," + co->ID());
-    s.append(",'" + co->type() + "'");
-    s.append(",'" + co->symbol() + "'");
-    s.append(",'" + co->plotName() + "'");
-    s.append(",'" + keys.at(loop) + "'");
-    s.append(",'" + set->toString() + "'");
-    s.append(")");
-    q.exec(s);
-    if (q.lastError().isValid())
-    {
-      qDebug() << "ChartObjectDataBase::save: " << q.lastError().text();
-      qDebug() << s;
-    }
+    qDebug() << "ChartObjectDataBase::save: " << q.lastError().text();
+    qDebug() << s;
+    return 1;
   }
 
   return 0;
@@ -220,4 +192,3 @@ int ChartObjectDataBase::lastId ()
 
   return id;
 }
-

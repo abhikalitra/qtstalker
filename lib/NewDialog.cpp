@@ -20,7 +20,6 @@
  */
 
 #include "NewDialog.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -44,7 +43,7 @@ void NewDialog::createGUI ()
   _vbox->insertWidget(0, _title);
 
   _edit = new LineEdit(this);
-  
+
   _name = new QComboBox;
   _name->setLineEdit(_edit);
   _name->setEditable(TRUE);
@@ -73,7 +72,7 @@ void NewDialog::done ()
   saveSettings();
 
   emit signalDone(name);
-  
+
   accept();
 }
 

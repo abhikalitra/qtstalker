@@ -20,7 +20,6 @@
  */
 
 #include "Dialog.h"
-#include "Globals.h"
 #include "Doc.h"
 
 #include <QtDebug>
@@ -92,7 +91,7 @@ void Dialog::cancel ()
 // virtual
 void Dialog::loadSettings ()
 {
-  QSettings settings(g_globalSettings);
+  QSettings settings("QtStalker/qtstalkerrc");
 
   QSize sz = settings.value(_keySize, QSize(200,200)).toSize();
   resize(sz);
@@ -106,7 +105,7 @@ void Dialog::loadSettings ()
 // virtual
 void Dialog::saveSettings ()
 {
-  QSettings settings(g_globalSettings);
+  QSettings settings("QtStalker/qtstalkerrc");
   settings.setValue(_keySize, size());
   settings.setValue(_keyPos, pos());
   settings.sync();

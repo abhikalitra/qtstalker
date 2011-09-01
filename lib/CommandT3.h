@@ -23,7 +23,6 @@
 #define COMMAND_T3_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandT3 : public Command
 {
@@ -31,9 +30,9 @@ class CommandT3 : public Command
 
   public:
     CommandT3 (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getT3 (QList<Curve *> &, int, double);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getT3 (QList<Data *> &, int, double);
 };
 
 #endif

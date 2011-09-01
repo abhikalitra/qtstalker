@@ -23,7 +23,6 @@
 #define COMMAND_STDDEV_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandSTDDEV : public Command
 {
@@ -31,9 +30,9 @@ class CommandSTDDEV : public Command
 
   public:
     CommandSTDDEV (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getSTDDEV (QList<Curve *> &, int, double);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getSTDDEV (QList<Data *> &, int, double);
 };
 
 #endif

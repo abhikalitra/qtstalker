@@ -23,10 +23,8 @@
 #include "ta_libc.h"
 #include "MAType.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingDouble.h"
-#include "SettingList.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -39,54 +37,44 @@ CommandBBANDS::CommandBBANDS (QObject *p) : Command (p)
     qDebug("CommandBBANDS::CommandBBANDS: error on TA_Initialize");
 }
 
-int CommandBBANDS::runScript (void *d)
+int CommandBBANDS::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString uname = sg->get("NAME_UPPER")->getString();
-  Curve *line = script->curve(uname);
+  QString uname = sg->get("OUTPUT_UPPER");
+  Data *line = script->data(uname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_UPPER" << uname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_UPPER" << uname;
     return _ERROR;
   }
 
-  QString mname = sg->get("NAME_MIDDLE")->getString();
-  line = script->curve(mname);
+  QString mname = sg->get("OUTPUT_MIDDLE");
+  line = script->data(mname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_MIDDLE" << mname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_MIDDLE" << mname;
     return _ERROR;
   }
 
-  QString lname = sg->get("NAME_LOWER")->getString();
-  line = script->curve(lname);
+  QString lname = sg->get("OUTPUT_LOWER");
+  line = script->data(lname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_LOWER" << lname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_LOWER" << lname;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *input = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *input = script->data(s);
   if (! input)
   {
     qDebug() << _type << "::runScript: invalid INPUT" << s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
-
-  if (input->count() < period)
-    return _ERROR;
+  int period = sg->getInteger("PERIOD");
 
   MAType types;
-  s = sg->get("MA_TYPE")->getString();
+  s = sg->get("MA_TYPE");
   int type = types.fromString(s);
   if (type == -1)
   {
@@ -94,37 +82,34 @@ int CommandBBANDS::runScript (void *d)
     return _ERROR;
   }
 
-  double udev = sg->get("DEV_UP")->getDouble();
+  double udev = sg->getDouble("DEV_UP");
 
-  double ldev = sg->get("DEV_DOWN")->getDouble();
+  double ldev = sg->getDouble("DEV_DOWN");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << input;
-  QList<Curve *> lines = getBBANDS(list, period, udev, ldev, type);
+  QList<Data *> lines = getBBANDS(list, period, udev, ldev, type);
   if (lines.count() != 3)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Curve *upper = lines.at(0);
-  upper->setLabel(uname);
-  script->setCurve(uname, upper);
+  Data *upper = lines.at(0);
+  script->setData(uname, upper);
 
-  Curve *middle = lines.at(1);
-  middle->setLabel(mname);
-  script->setCurve(mname, middle);
+  Data *middle = lines.at(1);
+  script->setData(mname, middle);
 
-  Curve *lower = lines.at(2);
-  lower->setLabel(lname);
-  script->setCurve(lname, lower);
+  Data *lower = lines.at(2);
+  script->setData(lname, lower);
 
   return _OK;
 }
 
-QList<Curve *> CommandBBANDS::getBBANDS (QList<Curve *> &list, int period, double udev, double ldev, int type)
+QList<Data *> CommandBBANDS::getBBANDS (QList<Data *> &list, int period, double udev, double ldev, int type)
 {
-  QList<Curve *> lines;
+  QList<Data *> lines;
   if (! list.count())
     return lines;
 
@@ -164,12 +149,14 @@ QList<Curve *> CommandBBANDS::getBBANDS (QList<Curve *> &list, int period, doubl
     return lines;
   }
 
-  Curve *c = new Curve;
-  lines.append(c);
-  c = new Curve;
-  lines.append(c);
-  c = new Curve;
-  lines.append(c);
+  lines.clear();
+
+  Data *c = new Data;
+  lines << c;
+  c = new Data;
+  lines << c;
+  c = new Data;
+  lines << c;
   if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
   {
     qDeleteAll(lines);
@@ -180,43 +167,16 @@ QList<Curve *> CommandBBANDS::getBBANDS (QList<Curve *> &list, int period, doubl
   return lines;
 }
 
-SettingGroup * CommandBBANDS::settings ()
+Data * CommandBBANDS::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("BBU"));
-  ss->setKey("NAME_UPPER");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("BBM"));
-  ss->setKey("NAME_MIDDLE");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("BBL"));
-  ss->setKey("NAME_LOWER");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 14, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
-  SettingDouble *sd = new SettingDouble(0, 0, 2.0, 9999.0, -9999.0);
-  sd->setKey("DEV_UP");
-  sg->set(sd);
-
-  sd = new SettingDouble(0, 0, 2.0, 9999.0, -9999.0);
-  sd->setKey("DEV_DOWN");
-  sg->set(sd);
-
-  MAType mat;
-  SettingList *sl = new SettingList(mat.list(), QString("EMA"));
-  sl->setKey("MA_TYPE");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT_UPPER", QString());
+  sg->set("OUTPUT_MIDDLE", QString());
+  sg->set("OUTPUT_LOWER", QString());
+  sg->set("INPUT", QString());
+  sg->set("PERIOD", 14);
+  sg->set("DEV_UP", 2.0);
+  sg->set("DEV_DOWN", 2.0);
+  sg->set("MA_TYPE", QString("EMA"));
   return sg;
 }

@@ -24,10 +24,8 @@
 
 #include "CommandSZ.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingDouble.h"
-#include "SettingList.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -37,41 +35,33 @@ CommandSZ::CommandSZ (QObject *p) : Command (p)
   _method << "LONG" << "SHORT";
 }
 
-int CommandSZ::runScript (void *d)
+int CommandSZ::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("HIGH")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  QString s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::runScript: invalid HIGH" << s;
     return _ERROR;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::runScript: invalid LOW" << s;
     return _ERROR;
   }
 
-  s = sg->get("METHOD")->getString();
+  s = sg->get("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -79,25 +69,24 @@ int CommandSZ::runScript (void *d)
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
+  int period = sg->getInteger("PERIOD");
 
-  int no_decline_period = sg->get("PERIOD_NO_DECLINE")->getInteger();
+  int no_decline_period = sg->getInteger("PERIOD_NO_DECLINE");
 
-  double coefficient = sg->get("COEFFICIENT")->getDouble();
+  double coefficient = sg->getDouble("COEFFICIENT");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << ihigh << ilow;
-  Curve *pl = getSZ(list, method, period, no_decline_period, coefficient);
+  Data *pl = getSZ(list, method, period, no_decline_period, coefficient);
   if (! pl)
     return _ERROR;
 
-  pl->setLabel(name);
-  script->setCurve(name, pl);
+  script->setData(name, pl);
 
   return _OK;
 }
 
-Curve * CommandSZ::getSZ (QList<Curve *> &list, int method, int period, int no_decline_period, double coefficient)
+Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_decline_period, double coefficient)
 {
   if (list.count() != 2)
     return 0;
@@ -117,8 +106,8 @@ Curve * CommandSZ::getSZ (QList<Curve *> &list, int method, int period, int no_d
   if (position & 2) // short
     display_dntrend = 1;
 
-  Curve *sz_uptrend = new Curve;
-  Curve *sz_dntrend = new Curve;
+  Data *sz_uptrend = new CurveData;
+  Data *sz_dntrend = new CurveData;
 
   double uptrend_stop = 0;
   double dntrend_stop = 0;
@@ -138,8 +127,8 @@ Curve * CommandSZ::getSZ (QList<Curve *> &list, int method, int period, int no_d
     old_dntrend_stops[loop] = 0;
   }
 
-  Curve *ihigh = list.at(0);
-  Curve *ilow = list.at(1);
+  Data *ihigh = list.at(0);
+  Data *ilow = list.at(1);
   int ipos = period + 1;
   int start = ipos;
   for (; ipos < keys.count(); ipos++)
@@ -155,26 +144,26 @@ Curve * CommandSZ::getSZ (QList<Curve *> &list, int method, int period, int no_d
     double dntrend_noise_cnt = 0;
     for (lbloop = lbstart; lbloop < ipos; lbloop++)
     {
-      CurveBar *hbar = ihigh->bar(keys.at(lbloop));
+      Data *hbar = ihigh->getData(keys.at(lbloop));
       if (! hbar)
         continue;
 
-      CurveBar *phbar = ihigh->bar(keys.at(lbloop - 1));
+      Data *phbar = ihigh->getData(keys.at(lbloop - 1));
       if (! phbar)
         continue;
 
-      CurveBar *lbar = ilow->bar(keys.at(lbloop));
+      Data *lbar = ilow->getData(keys.at(lbloop));
       if (! lbar)
         continue;
 
-      CurveBar *plbar = ilow->bar(keys.at(lbloop - 1));
+      Data *plbar = ilow->getData(keys.at(lbloop - 1));
       if (! plbar)
         continue;
 
-      double lo_curr = lbar->data();
-      double lo_last = plbar->data();
-      double hi_curr = hbar->data();
-      double hi_last = phbar->data();
+      double lo_curr = lbar->getDouble(CurveBar::_VALUE);
+      double lo_last = plbar->getDouble(CurveBar::_VALUE);
+      double hi_curr = hbar->getDouble(CurveBar::_VALUE);
+      double hi_last = phbar->getDouble(CurveBar::_VALUE);
       if (lo_last > lo_curr)
       {
         uptrend_noise_avg += lo_last - lo_curr;
@@ -192,16 +181,16 @@ Curve * CommandSZ::getSZ (QList<Curve *> &list, int method, int period, int no_d
     if (dntrend_noise_cnt > 0)
       dntrend_noise_avg /= dntrend_noise_cnt;
 
-    CurveBar *phbar = ihigh->bar(keys.at(ipos - 1));
+    Data *phbar = ihigh->getData(keys.at(ipos - 1));
     if (! phbar)
       continue;
 
-    CurveBar *plbar = ilow->bar(keys.at(ipos - 1));
+    Data *plbar = ilow->getData(keys.at(ipos - 1));
     if (! plbar)
       continue;
 
-    double lo_last = plbar->data();
-    double hi_last = phbar->data();
+    double lo_last = plbar->getDouble(CurveBar::_VALUE);
+    double hi_last = phbar->getDouble(CurveBar::_VALUE);
     uptrend_stop = lo_last - coefficient * uptrend_noise_avg;
     dntrend_stop = hi_last + coefficient * dntrend_noise_avg;
 
@@ -228,11 +217,16 @@ Curve * CommandSZ::getSZ (QList<Curve *> &list, int method, int period, int no_d
     old_uptrend_stops[0] = uptrend_stop;
     old_dntrend_stops[0] = dntrend_stop;
 
-    sz_uptrend->setBar(keys.at(ipos), new CurveBar(adjusted_uptrend_stop));
-    sz_dntrend->setBar(keys.at(ipos), new CurveBar(adjusted_dntrend_stop));
+    Data *b = new CurveBar;
+    b->set(CurveBar::_VALUE, adjusted_uptrend_stop);
+    sz_uptrend->set(keys.at(ipos), b);
+
+    b = new CurveBar;
+    b->set(CurveBar::_VALUE, adjusted_dntrend_stop);
+    sz_dntrend->set(keys.at(ipos), b);
   }
 
-  Curve *pl = 0;
+  Data *pl = 0;
   if (display_uptrend)
   {
     pl = sz_uptrend;
@@ -248,38 +242,15 @@ Curve * CommandSZ::getSZ (QList<Curve *> &list, int method, int period, int no_d
   return pl;
 }
 
-SettingGroup * CommandSZ::settings ()
+Data * CommandSZ::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 10, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 2, 9999, 1);
-  si->setKey("PERIOD_NO_DECLINE");
-  sg->set(si);
-
-  SettingDouble *sd = new SettingDouble(0, 0, 2, 9999, -9999);
-  sd->setKey("COEFFICIENT");
-  sg->set(sd);
-
-  SettingList *sl = new SettingList(_method, _method.at(0));
-  sl->setKey("METHOD");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("HIGH", QString());
+  sg->set("LOW", QString());
+  sg->set("PERIOD", 10);
+  sg->set("PERIOD_NO_DECLINE", 2);
+  sg->set("COEFFICIENT", 2.0);
+  sg->set("METHOD", _method.at(0));
   return sg;
 }

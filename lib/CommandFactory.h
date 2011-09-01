@@ -57,6 +57,7 @@ class CommandFactory
       _COMPARE,
       _CORREL,
       _CSV,
+      _DEBUG,
       _EXCHANGE_SEARCH_DIALOG,
       _FI,
       _FILE_DIALOG,
@@ -74,12 +75,8 @@ class CommandFactory
       _MOM,
       _NORMALIZE,
       _PO,
-      _PLOT_CANDLE,
-      _PLOT_DASH,
-      _PLOT_DOT,
       _PLOT_LINE,
       _PLOT_HISTOGRAM,
-      _PLOT_HISTOGRAM_BAR,
       _PLOT_OHLC,
       _ROC,
       _RSI,
@@ -87,6 +84,8 @@ class CommandFactory
       _SCRIPT_DONE,
       _SCRIPT_START,
       _SELECT_DIALOG,
+      _SETTING_GET,
+      _SHIFT,
       _STDDEV,
       _STOCH_FAST,
       _STOCH_RSI,
@@ -94,6 +93,7 @@ class CommandFactory
       _SZ,
       _SYMBOL,
       _SYMBOL_CURRENT,
+      _SYMBOL_DIALOG,
       _T3,
       _THERM,
       _TRIX,
@@ -111,6 +111,7 @@ class CommandFactory
     CommandFactory ();
     Command * command (QObject *, QString);
     QStringList list ();
+    int stringToType (QString);
 
   protected:
     QStringList _types;

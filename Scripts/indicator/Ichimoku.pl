@@ -4,7 +4,7 @@ $candleName = 'Candles';
 $candleUpColor = 'green';
 $candleDownColor = 'green';
 $candleNeutralColor = 'green';
-$candleZ = '0';
+$candleZ = '1';
 
 $tsName = 'TENKAN SEN';
 $tsStyle = 'Line';
@@ -12,7 +12,8 @@ $tsColor = 'red';
 $tsPeriod = '9';
 $tsHighName = 'tsHigh';
 $tsLowName = 'tsLow';
-$tsZ = '1';
+$tsZ = '2';
+$tsMedianName = 'tsmedian';
 
 $ksName = 'KIJUN SEN';
 $ksStyle = 'Line';
@@ -20,33 +21,46 @@ $ksColor = 'blue';
 $ksPeriod = '26';
 $ksHighName = 'ksHigh';
 $ksLowName = 'ksLow';
-$ksZ = '2';
+$ksZ = '3';
+$ksMedianName = 'ksmedian';
 
 $csName = 'CHIKOU SPAN';
 $csStyle = 'Line';
 $csColor = 'purple';
 $csPeriod = '-26';
-$csZ = '3';
+$csZ = '4';
+$csShiftName = 'csshift';
 
 $ssaName = 'SENKOU SPAN A';
-$ssaStyle = 'Line';
-$ssaColor = 'orange';
+#$ssaStyle = 'Line';
+#$ssaColor = 'orange';
 $ssaPeriod = '26';
-$ssaZ = '4';
+#$ssaZ = '4';
+$ssaMedianName = 'ssamedian';
+$ssaShiftName = 'ssashift';
 
 $ssbName = 'SENKOU SPAN B';
-$ssbStyle = 'Line';
-$ssbColor = 'yellow';
+#$ssbStyle = 'Line';
+#$ssbColor = 'yellow';
 $ssbPeriod = '52';
 $ssbShift = '26';
-$ssbZ = '5';
+#$ssbZ = '5';
 $ssbHighName = 'ssbHigh';
 $ssbLowName = 'ssbLow';
+$ssbMedianName = 'ssbmedian';
+$ssbShiftName = 'ssbshift';
 
+$ssCloudZ = '0';
+$ssCloudColor = 'dimgray';
+$ssCloudName = 'SSAB';
+
+$dateName = 'Date';
 $openName = 'Open';
 $highName = 'High';
 $lowName = 'Low';
 $closeName = 'Close';
+
+$chartName = 'Ichimoku';
 
 ###################################################################
 
@@ -54,108 +68,226 @@ $|++;
 
 # candles
 
-$command = "PLUGIN=DOHLCVI,METHOD=O,NAME_OPEN=$openName";
+# create the chart
+$command = "COMMAND=CHART;
+            NAME=$chartName;
+            DATE=1;
+            LOG=0;
+            ROW=0;
+            COL=99";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=H,NAME_HIGH=$highName";
+# load current bars
+$command = "COMMAND=SYMBOL_CURRENT;
+            DATE=$dateName;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            VOLUME=volume;
+            OI=oi";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=L,NAME_LOW=$lowName";
+# create the candles
+$command = "COMMAND=PLOT_OHLC;
+            CHART=$chartName;
+            NAME=$candleName;
+            STYLE=Candle;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            COLOR=$candleNeutralColor;
+            Z=$candleZ;
+            PEN=1";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=C,NAME_CLOSE=$closeName";
+# color up candles
+$command = "COMMAND=COLOR;
+            INPUT_1=$closeName;
+            INPUT_1_OFFSET=0;
+            OP=GT;
+            INPUT_2=$closeName;
+            INPUT_2_OFFSET=1;
+            INPUT_3=$candleName;
+            INPUT_3_OFFSET=0;
+            COLOR=$candleUpColor";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=CANDLES,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME=$candleName,COLOR_UP=$candleUpColor,COLOR_DOWN=$candleDownColor,COLOR_NEUTRAL=$candleNeutralColor";
+# color down candles
+$command = "COMMAND=COLOR;
+            INPUT_1=$closeName;
+            INPUT_1_OFFSET=0;
+            OP=LT;
+            INPUT_2=$closeName;
+            INPUT_2_OFFSET=1;
+            INPUT_3=$candleName;
+            INPUT_3_OFFSET=0;
+            COLOR=$candleDownColor";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=PLOT,NAME=$candleName,Z=$candleZ";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # TENKAN SEN
 
-$command = "PLUGIN=MAX,NAME=$tsHighName,INPUT=$highName,PERIOD=$tsPeriod";
+$command = "COMMAND=MINMAX;
+            OUTPUT=$tsHighName;
+            INPUT=$highName;
+            METHOD=MAX;
+            PERIOD=$tsPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=MIN,NAME=$tsLowName,INPUT=$lowName,PERIOD=$tsPeriod";
+$command = "COMMAND=MINMAX;
+            OUTPUT=$tsLowName;
+            INPUT=$lowName;
+            METHOD=MIN;
+            PERIOD=$tsPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=MEDIAN_PRICE,NAME=$tsName,INPUT=$tsHighName,INPUT2=$tsLowName";
+$command = "COMMAND=MEDIAN_PRICE;
+            OUTPUT=$tsMedianName;
+            INPUT_1=$tsHighName;
+            INPUT_2=$tsLowName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$tsName,STYLE=$tsStyle,COLOR=$tsColor,Z=$tsZ";
+$command = "COMMAND=PLOT_LINE;
+            CHART=$chartName;
+            NAME=$tsName;
+            INPUT=$tsMedianName;
+            STYLE=$tsStyle;
+            COLOR=$tsColor;
+            Z=$tsZ;
+            PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # KIJUN SEN
 
-$command = "PLUGIN=MAX,NAME=$ksHighName,INPUT=$highName,PERIOD=$ksPeriod";
+$command = "COMMAND=MINMAX;
+            OUTPUT=$ksHighName;
+            INPUT=$highName;
+            METHOD=MAX;
+            PERIOD=$ksPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=MIN,NAME=$ksLowName,INPUT=$lowName,PERIOD=$ksPeriod";
+$command = "COMMAND=MINMAX;
+            METHOD=MIN;
+            OUTPUT=$ksLowName;
+            INPUT=$lowName;
+            PERIOD=$ksPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=MEDIAN_PRICE,NAME=$ksName,INPUT=$ksHighName,INPUT2=$ksLowName";
+$command = "COMMAND=MEDIAN_PRICE;
+            OUTPUT=$ksMedianName;
+            INPUT_1=$ksHighName;
+            INPUT_2=$ksLowName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$ksName,STYLE=$ksStyle,COLOR=$ksColor,Z=$ksZ";
+$command = "COMMAND=PLOT_LINE;
+            CHART=$chartName;
+            NAME=$ksName;
+            INPUT=$ksMedianName;
+            STYLE=$ksStyle;
+            COLOR=$ksColor;
+            Z=$ksZ;
+            PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # CHIKOU SPAN
 
-$command = "PLUGIN=SHIFT,NAME=$csName,INPUT=$closeName,PERIOD=$csPeriod";
+$command = "COMMAND=SHIFT;
+            OUTPUT=$csShiftName;
+            INPUT=$closeName;
+            PERIOD=$csPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$csName,STYLE=$csStyle,COLOR=$csColor,Z=$csZ";
+$command = "COMMAND=PLOT_LINE;
+            CHART=$chartName;
+            NAME=$csName;
+            INPUT=$csShiftName;
+            STYLE=$csStyle;
+            COLOR=$csColor;
+            Z=$csZ;
+            PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # SENKOU SPAN A
 
-$command = "PLUGIN=MEDIAN_PRICE,NAME=tssa,INPUT=$tsName,INPUT2=$ksName";
+$command = "COMMAND=MEDIAN_PRICE;
+            OUTPUT=$ssaMedianName;
+            INPUT_1=$tsName;
+            INPUT_2=$ksName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=SHIFT,NAME=$ssaName,INPUT=tssa,PERIOD=$ssaPeriod";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
-
-$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$ssaName,STYLE=$ssaStyle,COLOR=$ssaColor,Z=$ssaZ";
+$command = "COMMAND=SHIFT;
+            OUTPUT=$ssaShiftName;
+            INPUT=$ssaMedianName;
+            PERIOD=$ssaPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 # SENKOU SPAN B
 
-$command = "PLUGIN=MAX,NAME=$ssbHighName,INPUT=$highName,PERIOD=$ssbPeriod";
+$command = "COMMAND=MINMAX;
+            METHOD=MAX;
+            OUTPUT=$ssbHighName;
+            INPUT=$highName;
+            PERIOD=$ssbPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=MIN,NAME=$ssbLowName,INPUT=$lowName,PERIOD=$ssbPeriod";
+$command = "COMMAND=MINMAX;
+            METHOD=MIN;
+            OUTPUT=$ssbLowName;
+            INPUT=$lowName;
+            PERIOD=$ssbPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=MEDIAN_PRICE,NAME=tssb,INPUT=$ssbHighName,INPUT2=$ssbLowName";
+$command = "COMMAND=MEDIAN_PRICE;
+            OUTPUT=$ssbMedianName;
+            INPUT_1=$ssbHighName;
+            INPUT_2=$ssbLowName";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=SHIFT,NAME=$ssbName,INPUT=tssb,PERIOD=$ssbShift";
+$command = "COMMAND=SHIFT;
+            OUTPUT=$ssbShiftName;
+            INPUT=$ssbMedianName;
+            PERIOD=$ssbPeriod";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=PLOT_ALL,NAME=$ssbName,STYLE=$ssbStyle,COLOR=$ssbColor,Z=$ssbZ";
+# create the senkou span a -b cloud
+$command = "COMMAND=PLOT_HISTOGRAM;
+            CHART=$chartName;
+            HIGH=$ssaShiftName;
+            LOW=$ssbShiftName;
+            NAME=$ssCloudName;
+            STYLE=Histogram;
+            COLOR=$ssCloudColor;
+            Z=$ssCloudZ;
+            PEN=1";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+
+# update chart
+$command = "COMMAND=CHART_UPDATE;
+            CHART=$chartName;
+            DATE=$dateName";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

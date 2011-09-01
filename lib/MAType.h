@@ -24,7 +24,7 @@
 
 #include <QStringList>
 
-#include "Curve.h"
+#include "Data.h"
 
 class MAType
 {
@@ -40,12 +40,12 @@ class MAType
       _KAMA,
       _WILDER
     };
-    
+
     MAType ();
     QStringList & list ();
     MAType::Type fromString (QString);
-    Curve * getMA (Curve *, int period, int method);
-    Curve * getWilder (Curve *, int period);
+    Data * getMA (Data *, int period, int method);
+    Data * getWilder (Data *, int period);
 
   private:
     QStringList _list;

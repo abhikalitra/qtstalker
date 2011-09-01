@@ -20,7 +20,6 @@
  */
 
 #include "GroupEditDialog.h"
-#include "Globals.h"
 #include "GroupDataBase.h"
 #include "SymbolDialog.h"
 
@@ -40,7 +39,7 @@ GroupEditDialog::GroupEditDialog (QWidget *p, QString n) : Dialog (p)
   _keyPos = "group_edit_dialog_window_position";
 
   QStringList l;
-  l << "QtStalker" + g_session + ":" << tr("Edit Group") << _name;
+  l << "QtStalker" << ":" << tr("Edit Group") << _name;
   setWindowTitle(l.join(" "));
 
   createGUI();
@@ -82,7 +81,7 @@ void GroupEditDialog::createGUI ()
   b->setToolTip(tr("Add Symbols"));
   connect(b, SIGNAL(clicked(bool)), this, SLOT(addButtonPressed()));
   tb->addWidget(b);
-  
+
   _deleteButton = new QToolButton;
   _deleteButton->setIcon(QIcon(delete_xpm));
   _deleteButton->setToolTip(tr("Delete Symbols"));
@@ -123,7 +122,7 @@ void GroupEditDialog::done ()
   int loop = 0;
   for (; loop < _list->count(); loop++)
     l << _list->item(loop)->text();
-  
+
   GroupDataBase db;
   db.transaction();
   if (db.save(_name, l))

@@ -23,7 +23,6 @@
 #define COMMAND_BETA_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandBETA : public Command
 {
@@ -31,9 +30,9 @@ class CommandBETA : public Command
 
   public:
     CommandBETA (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getBETA (QList<Curve *> &, int period);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getBETA (QList<Data *> &, int period);
 };
 
 #endif

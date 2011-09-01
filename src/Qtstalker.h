@@ -44,7 +44,7 @@ class QtstalkerApp : public QMainWindow
     QString getWindowCaption ();
 
   public slots:
-    void loadChart (BarData);
+    void loadChart (QString);
     void save ();
     void chartUpdated ();
     void statusMessage (QString);

@@ -23,7 +23,6 @@
 #define COMMAND_STOCH_RSI_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandStochRSI : public Command
 {
@@ -31,9 +30,9 @@ class CommandStochRSI : public Command
 
   public:
     CommandStochRSI (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getSR (QList<Curve *> &, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getSR (QList<Data *> &, int);
 };
 
 #endif

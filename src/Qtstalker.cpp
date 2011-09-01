@@ -56,6 +56,9 @@
 #include "IPCMessage.h"
 #include "SharedMemory.h"
 #include "PlotGroup.h"
+#include "BarLength.h"
+#include "CommandMessage.h"
+#include "Symbol.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -100,6 +103,7 @@ void QtstalkerApp::shutDown ()
   // shutting down before the destructor is called
   save();
   emit signalShutDown();
+  delete g_currentSymbol;
 }
 
 void QtstalkerApp::createGUI ()
@@ -114,7 +118,7 @@ void QtstalkerApp::createGUI ()
 
   // side panel dock
   g_sidePanel = new SidePanel(this);
-  connect(g_sidePanel, SIGNAL(signalLoadChart(BarData)), this, SLOT(loadChart(BarData)));
+  connect(g_sidePanel, SIGNAL(signalLoadChart(QString)), this, SLOT(loadChart(QString)));
   connect(g_sidePanel, SIGNAL(signalReloadChart()), this, SLOT(chartUpdated()));
   connect(g_sidePanel, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalLoadSettings()), g_sidePanel, SLOT(loadSettings()));
@@ -135,8 +139,8 @@ void QtstalkerApp::createGUI ()
   connect(this, SIGNAL(signalShutDown()), g_controlPanel, SLOT(saveSettings()));
   connect(g_controlPanel->barLengthButton(), SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
   connect(g_controlPanel->dateRangeControl(), SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
-  connect(g_controlPanel->recentCharts(), SIGNAL(signalChartSelected(BarData)), this, SLOT(loadChart(BarData)));
-  connect(g_sidePanel, SIGNAL(signalRecentChart(BarData)), g_controlPanel->recentCharts(), SLOT(addRecentChart(BarData)));
+  connect(g_controlPanel->recentCharts(), SIGNAL(signalChartSelected(QString)), this, SLOT(loadChart(QString)));
+  connect(g_sidePanel, SIGNAL(signalRecentChart(QString)), g_controlPanel->recentCharts(), SLOT(addRecentChart(QString)));
   connect(g_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
   connect(g_controlPanel->configureButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
 
@@ -215,54 +219,57 @@ void QtstalkerApp::save()
   settings.setValue("main_window_state", saveState());
   settings.setValue("main_window_size", size());
   settings.setValue("main_window_position", pos());
-  settings.setValue("current_symbol", g_currentSymbol.key());
+
+  if (g_currentSymbol->dataKeyCount())
+  {
+    QString s = g_currentSymbol->get(Symbol::_EXCHANGE) + ":" + g_currentSymbol->get(Symbol::_SYMBOL);
+    settings.setValue("current_symbol", s);
+  }
+
   settings.sync();
 }
 
-void QtstalkerApp::loadChart (BarData symbol)
+void QtstalkerApp::loadChart (QString symbol)
 {
   // do all the stuff we need to do to load a chart
-  if (symbol.key().length() == 0)
+
+  QStringList tl = symbol.split(":");
+  if (tl.count() != 2)
     return;
 
-  BarData tsymbol = symbol;
-  tsymbol.setName(symbol.name());
-  tsymbol.setBarLength((BarLength::Length) g_controlPanel->barLengthButton()->length());
-  tsymbol.setStartDate(QDateTime());
-  tsymbol.setEndDate(QDateTime());
-  tsymbol.setRange(g_controlPanel->dateRangeControl()->dateRange());
+  g_currentSymbol->clear();
+  g_currentSymbol->set(Symbol::_EXCHANGE, tl.at(0));
+  g_currentSymbol->set(Symbol::_SYMBOL, tl.at(1));
+  g_currentSymbol->set(Symbol::_LENGTH, g_controlPanel->barLengthButton()->length());
+  g_currentSymbol->set(Symbol::_START_DATE, QDateTime());
+  g_currentSymbol->set(Symbol::_END_DATE, QDateTime());
+  g_currentSymbol->set(Symbol::_RANGE, g_controlPanel->dateRangeControl()->dateRange());
 
   QuoteDataBase db;
-  if (db.getBars(&tsymbol))
+  if (db.getBars(g_currentSymbol))
   {
     qDebug() << "QtstalkerApp::loadChart: QuoteDataBase error";
     return;
   }
 
+//qDebug() << g_currentSymbol->toString();
+
   SharedMemory sm;
-  if (sm.setData(g_sharedCurrentSymbol, tsymbol.toString()))
+  if (sm.setData(g_sharedCurrentSymbol, g_currentSymbol->toString()))
   {
     qDebug() << "QtstalkerApp::loadChart: error creating shared memory";
     return;
   }
 
-  // update g_currentSymbol
-  g_currentSymbol.setKey(tsymbol.key());
-  g_currentSymbol.setName(tsymbol.name());
-  g_currentSymbol.setBarLength((BarLength::Length) g_controlPanel->barLengthButton()->length());
-  g_currentSymbol.setStartDate(QDateTime());
-  g_currentSymbol.setEndDate(QDateTime());
-  g_currentSymbol.setRange(g_controlPanel->dateRangeControl()->dateRange());
-
   // update settings file
   QSettings settings(g_localSettings);
-  settings.setValue("current_symbol", g_currentSymbol.key());
+  settings.setValue("current_symbol", symbol);
   settings.sync();
 
   setWindowTitle(getWindowCaption());
   statusMessage(QString());
 
-  g_controlPanel->setStart(tsymbol.count(), 0, 0);
+  g_controlPanel->setStart(g_currentSymbol->barKeyCount(), 0, 0);
 
   // run indicators
   QStringList il = settings.value("indicators").toStringList();
@@ -271,6 +278,7 @@ void QtstalkerApp::loadChart (BarData symbol)
   {
     Script script(this);
     script.setFile(il.at(loop));
+    script.setSession(g_session);
     script.run();
   }
 
@@ -282,10 +290,17 @@ QString QtstalkerApp::getWindowCaption ()
   // update the main window text
   QStringList l;
   l << "QtStalker" + g_session + ":";
-  if (! g_currentSymbol.name().isEmpty())
-    l << g_currentSymbol.name();
-  if (! g_currentSymbol.symbol().isEmpty())
-    l << "(" + g_currentSymbol.symbol() + ")";
+
+  if (! g_currentSymbol->dataKeyCount())
+    return l.join(" ");
+
+  QString name = g_currentSymbol->get(Symbol::_NAME);
+  if (! name.isEmpty())
+    l << name;
+
+  QString symbol = g_currentSymbol->get(Symbol::_SYMBOL);
+  if (! symbol.isEmpty())
+    l << "(" + symbol + ")";
 
   QStringList bl;
   BarLength b;
@@ -298,13 +313,12 @@ QString QtstalkerApp::getWindowCaption ()
 void QtstalkerApp::chartUpdated ()
 {
   // we are here because something wants us to reload the chart with fresh bars
-  if (g_currentSymbol.symbol().isEmpty())
+  QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE);
+  if (symbol.isEmpty())
     return;
 
-  BarData bd;
-  bd.setExchange(g_currentSymbol.exchange());
-  bd.setSymbol(g_currentSymbol.symbol());
-  loadChart(bd);
+  symbol.append(":" + g_currentSymbol->get(Symbol::_SYMBOL));
+  loadChart(symbol);
 }
 
 void QtstalkerApp::statusMessage (QString d)
@@ -335,10 +349,8 @@ void QtstalkerApp::commandLineAsset ()
     return;
   }
 
-  BarData bd;
-  bd.setExchange(l[0]);
-  bd.setSymbol(l[1]);
-  loadChart(bd);
+  QString s = l.at(0) + ":" + l.at(1);
+  loadChart(s);
 }
 
 /*
@@ -379,12 +391,35 @@ void QtstalkerApp::afterStartup ()
   {
     // display last viewed chart
     QSettings settings(g_localSettings);
-    BarData bd;
-    bd.setKey(settings.value("current_symbol").toString());
-    loadChart(bd);
+    loadChart(settings.value("current_symbol").toString());
   }
 }
 
+void QtstalkerApp::messageSlot (QString m, QString d)
+{
+  qDebug() << "QtstalkerApp::messageSlot:" << m;
+//  qDebug() << "QtstalkerApp::messageSlot:" << d;
+
+  IPCMessage ipcm;
+  if (ipcm.fromString(m))
+  {
+    qDebug() << "QtstalkerApp::messageSlot: invalid message" << m;
+    return;
+  }
+
+  // ignore message from another session
+  if (ipcm.session() != g_session)
+    return;
+
+  CommandMessage cm;
+  if (cm.message(ipcm, d))
+  {
+    qDebug() << "QtstalkerApp::messageSlot: CommandMessage error" << d;
+    return;
+  }
+}
+
+/*
 void QtstalkerApp::messageSlot (QString m, QString d)
 {
   qDebug() << "QtstalkerApp::messageSlot:" << m;
@@ -412,6 +447,7 @@ void QtstalkerApp::messageSlot (QString m, QString d)
 
   delete com;
 }
+*/
 
 void QtstalkerApp::actionSlot (QString command, QString d)
 {

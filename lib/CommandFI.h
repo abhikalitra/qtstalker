@@ -23,7 +23,6 @@
 #define COMMAND_FI_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandFI : public Command
 {
@@ -31,9 +30,9 @@ class CommandFI : public Command
 
   public:
     CommandFI (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getFI (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getFI (QList<Data *> &);
 };
 
 #endif

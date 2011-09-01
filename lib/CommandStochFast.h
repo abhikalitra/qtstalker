@@ -23,7 +23,6 @@
 #define COMMAND_STOCH_FAST_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandStochFast : public Command
 {
@@ -31,9 +30,9 @@ class CommandStochFast : public Command
 
   public:
     CommandStochFast (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    QList<Curve *> getSTOCHF (QList<Curve *> &, int kperiod, int dperiod, int type);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    QList<Data *> getSTOCHF (QList<Data *> &, int kperiod, int dperiod, int type);
 };
 
 #endif

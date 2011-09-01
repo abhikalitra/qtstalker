@@ -22,8 +22,8 @@
 #include "CommandVIDYA.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -40,53 +40,45 @@ CommandVIDYA::CommandVIDYA (QObject *p) : Command (p)
     qDebug("CommandVIDYA::CommandVIDYA: error on TA_Initialize");
 }
 
-int CommandVIDYA::runScript (void *d)
+int CommandVIDYA::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: invalid INPUT" << s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
+  int period = sg->getInteger("PERIOD");
 
-  int vperiod = sg->get("PERIOD_VOLUME")->getInteger();
+  int vperiod = sg->getInteger("PERIOD_VOLUME");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in;
   line = getVIDYA(list, period, vperiod);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandVIDYA::getVIDYA (QList<Curve *> &list, int period, int vperiod)
+Data * CommandVIDYA::getVIDYA (QList<Data *> &list, int period, int vperiod)
 {
   if (! list.count())
     return 0;
 
-  Curve *cmo = getCMO(list, vperiod);
+  Data *cmo = getCMO(list, vperiod);
   if (! cmo)
     return 0;
 
@@ -96,7 +88,7 @@ Curve * CommandVIDYA::getVIDYA (QList<Curve *> &list, int period, int vperiod)
     return 0;
   int size = keys.count();
 
-  Curve *out = new Curve;
+  Data *out = new CurveData;
 
   QVector<double> *inSeries = new QVector<double>(size);
   inSeries->fill(0.0);
@@ -110,22 +102,21 @@ Curve * CommandVIDYA::getVIDYA (QList<Curve *> &list, int period, int vperiod)
   double c = 2 / (double) period + 1;
 
   int loop = 0;
-  Curve *in = list.at(0);
+  Data *in = list.at(0);
   for (; loop < keys.count(); loop++)
   {
-    CurveBar *bar = in->bar(keys.at(loop));
-    (*inSeries)[loop] = bar->data();
+    Data *bar = in->getData(keys.at(loop));
+    (*inSeries)[loop] = bar->getDouble(CurveBar::_VALUE);
   }
 
-  keys.clear();
-  cmo->keys(keys);
+  keys = cmo->barKeys();
 
   int index = inSeries->size() -1;
   loop = keys.count() - 1;
   for (; loop > -1; loop--)
   {
-    CurveBar *bar = cmo->bar(keys.at(loop));
-    (*absCmo)[index] = fabs(bar->data() / 100);
+    Data *bar = cmo->getData(keys.at(loop));
+    (*absCmo)[index] = fabs(bar->getDouble(CurveBar::_VALUE) / 100);
     index--;
   }
 
@@ -133,7 +124,10 @@ Curve * CommandVIDYA::getVIDYA (QList<Curve *> &list, int period, int vperiod)
   for (; loop < (int) inSeries->size(); loop++)         // period safty
   {
     (*vidya)[loop] = (inSeries->at(loop) * c * absCmo->at(loop)) + ((1 - absCmo->at(loop) * c) * vidya->at(loop - 1));
-    out->setBar(loop, new CurveBar(vidya->at(loop)));
+
+    Data *b = new CurveBar;
+    b->set(CurveBar::_VALUE, vidya->at(loop));
+    out->set(loop, b);
   }
 
   delete inSeries;
@@ -145,7 +139,7 @@ Curve * CommandVIDYA::getVIDYA (QList<Curve *> &list, int period, int vperiod)
   return out;
 }
 
-Curve * CommandVIDYA::getCMO (QList<Curve *> &list, int period)
+Data * CommandVIDYA::getCMO (QList<Data *> &list, int period)
 {
   if (! list.count())
     return 0;
@@ -179,8 +173,8 @@ Curve * CommandVIDYA::getCMO (QList<Curve *> &list, int period)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -191,26 +185,12 @@ Curve * CommandVIDYA::getCMO (QList<Curve *> &list, int period)
   return c;
 }
 
-SettingGroup * CommandVIDYA::settings ()
+Data * CommandVIDYA::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 10, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 10, 9999, 2);
-  si->setKey("PERIOD_VOLUME");
-  sg->set(si);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("INPUT", QString());
+  sg->set("PERIOD", 10);
+  sg->set("PERIOD_VOLUME", 10);
   return sg;
 }

@@ -20,11 +20,9 @@
  */
 
 #include "CommandPlotOHLC.h"
-#include "CurveOHLC.h"
 #include "InputType.h"
-#include "SettingInteger.h"
-#include "SettingString.h"
-#include "SettingColor.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -33,69 +31,51 @@ CommandPlotOHLC::CommandPlotOHLC (QObject *p) : Command (p)
   _type = "PLOT_OHLC";
 }
 
-int CommandPlotOHLC::runScript (void *d)
+int CommandPlotOHLC::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("NAME");
+  Data *line = script->data(name);
   if (line)
   {
     qDebug() << _type << "::runScript: duplicate name" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("DATE")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *idate = script->curve(s);
-  if (! idate)
-  {
-    qDebug() << _type << "::runScript: invalid DATE" << s;
-    return _ERROR;
-  }
-
-  key = sg->get("OPEN")->getString();
-  s = script->setting(key)->getString();
-  Curve *iopen = script->curve(s);
+  QString s = sg->get("OPEN");
+  Data *iopen = script->data(s);
   if (! iopen)
   {
     qDebug() << _type << "::runScript: invalid OPEN" << s;
     return _ERROR;
   }
 
-  key = sg->get("HIGH")->getString();
-  s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::runScript: invalid HIGH" << s;
     return _ERROR;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::runScript: invalid LOW" << s;
     return _ERROR;
   }
 
-  key = sg->get("CLOSE")->getString();
-  s = script->setting(key)->getString();
-  Curve *iclose = script->curve(s);
+  s = sg->get("CLOSE");
+  Data *iclose = script->data(s);
   if (! iclose)
   {
     qDebug() << _type << "::runScript: invalid CLOSE" << s;
     return _ERROR;
   }
 
-  QList<Curve *> list;
-  list << idate << iopen << ihigh << ilow << iclose;
+  QList<Data *> list;
+  list << iopen << ihigh << ilow << iclose;
+
   InputType it;
   QList<int> keys;
   if (it.keys(list, keys))
@@ -104,108 +84,76 @@ int CommandPlotOHLC::runScript (void *d)
     return _ERROR;
   }
 
+//qDebug() << "CommandPlotOHLC::runScript:" << keys.count();
+
   // chart
-  key = sg->get("CHART")->getString();
-  QString chart = script->setting(key)->getString();
+  QString chart = sg->get("CHART");
+
+  // style
+  QString style = sg->get("STYLE");
 
   // color
-  QColor color = sg->get("COLOR")->getColor();
+  QColor color = sg->getColor("COLOR");
 
   // Z
-  int z = sg->get("Z")->getInteger();
+  int z = sg->getInteger("Z");
 
   // PEN
-  int pen = sg->get("PEN")->getInteger();
+  int pen = sg->getInteger("PEN");
 
-  line = new CurveOHLC;
-  line->setZ(z);
-  line->setPenWidth(pen);
-  line->setLabel(name);
-  line->setPlotName(chart);
+  line = new CurveData;
+  line->set(CurveData::_TYPE, QString("OHLC"));
+  line->set(CurveData::_Z, z);
+  line->set(CurveData::_PEN, pen);
+  line->set(CurveData::_LABEL, name);
+  line->set(CurveData::_CHART, chart);
+  line->set(CurveData::_STYLE, style);
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    CurveBar *dbar = idate->bar(keys.at(loop));
-    if (! dbar)
-      continue;
-
-    CurveBar *obar = iopen->bar(keys.at(loop));
+    Data *obar = iopen->getData(keys.at(loop));
     if (! obar)
       continue;
 
-    CurveBar *hbar = ihigh->bar(keys.at(loop));
+    Data *hbar = ihigh->getData(keys.at(loop));
     if (! hbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(keys.at(loop));
+    Data *lbar = ilow->getData(keys.at(loop));
     if (! lbar)
       continue;
 
-    CurveBar *cbar = iclose->bar(keys.at(loop));
+    Data *cbar = iclose->getData(keys.at(loop));
     if (! cbar)
       continue;
 
-    CurveBar *bar = new CurveBar;
-    bar->setData(0, obar->data());
-    bar->setData(1, hbar->data());
-    bar->setData(2, lbar->data());
-    bar->setData(3, cbar->data());
-    bar->setColor(color);
-    bar->setDateTime(dbar->dateTime());
-
-    line->setBar(keys.at(loop), bar);
+    Data *bar = new CurveBar;
+    bar->set(CurveBar::_OPEN, obar->getDouble(CurveBar::_VALUE));
+    bar->set(CurveBar::_HIGH, hbar->getDouble(CurveBar::_VALUE));
+    bar->set(CurveBar::_LOW, lbar->getDouble(CurveBar::_VALUE));
+    bar->set(CurveBar::_CLOSE, cbar->getDouble(CurveBar::_VALUE));
+    bar->set(CurveBar::_COLOR, color);
+    line->set(keys.at(loop), bar);
   }
 
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-SettingGroup * CommandPlotOHLC::settings ()
+Data * CommandPlotOHLC::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_CHART, Setting::_NONE, QString());
-  ss->setKey("CHART");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("ohlc"));
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("DATE");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("OPEN");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("CLOSE");
-  sg->set(ss);
-
-  SettingColor *sc = new SettingColor(QColor(Qt::red));
-  sc->setKey("COLOR");
-  sg->set(sc);
-
-  SettingInteger *si = new SettingInteger(0, 0, 0, 99, 0);
-  si->setKey("Z");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 1, 99, 1);
-  si->setKey("PEN");
-  sg->set(si);
-
+  Data *sg = new Data;
+  sg->set("CHART", QString());
+  sg->set("NAME", QString("OHLC"));
+  sg->set("STYLE", QString("OHLC"));
+  sg->set("OPEN", QString("open"));
+  sg->set("HIGH", QString("high"));
+  sg->set("LOW", QString("low"));
+  sg->set("CLOSE", QString("close"));
+  sg->set("COLOR", QColor(Qt::red));
+  sg->set("Z", -1);
+  sg->set("PEN", 1);
   return sg;
 }

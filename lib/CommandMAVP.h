@@ -23,7 +23,6 @@
 #define COMMAND_MAVP_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandMAVP : public Command
 {
@@ -31,9 +30,9 @@ class CommandMAVP : public Command
 
   public:
     CommandMAVP (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getMAVP (QList<Curve *> &, int min, int max, int type);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getMAVP (QList<Data *> &, int min, int max, int type);
 };
 
 #endif

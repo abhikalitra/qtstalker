@@ -22,9 +22,8 @@
 #include "CommandMINMAX.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingList.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -38,34 +37,27 @@ CommandMINMAX::CommandMINMAX (QObject *p) : Command (p)
     qDebug("CommandMINMAX::CommandMINMAX: error on TA_Initialize");
 }
 
-int CommandMINMAX::runScript (void *d)
+int CommandMINMAX::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: INPUT missing" << s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
+  int period = sg->getInteger("PERIOD");
 
-  s = sg->get("METHOD")->getString();
+  s = sg->get("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -73,33 +65,28 @@ int CommandMINMAX::runScript (void *d)
     return _ERROR;
   }
 
-  QList<Curve *> list;
-  list << in;
-  line = getMINMAX(list, period, method);
+  line = getMINMAX(in, period, method);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandMINMAX::getMINMAX (QList<Curve *> &list, int period, int method)
+Data * CommandMINMAX::getMINMAX (Data *in, int period, int method)
 {
-  if (! list.count())
-    return 0;
-
-  InputType it;
-  QList<int> keys;
-  if (it.keys(list, keys))
-    return 0;
+  QList<int> keys = in->barKeys();
 
   int size = keys.count();
   TA_Real input[size];
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
+
+  InputType it;
+  QList<Data *> list;
+  list << in;
 
   size = it.fill(list, keys, &input[0], &input[0], &input[0], &input[0]);
   if (! size)
@@ -125,9 +112,10 @@ Curve * CommandMINMAX::getMINMAX (QList<Curve *> &list, int period, int method)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
+
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
     delete c;
@@ -137,26 +125,12 @@ Curve * CommandMINMAX::getMINMAX (QList<Curve *> &list, int period, int method)
   return c;
 }
 
-SettingGroup * CommandMINMAX::settings ()
+Data * CommandMINMAX::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 10, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
-  SettingList *sl = new SettingList(_method, _method.at(0));
-  sl->setKey("METHOD");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString("min"));
+  sg->set("METHOD", QString("MIN"));
+  sg->set("INPUT", QString("close"));
+  sg->set("PERIOD", 10);
   return sg;
 }

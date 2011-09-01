@@ -23,7 +23,6 @@
 #define COMMAND_WILLR_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandWILLR : public Command
 {
@@ -31,9 +30,9 @@ class CommandWILLR : public Command
 
   public:
     CommandWILLR (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getWILLR (QList<Curve *> &, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getWILLR (QList<Data *> &, int);
 };
 
 #endif

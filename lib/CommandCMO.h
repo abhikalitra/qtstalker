@@ -23,7 +23,6 @@
 #define COMMAND_CMO_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandCMO : public Command
 {
@@ -31,9 +30,9 @@ class CommandCMO : public Command
 
   public:
     CommandCMO (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getCMO (QList<Curve *> &, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getCMO (QList<Data *> &, int);
 };
 
 #endif

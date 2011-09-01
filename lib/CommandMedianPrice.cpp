@@ -21,7 +21,8 @@
 
 #include "CommandMedianPrice.h"
 #include "InputType.h"
-#include "SettingString.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -30,99 +31,78 @@ CommandMedianPrice::CommandMedianPrice (QObject *p) : Command (p)
   _type = "MEDIAN_PRICE";
 }
 
-int CommandMedianPrice::runScript (void *d)
+int CommandMedianPrice::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT_1");
+  Data *in = script->data(s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    qDebug() << _type << "::runScript: INPUT_1 missing" << s;
     return _ERROR;
   }
 
-  key = sg->get("INPUT_2")->getString();
-  s = script->setting(key)->getString();
-  Curve *in2 = script->curve(s);
+  s = sg->get("INPUT_2");
+  Data *in2 = script->data(s);
   if (! in2)
   {
     qDebug() << _type << "::runScript: INPUT_2 missing" << s;
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in << in2;
   line = getMP(list);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandMedianPrice::getMP (QList<Curve *> &list)
+Data * CommandMedianPrice::getMP (QList<Data *> &list)
 {
-  if (list.count() != 2)
-    return 0;
-
   InputType it;
   QList<int> keys;
   if (it.keys(list, keys))
     return 0;
 
-  Curve *line = new Curve;
-  Curve *in = list.at(0);
-  Curve *in2 = list.at(1);
+  Data *line = new CurveData;
+  Data *in = list.at(0);
+  Data *in2 = list.at(1);
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    CurveBar *bar = in->bar(keys.at(loop));
+    Data *bar = in->getData(keys.at(loop));
     if (! bar)
       continue;
 
-    CurveBar *bar2 = in2->bar(keys.at(loop));
+    Data *bar2 = in2->getData(keys.at(loop));
     if (! bar2)
       continue;
 
-    double t = (bar->data() + bar2->data()) / 2.0;
-    line->setBar(keys.at(loop), new CurveBar(t));
+    double t = (bar->getDouble(CurveBar::_VALUE) + bar2->getDouble(CurveBar::_VALUE)) / 2.0;
+    Data *b = new CurveBar;
+    b->set(CurveBar::_VALUE, t);
+    line->set(keys.at(loop), b);
   }
 
   return line;
 }
 
-SettingGroup * CommandMedianPrice::settings ()
+Data * CommandMedianPrice::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("AD"));
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT_2");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("INPUT_1", QString());
+  sg->set("INPUT_2", QString());
   return sg;
 }

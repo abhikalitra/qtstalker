@@ -27,16 +27,16 @@
 #define CHART_OBJECT_DATA_BASE_HPP
 
 #include "DataBase.h"
-#include "ChartObject.h"
+#include "Data.h"
 
 class ChartObjectDataBase : public DataBase
 {
   public:
     ChartObjectDataBase ();
     void init ();
-    int load (QString chart, QString symbol, QHash<QString, ChartObject *> &);
-    int load (ChartObject *);
-    int save (ChartObject *);
+    int load (QString chart, QString symbol, QHash<QString, Data *> &);
+    int load (Data *);
+    int save (Data *);
     int names (QStringList &);
     int remove (QStringList &);
     int lastId ();

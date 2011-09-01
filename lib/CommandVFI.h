@@ -23,7 +23,6 @@
 #define COMMAND_VFI_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandVFI : public Command
 {
@@ -31,9 +30,9 @@ class CommandVFI : public Command
 
   public:
     CommandVFI (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getVFI (QList<Curve *> &, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getVFI (QList<Data *> &, int);
 };
 
 #endif

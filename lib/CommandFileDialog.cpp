@@ -52,7 +52,7 @@ int CommandFileDialog::runScript (void *d)
     return _ERROR;
 
   Setting *set = sg->get("FILES");
-  set->setFile(files);
+  set->setList(files);
 
   return _OK;
 }

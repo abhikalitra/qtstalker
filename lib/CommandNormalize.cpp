@@ -21,7 +21,8 @@
 
 #include "CommandNormalize.h"
 #include "InputType.h"
-#include "SettingString.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -31,44 +32,36 @@ CommandNormalize::CommandNormalize (QObject *p) : Command (p)
   _type = "NORMALIZE";
 }
 
-int CommandNormalize::runScript (void *d)
+int CommandNormalize::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: invalid INPUT" << s;
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in;
   line = getNORM(list);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandNormalize::getNORM (QList<Curve *> &list)
+Data * CommandNormalize::getNORM (QList<Data *> &list)
 {
   if (! list.count())
     return 0;
@@ -78,7 +71,7 @@ Curve * CommandNormalize::getNORM (QList<Curve *> &list)
   if (it.keys(list, keys))
     return 0;
 
-  Curve *in = list.at(0);
+  Data *in = list.at(0);
   double max = 0;
   double min = 0;
   if (in->highLow(max, min))
@@ -86,29 +79,25 @@ Curve * CommandNormalize::getNORM (QList<Curve *> &list)
 
   double range = fabs(max) + fabs(min);
 
-  Curve *line = new Curve;
+  Data *line = new CurveData;
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    CurveBar *bar = in->bar(keys.at(loop));
-    line->setBar(keys.at(loop), new CurveBar(((bar->data() - min) / range) * 100));
+    Data *bar = in->getData(keys.at(loop));
+    double t = ((bar->getDouble(CurveBar::_VALUE) - min) / range) * 100;
+
+    Data *b = new CurveBar;
+    b->set(CurveBar::_VALUE, t);
+    line->set(keys.at(loop), t);
   }
 
   return line;
 }
 
-SettingGroup * CommandNormalize::settings ()
+Data * CommandNormalize::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("INPUT", QString());
   return sg;
 }

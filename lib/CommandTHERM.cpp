@@ -31,8 +31,8 @@
 
 #include "CommandTHERM.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -42,53 +42,44 @@ CommandTHERM::CommandTHERM (QObject *p) : Command (p)
   _type = "THERM";
 }
 
-int CommandTHERM::runScript (void *d)
+int CommandTHERM::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("HIGH")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  QString s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::runScript: invalid HIGH" << s;
     return _ERROR;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::runScript: invalid LOW" << s;
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << ihigh << ilow;
   line = getTHERM(list);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandTHERM::getTHERM (QList<Curve *> &list)
+Data * CommandTHERM::getTHERM (QList<Data *> &list)
 {
   if (list.count() != 2)
     return 0;
@@ -98,59 +89,50 @@ Curve * CommandTHERM::getTHERM (QList<Curve *> &list)
   if (it.keys(list, keys))
     return 0;
 
-  Curve *line = new Curve;
-  Curve *ihigh = list.at(0);
-  Curve *ilow = list.at(1);
+  Data *line = new CurveData;
+  Data *ihigh = list.at(0);
+  Data *ilow = list.at(1);
   double thermometer = 0;
   int loop = 1;
   for (; loop < keys.count(); loop++)
   {
-    CurveBar *hbar = ihigh->bar(keys.at(loop));
+    Data *hbar = ihigh->getData(keys.at(loop));
     if (! hbar)
       continue;
 
-    CurveBar *phbar = ihigh->bar(keys.at(loop - 1));
+    Data *phbar = ihigh->getData(keys.at(loop - 1));
     if (! phbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(keys.at(loop));
+    Data *lbar = ilow->getData(keys.at(loop));
     if (! lbar)
       continue;
 
-    CurveBar *plbar = ilow->bar(keys.at(loop - 1));
+    Data *plbar = ilow->getData(keys.at(loop - 1));
     if (! plbar)
       continue;
 
-    double high = fabs(hbar->data() - phbar->data());
-    double lo = fabs(plbar->data() - lbar->data());
+    double high = fabs(hbar->getDouble(CurveBar::_VALUE) - phbar->getDouble(CurveBar::_VALUE));
+    double lo = fabs(plbar->getDouble(CurveBar::_VALUE) - lbar->getDouble(CurveBar::_VALUE));
 
     if (high > lo)
       thermometer = high;
     else
       thermometer = lo;
 
-    line->setBar(keys.at(loop), new CurveBar(thermometer));
+    Data *b = new CurveBar;
+    b->set(CurveBar::_VALUE, thermometer);
+    line->set(keys.at(loop), b);
   }
 
   return line;
 }
 
-SettingGroup * CommandTHERM::settings ()
+Data * CommandTHERM::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("HIGH", QString());
+  sg->set("LOW", QString());
   return sg;
 }

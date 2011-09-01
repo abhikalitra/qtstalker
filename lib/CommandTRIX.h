@@ -23,7 +23,6 @@
 #define COMMAND_TRIX_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandTRIX : public Command
 {
@@ -31,9 +30,9 @@ class CommandTRIX : public Command
 
   public:
     CommandTRIX (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getTRIX (QList<Curve *> &, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getTRIX (QList<Data *> &, int);
 };
 
 #endif

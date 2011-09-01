@@ -23,7 +23,6 @@
 #define COMMAND_THERM_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandTHERM : public Command
 {
@@ -31,9 +30,9 @@ class CommandTHERM : public Command
 
   public:
     CommandTHERM (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getTHERM (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getTHERM (QList<Data *> &);
 };
 
 #endif

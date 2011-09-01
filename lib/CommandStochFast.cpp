@@ -23,9 +23,8 @@
 #include "ta_libc.h"
 #include "MAType.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingList.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -38,63 +37,54 @@ CommandStochFast::CommandStochFast (QObject *p) : Command (p)
     qDebug("CommandStochFast::CommandStochFast: error on TA_Initialize");
 }
 
-int CommandStochFast::runScript (void *d)
+int CommandStochFast::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString kname = sg->get("NAME_FASTK")->getString();
-  Curve *line = script->curve(kname);
+  QString kname = sg->get("OUTPUT_FASTK");
+  Data *line = script->data(kname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_FASTK" << kname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_FASTK" << kname;
     return _ERROR;
   }
 
-  QString dname = sg->get("NAME_FASTD")->getString();
-  line = script->curve(dname);
+  QString dname = sg->get("OUTPUT_FASTD");
+  line = script->data(dname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_FASTD" << dname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_FASTD" << dname;
     return _ERROR;
   }
 
-  QString key = sg->get("HIGH")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  QString s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::runScript: invalid HIGH" << s;
     return _ERROR;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::runScript: invalid LOW" << s;
     return _ERROR;
   }
 
-  key = sg->get("CLOSE")->getString();
-  s = script->setting(key)->getString();
-  Curve *iclose = script->curve(s);
+  s = sg->get("CLOSE");
+  Data *iclose = script->data(s);
   if (! iclose)
   {
     qDebug() << _type << "::runScript: invalid CLOSE" << s;
     return _ERROR;
   }
 
-  int kperiod = sg->get("PERIOD_FASTK")->getInteger();
+  int kperiod = sg->getInteger("PERIOD_FASTK");
 
-  int dperiod = sg->get("PERIOD_FASTD")->getInteger();
+  int dperiod = sg->getInteger("PERIOD_FASTD");
 
   MAType mat;
-  s = sg->get("MA_TYPE")->getString();
+  s = sg->get("MA_TYPE");
   int type = mat.fromString(s);
   if (type == -1)
   {
@@ -102,29 +92,27 @@ int CommandStochFast::runScript (void *d)
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << ihigh << ilow << iclose;
-  QList<Curve *> lines = getSTOCHF(list, kperiod, dperiod, type);
+  QList<Data *> lines = getSTOCHF(list, kperiod, dperiod, type);
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Curve *kline = lines.at(0);
-  kline->setLabel(kname);
-  script->setCurve(kname, kline);
+  Data *kline = lines.at(0);
+  script->setData(kname, kline);
 
-  Curve *dline = lines.at(1);
-  dline->setLabel(dname);
-  script->setCurve(dname, dline);
+  Data *dline = lines.at(1);
+  script->setData(dname, dline);
 
   return _OK;
 }
 
-QList<Curve *> CommandStochFast::getSTOCHF (QList<Curve *> &list, int kperiod, int dperiod, int type)
+QList<Data *> CommandStochFast::getSTOCHF (QList<Data *> &list, int kperiod, int dperiod, int type)
 {
-  QList<Curve *> lines;
+  QList<Data *> lines;
   if (! list.count())
     return lines;
 
@@ -165,10 +153,11 @@ QList<Curve *> CommandStochFast::getSTOCHF (QList<Curve *> &list, int kperiod, i
     return lines;
   }
 
-  Curve *c = new Curve;
-  lines.append(c);
-  c = new Curve;
-  lines.append(c);
+  lines.clear();
+  Data *c = new CurveData;
+  lines << c;
+  c = new CurveData;
+  lines << c;
   if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
   {
     qDeleteAll(lines);
@@ -179,43 +168,16 @@ QList<Curve *> CommandStochFast::getSTOCHF (QList<Curve *> &list, int kperiod, i
   return lines;
 }
 
-SettingGroup * CommandStochFast::settings ()
+Data * CommandStochFast::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("%K"));
-  ss->setKey("NAME_FASTK");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("%D"));
-  ss->setKey("NAME_FASTD");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("CLOSE");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 5, 9999, 2);
-  si->setKey("PERIOD_FASTK");
-  sg->set(si);
-
-  si = new SettingInteger(0, 0, 3, 9999, 2);
-  si->setKey("PERIOD_FASTD");
-  sg->set(si);
-
-  MAType mat;
-  SettingList *sl = new SettingList(mat.list(), QString("EMA"));
-  sl->setKey("MA_TYPE");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT_FASTK", QString());
+  sg->set("OUTPUT_FASTD", QString());
+  sg->set("HIGH", QString());
+  sg->set("LOW", QString());
+  sg->set("CLOSE", QString());
+  sg->set("PERIOD_FASTK", 5);
+  sg->set("PERIOD_FASTD", 3);
+  sg->set("MA_TYPE", QString("EMA"));
   return sg;
 }

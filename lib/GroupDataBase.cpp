@@ -20,7 +20,6 @@
  */
 
 #include "GroupDataBase.h"
-#include "Globals.h"
 
 #include <QtDebug>
 
@@ -49,7 +48,7 @@ int GroupDataBase::load (QString name, QStringList &group)
 
   if (name.isEmpty())
     return 1;
-  
+
   QString s = "SELECT items FROM " + _table + " WHERE name='" + name + "'";
   QSqlQuery q(_db);
   q.exec(s);

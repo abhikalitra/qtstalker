@@ -21,83 +21,73 @@
 
 #include "CommandVFI.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
+#include <cmath>
 
 CommandVFI::CommandVFI (QObject *p) : Command (p)
 {
   _type = "VFI";
 }
 
-int CommandVFI::runScript (void *d)
+int CommandVFI::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("HIGH")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  QString s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::runScript: invalid HIGH" << s;
     return _ERROR;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::runScript: invalid LOW" << s;
     return _ERROR;
   }
 
-  key = sg->get("CLOSE")->getString();
-  s = script->setting(key)->getString();
-  Curve *iclose = script->curve(s);
+  s = sg->get("CLOSE");
+  Data *iclose = script->data(s);
   if (! iclose)
   {
     qDebug() << _type << "::runScript: invalid CLOSE" << s;
     return _ERROR;
   }
 
-  key = sg->get("VOLUME")->getString();
-  s = script->setting(key)->getString();
-  Curve *ivol = script->curve(s);
+  s = sg->get("VOLUME");
+  Data *ivol = script->data(s);
   if (! ivol)
   {
     qDebug() << _type << "::runScript: invalid VOLUME" << s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
+  int period = sg->getInteger("PERIOD");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << ihigh << ilow << iclose << ivol;
   line = getVFI(list, period);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandVFI::getVFI (QList<Curve *> &list, int period)
+Data * CommandVFI::getVFI (QList<Data *> &list, int period)
 {
   if (list.count() != 4)
     return 0;
@@ -107,103 +97,103 @@ Curve * CommandVFI::getVFI (QList<Curve *> &list, int period)
   if (it.keys(list, keys))
     return 0;
 
-  Curve *vfi = new Curve;
-  Curve *ihigh = list.at(0);
-  Curve *ilow = list.at(1);
-  Curve *iclose = list.at(2);
-  Curve *ivol = list.at(3);
+  Data *vfi = new CurveData;
+  Data *ihigh = list.at(0);
+  Data *ilow = list.at(1);
+  Data *iclose = list.at(2);
+  Data *ivol = list.at(3);
   int loop = period;
   for (; loop < keys.count(); loop++)
   {
-    CurveBar *hbar = ihigh->bar(keys.at(loop - period));
+    Data *hbar = ihigh->getData(keys.at(loop - period));
     if (! hbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(keys.at(loop - period));
+    Data *lbar = ilow->getData(keys.at(loop - period));
     if (! lbar)
       continue;
 
-    CurveBar *cbar = iclose->bar(keys.at(loop - period));
+    Data *cbar = iclose->getData(keys.at(loop - period));
     if (! cbar)
       continue;
 
     double inter = 0.0;
     double sma_vol = 0.0;
     int i;
-    double close = cbar->data();
-    double high = hbar->data();
-    double low = lbar->data();
+    double close = cbar->getDouble(CurveBar::_VALUE);
+    double high = hbar->getDouble(CurveBar::_VALUE);
+    double low = lbar->getDouble(CurveBar::_VALUE);
     double typical = (high + low + close) / 3.0;
     for (i = loop - period + 1; i <= loop; i++)
     {
-      hbar = ihigh->bar(keys.at(i));
+      hbar = ihigh->getData(keys.at(i));
       if (! hbar)
         continue;
 
-      lbar = ilow->bar(keys.at(i));
+      lbar = ilow->getData(keys.at(i));
       if (! lbar)
         continue;
 
-      cbar = iclose->bar(keys.at(i));
+      cbar = iclose->getData(keys.at(i));
       if (! cbar)
         continue;
 
-      CurveBar *vbar = ivol->bar(keys.at(i));
+      Data *vbar = ivol->getData(keys.at(i));
       if (! vbar)
         continue;
 
       double ytypical = typical;
-      close = cbar->data();
-      high = hbar->data();
-      low = lbar->data();
+      close = cbar->getDouble(CurveBar::_VALUE);
+      high = hbar->getDouble(CurveBar::_VALUE);
+      low = lbar->getDouble(CurveBar::_VALUE);
       typical = (high + low + close) / 3.0;
       double delta = (log(typical) - log(ytypical));
       inter += delta * delta;
-      sma_vol += vbar->data();
+      sma_vol += vbar->getDouble(CurveBar::_VALUE);
     }
     inter = 0.2 * sqrt(inter / (double) period) * typical;
     sma_vol /= (double) period;
 
-    hbar = ihigh->bar(keys.at(loop - period));
+    hbar = ihigh->getData(keys.at(loop - period));
     if (! hbar)
       continue;
 
-    lbar = ilow->bar(keys.at(loop - period));
+    lbar = ilow->getData(keys.at(loop - period));
     if (! lbar)
       continue;
 
-    cbar = iclose->bar(keys.at(loop - period));
+    cbar = iclose->getData(keys.at(loop - period));
     if (! cbar)
       continue;
 
-    close = cbar->data();
-    high = hbar->data();
-    low = lbar->data();
+    close = cbar->getDouble(CurveBar::_VALUE);
+    high = hbar->getDouble(CurveBar::_VALUE);
+    low = lbar->getDouble(CurveBar::_VALUE);
     typical = (high + low + close) / 3.0;
     double t = 0;
     for (i = loop - period + 1; i <= loop; i++)
     {
-      hbar = ihigh->bar(keys.at(i));
+      hbar = ihigh->getData(keys.at(i));
       if (! hbar)
         continue;
 
-      lbar = ilow->bar(keys.at(i));
+      lbar = ilow->getData(keys.at(i));
       if (! lbar)
         continue;
 
-      cbar = iclose->bar(keys.at(i));
+      cbar = iclose->getData(keys.at(i));
       if (! cbar)
         continue;
 
-      CurveBar *vbar = ivol->bar(keys.at(i));
+      Data *vbar = ivol->getData(keys.at(i));
       if (! vbar)
         continue;
 
       double ytypical = typical;
-      double volume = vbar->data();
-      close = cbar->data();
-      high = hbar->data();
-      low = lbar->data();
+      double volume = vbar->getDouble(CurveBar::_VALUE);
+      close = cbar->getDouble(CurveBar::_VALUE);
+      high = hbar->getDouble(CurveBar::_VALUE);
+      low = lbar->getDouble(CurveBar::_VALUE);
       typical = (high + low + close) / 3.0;
 
       if (typical > ytypical + inter)
@@ -215,40 +205,22 @@ Curve * CommandVFI::getVFI (QList<Curve *> &list, int period)
       }
     }
 
-    vfi->setBar(keys.at(loop), new CurveBar(t));
+    Data *b = new CurveBar;
+    b->set(CurveBar::_VALUE, t);
+    vfi->set(keys.at(loop), b);
   }
 
   return vfi;
 }
 
-SettingGroup * CommandVFI::settings ()
+Data * CommandVFI::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("CLOSE");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("VOLUME");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 10, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("HIGH", QString());
+  sg->set("LOW", QString());
+  sg->set("CLOSE", QString());
+  sg->set("VOLUME", QString());
+  sg->set("PERIOD", 10);
   return sg;
 }

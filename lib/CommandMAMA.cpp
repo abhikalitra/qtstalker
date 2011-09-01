@@ -22,8 +22,8 @@
 #include "CommandMAMA.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingDouble.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -36,66 +36,57 @@ CommandMAMA::CommandMAMA (QObject *p) : Command (p)
     qDebug("CommandMAMA::CommandMAMA: error on TA_Initialize");
 }
 
-int CommandMAMA::runScript (void *d)
+int CommandMAMA::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString mname = sg->get("NAME_MAMA")->getString();
-  Curve *line = script->curve(mname);
+  QString mname = sg->get("OUTPUT_MAMA");
+  Data *line = script->data(mname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_MAMA" << mname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_MAMA" << mname;
     return _ERROR;
   }
 
-  QString fname = sg->get("NAME_FAMA")->getString();
-  line = script->curve(fname);
+  QString fname = sg->get("OUTPUT_FAMA");
+  line = script->data(fname);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate NAME_FAMA" << fname;
+    qDebug() << _type << "::runScript: duplicate OUTPUT_FAMA" << fname;
     return _ERROR;
   }
 
-  QString key = sg->get("INPUT")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *in = script->curve(s);
+  QString s = sg->get("INPUT");
+  Data *in = script->data(s);
   if (! in)
   {
     qDebug() << _type << "::runScript: INPUT missing" << s;
     return _ERROR;
   }
 
-  double flimit = sg->get("LIMIT_FAST")->getDouble();
+  double flimit = sg->getDouble("LIMIT_FAST");
 
-  double slimit = sg->get("LIMIT_SLOW")->getDouble();
+  double slimit = sg->getDouble("LIMIT_SLOW");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << in;
-  QList<Curve *> lines = getMAMA(list, flimit, slimit);
+  QList<Data *> lines = getMAMA(list, flimit, slimit);
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Curve *mama = lines.at(0);
-  mama->setLabel(mname);
-  script->setCurve(mname, mama);
+  Data *mama = lines.at(0);
+  script->setData(mname, mama);
 
-  Curve *fama = lines.at(1);
-  fama->setLabel(fname);
-  script->setCurve(fname, fama);
+  Data *fama = lines.at(1);
+  script->setData(fname, fama);
 
   return _OK;
 }
 
-QList<Curve *> CommandMAMA::getMAMA (QList<Curve *> &list, double flimit, double slimit)
+QList<Data *> CommandMAMA::getMAMA (QList<Data *> &list, double flimit, double slimit)
 {
-  QList<Curve *> lines;
+  QList<Data *> lines;
   if (! list.count())
     return lines;
 
@@ -131,10 +122,11 @@ QList<Curve *> CommandMAMA::getMAMA (QList<Curve *> &list, double flimit, double
     return lines;
   }
 
-  Curve *c = new Curve;
-  lines.append(c);
-  c = new Curve;
-  lines.append(c);
+  lines.clear();
+  Data *c = new CurveData;
+  lines << c;
+  c = new CurveData;
+  lines << c;
   if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
   {
     qDeleteAll(lines);
@@ -145,30 +137,13 @@ QList<Curve *> CommandMAMA::getMAMA (QList<Curve *> &list, double flimit, double
   return lines;
 }
 
-SettingGroup * CommandMAMA::settings ()
+Data * CommandMAMA::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME_MAMA");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME_FAMA");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("INPUT");
-  sg->set(ss);
-
-  SettingDouble *sd = new SettingDouble(0, 0, 0.5, 1, 0);
-  sd->setKey("LIMIT_FAST");
-  sg->set(sd);
-
-  sd = new SettingDouble(0, 0, 0.05, 1, 0);
-  sd->setKey("LIMIT_SLOW");
-  sg->set(sd);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT_MAMA", QString());
+  sg->set("OUTPUT_FAMA", QString());
+  sg->set("INPUT", QString());
+  sg->set("LIMIT_FAST", 0.5);
+  sg->set("LIMIT_SLOW", 0.05);
   return sg;
 }

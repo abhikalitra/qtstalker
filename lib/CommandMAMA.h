@@ -23,7 +23,6 @@
 #define COMMAND_MAMA_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandMAMA : public Command
 {
@@ -31,9 +30,9 @@ class CommandMAMA : public Command
 
   public:
     CommandMAMA (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    QList<Curve *> getMAMA (QList<Curve *> &, double fast, double slow);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    QList<Data *> getMAMA (QList<Data *> &, double fast, double slow);
 };
 
 #endif

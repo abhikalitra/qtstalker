@@ -20,7 +20,6 @@
  */
 
 #include "CommandFactory.h"
-#include "Globals.h"
 #include "CommandAD.h"
 #include "CommandADX.h"
 #include "CommandArithmetic.h"
@@ -30,7 +29,7 @@
 #include "CommandBBANDS.h"
 #include "CommandBETA.h"
 #include "CommandBOP.h"
-#include "CommandBuy.h"
+//#include "CommandBuy.h"
 #include "CommandCandlePattern.h"
 #include "CommandCCI.h"
 #include "CommandChart.h"
@@ -40,13 +39,12 @@
 #include "CommandColor.h"
 #include "CommandCompare.h"
 #include "CommandCORREL.h"
-#include "CommandCSV.h"
-#include "CommandExchangeSearchDialog.h"
+//#include "CommandCSV.h"
+//#include "CommandExchangeSearchDialog.h"
 #include "CommandFI.h"
-#include "CommandFileDialog.h"
+//#include "CommandFileDialog.h"
 #include "CommandHLine.h"
 #include "CommandHT.h"
-#include "CommandPHASOR.h"
 #include "CommandLINEARREG.h"
 #include "CommandMA.h"
 #include "CommandMACD.h"
@@ -57,14 +55,11 @@
 #include "CommandMFI.h"
 #include "CommandMOM.h"
 #include "CommandNormalize.h"
+#include "CommandPHASOR.h"
 #include "CommandPO.h"
 #include "CommandPlotOHLC.h"
-#include "CommandPlotCandle.h"
-#include "CommandPlotDash.h"
-#include "CommandPlotDot.h"
 #include "CommandPlotLine.h"
 #include "CommandPlotHistogram.h"
-#include "CommandPlotHistogramBar.h"
 //#include "CommandRetracement.h"
 #include "CommandROC.h"
 #include "CommandRSI.h"
@@ -73,14 +68,17 @@
 #include "CommandScriptStart.h"
 //#include "CommandSelectDialog.h"
 //#include "CommandSell.h"
+//#include "CommandSettingGet.h"
+#include "CommandShift.h"
 #include "CommandSINE.h"
 #include "CommandSTDDEV.h"
 #include "CommandStochFast.h"
 #include "CommandStochRSI.h"
 #include "CommandStochSlow.h"
 #include "CommandSZ.h"
-#include "CommandSymbol.h"
+//#include "CommandSymbol.h"
 #include "CommandSymbolCurrent.h"
+//#include "CommandSymbolDialog.h"
 #include "CommandT3.h"
 //#include "CommandText.h"
 #include "CommandTHERM.h"
@@ -95,7 +93,7 @@
 //#include "CommandVLine.h"
 #include "CommandWeightedClose.h"
 #include "CommandWILLR.h"
-#include "CommandYahooHistory.h"
+//#include "CommandYahooHistory.h"
 
 #include <QDebug>
 
@@ -108,18 +106,18 @@ CommandFactory::CommandFactory ()
   _types << "CHART_OBJECT_TEXT" << "CHART_OBJECT_TLINE" << "CHART_OBJECT_VLINE";
   _types << "CHART_PANEL_REFRESH" << "CHART_UPDATE";
   _types << "CMO" << "COLOR" << "COMPARE" << "CORREL" << "CSV";
+  _types << "DEBUG";
   _types << "EXCHANGE_SEARCH_DIALOG";
   _types << "FI" << "FILE_DIALOG";
   _types << "HT" << "HT_PHASOR" << "HT_SINE";
   _types << "LINEARREG";
   _types << "MA" << "MACD" << "MAMA" << "MAVP" << "MEDIAN_PRICE" << "MINMAX" << "MFI" << "MOM";
   _types << "NORMALIZE";
-  _types << "PO" << "PLOT_CANDLE" << "PLOT_DASH" << "PLOT_DOT" << "PLOT_LINE";
-  _types << "PLOT_HISTOGRAM" << "PLOT_HISTOGRAM_BAR" << "PLOT_OHLC";
+  _types << "PO" << "PLOT_LINE" << "PLOT_HISTOGRAM" << "PLOT_OHLC";
   _types << "ROC" << "RSI";
-  _types << "SAR" << "SCRIPT_DONE" << "SCRIPT_START" << "SELECT_DIALOG" << "STDDEV";
+  _types << "SAR" << "SCRIPT_DONE" << "SCRIPT_START" << "SELECT_DIALOG" << "SETTING_GET" << "SHIFT" << "STDDEV";
   _types << "STOCH_FAST" << "STOCH_RSI" << "STOCH_SLOW" << "SZ";
-  _types << "SYMBOL" << "SYMBOL_CURRENT";
+  _types << "SYMBOL" << "SYMBOL_CURRENT" << "SYMBOL_DIALOG";
   _types << "T3" << "THERM" << "TRIX" << "TYPICAL_PRICE";
   _types << "ULTOSC";
   _types << "VAR" << "VBP" << "VFI" << "VIDYA";
@@ -170,7 +168,7 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandChart(p);
       break;
     case _CHART_OBJECT_BUY:
-      c = new CommandBuy(p);
+//      c = new CommandBuy(p);
       break;
     case _CHART_OBJECT_HLINE:
       c = new CommandHLine(p);
@@ -209,16 +207,18 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandCORREL(p);
       break;
     case _CSV:
-      c = new CommandCSV(p);
+//      c = new CommandCSV(p);
+      break;
+    case _DEBUG:
       break;
     case _EXCHANGE_SEARCH_DIALOG:
-      c = new CommandExchangeSearchDialog(p);
+//      c = new CommandExchangeSearchDialog(p);
       break;
     case _FI:
       c = new CommandFI(p);
       break;
     case _FILE_DIALOG:
-      c = new CommandFileDialog(p);
+//      c = new CommandFileDialog(p);
       break;
     case _HT:
       c = new CommandHT(p);
@@ -262,23 +262,11 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _PO:
       c = new CommandPO(p);
       break;
-    case _PLOT_CANDLE:
-      c = new CommandPlotCandle(p);
-      break;
-    case _PLOT_DASH:
-      c = new CommandPlotDash(p);
-      break;
-    case _PLOT_DOT:
-      c = new CommandPlotDot(p);
-      break;
     case _PLOT_LINE:
       c = new CommandPlotLine(p);
       break;
     case _PLOT_HISTOGRAM:
       c = new CommandPlotHistogram(p);
-      break;
-    case _PLOT_HISTOGRAM_BAR:
-      c = new CommandPlotHistogramBar(p);
       break;
     case _PLOT_OHLC:
       c = new CommandPlotOHLC(p);
@@ -301,6 +289,12 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _SELECT_DIALOG:
 //      c = new CommandSelectDialog(p);
       break;
+    case _SETTING_GET:
+//      c = new CommandSettingGet(p);
+      break;
+    case _SHIFT:
+      c = new CommandShift(p);
+      break;
     case _STDDEV:
       c = new CommandSTDDEV(p);
       break;
@@ -317,10 +311,13 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandSZ(p);
       break;
     case _SYMBOL:
-      c = new CommandSymbol(p);
+//      c = new CommandSymbol(p);
       break;
     case _SYMBOL_CURRENT:
       c = new CommandSymbolCurrent(p);
+      break;
+    case _SYMBOL_DIALOG:
+//      c = new CommandSymbolDialog(p);
       break;
     case _T3:
       c = new CommandT3(p);
@@ -356,7 +353,7 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandWILLR(p);
       break;
     case _YAHOO_HISTORY:
-      c = new CommandYahooHistory(p);
+//      c = new CommandYahooHistory(p);
       break;
     default:
       break;
@@ -368,4 +365,9 @@ Command * CommandFactory::command (QObject *p, QString type)
 QStringList CommandFactory::list ()
 {
   return _types;
+}
+
+int CommandFactory::stringToType (QString d)
+{
+  return _types.indexOf(d);
 }

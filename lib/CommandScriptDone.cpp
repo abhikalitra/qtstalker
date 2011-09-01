@@ -20,54 +20,28 @@
  */
 
 #include "CommandScriptDone.h"
-#include "Globals.h"
-#include "Script.h"
 #include "IPCMessage.h"
-#include "SettingString.h"
 #include "MessageSend.h"
 
 #include <QtDebug>
-#include <QSettings>
 
 CommandScriptDone::CommandScriptDone (QObject *p) : Command (p)
 {
   _type = "SCRIPT_DONE";
 }
 
-int CommandScriptDone::runScript (void *d)
+int CommandScriptDone::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  IPCMessage ipcm(script->session(), _type, "*", script->file());
-
+  IPCMessage ipcm(script->session(), _type, "*", script->file(), sg->type());
   MessageSend ms(this);
-  ms.send(ipcm, sg->get("SCRIPT")->getString());
+  ms.send(ipcm, sg->toString());
 
   return _OK;
 }
 
-int CommandScriptDone::message (IPCMessage &, QString &d)
+Data * CommandScriptDone::settings ()
 {
-  if (d.isEmpty())
-    return _ERROR;
-
-  g_scriptPanel->done(d);
-
-  return _OK;
-}
-
-SettingGroup * CommandScriptDone::settings ()
-{
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_NONE, QString());
-  ss->setKey("SCRIPT");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("SCRIPT", QString());
   return sg;
 }

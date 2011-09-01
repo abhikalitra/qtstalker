@@ -20,14 +20,15 @@
  */
 
 #include "QtStalkerScript.h"
-#include "Globals.h"
 #include "CommandFactory.h"
+#include "Message.h"
 
 #include <QtDebug>
 #include <QCoreApplication>
 #include <QWidget>
 #include <QTimer>
 #include <QFileInfo>
+#include <QFile>
 
 QtStalkerScript::QtStalkerScript (QString session, QString file)
 {
@@ -62,6 +63,10 @@ void QtStalkerScript::run ()
     return;
   }
 
+  QFile f("/tmp/QtStalkerScript.log");
+  if (f.open(QIODevice::ReadOnly | QIODevice::Text))
+    _msg.setDevice(&f);
+
   _stop = 0;
   CommandFactory fac;
 
@@ -74,31 +79,46 @@ void QtStalkerScript::run ()
     QByteArray ba = pro.readAllStandardOutput();
     qDebug() << ba;
 
-    SettingGroup tsg;
+    Message tsg;
     QString s(ba);
     QStringList l = s.split(";");
-    if (tsg.parse(l))
+    int loop = 0;
+    for (; loop < l.count(); loop++)
     {
-      pro.kill();
-      done();
-      return;
+      QStringList tl = l.at(loop).split("=");
+      if (tl.count() != 2)
+        continue;
+
+      tsg.insert(tl.at(0).trimmed(), tl.at(1).trimmed());
     }
 
-    Command *com = fac.command(this, tsg.command());
+    Command *com = fac.command(this, tsg.value("COMMAND"));
     if (! com)
     {
-      qDebug() << "QtStalkerScript::run: command not found" << tsg.command();
+      qDebug() << "QtStalkerScript::run: command not found" << tsg.value("COMMAND");
       pro.kill();
       done();
       return;
     }
 
-    SettingGroup *sg = com->settings();
-    sg->setStepName(tsg.stepName());
-    sg->merge(&tsg);
+    Data *sg = com->settings();
 
-    _script->setSettingGroup(sg);
-    _script->setCurrentStep(sg->stepName());
+    // merge settings and verify them
+    QList<QString> keys = tsg.keys();
+    for (loop = 0; loop < keys.count(); loop++)
+    {
+      if (! sg->dataContains(keys.at(loop)))
+        continue;
+
+      if (sg->set(keys.at(loop), tsg.value(keys.at(loop))))
+      {
+        qDebug() << "QtStalkerScript::run: invalid setting" << keys.at(loop) << tsg.value(keys.at(loop));
+        pro.kill();
+        done();
+        delete sg;
+        return;
+      }
+    }
 
     if (com->isDialog())
     {
@@ -120,10 +140,16 @@ void QtStalkerScript::run ()
     }
 
     s = "OK\n";
-    if (com->runScript(_script))
+    if (com->runScript(sg, _script))
       s = "ERROR\n";
 
+    // check if we have any return data to the script
+    QString ts = com->returnString();
+    if (! ts.isEmpty())
+      s = ts + "\n";
+
     delete com;
+    delete sg;
 
     // deal with it
     ba.clear();
@@ -137,111 +163,18 @@ void QtStalkerScript::run ()
   done();
 }
 
-/*
-void QtStalkerScript::run ()
-{
-  if (_script->loadScript())
-  {
-    qDebug() << "QtStalkerScript::run: script file error";
-    done();
-    return;
-  }
-
-  QStringList runOrder = _script->runOrder();
-
-  CommandFactory fac;
-  int loop = 0;
-  for (; loop < runOrder.count(); loop++)
-  {
-    SettingGroup *sg = _script->settingGroup(runOrder.at(loop));
-    if (! sg)
-    {
-      qDebug() << "QtStalkerScript::run: settingGroup missing" << runOrder.at(loop);
-      done();
-      return;
-    }
-
-    Command *com = fac.command(this, sg->command());
-    if (! com)
-    {
-      qDebug() << "QtStalkerScript::run: command missing" << sg->command();
-      delete com;
-      done();
-      return;
-    }
-
-    connect(com, SIGNAL(signalMessage(QString)), this, SLOT(message(QString)));
-
-    if (com->isDialog())
-    {
-      // we need to create the parent gui thread and keep it running
-      // or else after the first dialog is deleted, the qt gui thread
-      // will terminate.
-      // we create a hidden window and keep it for the remainder of the
-      // script.
-      if (! _dummyFlag)
-      {
-        QWidget *w = new QWidget(0,
-                                 Qt::WindowStaysOnBottomHint
-                                 | Qt::FramelessWindowHint
-                                 | Qt::X11BypassWindowManagerHint);
-        w->setFixedSize(0, 0);
-        w->show();
-        _dummyFlag++;
-      }
-    }
-
-    _script->setCurrentStep(runOrder.at(loop));
-
-    if (com->runScript(_script))
-    {
-      qDebug() << "QtStalkerScript::run: command error" << runOrder.at(loop);
-      delete com;
-      done();
-      return;
-    }
-
-    delete com;
-  }
-
-  done();
-}
-*/
-
 void QtStalkerScript::done ()
 {
-  // setup exit script
-  Script tscript(this);
-  tscript.setSession(_script->session());
-  tscript.setFile(_script->file());
-
   CommandFactory fac;
   Command *com = fac.command(this, "SCRIPT_DONE");
   if (com)
   {
-    SettingGroup *sg = com->settings();
-    sg->setStepName("XXX123");
-    Setting *v = sg->get("SCRIPT");
-    v->setString(_script->file());
-    tscript.setSettingGroup(sg);
+    Data *sg = com->settings();
+    sg->set("SCRIPT", _script->file());
+    com->runScript(sg, _script);
+    delete com;
+    delete sg;
   }
-
-/*
-  com = fac.command(this, "DEBUG");
-  if (com)
-  {
-    SettingGroup *sg = com->settings();
-    sg->setStepName("XXX1234");
-    Setting *v = sg->get("MESSAGE");
-    v->setString(_messages.join("\n"));
-    tscript.setSettingGroup(sg);
-  }
-  delete com;
-*/
-
-  tscript.setCurrentStep("XXX123");
-  com->runScript(&tscript);
-  delete com;
 
   QStringList l;
   l << QDateTime::currentDateTime().toString();

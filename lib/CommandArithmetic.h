@@ -23,7 +23,6 @@
 #define COMMAND_ARITHMETIC_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandArithmetic : public Command
 {
@@ -31,9 +30,9 @@ class CommandArithmetic : public Command
 
   public:
     CommandArithmetic (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getArithmetic (Curve *in, Curve *in2, int method);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getArithmetic (Data *in, Data *in2, int method);
 
   private:
     QStringList _method;

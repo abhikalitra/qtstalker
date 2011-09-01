@@ -22,11 +22,11 @@
 #include "Setup.h"
 #include "Script.h"
 #include "Globals.h"
-#include "BarData.h"
 #include "qtstalker_defines.h"
 #include "ExchangeDataBase.h"
 #include "Script.h"
 #include "ScriptDataBase.h"
+#include "Symbol.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -43,6 +43,8 @@ void Setup::setup (QObject *, QString session)
 {
   // set the global variables
   g_session = session;
+
+  g_currentSymbol = new Symbol;
 
   // setup the disk environment and init databases
   // order is critical here

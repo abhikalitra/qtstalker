@@ -23,7 +23,6 @@
 #define COMMAND_PHASOR_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandPHASOR : public Command
 {
@@ -31,9 +30,9 @@ class CommandPHASOR : public Command
 
   public:
     CommandPHASOR (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    QList<Curve *> getPHASOR (QList<Curve *> &);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    QList<Data *> getPHASOR (QList<Data *> &);
 };
 
 #endif

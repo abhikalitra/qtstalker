@@ -21,7 +21,8 @@
 
 #include "CommandTypicalPrice.h"
 #include "InputType.h"
-#include "SettingString.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -30,62 +31,52 @@ CommandTypicalPrice::CommandTypicalPrice (QObject *p) : Command (p)
   _type = "TYPICAL_PRICE";
 }
 
-int CommandTypicalPrice::runScript (void *d)
+int CommandTypicalPrice::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("HIGH")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  QString s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::runScript: invalid HIGH" << s;
     return _ERROR;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::runScript: invalid LOW" << s;
     return _ERROR;
   }
 
-  key = sg->get("CLOSE")->getString();
-  s = script->setting(key)->getString();
-  Curve *iclose = script->curve(s);
+  s = sg->get("CLOSE");
+  Data *iclose = script->data(s);
   if (! iclose)
   {
     qDebug() << _type << "::runScript: invalid CLOSE" << s;
     return _ERROR;
   }
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << ihigh << ilow << iclose;
   line = getTP(list);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandTypicalPrice::getTP (QList<Curve *> &list)
+Data * CommandTypicalPrice::getTP (QList<Data *> &list)
 {
   if (list.count() != 3)
     return 0;
@@ -95,52 +86,41 @@ Curve * CommandTypicalPrice::getTP (QList<Curve *> &list)
   if (it.keys(list, keys))
     return 0;
 
-  Curve *line = new Curve;
+  Data *line = new CurveData;
   int loop = 0;
-  Curve *ihigh = list.at(loop++);
-  Curve *ilow = list.at(loop++);
-  Curve *iclose = list.at(loop++);
+  Data *ihigh = list.at(loop++);
+  Data *ilow = list.at(loop++);
+  Data *iclose = list.at(loop++);
   for (loop = 0; loop < keys.count(); loop++)
   {
-    CurveBar *hbar = ihigh->bar(keys.at(loop));
+    Data *hbar = ihigh->getData(keys.at(loop));
     if (! hbar)
       continue;
 
-    CurveBar *lbar = ilow->bar(keys.at(loop));
+    Data *lbar = ilow->getData(keys.at(loop));
     if (! lbar)
       continue;
 
-    CurveBar *cbar = iclose->bar(keys.at(loop));
+    Data *cbar = iclose->getData(keys.at(loop));
     if (! cbar)
       continue;
 
-    double t = (hbar->data() + lbar->data() + cbar->data()) / 3.0;
-    line->setBar(keys.at(loop), new CurveBar(t));
+    double t = (hbar->getDouble(CurveBar::_VALUE) + lbar->getDouble(CurveBar::_VALUE) + cbar->getDouble(CurveBar::_VALUE)) / 3.0;
+
+    Data *b = new CurveBar;
+    b->set(CurveBar::_VALUE, t);
+    line->set(keys.at(loop), b);
   }
 
   return line;
 }
 
-SettingGroup * CommandTypicalPrice::settings ()
+Data * CommandTypicalPrice::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, QString("AD"));
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("CLOSE");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("HIGH", QString());
+  sg->set("LOW", QString());
+  sg->set("CLOSE", QString());
   return sg;
 }

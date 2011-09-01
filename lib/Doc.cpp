@@ -45,7 +45,7 @@ http://qt.nokia.com/doc/4.5/help-simpletextviewer-assistant-cpp.html
 
 Qtstalker changes are minor configuration and are noted below, and also in the
 project's revision control system.
-CVS $Revision: 1.1 $ $Date: 2010/11/07 23:25:04 $
+CVS $Revision: 1.2 $ $Date: 2011/09/01 23:03:25 $
 */
 
 #include <QByteArray>
@@ -55,7 +55,6 @@ CVS $Revision: 1.1 $ $Date: 2010/11/07 23:25:04 $
 
 #include "Doc.h"
 #include "qtstalker_defines.h"
-#include "Globals.h"
 
 Doc::Doc ()
 {
@@ -69,7 +68,7 @@ Doc::~Doc ()
     _proc->terminate();
     _proc->waitForFinished(3000);
   }
-    
+
   delete _proc;
 }
 
@@ -81,7 +80,7 @@ void Doc::showDocumentation (QString page)
   QByteArray ba("SetSource ");
 //  ba.append("qthelp://com.trolltech.examples.simpletextviewer/doc/");
   ba.append("qthelp://qtstalker/doc/");
-    
+
   _proc->write(ba + page.toLocal8Bit() + '\0');
 }
 
@@ -107,7 +106,7 @@ bool Doc::startAssistant ()
         << QLatin1String("-enableRemoteControl");
 */
     QString collectionFile = QString("%1/qtstalker/html/doc.qhc").arg(INSTALL_DOCS_DIR);
-    
+
     args << QLatin1String("-collectionFile") << collectionFile << QLatin1String("-enableRemoteControl");
 
     _proc->start(app, args);
@@ -116,8 +115,8 @@ bool Doc::startAssistant ()
     {
       qDebug() << QObject::tr("Unable to launch Qt Assistant (%1)").arg(app);
       return false;
-    }    
+    }
   }
-  
+
   return true;
 }

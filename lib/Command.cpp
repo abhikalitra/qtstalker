@@ -20,20 +20,20 @@
  */
 
 #include "Command.h"
+#include "IPCMessage.h"
+#include "MessageSend.h"
+#include "Data.h"
 
 #include <QDebug>
+#include <QFile>
+#include <QTextStream>
 
 Command::Command (QObject *p) : QObject (p)
 {
   _isDialog = 0;
 }
 
-int Command::runScript (void *)
-{
-  return 0;
-}
-
-int Command::message (IPCMessage &, QString &)
+int Command::runScript (Data *, Script *)
 {
   return 0;
 }
@@ -43,7 +43,7 @@ int Command::request (Message *, Message *)
   return 0;
 }
 
-SettingGroup * Command::settings ()
+Data * Command::settings ()
 {
   return 0;
 }
@@ -53,15 +53,31 @@ QString Command::type ()
   return _type;
 }
 
-/*
-CommandWidget * Command::dialog (QWidget *p)
-{
-  CommandWidget *w = new CommandWidget(p, _settings);
-  return w;
-}
-*/
-
 int Command::isDialog ()
 {
   return _isDialog;
+}
+
+QString Command::returnString ()
+{
+  return _returnString;
+}
+
+void Command::message (QString session, QString command, QString member, QString data)
+{
+/*
+  Data data;
+  data.set("MESSAGE", d);
+
+  IPCMessage ipcm(session, "DEBUG", "*", QString(), data.type());
+  MessageSend ms(this);
+  ms.send(ipcm, data.toString());
+*/
+
+  QFile f("/tmp/QtStalkerScript.log");
+  if (! f.open(QIODevice::Append | QIODevice::Text))
+    return;
+
+  QTextStream out(&f);
+  out << session << ":" << command << ":" << member << ":" << data << "\n";
 }

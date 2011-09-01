@@ -23,7 +23,6 @@
 #define COMMAND_RSI_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandRSI : public Command
 {
@@ -31,9 +30,9 @@ class CommandRSI : public Command
 
   public:
     CommandRSI (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getRSI (QList<Curve *> &, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getRSI (QList<Data *> &, int);
 };
 
 #endif

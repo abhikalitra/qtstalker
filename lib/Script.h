@@ -26,9 +26,7 @@
 #include <QHash>
 #include <QObject>
 
-#include "Curve.h"
-#include "ChartObject.h"
-#include "SettingGroup.h"
+#include "Data.h"
 
 class Script : public QObject
 {
@@ -38,27 +36,18 @@ class Script : public QObject
     Script (QObject *);
     ~Script ();
     void clear ();
-    void setCurve (QString key, Curve *);
-    Curve * curve (QString);
-    void setCurves (QHash<QString, Curve *>);
-    QHash<QString, Curve *> curves ();
-    void setSettingGroup (SettingGroup *);
-    SettingGroup * settingGroup (QString);
-    Setting * setting (QString);
-    int chartObjectCount ();
-    void setChartObject (QString key, ChartObject *);
-    QHash<QString, ChartObject *> chartObjects ();
+    void setData (QString, Data *);
+    Data * data (QString);
     void setSession (QString);
     QString session ();
     void setName (QString);
     QString name ();
-    void removeSettingGroup (QString);
     void setFile (QString);
     QString & file ();
     qint64 pid ();
-    void setCurrentStep (QString);
-    QString currentStep ();
-    QString nextROID ();
+    int count ();
+    QList<QString> dataKeys ();
+    int nextROID ();
 
   public slots:
     int run ();
@@ -70,10 +59,7 @@ class Script : public QObject
     QString _session;
     QString _name;
     QString _file;
-    QString _currentStep;
-    QHash<QString, Curve *> _curves;
-    QHash<QString, ChartObject *> _chartObjects;
-    QHash<QString, SettingGroup *> _settingGroups;
+    QHash<QString, Data *> _data;
 };
 
 #endif

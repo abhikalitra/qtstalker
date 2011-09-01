@@ -23,7 +23,6 @@
 #define COMMAND_ROC_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandROC : public Command
 {
@@ -31,9 +30,9 @@ class CommandROC : public Command
 
   public:
     CommandROC (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getROC (QList<Curve *> &, int, int);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getROC (QList<Data *> &, int, int);
 
   protected:
     QStringList _method;

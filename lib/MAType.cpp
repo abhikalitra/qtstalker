@@ -21,6 +21,8 @@
 
 #include "MAType.h"
 #include "ta_libc.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QDebug>
 
@@ -43,16 +45,12 @@ MAType::Type MAType::fromString (QString d)
   return (MAType::Type) _list.indexOf(d);
 }
 
-Curve * MAType::getMA (Curve *in, int period, int method)
+Data * MAType::getMA (Data *in, int period, int method)
 {
-  if (in->count() < period)
-    return 0;
-
   if (method == _WILDER)
     return getWilder(in, period);
 
-  QList<int> keys;
-  in->keys(keys);
+  QList<int> keys = in->barKeys();
 
   int size = keys.count();
   TA_Real input[size];
@@ -63,8 +61,8 @@ Curve * MAType::getMA (Curve *in, int period, int method)
   int loop = 0;
   for (; loop < size; loop++)
   {
-    CurveBar *bar = in->bar(keys.at(loop));
-    input[loop] = (TA_Real) bar->data();
+    Data *bar = in->getData(keys.at(loop));
+    input[loop] = (TA_Real) bar->getDouble(CurveBar::_VALUE);
   }
 
   TA_RetCode rc = TA_MA(0, size - 1, &input[0], period, (TA_MAType) method, &outBeg, &outNb, &out[0]);
@@ -74,13 +72,16 @@ Curve * MAType::getMA (Curve *in, int period, int method)
     return 0;
   }
 
-  Curve *line = new Curve;
+  Data *line = new CurveData;
 
   int keyLoop = keys.count() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    line->setBar(keys.at(keyLoop), new CurveBar(out[outLoop]));
+    CurveBar *b = new CurveBar;
+    b->set(CurveBar::_VALUE, out[outLoop]);
+    line->set(keys.at(keyLoop), b);
+
     keyLoop--;
     outLoop--;
   }
@@ -88,33 +89,33 @@ Curve * MAType::getMA (Curve *in, int period, int method)
   return line;
 }
 
-Curve * MAType::getWilder (Curve *in, int period)
+Data * MAType::getWilder (Data *in, int period)
 {
-  if (in->count() < period)
-    return 0;
+  Data *line = new CurveData;
 
-  Curve *line = new Curve;
-
-  QList<int> keys;
-  in->keys(keys);
+  QList<int> keys = in->barKeys();
 
   double t = 0;
   int loop = 0;
   for (; loop < period; loop++)
   {
-    CurveBar *bar = in->bar(keys.at(loop));
-    t += bar->data();
+    Data *bar = in->getData(keys.at(loop));
+    t += bar->getDouble(CurveBar::_VALUE);
   }
   double yesterday = t / (double) period;
-  line->setBar(keys.at(loop), new CurveBar(yesterday));
+  CurveBar *db = new CurveBar;
+  db->set(CurveBar::_VALUE, yesterday);
+  line->set(keys.at(loop), db);
 
   for (; loop < keys.count(); loop++)
   {
-    CurveBar *bar = in->bar(keys.at(loop));
-    double t  = (yesterday * (period - 1) + bar->data()) / (double) period;
+    Data *bar = in->getData(keys.at(loop));
+    double t  = (yesterday * (period - 1) + bar->getDouble(CurveBar::_VALUE)) / (double) period;
     yesterday = t;
 
-    line->setBar(keys.at(loop), new CurveBar(t));
+    CurveBar *db = new CurveBar;
+    db->set(CurveBar::_VALUE, t);
+    line->set(keys.at(loop), db);
   }
 
   return line;

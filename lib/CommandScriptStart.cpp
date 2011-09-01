@@ -20,54 +20,28 @@
  */
 
 #include "CommandScriptStart.h"
-#include "Globals.h"
-#include "Script.h"
 #include "IPCMessage.h"
-#include "SettingString.h"
 #include "MessageSend.h"
 
 #include <QtDebug>
-#include <QSettings>
 
 CommandScriptStart::CommandScriptStart (QObject *p) : Command (p)
 {
   _type = "SCRIPT_START";
 }
 
-int CommandScriptStart::runScript (void *d)
+int CommandScriptStart::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  IPCMessage ipcm(script->session(), _type, "*", script->file());
-
+  IPCMessage ipcm(script->session(), _type, "*", script->file(), sg->type());
   MessageSend ms(this);
-  ms.send(ipcm, sg->get("SCRIPT")->getString());
+  ms.send(ipcm, sg->toString());
 
   return _OK;
 }
 
-int CommandScriptStart::message (IPCMessage &, QString &d)
+Data * CommandScriptStart::settings ()
 {
-  if (d.isEmpty())
-    return _ERROR;
-
-  g_scriptPanel->runScript(d);
-
-  return _OK;
-}
-
-SettingGroup * CommandScriptStart::settings ()
-{
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_NONE, QString());
-  ss->setKey("SCRIPT");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("SCRIPT", QString());
   return sg;
 }

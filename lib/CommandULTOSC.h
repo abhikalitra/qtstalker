@@ -23,7 +23,6 @@
 #define COMMAND_ULTOSC_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandULTOSC : public Command
 {
@@ -31,9 +30,9 @@ class CommandULTOSC : public Command
 
   public:
     CommandULTOSC (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    Curve * getULTOSC (QList<Curve *> &, int sp, int mp, int lp);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    Data * getULTOSC (QList<Data *> &, int sp, int mp, int lp);
 };
 
 #endif

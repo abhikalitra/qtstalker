@@ -23,7 +23,6 @@
 #define COMMAND_BBANDS_HPP
 
 #include "Command.h"
-#include "Curve.h"
 
 class CommandBBANDS : public Command
 {
@@ -31,9 +30,9 @@ class CommandBBANDS : public Command
 
   public:
     CommandBBANDS (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
-    QList<Curve *> getBBANDS (QList<Curve *> &, int period, double udev, double ldev, int type);
+    int runScript (Data *, Script *);
+    Data * settings ();
+    QList<Data *> getBBANDS (QList<Data *> &, int period, double udev, double ldev, int type);
 };
 
 #endif

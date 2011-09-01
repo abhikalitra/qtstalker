@@ -20,7 +20,7 @@
  */
 
 #include "ConfirmDialog.h"
-#include "Globals.h"
+//#include "Globals.h"
 
 #include <QtDebug>
 #include <QMessageBox>
@@ -31,7 +31,8 @@ ConfirmDialog::ConfirmDialog (QWidget *p) : Dialog (p)
   _keyPos = "confirm_dialog_window_position";
 
   QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Confirm");
+//  l << "QtStalker" << g_session << ":" << tr("Confirm");
+  l << "QtStalker" << ":" << tr("Confirm");
   setWindowTitle(l.join(" "));
 
   createGUI();

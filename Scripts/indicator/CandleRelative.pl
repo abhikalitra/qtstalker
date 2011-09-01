@@ -6,32 +6,79 @@ $openName = 'Open';
 $highName = 'High';
 $lowName = 'Low';
 $closeName = 'Close';
+$chartName = 'CR';
+$neutralColor = 'blue';
+$upColor = 'green';
+$downColor = 'red';
 
 ###################################################################
 
 $|++;
 
-$command = "PLUGIN=DOHLCVI,METHOD=O,NAME_OPEN=$openName";
+# create the chart
+$command = "COMMAND=CHART;
+            NAME=$chartName;
+            DATE=1;
+            LOG=0;
+            ROW=0;
+            COL=99";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=H,NAME_HIGH=$highName";
+# load current bars
+$command = "COMMAND=SYMBOL_CURRENT;
+            DATE=$dateName;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=L,NAME_LOW=$lowName";
+# create the candles
+$command = "COMMAND=PLOT_OHLC;
+            CHART=$chartName;
+            NAME=$name;
+            STYLE=Candle;
+            OPEN=$openName;
+            HIGH=$highName;
+            LOW=$lowName;
+            CLOSE=$closeName;
+            COLOR=$neutralColor;
+            Z=0;
+            PEN=1";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=DOHLCVI,METHOD=C,NAME_CLOSE=$closeName";
+# color up bars
+$command = "COMMAND=COLOR;
+            INPUT_1=$closeName;
+            INPUT_1_OFFSET=0;
+            OP=GT;
+            INPUT_2=$closeName;
+            INPUT_2_OFFSET=1;
+            INPUT_3=$name;
+            INPUT_3_OFFSET=0;
+            COLOR=$upColor";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# get the candles
-$command = "PLUGIN=CANDLES,INPUT_OPEN=$openName,INPUT_HIGH=$highName,INPUT_LOW=$lowName,INPUT_CLOSE=$closeName,NAME=$name,COLOR_UP=green,COLOR_DOWN=red,COLOR_NEUTRAL=blue";
+# color down bars
+$command = "COMMAND=COLOR;
+            INPUT_1=$closeName;
+            INPUT_1_OFFSET=0;
+            OP=LT;
+            INPUT_2=$closeName;
+            INPUT_2_OFFSET=1;
+            INPUT_3=$name;
+            INPUT_3_OFFSET=0;
+            COLOR=$downColor";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-$command = "PLUGIN=INDICATOR,METHOD=PLOT,NAME=$name,Z=0";
+# update chart
+$command = "COMMAND=CHART_UPDATE;
+            CHART=$chartName;
+            DATE=$dateName";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

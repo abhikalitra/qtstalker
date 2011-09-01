@@ -25,8 +25,7 @@
 #include <QWidget>
 
 #include "Message.h"
-#include "SettingGroup.h"
-#include "IPCMessage.h"
+#include "Script.h"
 
 class Command : public QObject
 {
@@ -45,17 +44,18 @@ class Command : public QObject
 
     Command (QObject *);
     virtual int request (Message *, Message *);
-//    virtual CommandWidget * dialog (QWidget *);
-    virtual int runScript (void *);
-    virtual int message (IPCMessage &, QString &);
-    virtual SettingGroup * settings ();
+    virtual int runScript (Data *, Script *);
+    virtual Data * settings ();
 
     QString type ();
     int isDialog ();
+    QString returnString ();
+    void message (QString session, QString command, QString member, QString data);
 
   protected:
     QString _type;
     int _isDialog;
+    QString _returnString;
 };
 
 #endif

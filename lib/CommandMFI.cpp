@@ -22,8 +22,8 @@
 #include "CommandMFI.h"
 #include "ta_libc.h"
 #include "InputType.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -36,73 +36,62 @@ CommandMFI::CommandMFI (QObject *p) : Command (p)
     qDebug("CommandMFI::CommandMFI: error on TA_Initialize");
 }
 
-int CommandMFI::runScript (void *d)
+int CommandMFI::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-  QString name = sg->get("NAME")->getString();
-  Curve *line = script->curve(name);
+  QString name = sg->get("OUTPUT");
+  Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString key = sg->get("HIGH")->getString();
-  QString s = script->setting(key)->getString();
-  Curve *ihigh = script->curve(s);
+  QString s = sg->get("HIGH");
+  Data *ihigh = script->data(s);
   if (! ihigh)
   {
     qDebug() << _type << "::runScript: invalid HIGH" << s;
     return _ERROR;
   }
 
-  key = sg->get("LOW")->getString();
-  s = script->setting(key)->getString();
-  Curve *ilow = script->curve(s);
+  s = sg->get("LOW");
+  Data *ilow = script->data(s);
   if (! ilow)
   {
     qDebug() << _type << "::runScript: invalid LOW" << s;
     return _ERROR;
   }
 
-  key = sg->get("CLOSE")->getString();
-  s = script->setting(key)->getString();
-  Curve *iclose = script->curve(s);
+  s = sg->get("CLOSE");
+  Data *iclose = script->data(s);
   if (! iclose)
   {
     qDebug() << _type << "::runScript: invalid CLOSE" << s;
     return _ERROR;
   }
 
-  key = sg->get("VOLUME")->getString();
-  s = script->setting(key)->getString();
-  Curve *ivol = script->curve(s);
+  s = sg->get("VOLUME");
+  Data *ivol = script->data(s);
   if (! ivol)
   {
     qDebug() << _type << "::runScript: invalid VOLUME" << s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD")->getInteger();
+  int period = sg->getInteger("PERIOD");
 
-  QList<Curve *> list;
+  QList<Data *> list;
   list << ihigh << ilow << iclose << ivol;
   line = getMFI(list, period);
   if (! line)
     return _ERROR;
 
-  line->setLabel(name);
-  script->setCurve(name, line);
+  script->setData(name, line);
 
   return _OK;
 }
 
-Curve * CommandMFI::getMFI (QList<Curve *> &list, int period)
+Data * CommandMFI::getMFI (QList<Data *> &list, int period)
 {
   if (list.count() != 4)
     return 0;
@@ -142,8 +131,8 @@ Curve * CommandMFI::getMFI (QList<Curve *> &list, int period)
     return 0;
   }
 
-  QList<Curve *> outs;
-  Curve *c = new Curve;
+  QList<Data *> outs;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -154,34 +143,14 @@ Curve * CommandMFI::getMFI (QList<Curve *> &list, int period)
   return c;
 }
 
-SettingGroup * CommandMFI::settings ()
+Data * CommandMFI::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_NONE, Setting::_CURVE, _type);
-  ss->setKey("NAME");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("HIGH");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("LOW");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("CLOSE");
-  sg->set(ss);
-
-  ss = new SettingString(Setting::_CURVE, Setting::_NONE, QString());
-  ss->setKey("VOLUME");
-  sg->set(ss);
-
-  SettingInteger *si = new SettingInteger(0, 0, 14, 9999, 2);
-  si->setKey("PERIOD");
-  sg->set(si);
-
+  Data *sg = new Data;
+  sg->set("OUTPUT", QString());
+  sg->set("HIGH", QString());
+  sg->set("LOW", QString());
+  sg->set("CLOSE", QString());
+  sg->set("VOLUME", QString());
+  sg->set("PERIOD", 14);
   return sg;
 }

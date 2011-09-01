@@ -19,38 +19,33 @@
  *  USA.
  */
 
+// *************************************************************************************************
+// *************************************************************************************************
+
 #ifndef CURVE_BAR_HPP
 #define CURVE_BAR_HPP
 
-#include <QColor>
-#include <QHash>
-#include <QDateTime>
+#include "Data.h"
 
-class CurveBar
+class CurveBar : public Data
 {
   public:
-    CurveBar ();
-    CurveBar (double);
-    CurveBar (QColor, double);
-    double data (int);
-    double data ();
-    void setData (int, double);
-    void setData (double);
-    void setColor (QColor);
-    QColor color ();
-    void setDateTime (QDateTime);
-    QDateTime dateTime ();
-    int count ();
-    int highLow (double &, double &);
-    int isDate ();
-    void copy (CurveBar *);
-    QString toString ();
-    int fromString (QString);
+    enum Parm
+    {
+      _DATE,
+      _OPEN,
+      _HIGH,
+      _LOW,
+      _CLOSE,
+      _VOLUME,
+      _OI,
+      _COLOR,
+      _VALUE
+    };
 
-  protected:
-    QHash<int, double> _data;
-    QColor _color;
-    QDateTime _dateTime;
+    CurveBar ();
+    void clear ();
+    int highLow (double &, double &);
 };
 
 #endif
