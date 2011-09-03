@@ -32,23 +32,23 @@
 
 ChartObjectHLine::ChartObjectHLine ()
 {
-  _settings->set(ChartObjectData::_TYPE, QString("HLine"));
-  _settings->set(ChartObjectData::_PRICE, 0);
-  _settings->set(ChartObjectData::_COLOR, QColor(Qt::red));
-  _settings->set(ChartObjectData::_Z, 1);
-  _settings->set(ChartObjectData::_PEN, 1);
+  _settings->set(ChartObjectData::_TYPE, QVariant(QString("HLine")));
+  _settings->set(ChartObjectData::_PRICE, QVariant(0));
+  _settings->set(ChartObjectData::_COLOR, QVariant(QString("red")));
+  _settings->set(ChartObjectData::_Z, QVariant(1));
+  _settings->set(ChartObjectData::_PEN, QVariant(1));
 }
 
 void ChartObjectHLine::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap &yMap, const QRect &) const
 {
-  p->setPen(_settings->getColor(ChartObjectData::_COLOR));
+  p->setPen(QColor(_settings->get(ChartObjectData::_COLOR).toString()));
 
-  int y = yMap.transform(_settings->getDouble(ChartObjectData::_PRICE));
+  int y = yMap.transform(_settings->get(ChartObjectData::_PRICE).toDouble());
 
   // test start
   Strip strip;
   QString ts;
-  strip.strip(_settings->getDouble(ChartObjectData::_PRICE), 4, ts);
+  strip.strip(_settings->get(ChartObjectData::_PRICE).toDouble(), 4, ts);
   QString s = " " + ts; // prepend space so we can clearly read text
   QFontMetrics fm = p->fontMetrics();
   QRect rc = p->boundingRect(0, y - (fm.height() / 2), 1, 1, 0, s);
@@ -92,15 +92,15 @@ void ChartObjectHLine::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap
                   y - (_handleWidth / 2),
                   _handleWidth,
                   _handleWidth,
-                  _settings->getColor(ChartObjectData::_COLOR));
+                  QColor(_settings->get(ChartObjectData::_COLOR).toString()));
     }
   }
 }
 
 int ChartObjectHLine::info (Message &info)
 {
-  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE));
-  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE));
+  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE).toString());
+  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE).toString());
   return 0;
 }
 
@@ -111,13 +111,13 @@ void ChartObjectHLine::move (QPoint p)
     case _MOVE:
     {
       QwtScaleMap map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_PRICE, map.invTransform((double) p.y()));
+      _settings->set(ChartObjectData::_PRICE, QVariant(map.invTransform((double) p.y())));
 
       plot()->replot();
 
       Strip strip;
       QString s;
-      strip.strip(_settings->getDouble(ChartObjectData::_PRICE), 4, s);
+      strip.strip(_settings->get(ChartObjectData::_PRICE).toDouble(), 4, s);
       g_parent->statusBar()->showMessage(s);
 
       _modified++;
@@ -138,7 +138,7 @@ int ChartObjectHLine::create ()
 
 int ChartObjectHLine::highLow (int, int, double &high, double &low)
 {
-  double d = _settings->getDouble(ChartObjectData::_PRICE);
+  double d = _settings->get(ChartObjectData::_PRICE).toDouble();
   high = d;
   low = d;
   return 0;

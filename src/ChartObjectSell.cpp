@@ -32,22 +32,22 @@
 
 ChartObjectSell::ChartObjectSell ()
 {
-  _settings->set(ChartObjectData::_TYPE, QString("Sell"));
-  _settings->set(ChartObjectData::_DATE, QDateTime::currentDateTime());
-  _settings->set(ChartObjectData::_PRICE, 0);
-  _settings->set(ChartObjectData::_COLOR, QColor(Qt::red));
-  _settings->set(ChartObjectData::_Z, 1);
-  _settings->set(ChartObjectData::_PEN, 1);
+  _settings->set(ChartObjectData::_TYPE, QVariant(QString("Sell")));
+  _settings->set(ChartObjectData::_DATE, QVariant(QDateTime::currentDateTime()));
+  _settings->set(ChartObjectData::_PRICE, QVariant(0));
+  _settings->set(ChartObjectData::_COLOR, QVariant(QString("red")));
+  _settings->set(ChartObjectData::_Z, QVariant(1));
+  _settings->set(ChartObjectData::_PEN, QVariant(1));
 }
 
 void ChartObjectSell::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->getDateTime(ChartObjectData::_DATE)));
+  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE).toDateTime()));
 
-  int y = yMap.transform(_settings->getDouble(ChartObjectData::_PRICE));
+  int y = yMap.transform(_settings->get(ChartObjectData::_PRICE).toDouble());
 
-  p->setBrush(_settings->getColor(ChartObjectData::_COLOR));
+  p->setBrush(QColor(_settings->get(ChartObjectData::_COLOR).toString()));
 
   QPolygon arrow;
   arrow.putPoints(0, 7, x, y,
@@ -78,19 +78,19 @@ void ChartObjectSell::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScale
                 y + (_handleWidth / 2),
                 _handleWidth,
                 _handleWidth,
-                _settings->getColor(ChartObjectData::_COLOR));
+                QColor(_settings->get(ChartObjectData::_COLOR).toString()));
   }
 }
 
 int ChartObjectSell::info (Message &info)
 {
-  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE));
+  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE).toString());
 
-  QDateTime dt = _settings->getDateTime(ChartObjectData::_DATE);
+  QDateTime dt = _settings->get(ChartObjectData::_DATE).toDateTime();
   info.insert("D", dt.toString("yyyy-MM-dd"));
   info.insert("T", dt.toString("HH:mm:ss"));
 
-  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE));
+  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE).toString());
 
   return 0;
 }
@@ -107,14 +107,14 @@ void ChartObjectSell::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE, dt);
+      _settings->set(ChartObjectData::_DATE, QVariant(dt));
 
       map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_PRICE, map.invTransform((double) p.y()));
+      _settings->set(ChartObjectData::_PRICE, QVariant(map.invTransform((double) p.y())));
 
       plot()->replot();
 
-      QString s = _settings->get(ChartObjectData::_DATE) + " " + _settings->get(ChartObjectData::_PRICE);
+      QString s = _settings->get(ChartObjectData::_DATE).toString() + " " + _settings->get(ChartObjectData::_PRICE).toString();
       g_parent->statusBar()->showMessage(s);
 
       _modified++;

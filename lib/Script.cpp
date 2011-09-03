@@ -168,7 +168,7 @@ int Script::nextROID ()
     if (dg->type() != "CHART_OBJECT")
       continue;
 
-    int t = dg->getInteger(ChartObjectData::_ID);
+    int t = dg->get(ChartObjectData::_ID).toInt();
     if (t < low)
       low = t;
   }

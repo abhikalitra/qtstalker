@@ -33,6 +33,7 @@ $ma2Color = 'red';
 $ma2Z = '1';
 $ma2Period = '50';
 $ma2Type = 'EMA';
+$ma2Style = 'Line';
 
 # MA3 parms
 $ma3Data = 'ma3';
@@ -41,6 +42,7 @@ $ma3Color = 'blue';
 $ma3Z = '1';
 $ma3Period = '200';
 $ma3Type = 'EMA';
+$ma3Style = 'Line';
 
 ###################################################################
 
@@ -71,7 +73,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # plot OHLC bars
 $command = "COMMAND=PLOT_OHLC;
             CHART=$chartName;
-            NAME=$ohlcName;
+            OUTPUT=$ohlcName;
             STYLE=OHLC;
             OPEN=$openName;
             HIGH=$highName;
@@ -139,7 +141,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # plot MA1
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
-            NAME=$ma1Name;
+            OUTPUT=$ma1Name;
             INPUT=$ma1Data;
             STYLE=$ma1Style;
             COLOR=$ma1Color;
@@ -151,7 +153,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # plot MA2
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
-            NAME=$ma2Name;
+            OUTPUT=$ma2Name;
             INPUT=$ma2Data;
             STYLE=$ma2Style;
             COLOR=$ma2Color;
@@ -163,7 +165,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # plot MA3
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
-            NAME=$ma3Name;
+            OUTPUT=$ma3Name;
             INPUT=$ma3Data;
             STYLE=$ma3Style;
             COLOR=$ma3Color;

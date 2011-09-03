@@ -25,11 +25,7 @@
 #ifndef DATA_HPP
 #define DATA_HPP
 
-#include <QStringList>
-#include <QDateTime>
-#include <QColor>
-#include <QList>
-#include <QFont>
+#include <QVariant>
 #include <QHash>
 
 class Data
@@ -40,38 +36,12 @@ class Data
     bool dataContains (QString);
     int dataKeyCount ();
     virtual void clear ();
-    virtual int set (QString, QString);
-    virtual int set (int, QString);
-    virtual int set (int, QDateTime);
-    virtual int set (QString, QDateTime);
-    virtual int set (int, QColor);
-    virtual int set (QString, QColor);
-    virtual int set (int, double);
-    virtual int set (QString, double);
-    virtual int set (int, int);
-    virtual int set (QString, int);
-    virtual int set (int, QStringList);
-    virtual int set (QString, QStringList);
-    virtual int set (int, bool);
-    virtual int set (QString, bool);
+    virtual int set (QString, QVariant);
+    virtual int set (int, QVariant);
     virtual int set (int, Data *);
-    virtual int set (QString, Data *);
-    virtual int set (int, QFont);
-    virtual int set (QString, QFont);
-    virtual QString get (QString);
-    virtual QString get (int);
-    virtual QDateTime getDateTime (int);
-    virtual QColor getColor (int);
-    virtual QColor getColor (QString);
-    virtual double getDouble (int);
-    virtual double getDouble (QString);
-    virtual int getInteger (int);
-    virtual int getInteger (QString);
-    virtual QStringList getList (int);
-    virtual bool getBool (int);
-    virtual bool getBool (QString);
+    virtual QVariant get (QString);
+    virtual QVariant get (int);
     virtual Data * getData (int);
-    virtual QFont getFont (int);
     virtual QString toString ();
     virtual int fromString (QString);
     virtual int highLow (double &, double &);
@@ -79,9 +49,10 @@ class Data
     virtual QList<QString> dataKeys ();
     virtual int barKeyCount ();
     virtual void barKeyRange (int &, int &);
+    virtual void append (Data *);
 
   protected:
-    QHash<QString, QString> _data;
+    QHash<QString, QVariant> _data;
     QString _type;
 };
 

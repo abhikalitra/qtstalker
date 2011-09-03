@@ -39,7 +39,7 @@ CommandStochSlow::CommandStochSlow (QObject *p) : Command (p)
 
 int CommandStochSlow::runScript (Data *sg, Script *script)
 {
-  QString kname = sg->get("OUTPUT_SLOWK");
+  QString kname = sg->get("OUTPUT_SLOWK").toString();
   Data *line = script->data(kname);
   if (line)
   {
@@ -47,7 +47,7 @@ int CommandStochSlow::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString dname = sg->get("OUTPUT_SLOWD");
+  QString dname = sg->get("OUTPUT_SLOWD").toString();
   line = script->data(dname);
   if (line)
   {
@@ -55,7 +55,7 @@ int CommandStochSlow::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -63,7 +63,7 @@ int CommandStochSlow::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -71,7 +71,7 @@ int CommandStochSlow::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -79,12 +79,12 @@ int CommandStochSlow::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int fkperiod = sg->getInteger("PERIOD_FASTK");
+  int fkperiod = sg->get("PERIOD_FASTK").toInt();
 
-  int skperiod = sg->getInteger("PERIOD_SLOWK");
+  int skperiod = sg->get("PERIOD_SLOWK").toInt();
 
   MAType mat;
-  s = sg->get("MA_TYPE_SLOWK");
+  s = sg->get("MA_TYPE_SLOWK").toString();
   int kma = mat.fromString(s);
   if (kma == -1)
   {
@@ -92,9 +92,9 @@ int CommandStochSlow::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int sdperiod = sg->getInteger("PERIOD_SLOWD");
+  int sdperiod = sg->get("PERIOD_SLOWD").toInt();
 
-  s = sg->get("MA_TYPE_SLOWD");
+  s = sg->get("MA_TYPE_SLOWD").toString();
   int dma = mat.fromString(s);
   if (dma == -1)
   {
@@ -183,15 +183,15 @@ QList<Data *> CommandStochSlow::getSTOCHS (QList<Data *> &list, int fkperiod, in
 Data * CommandStochSlow::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT_SLOWK", QString());
-  sg->set("OUTPUT_SLOWD", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("CLOSE", QString());
-  sg->set("PERIOD_FASTK", 5);
-  sg->set("PERIOD_SLOWK", 3);
-  sg->set("PERIOD_SLOWD", 3);
-  sg->set("MA_TYPE_SLOWK", QString("EMA"));
-  sg->set("MA_TYPE_SLOWD", QString("EMA"));
+  sg->set("OUTPUT_SLOWK", QVariant(QString()));
+  sg->set("OUTPUT_SLOWD", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("CLOSE", QVariant(QString()));
+  sg->set("PERIOD_FASTK", QVariant(5));
+  sg->set("PERIOD_SLOWK", QVariant(3));
+  sg->set("PERIOD_SLOWD", QVariant(3));
+  sg->set("MA_TYPE_SLOWK", QVariant(QString("EMA")));
+  sg->set("MA_TYPE_SLOWD", QVariant(QString("EMA")));
   return sg;
 }

@@ -38,7 +38,7 @@ CommandULTOSC::CommandULTOSC (QObject *p) : Command (p)
 
 int CommandULTOSC::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandULTOSC::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -54,7 +54,7 @@ int CommandULTOSC::runScript (Data *sg, Script *script)
     return 1;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -62,7 +62,7 @@ int CommandULTOSC::runScript (Data *sg, Script *script)
     return 1;
   }
 
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -70,11 +70,11 @@ int CommandULTOSC::runScript (Data *sg, Script *script)
     return 1;
   }
 
-  int sp = sg->getInteger("PERIOD_SHORT");
+  int sp = sg->get("PERIOD_SHORT").toInt();
 
-  int mp = sg->getInteger("PERIOD_MED");
+  int mp = sg->get("PERIOD_MED").toInt();
 
-  int lp = sg->getInteger("PERIOD_LONG");
+  int lp = sg->get("PERIOD_LONG").toInt();
 
   QList<Data *> list;
   list << ihigh << ilow << iclose;
@@ -142,12 +142,12 @@ Data * CommandULTOSC::getULTOSC (QList<Data *> &list, int sp, int mp, int lp)
 Data * CommandULTOSC::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("CLOSE", QString());
-  sg->set("PERIOD_SHORT", 7);
-  sg->set("PERIOD_MED", 14);
-  sg->set("PERIOD_LONG", 28);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("CLOSE", QVariant(QString()));
+  sg->set("PERIOD_SHORT", QVariant(7));
+  sg->set("PERIOD_MED", QVariant(14));
+  sg->set("PERIOD_LONG", QVariant(28));
   return sg;
 }

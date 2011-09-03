@@ -32,7 +32,7 @@ HEADERS += CurveHistogram.h
 HEADERS += CurveLine.h
 HEADERS += CurveOHLC.h
 
-#HEADERS += DataWindow.h
+HEADERS += DataWindow.h
 HEADERS += DataWindowButton.h
 HEADERS += DateRangeControl.h
 HEADERS += DateScaleDraw.h
@@ -54,7 +54,7 @@ HEADERS += PlotScaleDraw.h
 HEADERS += Qtstalker.h
 
 HEADERS += RecentCharts.h
-HEADERS += RefreshButton.h
+#HEADERS += RefreshButton.h
 
 HEADERS += ScriptLaunchButton.h
 HEADERS += ScriptLaunchButtonDialog.h
@@ -92,7 +92,7 @@ SOURCES += CurveHistogram.cpp
 SOURCES += CurveLine.cpp
 SOURCES += CurveOHLC.cpp
 
-#SOURCES += DataWindow.cpp
+SOURCES += DataWindow.cpp
 SOURCES += DataWindowButton.cpp
 SOURCES += DateRangeControl.cpp
 SOURCES += DateScaleDraw.cpp
@@ -116,7 +116,7 @@ SOURCES += PlotScaleDraw.cpp
 SOURCES += Qtstalker.cpp
 
 SOURCES += RecentCharts.cpp
-SOURCES += RefreshButton.cpp
+#SOURCES += RefreshButton.cpp
 
 SOURCES += ScriptLaunchButton.cpp
 SOURCES += ScriptLaunchButtonDialog.cpp

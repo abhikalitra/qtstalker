@@ -33,46 +33,45 @@ CommandHLine::CommandHLine (QObject *p) : Command (p)
 int CommandHLine::runScript (Data *sg, Script *script)
 {
   // verify COLOR
-  QString s = sg->get("COLOR");
-  QColor color(s);
-  if (! color.isValid())
+  QString color = sg->get("COLOR").toString();
+  QColor c(color);
+  if (! c.isValid())
   {
-    qDebug() << _type << "::runScript: invalid COLOR" << s;
+    qDebug() << _type << "::runScript: invalid COLOR" << color;
     return _ERROR;
   }
 
   // verify PRICE
-  s = sg->get("PRICE");
-  bool ok;
-  double price = s.toDouble(&ok);
-  if (! ok)
+  QVariant v = sg->get("PRICE");
+  if (! v.canConvert(QVariant::Double))
   {
-    qDebug() << _type << "::runScript: invalid PRICE" << s;
+    qDebug() << _type << "::runScript: invalid PRICE" << v.toString();
     return _ERROR;
   }
+  double price = v.toDouble();
 
   // CHART
-  QString chart = sg->get("CHART");
+  QString chart = sg->get("CHART").toString();
 
   // verify Z
-  s = sg->get("Z");
-  int z = s.toInt(&ok);
-  if (! ok)
+  v = sg->get("Z");
+  if (! v.canConvert(QVariant::Int))
   {
-    qDebug() << _type << "::runScript: invalid Z" << s;
+    qDebug() << _type << "::runScript: invalid Z" << v.toString();
     return _ERROR;
   }
+  int z = v.toInt();
 
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_COLOR, color);
-  co->set(ChartObjectData::_PRICE, price);
-  co->set(ChartObjectData::_CHART, chart);
-  co->set(ChartObjectData::_Z, z);
-  co->set(ChartObjectData::_ID, id);
-  co->set(ChartObjectData::_RO, 1);
-  co->set(ChartObjectData::_TYPE, QString("HLine"));
+  co->set(ChartObjectData::_COLOR, QVariant(color));
+  co->set(ChartObjectData::_PRICE, QVariant(price));
+  co->set(ChartObjectData::_CHART, QVariant(chart));
+  co->set(ChartObjectData::_Z, QVariant(z));
+  co->set(ChartObjectData::_ID, QVariant(id));
+  co->set(ChartObjectData::_RO, QVariant(TRUE));
+  co->set(ChartObjectData::_TYPE, QVariant(QString("HLine")));
 
   script->setData(QString::number(id), co);
 
@@ -82,9 +81,9 @@ int CommandHLine::runScript (Data *sg, Script *script)
 Data * CommandHLine::settings ()
 {
   Data *sg = new Data;
-  sg->set("CHART", QString());
-  sg->set("PRICE", 0);
-  sg->set("COLOR", QColor(Qt::red));
-  sg->set("Z", 1);
+  sg->set("CHART", QVariant(QString()));
+  sg->set("PRICE", QVariant(0));
+  sg->set("COLOR", QVariant("red"));
+  sg->set("Z", QVariant(1));
   return sg;
 }

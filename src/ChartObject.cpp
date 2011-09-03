@@ -113,12 +113,12 @@ int ChartObject::highLow (int start, int end, double &high, double &low)
   if (! dsd)
     return 1;
 
-  int x = dsd->x(_settings->getDateTime(ChartObjectData::_DATE));
+  int x = dsd->x(_settings->get(ChartObjectData::_DATE).toDateTime());
 
   if (x < start || x > end)
     return 1;
 
-  double d = _settings->getDouble(ChartObjectData::_PRICE);
+  double d = _settings->get(ChartObjectData::_PRICE).toDouble();
   if (! flag)
   {
     h = d;
@@ -212,7 +212,7 @@ void ChartObject::click (int button, QPoint p)
             _selected = 1;
 
 	    Plot *tplot = (Plot *) plot();
-	    tplot->select(_settings->get(ChartObjectData::_ID));
+	    tplot->select(_settings->get(ChartObjectData::_ID).toString());
 
             plot()->replot();
             return;
@@ -236,7 +236,7 @@ int ChartObject::create ()
 
 int ChartObject::save ()
 {
-  if (_settings->getInteger(ChartObjectData::_RO))
+  if (_settings->get(ChartObjectData::_RO).toBool())
     return 1;
 
   if (! _modified)

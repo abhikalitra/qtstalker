@@ -34,7 +34,7 @@ CommandMA::CommandMA (QObject *p) : Command (p)
 int CommandMA::runScript (Data *sg, Script *script)
 {
   MAType mat;
-  QString s = sg->get("METHOD");
+  QString s = sg->get("METHOD").toString();
   int method = mat.fromString(s);
   if (method == -1)
   {
@@ -42,7 +42,7 @@ int CommandMA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -50,7 +50,7 @@ int CommandMA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("INPUT");
+  s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -58,13 +58,11 @@ int CommandMA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
   line = mat.getMA(in, period, method);
   if (! line)
     return _ERROR;
-
-  line->set(CurveData::_LABEL, name);
 
   script->setData(name, line);
 
@@ -74,9 +72,9 @@ int CommandMA::runScript (Data *sg, Script *script)
 Data * CommandMA::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString("close"));
-  sg->set("PERIOD", 10);
-  sg->set("METHOD", QString("EMA"));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString("close")));
+  sg->set("PERIOD", QVariant(10));
+  sg->set("METHOD", QVariant(QString("EMA")));
   return sg;
 }

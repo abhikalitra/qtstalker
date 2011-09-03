@@ -42,7 +42,7 @@ CommandVIDYA::CommandVIDYA (QObject *p) : Command (p)
 
 int CommandVIDYA::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -50,7 +50,7 @@ int CommandVIDYA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -58,9 +58,9 @@ int CommandVIDYA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
-  int vperiod = sg->getInteger("PERIOD_VOLUME");
+  int vperiod = sg->get("PERIOD_VOLUME").toInt();
 
   QList<Data *> list;
   list << in;
@@ -106,7 +106,7 @@ Data * CommandVIDYA::getVIDYA (QList<Data *> &list, int period, int vperiod)
   for (; loop < keys.count(); loop++)
   {
     Data *bar = in->getData(keys.at(loop));
-    (*inSeries)[loop] = bar->getDouble(CurveBar::_VALUE);
+    (*inSeries)[loop] = bar->get(CurveBar::_VALUE).toDouble();
   }
 
   keys = cmo->barKeys();
@@ -116,7 +116,7 @@ Data * CommandVIDYA::getVIDYA (QList<Data *> &list, int period, int vperiod)
   for (; loop > -1; loop--)
   {
     Data *bar = cmo->getData(keys.at(loop));
-    (*absCmo)[index] = fabs(bar->getDouble(CurveBar::_VALUE) / 100);
+    (*absCmo)[index] = fabs(bar->get(CurveBar::_VALUE).toDouble() / 100);
     index--;
   }
 
@@ -126,7 +126,7 @@ Data * CommandVIDYA::getVIDYA (QList<Data *> &list, int period, int vperiod)
     (*vidya)[loop] = (inSeries->at(loop) * c * absCmo->at(loop)) + ((1 - absCmo->at(loop) * c) * vidya->at(loop - 1));
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, vidya->at(loop));
+    b->set(CurveBar::_VALUE, QVariant(vidya->at(loop)));
     out->set(loop, b);
   }
 
@@ -188,9 +188,9 @@ Data * CommandVIDYA::getCMO (QList<Data *> &list, int period)
 Data * CommandVIDYA::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString());
-  sg->set("PERIOD", 10);
-  sg->set("PERIOD_VOLUME", 10);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("PERIOD", QVariant(10));
+  sg->set("PERIOD_VOLUME", QVariant(10));
   return sg;
 }

@@ -32,19 +32,19 @@
 
 ChartObjectVLine::ChartObjectVLine ()
 {
-  _settings->set(ChartObjectData::_TYPE, QString("VLine"));
-  _settings->set(ChartObjectData::_DATE, QDateTime::currentDateTime());
-  _settings->set(ChartObjectData::_COLOR, QColor(Qt::red));
-  _settings->set(ChartObjectData::_Z, 1);
-  _settings->set(ChartObjectData::_PEN, 1);
+  _settings->set(ChartObjectData::_TYPE, QVariant(QString("VLine")));
+  _settings->set(ChartObjectData::_DATE, QVariant(QDateTime::currentDateTime()));
+  _settings->set(ChartObjectData::_COLOR, QVariant(QString("red")));
+  _settings->set(ChartObjectData::_Z, QVariant(1));
+  _settings->set(ChartObjectData::_PEN, QVariant(1));
 }
 
 void ChartObjectVLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->getDateTime(ChartObjectData::_DATE)));
+  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE).toDateTime()));
 
-  p->setPen(_settings->getColor(ChartObjectData::_COLOR));
+  p->setPen(QColor(_settings->get(ChartObjectData::_COLOR).toString()));
 
   p->drawLine (x, 0, x, p->window().height());
 
@@ -78,16 +78,16 @@ void ChartObjectVLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScal
 		  t * loop,
 		  _handleWidth,
 		  _handleWidth,
-		  _settings->getColor(ChartObjectData::_COLOR));
+		  QColor(_settings->get(ChartObjectData::_COLOR).toString()));
     }
   }
 }
 
 int ChartObjectVLine::info (Message &info)
 {
-  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE));
+  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE).toString());
 
-  QDateTime dt = _settings->getDateTime(ChartObjectData::_DATE);
+  QDateTime dt = _settings->get(ChartObjectData::_DATE).toDateTime();
   info.insert("D", dt.toString("yyyy-MM-dd"));
   info.insert("T", dt.toString("HH:mm:ss"));
 
@@ -106,11 +106,11 @@ void ChartObjectVLine::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE, dt);
+      _settings->set(ChartObjectData::_DATE, QVariant(dt));
 
       plot()->replot();
 
-      QString s = _settings->get(ChartObjectData::_DATE);
+      QString s = _settings->get(ChartObjectData::_DATE).toString();
       g_parent->statusBar()->showMessage(s);
 
       _modified++;

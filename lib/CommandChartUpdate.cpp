@@ -35,8 +35,8 @@ CommandChartUpdate::CommandChartUpdate (QObject *p) : Command (p)
 
 int CommandChartUpdate::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("CHART");
-  QString date = sg->get("DATE");
+  QString name = sg->get("CHART").toString();
+  QString date = sg->get("DATE").toString();
 
   QList<QString> keys = script->dataKeys();
 
@@ -59,13 +59,13 @@ int CommandChartUpdate::runScript (Data *sg, Script *script)
         continue;
       }
 
-      if (dg->getInteger(CurveData::_Z) < 0)
+      if (dg->get(CurveData::_Z).toInt() < 0)
         continue;
 
-      if (dg->get(CurveData::_CHART) != name)
+      if (dg->get(CurveData::_CHART).toString() != name)
         continue;
 
-      QString type = dg->get(CurveData::_TYPE);
+      QString type = dg->get(CurveData::_TYPE).toString();
 
       IPCMessage ipcm(script->session(), _type, "CURVE", script->file(), dg->type());
       MessageSend ms(this);
@@ -75,13 +75,13 @@ int CommandChartUpdate::runScript (Data *sg, Script *script)
 
     if (dg->type() == "CHART_OBJECT")
     {
-      if (dg->getInteger(ChartObjectData::_Z) < 0)
+      if (dg->get(ChartObjectData::_Z).toInt() < 0)
         continue;
 
-      if (dg->get(ChartObjectData::_CHART) != name)
+      if (dg->get(ChartObjectData::_CHART).toString() != name)
         continue;
 
-      QString type = dg->get(ChartObjectData::_TYPE);
+      QString type = dg->get(ChartObjectData::_TYPE).toString();
 
       IPCMessage ipcm(script->session(), _type, "CHART_OBJECT", script->file(), dg->type());
       MessageSend ms(this);
@@ -101,7 +101,7 @@ int CommandChartUpdate::runScript (Data *sg, Script *script)
 Data * CommandChartUpdate::settings ()
 {
   Data *sg = new Data;
-  sg->set("CHART", QString());
-  sg->set("DATE", QString("date"));
+  sg->set("CHART", QVariant(QString()));
+  sg->set("DATE", QVariant(QString("date")));
   return sg;
 }

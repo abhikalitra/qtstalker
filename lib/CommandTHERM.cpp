@@ -44,7 +44,7 @@ CommandTHERM::CommandTHERM (QObject *p) : Command (p)
 
 int CommandTHERM::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -52,7 +52,7 @@ int CommandTHERM::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -60,7 +60,7 @@ int CommandTHERM::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -112,8 +112,8 @@ Data * CommandTHERM::getTHERM (QList<Data *> &list)
     if (! plbar)
       continue;
 
-    double high = fabs(hbar->getDouble(CurveBar::_VALUE) - phbar->getDouble(CurveBar::_VALUE));
-    double lo = fabs(plbar->getDouble(CurveBar::_VALUE) - lbar->getDouble(CurveBar::_VALUE));
+    double high = fabs(hbar->get(CurveBar::_VALUE).toDouble() - phbar->get(CurveBar::_VALUE).toDouble());
+    double lo = fabs(plbar->get(CurveBar::_VALUE).toDouble() - lbar->get(CurveBar::_VALUE).toDouble());
 
     if (high > lo)
       thermometer = high;
@@ -121,7 +121,7 @@ Data * CommandTHERM::getTHERM (QList<Data *> &list)
       thermometer = lo;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, thermometer);
+    b->set(CurveBar::_VALUE, QVariant(thermometer));
     line->set(keys.at(loop), b);
   }
 
@@ -131,8 +131,8 @@ Data * CommandTHERM::getTHERM (QList<Data *> &list)
 Data * CommandTHERM::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
   return sg;
 }

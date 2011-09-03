@@ -39,7 +39,7 @@ CommandHT::CommandHT (QObject *p) : Command (p)
 
 int CommandHT::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -47,7 +47,7 @@ int CommandHT::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -55,7 +55,7 @@ int CommandHT::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("METHOD");
+  s = sg->get("METHOD").toString();
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -116,19 +116,15 @@ Data * CommandHT::getHT (QList<Data *> &list, int method)
         return 0;
       }
 
-      Data *line = new CurveData;
-      int keyLoop = keys.count() - 1;
-      int outLoop = outNb - 1;
-      while (keyLoop > -1 && outLoop > -1)
+      QList<Data *> outs;
+      Data *c = new CurveData;
+      outs.append(c);
+      if (it.outputs(outs, keys, outNb, &iout[0], &iout[0], &iout[0]))
       {
-        Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, (double) iout[outLoop]);
-        line->set(keys.at(keyLoop), b);
-
-        keyLoop--;
-        outLoop--;
+        delete c;
+        return 0;
       }
-      return line;
+       return c;
       break;
     }
     default:
@@ -156,8 +152,8 @@ Data * CommandHT::getHT (QList<Data *> &list, int method)
 Data * CommandHT::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString());
-  sg->set("METHOD", _method.at(0));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("METHOD", QVariant(_method.at(0)));
   return sg;
 }

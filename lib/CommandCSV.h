@@ -49,8 +49,8 @@ class CommandCSV : public Command
     };
 
     CommandCSV (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
+    int runScript (Data *, Script *);
+    Data * settings ();
 
   private:
     QStringList _formatType;

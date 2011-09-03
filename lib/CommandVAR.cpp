@@ -38,7 +38,7 @@ CommandVAR::CommandVAR (QObject *p) : Command (p)
 
 int CommandVAR::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandVAR::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -54,9 +54,9 @@ int CommandVAR::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
-  double dev = sg->getDouble("DEVIATION");
+  double dev = sg->get("DEVIATION").toDouble();
 
   QList<Data *> list;
   list << in;
@@ -119,9 +119,9 @@ Data * CommandVAR::getVAR (QList<Data *> &list, int period, double dev)
 Data * CommandVAR::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString());
-  sg->set("PERIOD", 20);
-  sg->set("DEVIATION", 2.0);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("PERIOD", QVariant(20));
+  sg->set("DEVIATION", QVariant(2.0));
   return sg;
 }

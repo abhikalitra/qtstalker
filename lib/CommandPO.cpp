@@ -40,7 +40,7 @@ CommandPO::CommandPO (QObject *p) : Command (p)
 
 int CommandPO::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -48,7 +48,7 @@ int CommandPO::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -56,7 +56,7 @@ int CommandPO::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("METHOD");
+  s = sg->get("METHOD").toString();
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -64,12 +64,12 @@ int CommandPO::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int fast = sg->getInteger("PERIOD_FAST");
+  int fast = sg->get("PERIOD_FAST").toInt();
 
-  int slow = sg->getInteger("PERIOD_SLOW");
+  int slow = sg->get("PERIOD_SLOW").toInt();
 
   MAType mat;
-  s = sg->get("MA_TYPE");
+  s = sg->get("MA_TYPE").toString();
   int type = mat.fromString(s);
   if (type == -1)
   {
@@ -142,11 +142,11 @@ Data * CommandPO::getPO (QList<Data *> &list, int fast, int slow, int type, int 
 Data * CommandPO::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString());
-  sg->set("PERIOD_FAST", 12);
-  sg->set("PERIOD_SLOW", 26);
-  sg->set("METHOD", _method.at(0));
-  sg->set("MA_TYPE", QString("EMA"));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("PERIOD_FAST", QVariant(12));
+  sg->set("PERIOD_SLOW", QVariant(26));
+  sg->set("METHOD", QVariant(_method.at(0)));
+  sg->set("MA_TYPE", QVariant(QString("EMA")));
   return sg;
 }

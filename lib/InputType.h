@@ -35,6 +35,7 @@ class InputType
     int keys (QList<Data *> &, QList<int> &);
     int fill (QList<Data *> &, QList<int> &, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[]);
     int outputs (QList<Data *> &, QList<int> &, int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[]);
+    int outputs (QList<Data *> &, QList<int> &, int outNb, TA_Integer out[], TA_Integer out2[], TA_Integer out3[]);
 };
 
 #endif

@@ -141,7 +141,7 @@ void QtstalkerApp::createGUI ()
   connect(g_controlPanel->dateRangeControl(), SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
   connect(g_controlPanel->recentCharts(), SIGNAL(signalChartSelected(QString)), this, SLOT(loadChart(QString)));
   connect(g_sidePanel, SIGNAL(signalRecentChart(QString)), g_controlPanel->recentCharts(), SLOT(addRecentChart(QString)));
-  connect(g_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
+//  connect(g_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
   connect(g_controlPanel->configureButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
 
   dock = new DockWidget(QString(), this);
@@ -222,7 +222,7 @@ void QtstalkerApp::save()
 
   if (g_currentSymbol->dataKeyCount())
   {
-    QString s = g_currentSymbol->get(Symbol::_EXCHANGE) + ":" + g_currentSymbol->get(Symbol::_SYMBOL);
+    QString s = g_currentSymbol->get(Symbol::_EXCHANGE).toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL).toString();
     settings.setValue("current_symbol", s);
   }
 
@@ -238,12 +238,12 @@ void QtstalkerApp::loadChart (QString symbol)
     return;
 
   g_currentSymbol->clear();
-  g_currentSymbol->set(Symbol::_EXCHANGE, tl.at(0));
-  g_currentSymbol->set(Symbol::_SYMBOL, tl.at(1));
-  g_currentSymbol->set(Symbol::_LENGTH, g_controlPanel->barLengthButton()->length());
-  g_currentSymbol->set(Symbol::_START_DATE, QDateTime());
-  g_currentSymbol->set(Symbol::_END_DATE, QDateTime());
-  g_currentSymbol->set(Symbol::_RANGE, g_controlPanel->dateRangeControl()->dateRange());
+  g_currentSymbol->set(Symbol::_EXCHANGE, QVariant(tl.at(0)));
+  g_currentSymbol->set(Symbol::_SYMBOL, QVariant(tl.at(1)));
+  g_currentSymbol->set(Symbol::_LENGTH, QVariant(g_controlPanel->barLengthButton()->length()));
+  g_currentSymbol->set(Symbol::_START_DATE, QVariant(QDateTime()));
+  g_currentSymbol->set(Symbol::_END_DATE, QVariant(QDateTime()));
+  g_currentSymbol->set(Symbol::_RANGE, QVariant(g_controlPanel->dateRangeControl()->dateRange()));
 
   QuoteDataBase db;
   if (db.getBars(g_currentSymbol))
@@ -294,11 +294,11 @@ QString QtstalkerApp::getWindowCaption ()
   if (! g_currentSymbol->dataKeyCount())
     return l.join(" ");
 
-  QString name = g_currentSymbol->get(Symbol::_NAME);
+  QString name = g_currentSymbol->get(Symbol::_NAME).toString();
   if (! name.isEmpty())
     l << name;
 
-  QString symbol = g_currentSymbol->get(Symbol::_SYMBOL);
+  QString symbol = g_currentSymbol->get(Symbol::_SYMBOL).toString();
   if (! symbol.isEmpty())
     l << "(" + symbol + ")";
 
@@ -313,11 +313,11 @@ QString QtstalkerApp::getWindowCaption ()
 void QtstalkerApp::chartUpdated ()
 {
   // we are here because something wants us to reload the chart with fresh bars
-  QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE);
+  QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE).toString();
   if (symbol.isEmpty())
     return;
 
-  symbol.append(":" + g_currentSymbol->get(Symbol::_SYMBOL));
+  symbol.append(":" + g_currentSymbol->get(Symbol::_SYMBOL).toString());
   loadChart(symbol);
 }
 

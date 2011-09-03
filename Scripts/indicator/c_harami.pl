@@ -58,7 +58,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 # create the candles
 $command = "COMMAND=PLOT_OHLC;
             CHART=$chartName;
-            NAME=$candleName;
+            OUTPUT=$candleName;
             STYLE=Candle;
             OPEN=$openName;
             HIGH=$highName;

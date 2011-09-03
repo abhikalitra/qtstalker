@@ -70,15 +70,15 @@ int CommandMessage::message (IPCMessage m, QString d)
       chartUpdate(m, dg);
       break;
     case CommandFactory::_SCRIPT_DONE:
-      g_scriptPanel->done(dg->get("SCRIPT"));
+      g_scriptPanel->done(dg->get("SCRIPT").toString());
       delete dg;
       break;
     case CommandFactory::_SCRIPT_START:
-      g_scriptPanel->runScript(dg->get("SCRIPT"));
+      g_scriptPanel->runScript(dg->get("SCRIPT").toString());
       delete dg;
       break;
     case CommandFactory::_DEBUG:
-      qDebug() << dg->get("MESSAGE");
+      qDebug() << dg->get("MESSAGE").toString();
       delete dg;
       break;
     default:
@@ -94,10 +94,10 @@ int CommandMessage::chartUpdate (IPCMessage mess, Data *dg)
 {
   if (mess.type() == "CHART_DATE")
   {
-    Plot *plot = g_plotGroup->plot(dg->get(CurveData::_CHART));
+    Plot *plot = g_plotGroup->plot(dg->get(CurveData::_CHART).toString());
     if (! plot)
     {
-      qDebug() << "CommandMessage::chartUpdate: chart not found" << dg->get(CurveData::_CHART);
+      qDebug() << "CommandMessage::chartUpdate: chart not found" << dg->get(CurveData::_CHART).toString();
       delete dg;
       return 1;
     }
@@ -113,7 +113,7 @@ int CommandMessage::chartUpdate (IPCMessage mess, Data *dg)
 
   if (mess.type() == "CURVE")
   {
-    QString type = dg->get(CurveData::_TYPE);
+    QString type = dg->get(CurveData::_TYPE).toString();
 
     CurveFactory fac;
     Curve *curve = fac.curve(type);
@@ -126,10 +126,10 @@ int CommandMessage::chartUpdate (IPCMessage mess, Data *dg)
 
     curve->setSettings(dg);
 
-    Plot *plot = g_plotGroup->plot(dg->get(CurveData::_CHART));
+    Plot *plot = g_plotGroup->plot(dg->get(CurveData::_CHART).toString());
     if (! plot)
     {
-      qDebug() << "CommandMessage::chartUpdate: chart not found" << dg->get(CurveData::_CHART);
+      qDebug() << "CommandMessage::chartUpdate: chart not found" << dg->get(CurveData::_CHART).toString();
       delete dg;
       return 1;
     }
@@ -141,7 +141,7 @@ int CommandMessage::chartUpdate (IPCMessage mess, Data *dg)
 
   if (mess.type() == "CHART_OBJECT")
   {
-    QString type = dg->get(ChartObjectData::_TYPE);
+    QString type = dg->get(ChartObjectData::_TYPE).toString();
 
     ChartObjectFactory fac;
     ChartObject *co = fac.chartObject(type);
@@ -156,10 +156,10 @@ int CommandMessage::chartUpdate (IPCMessage mess, Data *dg)
 //    co->setPlotName(sg.get("CHART")->getString());
 //    co->setReadOnly(TRUE);
 
-    Plot *plot = g_plotGroup->plot(dg->get(ChartObjectData::_CHART));
+    Plot *plot = g_plotGroup->plot(dg->get(ChartObjectData::_CHART).toString());
     if (! plot)
     {
-      qDebug() << "CommandMessage::chartUpdate: chart not found" << dg->get(ChartObjectData::_CHART);
+      qDebug() << "CommandMessage::chartUpdate: chart not found" << dg->get(ChartObjectData::_CHART).toString();
       delete co;
       delete dg;
       return 1;
@@ -172,7 +172,7 @@ int CommandMessage::chartUpdate (IPCMessage mess, Data *dg)
 
   if (mess.type() == "UPDATE")
   {
-    QString chart = dg->get("CHART");
+    QString chart = dg->get("CHART").toString();
 
     Plot *plot = g_plotGroup->plot(chart);
     if (! plot)
@@ -183,7 +183,7 @@ int CommandMessage::chartUpdate (IPCMessage mess, Data *dg)
     }
 
     // load chart objects from database
-    QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE) + ":" + g_currentSymbol->get(Symbol::_SYMBOL);
+    QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE).toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL).toString();
     ChartObjectDataBase codb;
     QHash<QString, Data *> chartObjects;
     if (! codb.load(chart, symbol, chartObjects))
@@ -194,8 +194,7 @@ int CommandMessage::chartUpdate (IPCMessage mess, Data *dg)
       {
         it.next();
         Data *dg = it.value();
-qDebug() << "CommandMessage::chartUpdate: type=" << dg->get(ChartObjectData::_TYPE);
-        ChartObject *co = fac.chartObject(dg->get(ChartObjectData::_TYPE));
+        ChartObject *co = fac.chartObject(dg->get(ChartObjectData::_TYPE).toString());
         if (! co)
           continue;
 
@@ -215,7 +214,7 @@ qDebug() << "CommandMessage::chartUpdate: type=" << dg->get(ChartObjectData::_TY
 
 int CommandMessage::chart (IPCMessage mess, Data *dg)
 {
-  QString chart = dg->get("NAME");
+  QString chart = dg->get("NAME").toString();
   if (chart.isEmpty())
   {
     qDebug() << "CommandMessage::chart: invalid NAME" << chart;
@@ -229,8 +228,8 @@ int CommandMessage::chart (IPCMessage mess, Data *dg)
     plot->setBarSpacing(g_controlPanel->barSpaceButton()->getPixelSpace());
     plot->loadSettings();
     plot->setScriptFile(mess.scriptFile());
-    plot->setRow(dg->getInteger("ROW"));
-    plot->setCol(dg->getInteger("COL"));
+    plot->setRow(dg->get("ROW").toInt());
+    plot->setCol(dg->get("COL").toInt());
 
     QObject::connect(plot, SIGNAL(signalInfoMessage(Message)), g_infoPanel, SLOT(showInfo(Message)));
     QObject::connect(g_controlPanel->barSpaceButton(), SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
@@ -242,9 +241,9 @@ int CommandMessage::chart (IPCMessage mess, Data *dg)
 
   plot->clear();
 
-  plot->showDate(dg->getBool("DATE"));
+  plot->showDate(dg->get("DATE").toBool());
 
-  plot->setLogScaling(dg->getBool("LOG"));
+  plot->setLogScaling(dg->get("LOG").toBool());
 
   plot->update();
 

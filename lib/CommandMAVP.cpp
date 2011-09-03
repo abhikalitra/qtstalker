@@ -39,7 +39,7 @@ CommandMAVP::CommandMAVP (QObject *p) : Command (p)
 
 int CommandMAVP::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -47,7 +47,7 @@ int CommandMAVP::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT_1");
+  QString s = sg->get("INPUT_1").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -55,7 +55,7 @@ int CommandMAVP::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("INPUT_2");
+  s = sg->get("INPUT_2").toString();
   Data *in2 = script->data(s);
   if (! in2)
   {
@@ -63,12 +63,12 @@ int CommandMAVP::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int min = sg->getInteger("PERIOD_MIN");
+  int min = sg->get("PERIOD_MIN").toInt();
 
-  int max = sg->getInteger("PERIOD_MAX");
+  int max = sg->get("PERIOD_MAX").toInt();
 
   MAType mat;
-  s = sg->get("MA_TYPE");
+  s = sg->get("MA_TYPE").toString();
   int type = mat.fromString(s);
   if (type == -1)
   {
@@ -140,11 +140,11 @@ Data * CommandMAVP::getMAVP (QList<Data *> &list, int min, int max, int type)
 Data * CommandMAVP::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT_1", QString());
-  sg->set("INPUT_2", QString());
-  sg->set("PERIOD_MIN", 2);
-  sg->set("PERIOD_MAX", 30);
-  sg->set("MA_TYPE", QString("EMA"));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT_1", QVariant(QString()));
+  sg->set("INPUT_2", QVariant(QString()));
+  sg->set("PERIOD_MIN", QVariant(2));
+  sg->set("PERIOD_MAX", QVariant(30));
+  sg->set("MA_TYPE", QVariant(QString("EMA")));
   return sg;
 }

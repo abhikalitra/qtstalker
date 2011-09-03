@@ -59,23 +59,23 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
 
       // bottom left
       int x = xMap.transform(loop - 1);
-      int y = yMap.transform(yb->getDouble(CurveBar::_LOW));
+      int y = yMap.transform(yb->get(CurveBar::_LOW).toDouble());
       poly << QPoint(x, y);
 
       // top left
-      y = yMap.transform(yb->getDouble(CurveBar::_HIGH));
+      y = yMap.transform(yb->get(CurveBar::_HIGH).toDouble());
       poly << QPoint(x, y);
 
       // top right
       x = xMap.transform(loop);
-      y = yMap.transform(b->getDouble(CurveBar::_HIGH));
+      y = yMap.transform(b->get(CurveBar::_HIGH).toDouble());
       poly << QPoint(x, y);
 
       // bottom right
-      y = yMap.transform(b->getDouble(CurveBar::_LOW));
+      y = yMap.transform(b->get(CurveBar::_LOW).toDouble());
       poly << QPoint(x, y);
 
-      painter->setBrush(b->getColor(CurveBar::_COLOR));
+      painter->setBrush(QColor(b->get(CurveBar::_COLOR).toString()));
       painter->drawPolygon(poly, Qt::OddEvenFill);
     }
 
@@ -120,31 +120,31 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
       if (! b)
         continue;
 
-      if (b->getDouble(CurveBar::_LOW) > b->getDouble(CurveBar::_HIGH))
+      if (b->get(CurveBar::_LOW).toDouble() > b->get(CurveBar::_HIGH).toDouble())
       {
         QPolygon poly;
 
         // bottom left
         int x = xMap.transform(loop);
-        int y = yMap.transform(b->getDouble(CurveBar::_HIGH));
+        int y = yMap.transform(b->get(CurveBar::_HIGH).toDouble());
         poly << QPoint(x, y);
 
         // top left
-        y = yMap.transform(b->getDouble(CurveBar::_LOW));
+        y = yMap.transform(b->get(CurveBar::_LOW).toDouble());
         poly << QPoint(x, y);
 
         int width = xMap.transform(loop + 1) - x;
 
         // top right
         x += width;
-        y = yMap.transform(b->getDouble(CurveBar::_LOW));
+        y = yMap.transform(b->get(CurveBar::_LOW).toDouble());
         poly << QPoint(x, y);
 
         // bottom right
-        y = yMap.transform(b->getDouble(CurveBar::_HIGH));
+        y = yMap.transform(b->get(CurveBar::_HIGH).toDouble());
         poly << QPoint(x, y);
 
-        painter->setBrush(b->getColor(CurveBar::_COLOR));
+        painter->setBrush(QColor(b->get(CurveBar::_COLOR).toString()));
         painter->drawPolygon(poly, Qt::OddEvenFill);
       }
       else
@@ -153,25 +153,25 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
 
         // bottom left
         int x = xMap.transform(loop);
-        int y = yMap.transform(b->getDouble(CurveBar::_LOW));
+        int y = yMap.transform(b->get(CurveBar::_LOW).toDouble());
         poly << QPoint(x, y);
 
         // top left
-        y = yMap.transform(b->getDouble(CurveBar::_HIGH));
+        y = yMap.transform(b->get(CurveBar::_HIGH).toDouble());
         poly << QPoint(x, y);
 
         int width = xMap.transform(loop + 1) - x;
 
         // top right
         x += width;
-        y = yMap.transform(b->getDouble(CurveBar::_HIGH));
+        y = yMap.transform(b->get(CurveBar::_HIGH).toDouble());
         poly << QPoint(x, y);
 
         // bottom right
-        y = yMap.transform(b->getDouble(CurveBar::_LOW));
+        y = yMap.transform(b->get(CurveBar::_LOW).toDouble());
         poly << QPoint(x, y);
 
-        painter->setBrush(b->getColor(CurveBar::_COLOR));
+        painter->setBrush(QColor(b->get(CurveBar::_COLOR).toString()));
         painter->drawPolygon(poly, Qt::OddEvenFill);
       }
     }
@@ -186,9 +186,9 @@ int CurveHistogram::info (int index, Message *data)
 
   Strip strip;
   QString s;
-  strip.strip(b->getDouble(CurveBar::_HIGH), 4, s);
+  strip.strip(b->get(CurveBar::_HIGH).toDouble(), 4, s);
 
-  data->insert(_settings->get(CurveData::_LABEL), s);
+  data->insert(_settings->get(CurveData::_LABEL).toString(), s);
 
   return 0;
 }
@@ -199,8 +199,8 @@ int CurveHistogram::scalePoint (int i, QColor &color, double &v)
   if (! bar)
     return 1;
 
-  color = bar->getColor(CurveBar::_COLOR);
-  v = bar->getDouble(CurveBar::_HIGH);
+  color.setNamedColor(bar->get(CurveBar::_COLOR).toString());
+  v = bar->get(CurveBar::_HIGH).toDouble();
 
   return 0;
 }

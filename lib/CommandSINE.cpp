@@ -38,7 +38,7 @@ CommandSINE::CommandSINE (QObject *p) : Command (p)
 
 int CommandSINE::runScript (Data *sg, Script *script)
 {
-  QString sname = sg->get("OUTPUT_SINE");
+  QString sname = sg->get("OUTPUT_SINE").toString();
   Data *line = script->data(sname);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandSINE::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString lname = sg->get("OUTPUT_LEAD");
+  QString lname = sg->get("OUTPUT_LEAD").toString();
   line = script->data(lname);
   if (line)
   {
@@ -54,7 +54,7 @@ int CommandSINE::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -134,8 +134,8 @@ QList<Data *> CommandSINE::getSINE (QList<Data *> &list)
 Data * CommandSINE::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT_SINE", QString());
-  sg->set("OUTPUT_LEAD", QString());
-  sg->set("INPUT", QString());
+  sg->set("OUTPUT_SINE", QVariant(QString()));
+  sg->set("OUTPUT_LEAD", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
   return sg;
 }

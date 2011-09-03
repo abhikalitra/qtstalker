@@ -38,7 +38,7 @@ CommandMAMA::CommandMAMA (QObject *p) : Command (p)
 
 int CommandMAMA::runScript (Data *sg, Script *script)
 {
-  QString mname = sg->get("OUTPUT_MAMA");
+  QString mname = sg->get("OUTPUT_MAMA").toString();
   Data *line = script->data(mname);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandMAMA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString fname = sg->get("OUTPUT_FAMA");
+  QString fname = sg->get("OUTPUT_FAMA").toString();
   line = script->data(fname);
   if (line)
   {
@@ -54,7 +54,7 @@ int CommandMAMA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -62,9 +62,9 @@ int CommandMAMA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  double flimit = sg->getDouble("LIMIT_FAST");
+  double flimit = sg->get("LIMIT_FAST").toDouble();
 
-  double slimit = sg->getDouble("LIMIT_SLOW");
+  double slimit = sg->get("LIMIT_SLOW").toDouble();
 
   QList<Data *> list;
   list << in;
@@ -140,10 +140,10 @@ QList<Data *> CommandMAMA::getMAMA (QList<Data *> &list, double flimit, double s
 Data * CommandMAMA::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT_MAMA", QString());
-  sg->set("OUTPUT_FAMA", QString());
-  sg->set("INPUT", QString());
-  sg->set("LIMIT_FAST", 0.5);
-  sg->set("LIMIT_SLOW", 0.05);
+  sg->set("OUTPUT_MAMA", QVariant(QString()));
+  sg->set("OUTPUT_FAMA", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("LIMIT_FAST", QVariant(0.5));
+  sg->set("LIMIT_SLOW", QVariant(0.05));
   return sg;
 }

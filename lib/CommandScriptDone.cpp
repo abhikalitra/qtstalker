@@ -42,6 +42,6 @@ int CommandScriptDone::runScript (Data *sg, Script *script)
 Data * CommandScriptDone::settings ()
 {
   Data *sg = new Data;
-  sg->set("SCRIPT", QString());
+  sg->set("SCRIPT", QVariant(QString()));
   return sg;
 }

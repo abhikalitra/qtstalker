@@ -35,7 +35,7 @@ CommandColor::CommandColor (QObject *p) : Command (p)
 int CommandColor::runScript (Data *sg, Script *script)
 {
   // verify INPUT_1
-  QString s = sg->get("INPUT_1");
+  QString s = sg->get("INPUT_1").toString();
   Data *line = script->data(s);
   if (! line)
   {
@@ -44,11 +44,11 @@ int CommandColor::runScript (Data *sg, Script *script)
   }
 
   // get NAME_OFFSET
-  int offset = sg->getInteger("INPUT_1_OFFSET");
+  int offset = sg->get("INPUT_1_OFFSET").toInt();
 
   // verify OP
   Operator top;
-  s = sg->get("OP");
+  s = sg->get("OP").toString();
   Operator::Type op = top.stringToOperator(s);
   if (op == -1)
   {
@@ -60,7 +60,7 @@ int CommandColor::runScript (Data *sg, Script *script)
   int valueFlag2 = FALSE;
   double value2 = 0;
   Data *line2 = 0;
-  s = sg->get("INPUT_2");
+  s = sg->get("INPUT_2").toString();
   bool ok;
   value2 = s.toDouble(&ok);
   if (ok)
@@ -76,10 +76,10 @@ int CommandColor::runScript (Data *sg, Script *script)
   }
 
   // get NAME_2_OFFSET
-  int offset2 = sg->getInteger("INPUT_2_OFFSET");
+  int offset2 = sg->get("INPUT_2_OFFSET").toInt();
 
   // verify INPUT_3
-  s = sg->get("INPUT_3");
+  s = sg->get("INPUT_3").toString();
   Data *line3 = script->data(s);
   if (! line3)
   {
@@ -88,9 +88,9 @@ int CommandColor::runScript (Data *sg, Script *script)
   }
 
   // get NAME_3_OFFSET
-  int offset3 = sg->getInteger("INPUT_3_OFFSET");
+  int offset3 = sg->get("INPUT_3_OFFSET").toInt();
 
-  QColor color = sg->getColor("COLOR");
+  QString color = sg->get("COLOR").toString();
 
   QList<Data *> list;
   list << line << line3;
@@ -129,7 +129,7 @@ int CommandColor::runScript (Data *sg, Script *script)
       if (! bar2)
         continue;
 
-      v2 = bar2->getDouble(CurveBar::_VALUE);
+      v2 = bar2->get(CurveBar::_VALUE).toDouble();
     }
 
     tloop = loop - offset3;
@@ -140,8 +140,8 @@ int CommandColor::runScript (Data *sg, Script *script)
     if (! bar3)
       continue;
 
-    if (top.test(bar->getDouble(CurveBar::_VALUE), op, v2))
-      bar3->set(CurveBar::_COLOR, color);
+    if (top.test(bar->get(CurveBar::_VALUE).toDouble(), op, v2))
+      bar3->set(CurveBar::_COLOR, QVariant(color));
   }
 
   return _OK;
@@ -150,13 +150,13 @@ int CommandColor::runScript (Data *sg, Script *script)
 Data * CommandColor::settings ()
 {
   Data *sg = new Data;
-  sg->set("INPUT_1", QString());
-  sg->set("INPUT_1_OFFSET", 0);
-  sg->set("INPUT_2", QString());
-  sg->set("INPUT_2_OFFSET", 0);
-  sg->set("INPUT_3", QString());
-  sg->set("INPUT_3_OFFSET", 0);
-  sg->set("OP", QString("EQ"));
-  sg->set("COLOR", QColor(Qt::red));
+  sg->set("INPUT_1", QVariant(QString()));
+  sg->set("INPUT_1_OFFSET", QVariant(0));
+  sg->set("INPUT_2", QVariant(QString()));
+  sg->set("INPUT_2_OFFSET", QVariant(0));
+  sg->set("INPUT_3", QVariant(QString()));
+  sg->set("INPUT_3_OFFSET", QVariant(0));
+  sg->set("OP", QVariant(QString("EQ")));
+  sg->set("COLOR", QVariant(QString("red")));
   return sg;
 }

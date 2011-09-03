@@ -30,15 +30,17 @@
 CommandPlotHistogram::CommandPlotHistogram (QObject *p) : Command (p)
 {
   _type = "PLOT_HISTOGRAM";
+
+  _types << "Histogram" << "Histogram Bar";
 }
 
 int CommandPlotHistogram::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("NAME");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
@@ -46,7 +48,7 @@ int CommandPlotHistogram::runScript (Data *sg, Script *script)
   int valueFlag = FALSE;
   double value = 0;
   Data *ihigh = 0;
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   bool ok;
   value = s.toDouble(&ok);
   if (ok)
@@ -65,7 +67,7 @@ int CommandPlotHistogram::runScript (Data *sg, Script *script)
   int valueFlag2 = FALSE;
   double value2 = 0;
   Data *ilow = 0;
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   value2 = s.toDouble(&ok);
   if (ok)
     valueFlag2++;
@@ -93,28 +95,30 @@ int CommandPlotHistogram::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  // chart
-  QString chart = sg->get("CHART");
-
   // style
-  QString style = sg->get("STYLE");
+  s = sg->get("STYLE").toString();
+  if (_types.indexOf(s) == -1)
+  {
+    qDebug() << _type << "::runScript: invalid STYLE" << s;
+    return _ERROR;
+  }
 
   // color
-  QColor color = sg->getColor("COLOR");
-
-  // Z
-  int z = sg->getInteger("Z");
-
-  // PEN
-  int pen = sg->getInteger("PEN");
+  s = sg->get("COLOR").toString();
+  QColor c(s);
+  if (! c.isValid())
+  {
+    qDebug() << _type << "::runScript: invalid COLOR" << s;
+    return _ERROR;
+  }
 
   line = new CurveData;
   line->set(CurveData::_TYPE, QString("Histogram"));
-  line->set(CurveData::_Z, z);
-  line->set(CurveData::_PEN, pen);
+  line->set(CurveData::_Z, sg->get("Z"));
+  line->set(CurveData::_PEN, sg->get("PEN"));
   line->set(CurveData::_LABEL, name);
-  line->set(CurveData::_CHART, chart);
-  line->set(CurveData::_STYLE, style);
+  line->set(CurveData::_CHART, sg->get("CHART"));
+  line->set(CurveData::_STYLE, sg->get("STYLE"));
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
@@ -127,7 +131,8 @@ int CommandPlotHistogram::runScript (Data *sg, Script *script)
       Data *hbar = ihigh->getData(keys.at(loop));
       if (! hbar)
         continue;
-      v = hbar->getDouble(CurveBar::_VALUE);
+
+      v = hbar->get(CurveBar::_VALUE).toDouble();
     }
 
     double v2 = 0;
@@ -138,13 +143,14 @@ int CommandPlotHistogram::runScript (Data *sg, Script *script)
       Data *lbar = ilow->getData(keys.at(loop));
       if (! lbar)
         continue;
-      v2 = lbar->getDouble(CurveBar::_VALUE);
+
+      v2 = lbar->get(CurveBar::_VALUE).toDouble();
     }
 
     Data *bar = new CurveBar;
-    bar->set(CurveBar::_HIGH, v);
-    bar->set(CurveBar::_LOW, v2);
-    bar->set(CurveBar::_COLOR, color);
+    bar->set(CurveBar::_HIGH, QVariant(v));
+    bar->set(CurveBar::_LOW, QVariant(v2));
+    bar->set(CurveBar::_COLOR, sg->get("COLOR"));
     line->set(keys.at(loop), bar);
   }
 
@@ -156,13 +162,13 @@ int CommandPlotHistogram::runScript (Data *sg, Script *script)
 Data * CommandPlotHistogram::settings ()
 {
   Data *sg = new Data;
-  sg->set("CHART", QString());
-  sg->set("NAME", QString());
-  sg->set("STYLE", QString("Histogram Bar"));
-  sg->set("HIGH", QString("high"));
-  sg->set("LOW", QString("low"));
-  sg->set("COLOR", QColor(Qt::red));
-  sg->set("Z", -1);
-  sg->set("PEN", 1);
+  sg->set("CHART", QVariant(QString()));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("STYLE", QVariant(QString("Histogram Bar")));
+  sg->set("HIGH", QVariant(QString("high")));
+  sg->set("LOW", QVariant(QString("low")));
+  sg->set("COLOR", QVariant(QString("red")));
+  sg->set("Z", QVariant(-1));
+  sg->set("PEN", QVariant(1));
   return sg;
 }

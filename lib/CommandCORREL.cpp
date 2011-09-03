@@ -38,7 +38,7 @@ CommandCORREL::CommandCORREL (QObject *p) : Command (p)
 
 int CommandCORREL::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandCORREL::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -54,7 +54,7 @@ int CommandCORREL::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("INDEX");
+  s = sg->get("INDEX").toString();
   Data *in2 = script->data(s);
   if (! in2)
   {
@@ -62,7 +62,7 @@ int CommandCORREL::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
   QList<Data *> list;
   list << in << in2;
@@ -126,9 +126,9 @@ Data * CommandCORREL::getCORREL (QList<Data *> &list, int period)
 Data * CommandCORREL::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString());
-  sg->set("INDEX", QString());
-  sg->set("PERIOD", 30);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("INDEX", QVariant(QString()));
+  sg->set("PERIOD", QVariant(30));
   return sg;
 }

@@ -24,6 +24,7 @@
 #include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "CurveType.h"
 
 #include <QtDebug>
 
@@ -35,7 +36,7 @@ CommandPlotLine::CommandPlotLine (QObject *p) : Command (p)
 int CommandPlotLine::runScript (Data *sg, Script *script)
 {
   // input
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -43,24 +44,21 @@ int CommandPlotLine::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  // chart
-  QString chart = sg->get("CHART");
-
-  // style
-  QString style = sg->get("STYLE");
-
-  // label
-  QString label = sg->get("NAME");
-  if (label.isEmpty())
+  // output
+  QString name = sg->get("OUTPUT").toString();
+  Data *line = script->data(name);
+  if (line)
   {
-    qDebug() << _type << "::runScript: invalid NAME" << label;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  Data *line = script->data(label);
-  if (line)
+  // style
+  CurveType ct;
+  s = sg->get("STYLE").toString();
+  if (ct.stringToType(s) == -1)
   {
-    qDebug() << _type << "::runScript: duplicate LABEL" << label;
+    qDebug() << _type << "::runScript: invalid STYLE" << s;
     return _ERROR;
   }
 
@@ -75,21 +73,21 @@ int CommandPlotLine::runScript (Data *sg, Script *script)
   }
 
   // color
-  QColor color = sg->getColor("COLOR");
-
-  // Z
-  int z = sg->getInteger("Z");
-
-  // PEN
-  int pen = sg->getInteger("PEN");
+  s = sg->get("COLOR").toString();
+  QColor c(s);
+  if (! c.isValid())
+  {
+    qDebug() << _type << "::runScript: invalid COLOR" << s;
+    return _ERROR;
+  }
 
   line = new CurveData;
-  line->set(CurveData::_TYPE, QString("Line"));
-  line->set(CurveData::_Z, z);
-  line->set(CurveData::_PEN, pen);
-  line->set(CurveData::_LABEL, label);
-  line->set(CurveData::_CHART, chart);
-  line->set(CurveData::_STYLE, style);
+  line->set(CurveData::_TYPE, QVariant(QString("Line")));
+  line->set(CurveData::_Z, sg->get("Z"));
+  line->set(CurveData::_PEN, sg->get("PEN"));
+  line->set(CurveData::_LABEL, sg->get("OUTPUT"));
+  line->set(CurveData::_CHART, sg->get("CHART"));
+  line->set(CurveData::_STYLE, sg->get("STYLE"));
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
@@ -99,12 +97,12 @@ int CommandPlotLine::runScript (Data *sg, Script *script)
       continue;
 
     Data *bar = new CurveBar;
-    bar->set(CurveBar::_VALUE, ibar->getDouble(CurveBar::_VALUE));
-    bar->set(CurveBar::_COLOR, color);
+    bar->set(CurveBar::_VALUE, ibar->get(CurveBar::_VALUE));
+    bar->set(CurveBar::_COLOR, sg->get("COLOR"));
     line->set(keys.at(loop), bar);
   }
 
-  script->setData(label, line);
+  script->setData(name, line);
 
   return _OK;
 }
@@ -112,12 +110,12 @@ int CommandPlotLine::runScript (Data *sg, Script *script)
 Data * CommandPlotLine::settings ()
 {
   Data *sg = new Data;
-  sg->set("CHART", QString());
-  sg->set("NAME", QString("Line"));
-  sg->set("INPUT", QString("close"));
-  sg->set("STYLE", QString("Line"));
-  sg->set("COLOR", QColor(Qt::red));
-  sg->set("Z", -1);
-  sg->set("PEN", 1);
+  sg->set("CHART", QVariant(QString()));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString("close")));
+  sg->set("STYLE", QVariant(QString("Line")));
+  sg->set("COLOR", QVariant(Qt::red));
+  sg->set("Z", QVariant(-1));
+  sg->set("PEN", QVariant(1));
   return sg;
 }

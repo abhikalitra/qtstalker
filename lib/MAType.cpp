@@ -62,7 +62,7 @@ Data * MAType::getMA (Data *in, int period, int method)
   for (; loop < size; loop++)
   {
     Data *bar = in->getData(keys.at(loop));
-    input[loop] = (TA_Real) bar->getDouble(CurveBar::_VALUE);
+    input[loop] = (TA_Real) bar->get(CurveBar::_VALUE).toDouble();
   }
 
   TA_RetCode rc = TA_MA(0, size - 1, &input[0], period, (TA_MAType) method, &outBeg, &outNb, &out[0]);
@@ -100,21 +100,21 @@ Data * MAType::getWilder (Data *in, int period)
   for (; loop < period; loop++)
   {
     Data *bar = in->getData(keys.at(loop));
-    t += bar->getDouble(CurveBar::_VALUE);
+    t += bar->get(CurveBar::_VALUE).toDouble();
   }
   double yesterday = t / (double) period;
   CurveBar *db = new CurveBar;
-  db->set(CurveBar::_VALUE, yesterday);
+  db->set(CurveBar::_VALUE, QVariant(yesterday));
   line->set(keys.at(loop), db);
 
   for (; loop < keys.count(); loop++)
   {
     Data *bar = in->getData(keys.at(loop));
-    double t  = (yesterday * (period - 1) + bar->getDouble(CurveBar::_VALUE)) / (double) period;
+    double t  = (yesterday * (period - 1) + bar->get(CurveBar::_VALUE).toDouble()) / (double) period;
     yesterday = t;
 
     CurveBar *db = new CurveBar;
-    db->set(CurveBar::_VALUE, t);
+    db->set(CurveBar::_VALUE, QVariant(t));
     line->set(keys.at(loop), db);
   }
 

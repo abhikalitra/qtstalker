@@ -38,7 +38,7 @@ CommandBOP::CommandBOP (QObject *p) : Command (p)
 
 int CommandBOP::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandBOP::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("OPEN");
+  QString s = sg->get("OPEN").toString();
   Data *iopen = script->data(s);
   if (! iopen)
   {
@@ -54,7 +54,7 @@ int CommandBOP::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("HIGH");
+  s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -62,7 +62,7 @@ int CommandBOP::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -70,7 +70,7 @@ int CommandBOP::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -143,10 +143,10 @@ Data * CommandBOP::getBOP (QList<Data *> &list)
 Data * CommandBOP::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("OPEN", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("CLOSE", QString());
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("OPEN", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("CLOSE", QVariant(QString()));
   return sg;
 }

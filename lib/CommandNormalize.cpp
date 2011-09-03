@@ -34,7 +34,7 @@ CommandNormalize::CommandNormalize (QObject *p) : Command (p)
 
 int CommandNormalize::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -42,7 +42,7 @@ int CommandNormalize::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -84,11 +84,11 @@ Data * CommandNormalize::getNORM (QList<Data *> &list)
   for (; loop < keys.count(); loop++)
   {
     Data *bar = in->getData(keys.at(loop));
-    double t = ((bar->getDouble(CurveBar::_VALUE) - min) / range) * 100;
+    double t = ((bar->get(CurveBar::_VALUE).toDouble() - min) / range) * 100;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, t);
-    line->set(keys.at(loop), t);
+    b->set(CurveBar::_VALUE, QVariant(t));
+    line->set(keys.at(loop), b);
   }
 
   return line;
@@ -97,7 +97,7 @@ Data * CommandNormalize::getNORM (QList<Data *> &list)
 Data * CommandNormalize::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString());
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
   return sg;
 }

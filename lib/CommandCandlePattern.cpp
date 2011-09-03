@@ -40,7 +40,7 @@ CommandCandlePattern::CommandCandlePattern (QObject *p) : Command (p)
 int CommandCandlePattern::runScript (Data *sg, Script *script)
 {
   // verify OUTPUT
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -49,7 +49,7 @@ int CommandCandlePattern::runScript (Data *sg, Script *script)
   }
 
   // verify OPEN
-  QString s = sg->get("OPEN");
+  QString s = sg->get("OPEN").toString();
   Data *iopen = script->data(s);
   if (! iopen)
   {
@@ -57,7 +57,7 @@ int CommandCandlePattern::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("HIGH");
+  s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -65,7 +65,7 @@ int CommandCandlePattern::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -73,7 +73,7 @@ int CommandCandlePattern::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -81,10 +81,10 @@ int CommandCandlePattern::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  double pen = sg->getDouble("PENETRATION");
+  double pen = sg->get("PENETRATION").toDouble();
 
   CandleType ct;
-  s = sg->get("METHOD");
+  s = sg->get("METHOD").toString();
   int method = ct.fromString(s);
   if (method == -1)
   {
@@ -92,7 +92,10 @@ int CommandCandlePattern::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  line = getPattern(iopen, ihigh, ilow, iclose, method, pen);
+  QList<Data *> list;
+  list << iopen << ihigh << ilow << iclose;
+
+  line = getPattern(list, method, pen);
   if (! line)
   {
     qDebug() << _type << "::runScript: CandleType error";
@@ -104,7 +107,7 @@ int CommandCandlePattern::runScript (Data *sg, Script *script)
   return _OK;
 }
 
-Data * CommandCandlePattern::getPattern (Data *iopen, Data *ihigh, Data *ilow, Data *iclose, int type, double pen)
+Data * CommandCandlePattern::getPattern (QList<Data *> &list, int type, double pen)
 {
   switch ((CandleType::Method) type)
   {
@@ -113,20 +116,18 @@ Data * CommandCandlePattern::getPattern (Data *iopen, Data *ihigh, Data *ilow, D
     case CandleType::_EVENINGDOJISTAR:
     case CandleType::_EVENINGSTAR:
     case CandleType::_MORNINGDOJISTAR:
-      return getCandlesPen(iopen, ihigh, ilow, iclose, type, pen);
+      return getCandlesPen(list, type, pen);
       break;
     default:
-      return getCandles(iopen, ihigh, ilow, iclose, type);
+      return getCandles(list, type);
       break;
   }
 
   return 0;
 }
 
-Data * CommandCandlePattern::getCandles (Data *iopen, Data *ihigh, Data *ilow, Data *iclose, int type)
+Data * CommandCandlePattern::getCandles (QList<Data *> &list, int type)
 {
-  QList<Data *> list;
-  list << iopen << ihigh << ilow << iclose;
   InputType it;
   QList<int> keys;
   if (it.keys(list, keys))
@@ -144,30 +145,9 @@ Data * CommandCandlePattern::getCandles (Data *iopen, Data *ihigh, Data *ilow, D
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    Data *obar = iopen->getData(keys.at(loop));
-    if (! obar)
-      continue;
-
-    Data *hbar = ihigh->getData(keys.at(loop));
-    if (! hbar)
-      continue;
-
-    Data *lbar = ilow->getData(keys.at(loop));
-    if (! lbar)
-      continue;
-
-    Data *cbar = iclose->getData(keys.at(loop));
-    if (! cbar)
-      continue;
-
-    open[loop] = (TA_Real) obar->getDouble(CurveBar::_VALUE);
-    high[loop] = (TA_Real) hbar->getDouble(CurveBar::_VALUE);
-    low[loop] = (TA_Real) lbar->getDouble(CurveBar::_VALUE);
-    close[loop] = (TA_Real) cbar->getDouble(CurveBar::_VALUE);
-  }
+  size = it.fill(list, keys, &open[0], &high[0], &low[0], &close[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_SUCCESS;
 
@@ -345,26 +325,20 @@ Data * CommandCandlePattern::getCandles (Data *iopen, Data *ihigh, Data *ilow, D
     return 0;
   }
 
-  Data *line = new CurveData;
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (dataLoop > -1 && outLoop > -1)
+  QList<Data *> outs;
+  Data *c = new CurveData;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    Data *bar = new CurveBar;
-    bar->set(CurveBar::_VALUE, out[outLoop]);
-    line->set(dataLoop, bar);
-
-    dataLoop--;
-    outLoop--;
+    delete c;
+    return 0;
   }
 
-  return line;
+  return c;
 }
 
-Data * CommandCandlePattern::getCandlesPen (Data *iopen, Data *ihigh, Data *ilow, Data *iclose, int type, double pen)
+Data * CommandCandlePattern::getCandlesPen (QList<Data *> &list, int type, double pen)
 {
-  QList<Data *> list;
-  list << iopen << ihigh << ilow << iclose;
   InputType it;
   QList<int> keys;
   if (it.keys(list, keys))
@@ -382,30 +356,9 @@ Data * CommandCandlePattern::getCandlesPen (Data *iopen, Data *ihigh, Data *ilow
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    Data *obar = iopen->getData(keys.at(loop));
-    if (! obar)
-      continue;
-
-    Data *hbar = ihigh->getData(keys.at(loop));
-    if (! hbar)
-      continue;
-
-    Data *lbar = ilow->getData(keys.at(loop));
-    if (! lbar)
-      continue;
-
-    Data *cbar = iclose->getData(keys.at(loop));
-    if (! cbar)
-      continue;
-
-    open[loop] = (TA_Real) obar->getDouble(CurveBar::_VALUE);
-    high[loop] = (TA_Real) hbar->getDouble(CurveBar::_VALUE);
-    low[loop] = (TA_Real) lbar->getDouble(CurveBar::_VALUE);
-    close[loop] = (TA_Real) cbar->getDouble(CurveBar::_VALUE);
-  }
+  size = it.fill(list, keys, &open[0], &high[0], &low[0], &close[0]);
+  if (! size)
+    return 0;
 
   TA_RetCode rc = TA_SUCCESS;
 
@@ -436,31 +389,27 @@ Data * CommandCandlePattern::getCandlesPen (Data *iopen, Data *ihigh, Data *ilow
     return 0;
   }
 
-  Data *line = new CurveData;
-  int dataLoop = size - 1;
-  int outLoop = outNb - 1;
-  while (dataLoop > -1 && outLoop > -1)
+  QList<Data *> outs;
+  Data *c = new CurveData;
+  outs.append(c);
+  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
-    Data *bar = new CurveBar;
-    bar->set(CurveBar::_VALUE, out[outLoop]);
-    line->set(dataLoop, bar);
-
-    dataLoop--;
-    outLoop--;
+    delete c;
+    return 0;
   }
 
-  return line;
+  return c;
 }
 
 Data * CommandCandlePattern::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("OPEN", QString("open"));
-  sg->set("HIGH", QString("high"));
-  sg->set("LOW", QString("low"));
-  sg->set("CLOSE", QString("close"));
-  sg->set("METHOD", QString("HARAMI"));
-  sg->set("PENETRATION", 0.5);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("OPEN", QVariant(QString("open")));
+  sg->set("HIGH", QVariant(QString("high")));
+  sg->set("LOW", QVariant(QString("low")));
+  sg->set("CLOSE", QVariant(QString("close")));
+  sg->set("METHOD", QVariant(QString("HARAMI")));
+  sg->set("PENETRATION", QVariant(0.5));
   return sg;
 }

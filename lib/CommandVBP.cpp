@@ -34,7 +34,7 @@ CommandVBP::CommandVBP (QObject *p) : Command (p)
 
 int CommandVBP::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -42,7 +42,7 @@ int CommandVBP::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("CLOSE");
+  QString s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -50,7 +50,7 @@ int CommandVBP::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("VOLUME");
+  s = sg->get("VOLUME").toString();
   Data *ivol = script->data(s);
   if (! ivol)
   {
@@ -58,9 +58,9 @@ int CommandVBP::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QColor upColor = sg->getColor("COLOR_UP");
+  QColor upColor(sg->get("COLOR_UP").toString());
 
-  QColor downColor = sg->getColor("COLOR_DOWN");
+  QColor downColor(sg->get("COLOR_DOWN").toString());
 
   QList<Data *> list;
   list << iclose << ivol;
@@ -101,10 +101,10 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
   for (; loop < 12; loop++)
   {
     Data *set = new Data;
-    set->set("HIGH", top);
-    set->set("LOW", bottom);
-    set->set("UP", 0);
-    set->set("DOWN", 0);
+    set->set("HIGH", QVariant(top));
+    set->set("LOW", QVariant(bottom));
+    set->set("UP", QVariant(0));
+    set->set("DOWN", QVariant(0));
     hash.insert(loop, set);
 
     bottom = top + 0.01;
@@ -127,7 +127,7 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
       continue;
 
     int flag = 1;
-    if (cb->getDouble(CurveBar::_VALUE) < ycb->getDouble(CurveBar::_VALUE))
+    if (cb->get(CurveBar::_VALUE).toDouble() < ycb->get(CurveBar::_VALUE).toDouble())
       flag = 0;
 
     QHashIterator<int, Data *> it(hash);
@@ -136,12 +136,12 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
       it.next();
       Data *set = it.value();
 
-      if (cb->getDouble(CurveBar::_VALUE) >= set->getDouble("LOW") && cb->getDouble(CurveBar::_VALUE) <= set->getDouble("HIGH"))
+      if (cb->get(CurveBar::_VALUE).toDouble() >= set->get("LOW").toDouble() && cb->get(CurveBar::_VALUE).toDouble() <= set->get("HIGH").toDouble())
       {
         if (flag)
-	  set->set("UP", set->getDouble("UP") + vb->getDouble(CurveBar::_VALUE));
+	  set->set("UP", QVariant(set->get("UP").toDouble() + vb->get(CurveBar::_VALUE).toDouble()));
 	else
-	  set->set("DOWN", set->getDouble("DOWN") + vb->getDouble(CurveBar::_VALUE));
+	  set->set("DOWN", QVariant(set->get("DOWN").toDouble() + vb->get(CurveBar::_VALUE).toDouble()));
 	break;
       }
     }
@@ -159,19 +159,19 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
       continue;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_HIGH, set->getDouble("HIGH"));
-    b->set(CurveBar::_LOW, set->getDouble("LOW"));
-    b->set(CurveBar::_OPEN, set->getDouble("UP"));
-    b->set(CurveBar::_CLOSE, set->getDouble("DOWN"));
-    b->set(CurveBar::_COLOR, upColor);
+    b->set(CurveBar::_HIGH, set->get("HIGH"));
+    b->set(CurveBar::_LOW, set->get("LOW"));
+    b->set(CurveBar::_OPEN, set->get("UP"));
+    b->set(CurveBar::_CLOSE, set->get("DOWN"));
+    b->set(CurveBar::_COLOR, QVariant(upColor.name()));
     line->set(pos++, b);
 
     b = new CurveBar;
-    b->set(CurveBar::_HIGH, set->getDouble("HIGH"));
-    b->set(CurveBar::_LOW, set->getDouble("LOW"));
-    b->set(CurveBar::_OPEN, set->getDouble("UP"));
-    b->set(CurveBar::_CLOSE, set->getDouble("DOWN"));
-    b->set(CurveBar::_COLOR, downColor);
+    b->set(CurveBar::_HIGH, set->get("HIGH"));
+    b->set(CurveBar::_LOW, set->get("LOW"));
+    b->set(CurveBar::_OPEN, set->get("UP"));
+    b->set(CurveBar::_CLOSE, set->get("DOWN"));
+    b->set(CurveBar::_COLOR, QVariant(downColor.name()));
     line->set(pos++, b);
   }
 
@@ -183,10 +183,10 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
 Data * CommandVBP::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("CLOSE", QString());
-  sg->set("VOLUME", QString());
-  sg->set("COLOR_UP", QColor(Qt::green));
-  sg->set("COLOR_DOWN", QColor(Qt::red));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("CLOSE", QVariant(QString()));
+  sg->set("VOLUME", QVariant(QString()));
+  sg->set("COLOR_UP", QVariant(Qt::green));
+  sg->set("COLOR_DOWN", QVariant(Qt::red));
   return sg;
 }

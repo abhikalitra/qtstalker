@@ -38,7 +38,7 @@ CommandSAR::CommandSAR (QObject *p) : Command (p)
 
 int CommandSAR::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandSAR::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -54,7 +54,7 @@ int CommandSAR::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -62,9 +62,9 @@ int CommandSAR::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  double init = sg->getDouble("STEP_INITIAL");
+  double init = sg->get("STEP_INITIAL").toDouble();
 
-  double max = sg->getDouble("STEP_MAX");
+  double max = sg->get("STEP_MAX").toDouble();
 
   QList<Data *> list;
   list << ihigh << ilow;
@@ -129,10 +129,10 @@ Data * CommandSAR::getSAR (QList<Data *> &list, double init, double max)
 Data * CommandSAR::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("STEP_INITIAL", 0.02);
-  sg->set("STEP_MAX", 0.2);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("STEP_INITIAL", QVariant(0.02));
+  sg->set("STEP_MAX", QVariant(0.2));
   return sg;
 }

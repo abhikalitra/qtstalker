@@ -33,7 +33,7 @@ CommandTypicalPrice::CommandTypicalPrice (QObject *p) : Command (p)
 
 int CommandTypicalPrice::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -41,7 +41,7 @@ int CommandTypicalPrice::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -49,7 +49,7 @@ int CommandTypicalPrice::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -57,7 +57,7 @@ int CommandTypicalPrice::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -105,10 +105,10 @@ Data * CommandTypicalPrice::getTP (QList<Data *> &list)
     if (! cbar)
       continue;
 
-    double t = (hbar->getDouble(CurveBar::_VALUE) + lbar->getDouble(CurveBar::_VALUE) + cbar->getDouble(CurveBar::_VALUE)) / 3.0;
+    double t = (hbar->get(CurveBar::_VALUE).toDouble() + lbar->get(CurveBar::_VALUE).toDouble() + cbar->get(CurveBar::_VALUE).toDouble()) / 3.0;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, t);
+    b->set(CurveBar::_VALUE, QVariant(t));
     line->set(keys.at(loop), b);
   }
 
@@ -118,9 +118,9 @@ Data * CommandTypicalPrice::getTP (QList<Data *> &list)
 Data * CommandTypicalPrice::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("CLOSE", QString());
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("CLOSE", QVariant(QString()));
   return sg;
 }

@@ -146,6 +146,17 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>CommandFileDialog</name>
+    <message>
+        <source>Select File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select file(s)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CommandSelectDialog</name>
     <message>
         <source>Select</source>
@@ -370,6 +381,38 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>&amp;Unlock</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ExchangeSearchDialog</name>
+    <message>
+        <source>Exchange Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Country</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>City</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Perform Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Invalid search pattern
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No items found</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1005,13 +1048,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Unselect All Items</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SymbolListWidget</name>
-    <message>
-        <source>Name: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -39,7 +39,7 @@ CommandADX::CommandADX (QObject *p) : Command (p)
 
 int CommandADX::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -47,7 +47,7 @@ int CommandADX::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -55,7 +55,7 @@ int CommandADX::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -63,7 +63,7 @@ int CommandADX::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -71,9 +71,9 @@ int CommandADX::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
-  s = sg->get("METHOD");
+  s = sg->get("METHOD").toString();
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -138,7 +138,7 @@ Data * CommandADX::getADX (QList<Data *> &list, int period, int method)
   }
 
   QList<Data *> outs;
-  Data *c = new Data;
+  Data *c = new CurveData;
   outs.append(c);
   if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
   {
@@ -152,11 +152,11 @@ Data * CommandADX::getADX (QList<Data *> &list, int period, int method)
 Data * CommandADX::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("CLOSE", QString());
-  sg->set("PERIOD", 14);
-  sg->set("METHOD", QString("ADX"));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("CLOSE", QVariant(QString()));
+  sg->set("PERIOD",QVariant(14));
+  sg->set("METHOD", QVariant(QString("ADX")));
   return sg;
 }

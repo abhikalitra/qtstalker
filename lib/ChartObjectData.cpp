@@ -41,7 +41,7 @@ int ChartObjectData::highLow (double &h, double &l)
   h = -99999999;
   l = 99999999;
 
-  QHashIterator<QString, QString> it(_data);
+  QHashIterator<QString, QVariant> it(_data);
   while (it.hasNext())
   {
     it.next();

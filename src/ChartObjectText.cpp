@@ -32,28 +32,31 @@
 
 ChartObjectText::ChartObjectText ()
 {
-  _settings->set(ChartObjectData::_TYPE, QString("Text"));
-  _settings->set(ChartObjectData::_TEXT, QString("Text"));
-  _settings->set(ChartObjectData::_DATE, QDateTime::currentDateTime());
-  _settings->set(ChartObjectData::_PRICE, 0);
-  _settings->set(ChartObjectData::_COLOR, QColor(Qt::red));
-  _settings->set(ChartObjectData::_Z, 1);
-  _settings->set(ChartObjectData::_PEN, 1);
-  _settings->set(ChartObjectData::_FONT, QFont());
+  _settings->set(ChartObjectData::_TYPE, QVariant(QString("Text")));
+  _settings->set(ChartObjectData::_TEXT, QVariant(QString("Text")));
+  _settings->set(ChartObjectData::_DATE, QVariant(QDateTime::currentDateTime()));
+  _settings->set(ChartObjectData::_PRICE, QVariant(0));
+  _settings->set(ChartObjectData::_COLOR, QVariant(QString("red")));
+  _settings->set(ChartObjectData::_Z, QVariant(1));
+  _settings->set(ChartObjectData::_PEN, QVariant(1));
+  QFont f;
+  _settings->set(ChartObjectData::_FONT, QVariant(f.toString()));
 }
 
 void ChartObjectText::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->getDateTime(ChartObjectData::_DATE)));
+  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE).toDateTime()));
 
-  int y = yMap.transform(_settings->getDouble(ChartObjectData::_PRICE));
+  int y = yMap.transform(_settings->get(ChartObjectData::_PRICE).toDouble());
 
-  p->setPen(_settings->getColor(ChartObjectData::_COLOR));
+  p->setPen(QColor(_settings->get(ChartObjectData::_COLOR).toString()));
 
-  p->setFont(_settings->getFont(ChartObjectData::_FONT));
+  QFont f;
+  f.fromString(_settings->get(ChartObjectData::_FONT).toString());
+  p->setFont(f);
 
-  p->drawText(x, y, _settings->get(ChartObjectData::_TEXT));
+  p->drawText(x, y, _settings->get(ChartObjectData::_TEXT).toString());
 
   QFontMetrics fm = p->fontMetrics();
 
@@ -61,7 +64,7 @@ void ChartObjectText::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScale
 
   _selectionArea.append(QRegion(x,
 		                y - fm.height(),
-		                fm.width(_settings->get(ChartObjectData::_TEXT), -1),
+		                fm.width(_settings->get(ChartObjectData::_TEXT).toString(), -1),
 		                fm.height(),
 		                QRegion::Rectangle));
 
@@ -79,7 +82,7 @@ void ChartObjectText::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScale
 		y - (fm.height() / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings->getColor(ChartObjectData::_COLOR));
+		QColor(_settings->get(ChartObjectData::_COLOR).toString()));
   }
 }
 
@@ -95,14 +98,14 @@ void ChartObjectText::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE, dt);
+      _settings->set(ChartObjectData::_DATE, QVariant(dt));
 
       map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_PRICE, map.invTransform((double) p.y()));
+      _settings->set(ChartObjectData::_PRICE, QVariant(map.invTransform((double) p.y())));
 
       plot()->replot();
 
-      QString s = _settings->get(ChartObjectData::_DATE) + " " + _settings->get(ChartObjectData::_PRICE);
+      QString s = _settings->get(ChartObjectData::_DATE).toString() + " " + _settings->get(ChartObjectData::_PRICE).toString();
       g_parent->statusBar()->showMessage(s);
 
       _modified++;
@@ -123,14 +126,14 @@ int ChartObjectText::create ()
 
 int ChartObjectText::info (Message &info)
 {
-  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE));
+  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE).toString());
 
-  QDateTime dt = _settings->getDateTime(ChartObjectData::_DATE);
+  QDateTime dt = _settings->get(ChartObjectData::_DATE).toDateTime();
   info.insert("D", dt.toString("yyyy-MM-dd"));
   info.insert("T", dt.toString("HH:mm:ss"));
 
-  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE));
-  info.insert(QObject::tr("Text"), _settings->get(ChartObjectData::_TEXT));
+  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE).toString());
+  info.insert(QObject::tr("Text"), _settings->get(ChartObjectData::_TEXT).toString());
 
   return 0;
 }

@@ -60,37 +60,37 @@ int CommandSymbolCurrent::runScript (Data *sg, Script *script)
 //  message(script->session(), s);
 
   // date
-  s = sg->get("DATE");
+  s = sg->get("DATE").toString();
   Data *dline = new CurveData;
   script->setData(s, dline);
 
   // open
-  s = sg->get("OPEN");
+  s = sg->get("OPEN").toString();
   Data *oline = new CurveData;
   script->setData(s, oline);
 
   // high
-  s = sg->get("HIGH");
+  s = sg->get("HIGH").toString();
   Data *hline = new CurveData;
   script->setData(s, hline);
 
   // low
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *lline = new CurveData;
   script->setData(s, lline);
 
   // close
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *cline = new CurveData;
   script->setData(s, cline);
 
   // volume
-  s = sg->get("VOLUME");
+  s = sg->get("VOLUME").toString();
   Data *vline = new CurveData;
   script->setData(s, vline);
 
   // oi
-  s = sg->get("OI");
+  s = sg->get("OI").toString();
   Data *iline = new CurveData;
   script->setData(s, iline);
 
@@ -101,31 +101,31 @@ int CommandSymbolCurrent::runScript (Data *sg, Script *script)
     Data *b = bd->getData(barKeys.at(loop));
 
     Data *db = new CurveBar;
-    db->set(CurveBar::_DATE, b->getDateTime(CurveBar::_DATE));
+    db->set(CurveBar::_DATE, b->get(CurveBar::_DATE));
     dline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->getDouble(CurveBar::_OPEN));
+    db->set(CurveBar::_VALUE, b->get(CurveBar::_OPEN));
     oline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->getDouble(CurveBar::_HIGH));
+    db->set(CurveBar::_VALUE, b->get(CurveBar::_HIGH));
     hline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->getDouble(CurveBar::_LOW));
+    db->set(CurveBar::_VALUE, b->get(CurveBar::_LOW));
     lline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->getDouble(CurveBar::_CLOSE));
+    db->set(CurveBar::_VALUE, b->get(CurveBar::_CLOSE));
     cline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->getDouble(CurveBar::_VOLUME));
+    db->set(CurveBar::_VALUE, b->get(CurveBar::_VOLUME));
     vline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->getDouble(CurveBar::_OI));
+    db->set(CurveBar::_VALUE, b->get(CurveBar::_OI));
     iline->set(loop, db);
   }
 
@@ -137,12 +137,12 @@ int CommandSymbolCurrent::runScript (Data *sg, Script *script)
 Data * CommandSymbolCurrent::settings ()
 {
   Data *sg = new Data;
-  sg->set("DATE", "date");
-  sg->set("OPEN", "open");
-  sg->set("HIGH", "high");
-  sg->set("LOW", "low");
-  sg->set("CLOSE", "close");
-  sg->set("VOLUME", "volume");
-  sg->set("OI", "oi");
+  sg->set("DATE", QVariant(QString("date")));
+  sg->set("OPEN", QVariant(QString("open")));
+  sg->set("HIGH", QVariant(QString("high")));
+  sg->set("LOW", QVariant(QString("low")));
+  sg->set("CLOSE", QVariant(QString("close")));
+  sg->set("VOLUME", QVariant(QString("volume")));
+  sg->set("OI", QVariant(QString("oi")));
   return sg;
 }

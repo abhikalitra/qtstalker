@@ -1267,3 +1267,12 @@
            Basically, almost anything a user wants to do will be done by running a script. I have completed the script builder
            GUI to aid making scripts simple and quick. Scripts are basically a sequence of commands run one after another in
            sequence. Docs and script examples have not been updated yet.
+
+********************************************************************************************************************************
+
+20110902:  Non-native scripting is back :-) In fact, there is only non-native scripting (perl, python etc.)
+
+           Needed to make to make some more design changes in order to separate the GUI classes from the library classes.
+
+           Designed the data classes to all be related so IPC works simply with common base classes.
+

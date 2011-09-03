@@ -23,6 +23,7 @@
 #include "CurveBar.h"
 
 #include <QtDebug>
+#include <QStringList>
 
 CurveData::CurveData ()
 {
@@ -41,13 +42,6 @@ void CurveData::clear ()
   _type = "CURVE";
   _startIndex = 99999999;
   _endIndex = -99999999;
-
-//  Data::set(_LABEL, QString());
-//  Data::set(_TYPE, QString());
-//  Data::set(_CHART, QString());
-//  Data::set(_Z, -1);
-//  Data::set(_PEN, 1);
-//  Data::set(_STYLE, QString());
 
   qDeleteAll(_bars);
   _bars.clear();
@@ -83,11 +77,11 @@ QString CurveData::toString ()
 {
   QStringList l;
 
-  QHashIterator<QString, QString> it(_data);
+  QHashIterator<QString, QVariant> it(_data);
   while (it.hasNext())
   {
     it.next();
-    l << it.key() + "=" + it.value();
+    l << it.key() + "=" + it.value().toString();
   }
 
   QHashIterator<int, Data *> it2(_bars);
@@ -123,7 +117,7 @@ int CurveData::fromString (QString d)
       case _Z:
       case _PEN:
       case _STYLE:
-        _data.insert(tl.at(0), tl.at(1));
+        _data.insert(tl.at(0), QVariant(tl.at(1)));
         break;
       default:
       {

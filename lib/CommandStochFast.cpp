@@ -39,7 +39,7 @@ CommandStochFast::CommandStochFast (QObject *p) : Command (p)
 
 int CommandStochFast::runScript (Data *sg, Script *script)
 {
-  QString kname = sg->get("OUTPUT_FASTK");
+  QString kname = sg->get("OUTPUT_FASTK").toString();
   Data *line = script->data(kname);
   if (line)
   {
@@ -47,7 +47,7 @@ int CommandStochFast::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString dname = sg->get("OUTPUT_FASTD");
+  QString dname = sg->get("OUTPUT_FASTD").toString();
   line = script->data(dname);
   if (line)
   {
@@ -55,7 +55,7 @@ int CommandStochFast::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -63,7 +63,7 @@ int CommandStochFast::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -71,7 +71,7 @@ int CommandStochFast::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -79,12 +79,12 @@ int CommandStochFast::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int kperiod = sg->getInteger("PERIOD_FASTK");
+  int kperiod = sg->get("PERIOD_FASTK").toInt();
 
-  int dperiod = sg->getInteger("PERIOD_FASTD");
+  int dperiod = sg->get("PERIOD_FASTD").toInt();
 
   MAType mat;
-  s = sg->get("MA_TYPE");
+  s = sg->get("MA_TYPE").toString();
   int type = mat.fromString(s);
   if (type == -1)
   {
@@ -171,13 +171,13 @@ QList<Data *> CommandStochFast::getSTOCHF (QList<Data *> &list, int kperiod, int
 Data * CommandStochFast::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT_FASTK", QString());
-  sg->set("OUTPUT_FASTD", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("CLOSE", QString());
-  sg->set("PERIOD_FASTK", 5);
-  sg->set("PERIOD_FASTD", 3);
-  sg->set("MA_TYPE", QString("EMA"));
+  sg->set("OUTPUT_FASTK", QVariant(QString()));
+  sg->set("OUTPUT_FASTD", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("CLOSE", QVariant(QString()));
+  sg->set("PERIOD_FASTK", QVariant(5));
+  sg->set("PERIOD_FASTD", QVariant(3));
+  sg->set("MA_TYPE", QVariant(QString("EMA")));
   return sg;
 }

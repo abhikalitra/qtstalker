@@ -43,10 +43,10 @@ int CommandChart::runScript (Data *sg, Script *script)
 Data * CommandChart::settings ()
 {
   Data *sg = new Data;
-  sg->set("NAME", QString());
-  sg->set("DATE", "1");
-  sg->set("LOG", "0");
-  sg->set("ROW", "0");
-  sg->set("COL", "0");
+  sg->set("NAME", QVariant(QString()));
+  sg->set("DATE", QVariant(TRUE));
+  sg->set("LOG", QVariant(FALSE));
+  sg->set("ROW", QVariant(0));
+  sg->set("COL", QVariant(0));
   return sg;
 }

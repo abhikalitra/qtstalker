@@ -58,7 +58,7 @@ $command = "COMMAND=PLOT_HISTOGRAM;
             CHART=$chartName;
             HIGH=$volumeName;
             LOW=0;
-            NAME=$volName;
+            OUTPUT=$volName;
             STYLE=$volStyle;
             COLOR=$volColor;
             Z=$volZ;
@@ -104,7 +104,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # plot the MA
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
-            NAME=$maName;
+            OUTPUT=$maName;
             INPUT=$maData;
             STYLE=$maStyle;
             COLOR=$maColor;

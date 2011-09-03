@@ -23,6 +23,7 @@
 #include "CurveBar.h"
 
 #include <QtDebug>
+#include <QStringList>
 
 Symbol::Symbol ()
 {
@@ -71,11 +72,11 @@ QString Symbol::toString ()
 {
   QStringList l;
 
-  QHashIterator<QString, QString> it(_data);
+  QHashIterator<QString, QVariant> it(_data);
   while (it.hasNext())
   {
     it.next();
-    l << it.key() + "=" + it.value();
+    l << it.key() + "=" + it.value().toString();
   }
 
   QHashIterator<int, Data *> it2(_bars);
@@ -114,7 +115,7 @@ int Symbol::fromString (QString d)
       case _RANGE:
       case _START_DATE:
       case _END_DATE:
-        _data.insert(tl.at(0), tl.at(1));
+        _data.insert(tl.at(0), QVariant(tl.at(1)));
         break;
       default:
       {
@@ -132,4 +133,10 @@ int Symbol::fromString (QString d)
 int Symbol::barKeyCount ()
 {
   return _bars.count();
+}
+
+void Symbol::append (Data *d)
+{
+  int i = _endIndex + 1;
+  set(i, d);
 }

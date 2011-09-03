@@ -37,7 +37,7 @@ CommandSZ::CommandSZ (QObject *p) : Command (p)
 
 int CommandSZ::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -45,7 +45,7 @@ int CommandSZ::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -53,7 +53,7 @@ int CommandSZ::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -61,7 +61,7 @@ int CommandSZ::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("METHOD");
+  s = sg->get("METHOD").toString();
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -69,11 +69,11 @@ int CommandSZ::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
-  int no_decline_period = sg->getInteger("PERIOD_NO_DECLINE");
+  int no_decline_period = sg->get("PERIOD_NO_DECLINE").toInt();
 
-  double coefficient = sg->getDouble("COEFFICIENT");
+  double coefficient = sg->get("COEFFICIENT").toDouble();
 
   QList<Data *> list;
   list << ihigh << ilow;
@@ -160,10 +160,10 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
       if (! plbar)
         continue;
 
-      double lo_curr = lbar->getDouble(CurveBar::_VALUE);
-      double lo_last = plbar->getDouble(CurveBar::_VALUE);
-      double hi_curr = hbar->getDouble(CurveBar::_VALUE);
-      double hi_last = phbar->getDouble(CurveBar::_VALUE);
+      double lo_curr = lbar->get(CurveBar::_VALUE).toDouble();
+      double lo_last = plbar->get(CurveBar::_VALUE).toDouble();
+      double hi_curr = hbar->get(CurveBar::_VALUE).toDouble();
+      double hi_last = phbar->get(CurveBar::_VALUE).toDouble();
       if (lo_last > lo_curr)
       {
         uptrend_noise_avg += lo_last - lo_curr;
@@ -189,8 +189,8 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     if (! plbar)
       continue;
 
-    double lo_last = plbar->getDouble(CurveBar::_VALUE);
-    double hi_last = phbar->getDouble(CurveBar::_VALUE);
+    double lo_last = plbar->get(CurveBar::_VALUE).toDouble();
+    double hi_last = phbar->get(CurveBar::_VALUE).toDouble();
     uptrend_stop = lo_last - coefficient * uptrend_noise_avg;
     dntrend_stop = hi_last + coefficient * dntrend_noise_avg;
 
@@ -218,11 +218,11 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     old_dntrend_stops[0] = dntrend_stop;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, adjusted_uptrend_stop);
+    b->set(CurveBar::_VALUE, QVariant(adjusted_uptrend_stop));
     sz_uptrend->set(keys.at(ipos), b);
 
     b = new CurveBar;
-    b->set(CurveBar::_VALUE, adjusted_dntrend_stop);
+    b->set(CurveBar::_VALUE, QVariant(adjusted_dntrend_stop));
     sz_dntrend->set(keys.at(ipos), b);
   }
 
@@ -245,12 +245,12 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
 Data * CommandSZ::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("PERIOD", 10);
-  sg->set("PERIOD_NO_DECLINE", 2);
-  sg->set("COEFFICIENT", 2.0);
-  sg->set("METHOD", _method.at(0));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("PERIOD", QVariant(10));
+  sg->set("PERIOD_NO_DECLINE", QVariant(2));
+  sg->set("COEFFICIENT", QVariant(2.0));
+  sg->set("METHOD", QVariant(_method.at(0)));
   return sg;
 }

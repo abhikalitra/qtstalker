@@ -61,7 +61,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # plot RSI
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
-            NAME=$rsiName;
+            OUTPUT=$rsiName;
             INPUT=$rsiData;
             STYLE=$rsiStyle;
             COLOR=$rsiColor;

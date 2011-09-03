@@ -213,11 +213,11 @@ void ChartPage::updateList ()
   for (; loop < l.count(); loop++)
   {
     Data *dg = l.at(loop);
-    QString s = dg->get(Symbol::_EXCHANGE) + ":" + dg->get(Symbol::_SYMBOL);
+    QString s = dg->get(Symbol::_EXCHANGE).toString() + ":" + dg->get(Symbol::_SYMBOL).toString();
 
     QListWidgetItem *item = new QListWidgetItem;
     item->setText(s);
-    item->setToolTip(dg->get(Symbol::_NAME));
+    item->setToolTip(dg->get(Symbol::_NAME).toString());
     _nav->addItem(item);
   }
 

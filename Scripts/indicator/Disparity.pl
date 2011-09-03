@@ -13,7 +13,7 @@
 #
 
 # disparity parms
-$dname = 'Disparity';
+$dName = 'Disparity';
 $dateName = 'date';
 $openName = 'open';
 $highName = 'high';
@@ -24,8 +24,8 @@ $oiName = 'oi';
 $chartName = 'Disparity';
 $upColor = 'green';
 $downColor = 'red';
-$dstyle = 'Histogram Bar';
-$dz = '0';
+$dStyle = 'Histogram Bar';
+$dZ = '0';
 
 # MA parms
 $maName = 'ma';
@@ -108,7 +108,7 @@ $command = "COMMAND=PLOT_HISTOGRAM;
             CHART=$chartName;
             HIGH=$divName;
             LOW=0;
-            NAME=$dName;
+            OUTPUT=$dName;
             STYLE=$dStyle;
             COLOR=$downColor;
             Z=$dZ;

@@ -29,6 +29,7 @@
 #include <QTimer>
 #include <QFileInfo>
 #include <QFile>
+#include <QDateTime>
 
 QtStalkerScript::QtStalkerScript (QString session, QString file)
 {
@@ -170,14 +171,14 @@ void QtStalkerScript::done ()
   if (com)
   {
     Data *sg = com->settings();
-    sg->set("SCRIPT", _script->file());
+    sg->set("SCRIPT", QVariant(_script->file()));
     com->runScript(sg, _script);
     delete com;
     delete sg;
   }
 
   QStringList l;
-  l << QDateTime::currentDateTime().toString();
+  l << QDateTime::currentDateTime().toString(Qt::ISODate);
   l << QObject::tr("Script");
   l << _script->name();
   l << QObject::tr("completed");

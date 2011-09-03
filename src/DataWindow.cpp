@@ -22,6 +22,10 @@
 #include "DataWindow.h"
 #include "Strip.h"
 #include "Globals.h"
+#include "CurveData.h"
+#include "CurveBar.h"
+#include "Symbol.h"
+#include "CurveType.h"
 
 #include <QVBoxLayout>
 #include <QTableWidgetItem>
@@ -46,66 +50,97 @@ DataWindow::DataWindow (QWidget *p) : QDialog (p, 0)
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 
   QStringList l;
-  l << "QtStalker" + g_session << ":" << g_currentSymbol.key();
-  l << "(" + g_currentSymbol.name() + ")";
+  l << "QtStalker" + g_session << ":" << g_currentSymbol->get(Symbol::_EXCHANGE).toString();
+  l << ":" << g_currentSymbol->get(Symbol::_SYMBOL).toString();
+  l << "(" + g_currentSymbol->get(Symbol::_NAME).toString() + ")";
   l << "-" << tr("Indicators");
   setWindowTitle(l.join(" "));
 }
 
 void DataWindow::setPlot (Plot *p)
 {
+  // get dates first
+  QList<QDateTime> dates;
+  p->dates(dates);
+  int loop = 0;
+  for (; loop < dates.count(); loop++)
+  {
+    Message *bar = _bars.value(loop);
+    if (! bar)
+    {
+      bar = new Message;
+      _bars.insert(loop, bar);
+    }
+
+    bar->insert("Date", dates.at(loop).toString(Qt::ISODate));
+  }
+
   QHash<QString, Curve *> curves = p->curves();
 
+  CurveType ct;
   Strip strip;
   QHashIterator<QString, Curve *> it(curves);
   while (it.hasNext())
   {
     it.next();
     Curve *line = it.value();
+    Data *d = line->settings();
 
-    QList<QString> keys;
-    line->keys(keys);
+    QList<int> keys = d->barKeys();
 
     int loop = 0;
     for (; loop < keys.count(); loop++)
     {
-      CurveBar *cb = line->bar(keys.at(loop));
+      Data *cb = d->getData(keys.at(loop));
 
       Message *bar = _bars.value(keys.at(loop));
       if (! bar)
       {
         bar = new Message;
         _bars.insert(keys.at(loop), bar);
-        bar->insert("Date", cb->dateTime().toString(Qt::ISODate));
       }
 
-      if (line->type() == "Candle" || line->type() == "OHLC")
+      switch ((CurveType::Type) ct.stringToType(d->get(CurveData::_TYPE).toString()))
       {
-        _headers.insert(tr("Open"), tr("Open"));
-        _headers.insert(tr("High"), tr("High"));
-        _headers.insert(tr("Low"), tr("Low"));
-        _headers.insert(tr("Close"), tr("Close"));
+        case CurveType::_OHLC:
+        {
+          _headers.insert(tr("Open"), tr("Open"));
+          _headers.insert(tr("High"), tr("High"));
+          _headers.insert(tr("Low"), tr("Low"));
+          _headers.insert(tr("Close"), tr("Close"));
 
-        QString s;
-        strip.strip(cb->data(0), 4, s);
-        bar->insert(tr("Open"), s);
+          QString s;
+          strip.strip(cb->get(CurveBar::_OPEN).toDouble(), 4, s);
+          bar->insert(tr("Open"), s);
 
-        strip.strip(cb->data(1), 4, s);
-        bar->insert(tr("High"), s);
+          strip.strip(cb->get(CurveBar::_HIGH).toDouble(), 4, s);
+          bar->insert(tr("High"), s);
 
-        strip.strip(cb->data(2), 4, s);
-        bar->insert(tr("Low"), s);
+          strip.strip(cb->get(CurveBar::_LOW).toDouble(), 4, s);
+          bar->insert(tr("Low"), s);
 
-        strip.strip(cb->data(3), 4, s);
-        bar->insert(tr("Close"), s);
-      }
-      else
-      {
-        _headers.insert(line->label(), line->label());
+          strip.strip(cb->get(CurveBar::_CLOSE).toDouble(), 4, s);
+          bar->insert(tr("Close"), s);
+          break;
+        }
+        case CurveType::_HISTOGRAM:
+        {
+          _headers.insert(d->get(CurveData::_LABEL).toString(), d->get(CurveData::_LABEL).toString());
 
-        QString s;
-        strip.strip(cb->data(), 4, s);
-        bar->insert(line->label(), s);
+          QString s;
+          strip.strip(cb->get(CurveBar::_HIGH).toDouble(), 4, s);
+          bar->insert(d->get(CurveData::_LABEL).toString(), s);
+          break;
+        }
+        default:
+        {
+          _headers.insert(d->get(CurveData::_LABEL).toString(), d->get(CurveData::_LABEL).toString());
+
+          QString s;
+          strip.strip(cb->get(CurveBar::_VALUE).toDouble(), 4, s);
+          bar->insert(d->get(CurveData::_LABEL).toString(), s);
+          break;
+        }
       }
     }
   }
@@ -139,7 +174,7 @@ void DataWindow::scrollToBottom ()
      for (; loop2 < hkeys.count(); loop2++)
      {
         QTableWidgetItem *item = new QTableWidgetItem(bar->value(hkeys.at(loop2)));
-        _table->setItem(loop, loop2, item);
+        _table->setItem(keys.at(loop), loop2, item);
      }
   }
 

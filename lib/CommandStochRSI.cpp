@@ -38,7 +38,7 @@ CommandStochRSI::CommandStochRSI (QObject *p) : Command (p)
 
 int CommandStochRSI::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandStochRSI::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -54,7 +54,7 @@ int CommandStochRSI::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
   QList<Data *> list;
   list << in;
@@ -121,8 +121,8 @@ Data * CommandStochRSI::getSR (QList<Data *> &list, int period)
 Data * CommandStochRSI::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString());
-  sg->set("PERIOD", 20);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("PERIOD", QVariant(20));
   return sg;
 }

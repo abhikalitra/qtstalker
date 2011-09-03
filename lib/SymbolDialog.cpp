@@ -229,8 +229,8 @@ void SymbolDialog::searchButtonPressed ()
   {
     Data *bd = l.at(loop);
     QTreeWidgetItem *item = new QTreeWidgetItem(_searchList);
-    item->setText(0, bd->get(Symbol::_EXCHANGE) + ":" + bd->get(Symbol::_SYMBOL));
-    item->setText(1, bd->get(Symbol::_NAME));
+    item->setText(0, bd->get(Symbol::_EXCHANGE).toString() + ":" + bd->get(Symbol::_SYMBOL).toString());
+    item->setText(1, bd->get(Symbol::_NAME).toString());
   }
 
   qDeleteAll(l);

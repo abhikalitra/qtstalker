@@ -117,9 +117,9 @@ int Curve::info (int index, Message *data)
 
   Strip strip;
   QString s;
-  strip.strip(b->getDouble(CurveBar::_VALUE), 4, s);
+  strip.strip(b->get(CurveBar::_VALUE).toDouble(), 4, s);
 
-  data->insert(_settings->get(CurveData::_LABEL), s);
+  data->insert(_settings->get(CurveData::_LABEL).toString(), s);
 
   return 0;
 }
@@ -154,7 +154,7 @@ void Curve::setSettings (Data *d)
   delete _settings;
   _settings = d;
 
-  setZ(_settings->getInteger(CurveData::_Z));
+  setZ(_settings->get(CurveData::_Z).toInt());
 }
 
 Data * Curve::settings ()
@@ -168,8 +168,8 @@ int Curve::scalePoint (int i, QColor &color, double &v)
   if (! bar)
     return 1;
 
-  color = bar->getColor(CurveBar::_COLOR);
-  v = bar->getDouble(CurveBar::_VALUE);
+  color.setNamedColor(bar->get(CurveBar::_COLOR).toString());
+  v = bar->get(CurveBar::_VALUE).toDouble();
 
   return 0;
 }

@@ -21,7 +21,7 @@
 
 #include "DataWindowButton.h"
 #include "Globals.h"
-//#include "DataWindow.h"
+#include "DataWindow.h"
 
 #include "../pics/datawindow.xpm"
 
@@ -41,7 +41,6 @@ DataWindowButton::DataWindowButton ()
 
 void DataWindowButton::dialog ()
 {
-/*
   DataWindow *dw = new DataWindow(0);
 
   QList<QString> l = g_plotGroup->plots();
@@ -52,7 +51,6 @@ void DataWindowButton::dialog ()
 
   dw->scrollToBottom();
   dw->show();
-*/
 
 /*
   QSettings settings(g_globalSettings);

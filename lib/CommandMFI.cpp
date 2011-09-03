@@ -38,7 +38,7 @@ CommandMFI::CommandMFI (QObject *p) : Command (p)
 
 int CommandMFI::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandMFI::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -54,7 +54,7 @@ int CommandMFI::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -62,7 +62,7 @@ int CommandMFI::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -70,7 +70,7 @@ int CommandMFI::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("VOLUME");
+  s = sg->get("VOLUME").toString();
   Data *ivol = script->data(s);
   if (! ivol)
   {
@@ -78,7 +78,7 @@ int CommandMFI::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
   QList<Data *> list;
   list << ihigh << ilow << iclose << ivol;
@@ -146,11 +146,11 @@ Data * CommandMFI::getMFI (QList<Data *> &list, int period)
 Data * CommandMFI::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("CLOSE", QString());
-  sg->set("VOLUME", QString());
-  sg->set("PERIOD", 14);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("CLOSE", QVariant(QString()));
+  sg->set("VOLUME", QVariant(QString()));
+  sg->set("PERIOD", QVariant(14));
   return sg;
 }

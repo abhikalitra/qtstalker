@@ -38,7 +38,7 @@ CommandPHASOR::CommandPHASOR (QObject *p) : Command (p)
 
 int CommandPHASOR::runScript (Data *sg, Script *script)
 {
-  QString pname = sg->get("OUTPUT_PHASE");
+  QString pname = sg->get("OUTPUT_PHASE").toString();
   Data *line = script->data(pname);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandPHASOR::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString qname = sg->get("OUTPUT_QUAD");
+  QString qname = sg->get("OUTPUT_QUAD").toString();
   line = script->data(qname);
   if (line)
   {
@@ -54,7 +54,7 @@ int CommandPHASOR::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -135,8 +135,8 @@ QList<Data *> CommandPHASOR::getPHASOR (QList<Data *> &list)
 Data * CommandPHASOR::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT_PHASE", QString());
-  sg->set("OUTPUT_QUAD", QString());
-  sg->set("INPUT", QString());
+  sg->set("OUTPUT_PHASE", QVariant(QString()));
+  sg->set("OUTPUT_QUAD", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
   return sg;
 }

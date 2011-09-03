@@ -39,7 +39,7 @@ CommandBBANDS::CommandBBANDS (QObject *p) : Command (p)
 
 int CommandBBANDS::runScript (Data *sg, Script *script)
 {
-  QString uname = sg->get("OUTPUT_UPPER");
+  QString uname = sg->get("OUTPUT_UPPER").toString();
   Data *line = script->data(uname);
   if (line)
   {
@@ -47,7 +47,7 @@ int CommandBBANDS::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString mname = sg->get("OUTPUT_MIDDLE");
+  QString mname = sg->get("OUTPUT_MIDDLE").toString();
   line = script->data(mname);
   if (line)
   {
@@ -55,7 +55,7 @@ int CommandBBANDS::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString lname = sg->get("OUTPUT_LOWER");
+  QString lname = sg->get("OUTPUT_LOWER").toString();
   line = script->data(lname);
   if (line)
   {
@@ -63,7 +63,7 @@ int CommandBBANDS::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *input = script->data(s);
   if (! input)
   {
@@ -71,10 +71,10 @@ int CommandBBANDS::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
   MAType types;
-  s = sg->get("MA_TYPE");
+  s = sg->get("MA_TYPE").toString();
   int type = types.fromString(s);
   if (type == -1)
   {
@@ -82,9 +82,9 @@ int CommandBBANDS::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  double udev = sg->getDouble("DEV_UP");
+  double udev = sg->get("DEV_UP").toDouble();
 
-  double ldev = sg->getDouble("DEV_DOWN");
+  double ldev = sg->get("DEV_DOWN").toDouble();
 
   QList<Data *> list;
   list << input;
@@ -151,11 +151,11 @@ QList<Data *> CommandBBANDS::getBBANDS (QList<Data *> &list, int period, double 
 
   lines.clear();
 
-  Data *c = new Data;
+  Data *c = new CurveData;
   lines << c;
-  c = new Data;
+  c = new CurveData;
   lines << c;
-  c = new Data;
+  c = new CurveData;
   lines << c;
   if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
   {
@@ -170,13 +170,13 @@ QList<Data *> CommandBBANDS::getBBANDS (QList<Data *> &list, int period, double 
 Data * CommandBBANDS::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT_UPPER", QString());
-  sg->set("OUTPUT_MIDDLE", QString());
-  sg->set("OUTPUT_LOWER", QString());
-  sg->set("INPUT", QString());
-  sg->set("PERIOD", 14);
-  sg->set("DEV_UP", 2.0);
-  sg->set("DEV_DOWN", 2.0);
-  sg->set("MA_TYPE", QString("EMA"));
+  sg->set("OUTPUT_UPPER", QVariant(QString()));
+  sg->set("OUTPUT_MIDDLE", QVariant(QString()));
+  sg->set("OUTPUT_LOWER", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("PERIOD", QVariant(14));
+  sg->set("DEV_UP", QVariant(2.0));
+  sg->set("DEV_DOWN", QVariant(2.0));
+  sg->set("MA_TYPE", QVariant(QString("EMA")));
   return sg;
 }

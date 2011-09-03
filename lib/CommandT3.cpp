@@ -38,7 +38,7 @@ CommandT3::CommandT3 (QObject *p) : Command (p)
 
 int CommandT3::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandT3::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -54,9 +54,9 @@ int CommandT3::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
-  double vfactor = sg->getDouble("VFACTOR");
+  double vfactor = sg->get("VFACTOR").toDouble();
 
   QList<Data *> list;
   list << in;
@@ -119,9 +119,9 @@ Data * CommandT3::getT3 (QList<Data *> &list, int period, double vfactor)
 Data * CommandT3::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString());
-  sg->set("PERIOD", 5);
-  sg->set("VFACTOR", 0.7);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("PERIOD", QVariant(5));
+  sg->set("VFACTOR", QVariant(0.7));
   return sg;
 }

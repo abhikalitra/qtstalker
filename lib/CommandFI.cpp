@@ -33,7 +33,7 @@ CommandFI::CommandFI (QObject *p) : Command (p)
 
 int CommandFI::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -41,7 +41,7 @@ int CommandFI::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("CLOSE");
+  QString s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -49,7 +49,7 @@ int CommandFI::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("VOLUME");
+  s = sg->get("VOLUME").toString();
   Data *ivol = script->data(s);
   if (! ivol)
   {
@@ -97,11 +97,11 @@ Data * CommandFI::getFI (QList<Data *> &list)
     if (! vbar)
       continue;
 
-    double cdiff = cbar->getDouble(CurveBar::_VALUE) - ycbar->getDouble(CurveBar::_VALUE);
-    force = vbar->getDouble(CurveBar::_VALUE) * cdiff;
+    double cdiff = cbar->get(CurveBar::_VALUE).toDouble() - ycbar->get(CurveBar::_VALUE).toDouble();
+    force = vbar->get(CurveBar::_VALUE).toDouble() * cdiff;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, force);
+    b->set(CurveBar::_VALUE, QVariant(force));
     line->set(keys.at(loop), b);
   }
 
@@ -111,8 +111,8 @@ Data * CommandFI::getFI (QList<Data *> &list)
 Data * CommandFI::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("CLOSE", QString());
-  sg->set("VOLUME", QString());
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("CLOSE", QVariant(QString()));
+  sg->set("VOLUME", QVariant(QString()));
   return sg;
 }

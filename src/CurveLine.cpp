@@ -54,21 +54,21 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
     int x = xMap.transform(loop - 1);
     int x2 = xMap.transform(loop);
 
-    int y = yMap.transform(yb->getDouble(CurveBar::_VALUE));
-    int y2 = yMap.transform(b->getDouble(CurveBar::_VALUE));
+    int y = yMap.transform(yb->get(CurveBar::_VALUE).toDouble());
+    int y2 = yMap.transform(b->get(CurveBar::_VALUE).toDouble());
 
     QPen tpen = painter->pen();
-    if (_settings->get(CurveData::_STYLE) == "Line")
+    if (_settings->get(CurveData::_STYLE).toString() == "Line")
       tpen.setStyle((Qt::PenStyle) Qt::SolidLine);
     else
     {
-      if (_settings->get(CurveData::_STYLE) == "Dash")
+      if (_settings->get(CurveData::_STYLE).toString() == "Dash")
         tpen.setStyle((Qt::PenStyle) Qt::DashLine);
       else
         tpen.setStyle((Qt::PenStyle) Qt::DotLine);
     }
-    tpen.setWidth(_settings->getInteger(CurveData::_PEN));
-    tpen.setColor(b->getColor(CurveBar::_COLOR));
+    tpen.setWidth(_settings->get(CurveData::_PEN).toInt());
+    tpen.setColor(QColor(b->get(CurveBar::_COLOR).toString()));
     painter->setPen(tpen);
 
     painter->drawLine (x, y, x2, y2);

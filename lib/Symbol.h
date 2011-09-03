@@ -52,6 +52,7 @@ class Symbol : public Data
     QString toString ();
     int fromString (QString);
     int barKeyCount ();
+    void append (Data *);
 
   private:
     QHash<int, Data *> _bars;

@@ -39,7 +39,7 @@ CommandMACD::CommandMACD (QObject *p) : Command (p)
 
 int CommandMACD::runScript (Data *sg, Script *script)
 {
-  QString mname = sg->get("OUTPUT_MACD");
+  QString mname = sg->get("OUTPUT_MACD").toString();
   Data *line = script->data(mname);
   if (line)
   {
@@ -47,7 +47,7 @@ int CommandMACD::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString sname = sg->get("OUTPUT_SIGNAL");
+  QString sname = sg->get("OUTPUT_SIGNAL").toString();
   line = script->data(sname);
   if (line)
   {
@@ -55,7 +55,7 @@ int CommandMACD::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString hname = sg->get("OUTPUT_HIST");
+  QString hname = sg->get("OUTPUT_HIST").toString();
   line = script->data(hname);
   if (line)
   {
@@ -63,7 +63,7 @@ int CommandMACD::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -71,10 +71,10 @@ int CommandMACD::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int fperiod = sg->getInteger("PERIOD_FAST");
+  int fperiod = sg->get("PERIOD_FAST").toInt();
 
   MAType mat;
-  s = sg->get("MA_TYPE_FAST");
+  s = sg->get("MA_TYPE_FAST").toString();
   int ftype = mat.fromString(s);
   if (ftype == -1)
   {
@@ -82,9 +82,9 @@ int CommandMACD::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int speriod = sg->getInteger("PERIOD_SLOW");
+  int speriod = sg->get("PERIOD_SLOW").toInt();
 
-  s = sg->get("MA_TYPE_SLOW");
+  s = sg->get("MA_TYPE_SLOW").toString();
   int stype = mat.fromString(s);
   if (stype == -1)
   {
@@ -92,9 +92,9 @@ int CommandMACD::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int sigperiod = sg->getInteger("PERIOD_SIGNAL");
+  int sigperiod = sg->get("PERIOD_SIGNAL").toInt();
 
-  s = sg->get("MA_TYPE_SIGNAL");
+  s = sg->get("MA_TYPE_SIGNAL").toString();
   int sigtype = mat.fromString(s);
   if (sigtype == -1)
   {
@@ -188,15 +188,15 @@ QList<Data *> CommandMACD::getMACD (QList<Data *> &list, int fp, int sp, int sig
 Data * CommandMACD::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT_MACD", QString());
-  sg->set("OUTPUT_SIGNAL", QString());
-  sg->set("OUTPUT_HIST", QString());
-  sg->set("INPUT", QString());
-  sg->set("PERIOD_FAST", 12);
-  sg->set("PERIOD_SLOW", 26);
-  sg->set("PERIOD_SIGNAL", 9);
-  sg->set("MA_TYPE_FAST", QString("EMA"));
-  sg->set("MA_TYPE_SLOW", QString("EMA"));
-  sg->set("MA_TYPE_SIGNAL", QString("EMA"));
+  sg->set("OUTPUT_MACD", QVariant(QString()));
+  sg->set("OUTPUT_SIGNAL", QVariant(QString()));
+  sg->set("OUTPUT_HIST", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("PERIOD_FAST", QVariant(12));
+  sg->set("PERIOD_SLOW", QVariant(26));
+  sg->set("PERIOD_SIGNAL", QVariant(9));
+  sg->set("MA_TYPE_FAST", QVariant(QString("EMA")));
+  sg->set("MA_TYPE_SLOW", QVariant(QString("EMA")));
+  sg->set("MA_TYPE_SIGNAL", QVariant(QString("EMA")));
   return sg;
 }

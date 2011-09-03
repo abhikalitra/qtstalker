@@ -24,117 +24,7 @@
 
 InputType::InputType ()
 {
-//  _list << "Date" << "Open" << "High" << "Low" << "Close" << "Volume" << "OI";
 }
-
-/*
-QStringList & InputType::list ()
-{
-  return _list;
-}
-*/
-/*
-InputType::Type InputType::fromString (QString d)
-{
-  return (InputType::Type) _list.indexOf(d);
-}
-*/
-/*
-Data * InputType::input (BarData *bd, QString t)
-{
-  int type = _list.indexOf(t);
-  if (type == -1)
-    return 0;
-
-  Data *line = new Data;
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
-  {
-    Bar *bar = bd->bar(loop);
-    if (! bar)
-      continue;
-
-    switch ((Type) type)
-    {
-      case _DATE:
-      {
-	DataBar *cb = new DataBar;
-	cb->setDateTime(bar->date());
-        line->setBar(loop, cb);
-	break;
-      }
-      case _OPEN:
-        line->setBar(loop, new DataBar(bar->open()));
-	break;
-      case _HIGH:
-        line->setBar(loop, new DataBar(bar->high()));
-	break;
-      case _LOW:
-        line->setBar(loop, new DataBar(bar->low()));
-	break;
-      case _CLOSE:
-        line->setBar(loop, new DataBar(bar->close()));
-	break;
-      case _VOLUME:
-        line->setBar(loop, new DataBar(bar->volume()));
-	break;
-      case _OI:
-        line->setBar(loop, new DataBar(bar->oi()));
-	break;
-      default:
-	break;
-    }
-  }
-
-  return line;
-}
-*/
-/*
-Data * InputType::ohlc (BarData *bd)
-{
-  Data *line = new Data;
-  int loop = 0;
-  for (; loop < bd->count(); loop++)
-  {
-    Bar *b = bd->bar(loop);
-    if (! b)
-      continue;
-
-    DataBar *cb = new DataBar;
-    cb->setData(0, b->open());
-    cb->setData(1, b->high());
-    cb->setData(2, b->low());
-    cb->setData(3, b->close());
-    line->setBar(loop, cb);
-  }
-
-  return line;
-}
-*/
-/*
-int InputType::inputs (QList<Data *> &list, QStringList &order, Script *i, BarData *bd)
-{
-  int loop = 0;
-  for (; loop < order.count(); loop++)
-  {
-    Data *c = i->curve(order.at(loop));
-    if (! c)
-    {
-      c = input(bd, order.at(loop));
-      if (! c)
-        return 1;
-
-      c->setLabel(order.at(loop));
-      i->setData(order.at(loop), c);
-      list.append(c);
-    }
-    else
-      list.append(c);
-}
-
-  return 0;
-}
-*/
 
 int InputType::keys (QList<Data *> &list, QList<int> &keys)
 {
@@ -183,8 +73,8 @@ int InputType::fill (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Re
         if (! bar2)
           continue;
 
-        out[opos] = (TA_Real) bar->getDouble(CurveBar::_VALUE);
-        out2[opos] = (TA_Real) bar2->getDouble(CurveBar::_VALUE);
+        out[opos] = (TA_Real) bar->get(CurveBar::_VALUE).toDouble();
+        out2[opos] = (TA_Real) bar2->get(CurveBar::_VALUE).toDouble();
         opos++;
 
 	break;
@@ -203,9 +93,9 @@ int InputType::fill (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Re
         if (! bar3)
           continue;
 
-        out[opos] = (TA_Real) bar->getDouble(CurveBar::_VALUE);
-        out2[opos] = (TA_Real) bar2->getDouble(CurveBar::_VALUE);
-        out3[opos] = (TA_Real) bar3->getDouble(CurveBar::_VALUE);
+        out[opos] = (TA_Real) bar->get(CurveBar::_VALUE).toDouble();
+        out2[opos] = (TA_Real) bar2->get(CurveBar::_VALUE).toDouble();
+        out3[opos] = (TA_Real) bar3->get(CurveBar::_VALUE).toDouble();
         opos++;
 
 	break;
@@ -228,10 +118,10 @@ int InputType::fill (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Re
         if (! bar4)
           continue;
 
-        out[opos] = (TA_Real) bar->getDouble(CurveBar::_VALUE);
-        out2[opos] = (TA_Real) bar2->getDouble(CurveBar::_VALUE);
-        out3[opos] = (TA_Real) bar3->getDouble(CurveBar::_VALUE);
-        out4[opos] = (TA_Real) bar4->getDouble(CurveBar::_VALUE);
+        out[opos] = (TA_Real) bar->get(CurveBar::_VALUE).toDouble();
+        out2[opos] = (TA_Real) bar2->get(CurveBar::_VALUE).toDouble();
+        out3[opos] = (TA_Real) bar3->get(CurveBar::_VALUE).toDouble();
+        out4[opos] = (TA_Real) bar4->get(CurveBar::_VALUE).toDouble();
         opos++;
 
 	break;
@@ -241,7 +131,7 @@ int InputType::fill (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Re
         if (! bar)
           continue;
 
-        out[opos] = (TA_Real) bar->getDouble(CurveBar::_VALUE);
+        out[opos] = (TA_Real) bar->get(CurveBar::_VALUE).toDouble();
         opos++;
 
 	break;
@@ -267,11 +157,11 @@ int InputType::outputs (QList<Data *> &list, QList<int> &keys, int outNb, TA_Rea
       while (keyLoop > -1 && outLoop > -1)
       {
         CurveBar *b = new CurveBar;
-        b->set(CurveBar::_VALUE, out[outLoop]);
+        b->set(CurveBar::_VALUE, QVariant(out[outLoop]));
         c->set(keys.at(keyLoop), b);
 
         b = new CurveBar;
-        b->set(CurveBar::_VALUE, out2[outLoop]);
+        b->set(CurveBar::_VALUE, QVariant(out2[outLoop]));
         c2->set(keys.at(keyLoop), b);
 
         keyLoop--;
@@ -289,15 +179,15 @@ int InputType::outputs (QList<Data *> &list, QList<int> &keys, int outNb, TA_Rea
       while (keyLoop > -1 && outLoop > -1)
       {
         CurveBar *b = new CurveBar;
-        b->set(CurveBar::_VALUE, out[outLoop]);
+        b->set(CurveBar::_VALUE, QVariant(out[outLoop]));
         c->set(keys.at(keyLoop), b);
 
         b = new CurveBar;
-        b->set(CurveBar::_VALUE, out2[outLoop]);
+        b->set(CurveBar::_VALUE, QVariant(out2[outLoop]));
         c2->set(keys.at(keyLoop), b);
 
         b = new CurveBar;
-        b->set(CurveBar::_VALUE, out3[outLoop]);
+        b->set(CurveBar::_VALUE, QVariant(out3[outLoop]));
         c3->set(keys.at(keyLoop), b);
 
         keyLoop--;
@@ -313,7 +203,82 @@ int InputType::outputs (QList<Data *> &list, QList<int> &keys, int outNb, TA_Rea
       while (keyLoop > -1 && outLoop > -1)
       {
         CurveBar *b = new CurveBar;
-        b->set(CurveBar::_VALUE, out[outLoop]);
+        b->set(CurveBar::_VALUE, QVariant(out[outLoop]));
+        c->set(keys.at(keyLoop), b);
+
+        keyLoop--;
+        outLoop--;
+      }
+      break;
+    }
+  }
+
+  return 0;
+}
+
+int InputType::outputs (QList<Data *> &list, QList<int> &keys, int outNb, TA_Integer out[], TA_Integer out2[], TA_Integer out3[])
+{
+  if (! list.count())
+    return 1;
+
+  switch (list.count())
+  {
+    case 2:
+    {
+      Data *c = list.at(0);
+      Data *c2 = list.at(1);
+      int keyLoop = keys.count() - 1;
+      int outLoop = outNb - 1;
+      while (keyLoop > -1 && outLoop > -1)
+      {
+        CurveBar *b = new CurveBar;
+        b->set(CurveBar::_VALUE, QVariant(out[outLoop]));
+        c->set(keys.at(keyLoop), b);
+
+        b = new CurveBar;
+        b->set(CurveBar::_VALUE, QVariant(out2[outLoop]));
+        c2->set(keys.at(keyLoop), b);
+
+        keyLoop--;
+        outLoop--;
+      }
+      break;
+    }
+    case 3:
+    {
+      Data *c = list.at(0);
+      Data *c2 = list.at(1);
+      Data *c3 = list.at(2);
+      int keyLoop = keys.count() - 1;
+      int outLoop = outNb - 1;
+      while (keyLoop > -1 && outLoop > -1)
+      {
+        CurveBar *b = new CurveBar;
+        b->set(CurveBar::_VALUE, QVariant(out[outLoop]));
+        c->set(keys.at(keyLoop), b);
+
+        b = new CurveBar;
+        b->set(CurveBar::_VALUE, QVariant(out2[outLoop]));
+        c2->set(keys.at(keyLoop), b);
+
+        b = new CurveBar;
+        b->set(CurveBar::_VALUE, QVariant(out3[outLoop]));
+        c3->set(keys.at(keyLoop), b);
+
+        keyLoop--;
+        outLoop--;
+      }
+      break;
+    }
+    default:
+    {
+      Data *c = list.at(0);
+      int keyLoop = keys.count() - 1;
+      int outLoop = outNb - 1;
+      while (keyLoop > -1 && outLoop > -1)
+      {
+        CurveBar *b = new CurveBar;
+        b->set(CurveBar::_VALUE, QVariant(out[outLoop]));
         c->set(keys.at(keyLoop), b);
 
         keyLoop--;

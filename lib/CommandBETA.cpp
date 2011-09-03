@@ -38,7 +38,7 @@ CommandBETA::CommandBETA (QObject *p) : Command (p)
 
 int CommandBETA::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandBETA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -54,7 +54,7 @@ int CommandBETA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("INDEX");
+  s = sg->get("INDEX").toString();
   Data *in2 = script->data(s);
   if (! in2)
   {
@@ -62,7 +62,7 @@ int CommandBETA::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
   QList<Data *> list;
   list << in << in2;
@@ -126,9 +126,9 @@ Data * CommandBETA::getBETA (QList<Data *> &list, int period)
 Data * CommandBETA::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString());
-  sg->set("INDEX", QString());
-  sg->set("PERIOD", 5);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("INDEX", QVariant(QString()));
+  sg->set("PERIOD", QVariant(5));
   return sg;
 }

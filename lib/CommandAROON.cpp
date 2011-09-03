@@ -38,7 +38,7 @@ CommandAROON::CommandAROON (QObject *p) : Command (p)
 
 int CommandAROON::runScript (Data *sg, Script *script)
 {
-  QString uname = sg->get("OUTPUT_UPPER");
+  QString uname = sg->get("OUTPUT_UPPER").toString();
   Data *line = script->data(uname);
   if (line)
   {
@@ -46,7 +46,7 @@ int CommandAROON::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString lname = sg->get("OUTPUT_LOWER");
+  QString lname = sg->get("OUTPUT_LOWER").toString();
   line = script->data(lname);
   if (line)
   {
@@ -54,7 +54,7 @@ int CommandAROON::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH");
+  QString s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -62,7 +62,7 @@ int CommandAROON::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -70,7 +70,7 @@ int CommandAROON::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
   QList<Data *> list;
   list << ihigh << ilow;
@@ -126,9 +126,9 @@ QList<Data *> CommandAROON::getAROON (QList<Data *> &list, int period)
     return lines;
   }
 
-  Data *c = new Data;
+  Data *c = new CurveData;
   lines.append(c);
-  c = new Data;
+  c = new CurveData;
   lines.append(c);
   if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
   {
@@ -143,10 +143,10 @@ QList<Data *> CommandAROON::getAROON (QList<Data *> &list, int period)
 Data * CommandAROON::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT_UPPER", QString());
-  sg->set("OUTPUT_LOWER", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("PERIOD", 14);
+  sg->set("OUTPUT_UPPER", QVariant(QString()));
+  sg->set("OUTPUT_LOWER", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("PERIOD", QVariant(14));
   return sg;
 }

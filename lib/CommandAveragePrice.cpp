@@ -33,7 +33,7 @@ CommandAveragePrice::CommandAveragePrice (QObject *p) : Command (p)
 
 int CommandAveragePrice::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -41,7 +41,7 @@ int CommandAveragePrice::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("OPEN");
+  QString s = sg->get("OPEN").toString();
   Data *iopen = script->data(s);
   if (! iopen)
   {
@@ -49,7 +49,7 @@ int CommandAveragePrice::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("HIGH");
+  s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -57,7 +57,7 @@ int CommandAveragePrice::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -65,7 +65,7 @@ int CommandAveragePrice::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -94,7 +94,7 @@ Data * CommandAveragePrice::getAP (QList<Data *> &list)
   if (it.keys(list, keys))
     return 0;
 
-  Data *line = new Data;
+  Data *line = new CurveData;
   int loop = 0;
   Data *iopen = list.at(loop++);
   Data *ihigh = list.at(loop++);
@@ -118,10 +118,10 @@ Data * CommandAveragePrice::getAP (QList<Data *> &list)
     if (! cbar)
       continue;
 
-    double t = (obar->getDouble(CurveBar::_VALUE) + hbar->getDouble(CurveBar::_VALUE)
-                + lbar->getDouble(CurveBar::_VALUE) + cbar->getDouble(CurveBar::_VALUE)) / 4.0;
+    double t = (obar->get(CurveBar::_VALUE).toDouble() + hbar->get(CurveBar::_VALUE).toDouble()
+                + lbar->get(CurveBar::_VALUE).toDouble() + cbar->get(CurveBar::_VALUE).toDouble()) / 4.0;
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, t);
+    b->set(CurveBar::_VALUE, QVariant(t));
     line->set(keys.at(loop), b);
   }
 
@@ -131,10 +131,10 @@ Data * CommandAveragePrice::getAP (QList<Data *> &list)
 Data * CommandAveragePrice::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("OPEN", QString());
-  sg->set("HIGH", QString());
-  sg->set("LOW", QString());
-  sg->set("CLOSE", QString());
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("OPEN", QVariant(QString()));
+  sg->set("HIGH", QVariant(QString()));
+  sg->set("LOW", QVariant(QString()));
+  sg->set("CLOSE", QVariant(QString()));
   return sg;
 }

@@ -29,19 +29,21 @@
 CommandPlotOHLC::CommandPlotOHLC (QObject *p) : Command (p)
 {
   _type = "PLOT_OHLC";
+
+  _types << "OHLC" << "Candle";
 }
 
 int CommandPlotOHLC::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("NAME");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
-    qDebug() << _type << "::runScript: duplicate name" << name;
+    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
     return _ERROR;
   }
 
-  QString s = sg->get("OPEN");
+  QString s = sg->get("OPEN").toString();
   Data *iopen = script->data(s);
   if (! iopen)
   {
@@ -49,7 +51,7 @@ int CommandPlotOHLC::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("HIGH");
+  s = sg->get("HIGH").toString();
   Data *ihigh = script->data(s);
   if (! ihigh)
   {
@@ -57,7 +59,7 @@ int CommandPlotOHLC::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("LOW");
+  s = sg->get("LOW").toString();
   Data *ilow = script->data(s);
   if (! ilow)
   {
@@ -65,7 +67,7 @@ int CommandPlotOHLC::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("CLOSE");
+  s = sg->get("CLOSE").toString();
   Data *iclose = script->data(s);
   if (! iclose)
   {
@@ -86,28 +88,30 @@ int CommandPlotOHLC::runScript (Data *sg, Script *script)
 
 //qDebug() << "CommandPlotOHLC::runScript:" << keys.count();
 
-  // chart
-  QString chart = sg->get("CHART");
-
   // style
-  QString style = sg->get("STYLE");
+  s = sg->get("STYLE").toString();
+  if (_types.indexOf(s) == -1)
+  {
+    qDebug() << _type << "::runScript: invalid STYLE" << s;
+    return _ERROR;
+  }
 
   // color
-  QColor color = sg->getColor("COLOR");
-
-  // Z
-  int z = sg->getInteger("Z");
-
-  // PEN
-  int pen = sg->getInteger("PEN");
+  s = sg->get("COLOR").toString();
+  QColor c(s);
+  if (! c.isValid())
+  {
+    qDebug() << _type << "::runScript: invalid COLOR" << s;
+    return _ERROR;
+  }
 
   line = new CurveData;
   line->set(CurveData::_TYPE, QString("OHLC"));
-  line->set(CurveData::_Z, z);
-  line->set(CurveData::_PEN, pen);
-  line->set(CurveData::_LABEL, name);
-  line->set(CurveData::_CHART, chart);
-  line->set(CurveData::_STYLE, style);
+  line->set(CurveData::_Z, sg->get("Z"));
+  line->set(CurveData::_PEN, sg->get("PEN"));
+  line->set(CurveData::_LABEL, sg->get("OUTPUT"));
+  line->set(CurveData::_CHART, sg->get("CHART"));
+  line->set(CurveData::_STYLE, sg->get("STYLE"));
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
@@ -129,11 +133,11 @@ int CommandPlotOHLC::runScript (Data *sg, Script *script)
       continue;
 
     Data *bar = new CurveBar;
-    bar->set(CurveBar::_OPEN, obar->getDouble(CurveBar::_VALUE));
-    bar->set(CurveBar::_HIGH, hbar->getDouble(CurveBar::_VALUE));
-    bar->set(CurveBar::_LOW, lbar->getDouble(CurveBar::_VALUE));
-    bar->set(CurveBar::_CLOSE, cbar->getDouble(CurveBar::_VALUE));
-    bar->set(CurveBar::_COLOR, color);
+    bar->set(CurveBar::_OPEN, obar->get(CurveBar::_VALUE));
+    bar->set(CurveBar::_HIGH, hbar->get(CurveBar::_VALUE));
+    bar->set(CurveBar::_LOW, lbar->get(CurveBar::_VALUE));
+    bar->set(CurveBar::_CLOSE, cbar->get(CurveBar::_VALUE));
+    bar->set(CurveBar::_COLOR, sg->get("COLOR"));
     line->set(keys.at(loop), bar);
   }
 
@@ -145,15 +149,15 @@ int CommandPlotOHLC::runScript (Data *sg, Script *script)
 Data * CommandPlotOHLC::settings ()
 {
   Data *sg = new Data;
-  sg->set("CHART", QString());
-  sg->set("NAME", QString("OHLC"));
-  sg->set("STYLE", QString("OHLC"));
-  sg->set("OPEN", QString("open"));
-  sg->set("HIGH", QString("high"));
-  sg->set("LOW", QString("low"));
-  sg->set("CLOSE", QString("close"));
-  sg->set("COLOR", QColor(Qt::red));
-  sg->set("Z", -1);
-  sg->set("PEN", 1);
+  sg->set("CHART", QVariant(QString()));
+  sg->set("OUTPUT", QVariant(QString("OHLC")));
+  sg->set("STYLE", QVariant(QString("OHLC")));
+  sg->set("OPEN", QVariant(QString("open")));
+  sg->set("HIGH", QVariant(QString("high")));
+  sg->set("LOW", QVariant(QString("low")));
+  sg->set("CLOSE", QVariant(QString("close")));
+  sg->set("COLOR", QVariant(QString("red")));
+  sg->set("Z", QVariant(-1));
+  sg->set("PEN", QVariant(1));
   return sg;
 }

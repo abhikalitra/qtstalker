@@ -33,7 +33,7 @@ CommandMedianPrice::CommandMedianPrice (QObject *p) : Command (p)
 
 int CommandMedianPrice::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -41,7 +41,7 @@ int CommandMedianPrice::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT_1");
+  QString s = sg->get("INPUT_1").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -49,7 +49,7 @@ int CommandMedianPrice::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("INPUT_2");
+  s = sg->get("INPUT_2").toString();
   Data *in2 = script->data(s);
   if (! in2)
   {
@@ -89,9 +89,9 @@ Data * CommandMedianPrice::getMP (QList<Data *> &list)
     if (! bar2)
       continue;
 
-    double t = (bar->getDouble(CurveBar::_VALUE) + bar2->getDouble(CurveBar::_VALUE)) / 2.0;
+    double t = (bar->get(CurveBar::_VALUE).toDouble() + bar2->get(CurveBar::_VALUE).toDouble()) / 2.0;
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, t);
+    b->set(CurveBar::_VALUE, QVariant(t));
     line->set(keys.at(loop), b);
   }
 
@@ -101,8 +101,8 @@ Data * CommandMedianPrice::getMP (QList<Data *> &list)
 Data * CommandMedianPrice::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT_1", QString());
-  sg->set("INPUT_2", QString());
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT_1", QVariant(QString()));
+  sg->set("INPUT_2", QVariant(QString()));
   return sg;
 }

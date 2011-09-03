@@ -32,7 +32,7 @@ CommandShift::CommandShift (QObject *p) : Command (p)
 
 int CommandShift::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -40,7 +40,7 @@ int CommandShift::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -48,7 +48,7 @@ int CommandShift::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
   line = getShift(in, period);
   if (! line)
@@ -70,7 +70,7 @@ Data * CommandShift::getShift (Data *in, int period)
     Data *bar = in->getData(keys.at(loop));
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, bar->getDouble(CurveBar::_VALUE));
+    b->set(CurveBar::_VALUE, bar->get(CurveBar::_VALUE));
     line->set(keys.at(loop) + period, b);
   }
 
@@ -80,8 +80,8 @@ Data * CommandShift::getShift (Data *in, int period)
 Data * CommandShift::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString("min"));
-  sg->set("INPUT", QString("close"));
-  sg->set("PERIOD", 10);
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString("close")));
+  sg->set("PERIOD", QVariant(10));
   return sg;
 }

@@ -93,7 +93,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # create the candles
 $command = "COMMAND=PLOT_OHLC;
             CHART=$chartName;
-            NAME=$candleName;
+            OUTPUT=$candleName;
             STYLE=Candle;
             OPEN=$openName;
             HIGH=$highName;
@@ -159,7 +159,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
-            NAME=$tsName;
+            OUTPUT=$tsName;
             INPUT=$tsMedianName;
             STYLE=$tsStyle;
             COLOR=$tsColor;
@@ -195,7 +195,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
-            NAME=$ksName;
+            OUTPUT=$ksName;
             INPUT=$ksMedianName;
             STYLE=$ksStyle;
             COLOR=$ksColor;
@@ -215,7 +215,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { print STDERR $command; exit; }
 
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
-            NAME=$csName;
+            OUTPUT=$csName;
             INPUT=$csShiftName;
             STYLE=$csStyle;
             COLOR=$csColor;
@@ -277,7 +277,7 @@ $command = "COMMAND=PLOT_HISTOGRAM;
             CHART=$chartName;
             HIGH=$ssaShiftName;
             LOW=$ssbShiftName;
-            NAME=$ssCloudName;
+            OUTPUT=$ssCloudName;
             STYLE=Histogram;
             COLOR=$ssCloudColor;
             Z=$ssCloudZ;

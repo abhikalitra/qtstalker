@@ -35,7 +35,7 @@ CommandArithmetic::CommandArithmetic (QObject *p) : Command (p)
 int CommandArithmetic::runScript (Data *sg, Script *script)
 {
   // verify NAME
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -44,7 +44,7 @@ int CommandArithmetic::runScript (Data *sg, Script *script)
   }
 
   // verify INPUT_1
-  QString s = sg->get("INPUT_1");
+  QString s = sg->get("INPUT_1").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -55,7 +55,7 @@ int CommandArithmetic::runScript (Data *sg, Script *script)
   // verify INPUT_2
   Data *in2 = 0;
   int delFlag = 0;
-  s = sg->get("INPUT_2");
+  s = sg->get("INPUT_2").toString();
   bool ok;
   double value = s.toDouble(&ok);
   if (ok)
@@ -66,7 +66,7 @@ int CommandArithmetic::runScript (Data *sg, Script *script)
     for (; loop < keys.count(); loop++)
     {
       Data *b = new CurveBar;
-      b->set(CurveBar::_VALUE, value);
+      b->set(CurveBar::_VALUE, QVariant(value));
       in2->set(keys.at(loop), b);
     }
     delFlag++;
@@ -81,7 +81,7 @@ int CommandArithmetic::runScript (Data *sg, Script *script)
     }
   }
 
-  s = sg->get("METHOD");
+  s = sg->get("METHOD").toString();
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -135,33 +135,33 @@ Data * CommandArithmetic::getArithmetic (Data *in, Data *in2, int method)
     {
       case 0: // add
       {
-        double v = bar->getDouble(CurveBar::_VALUE) + bar2->getDouble(CurveBar::_VALUE);
+        double v = bar->get(CurveBar::_VALUE).toDouble() + bar2->get(CurveBar::_VALUE).toDouble();
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, v);
+        b->set(CurveBar::_VALUE, QVariant(v));
         line->set(keys.at(loop), b);
 	break;
       }
       case 1: // div
       {
-        double v = bar->getDouble(CurveBar::_VALUE) / bar2->getDouble(CurveBar::_VALUE);
+        double v = bar->get(CurveBar::_VALUE).toDouble() / bar2->get(CurveBar::_VALUE).toDouble();
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, v);
+        b->set(CurveBar::_VALUE, QVariant(v));
         line->set(keys.at(loop), b);
 	break;
       }
       case 2: // mult
       {
-        double v = bar->getDouble(CurveBar::_VALUE) * bar2->getDouble(CurveBar::_VALUE);
+        double v = bar->get(CurveBar::_VALUE).toDouble() * bar2->get(CurveBar::_VALUE).toDouble();
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, v);
+        b->set(CurveBar::_VALUE, QVariant(v));
         line->set(keys.at(loop), b);
 	break;
       }
       case 3: // sub
       {
-        double v = bar->getDouble(CurveBar::_VALUE) - bar2->getDouble(CurveBar::_VALUE);
+        double v = bar->get(CurveBar::_VALUE).toDouble() - bar2->get(CurveBar::_VALUE).toDouble();
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, v);
+        b->set(CurveBar::_VALUE, QVariant(v));
         line->set(keys.at(loop), b);
 	break;
       }
@@ -176,9 +176,9 @@ Data * CommandArithmetic::getArithmetic (Data *in, Data *in2, int method)
 Data * CommandArithmetic::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("METHOD", QString());
-  sg->set("INPUT_1", QString());
-  sg->set("INPUT_2", QString());
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("METHOD", QVariant(QString()));
+  sg->set("INPUT_1", QVariant(QString()));
+  sg->set("INPUT_2", QVariant(QString()));
   return sg;
 }

@@ -39,7 +39,7 @@ CommandLINEARREG::CommandLINEARREG (QObject *p) : Command (p)
 
 int CommandLINEARREG::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUPUT");
+  QString name = sg->get("OUPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -47,7 +47,7 @@ int CommandLINEARREG::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -55,7 +55,7 @@ int CommandLINEARREG::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  s = sg->get("METHOD");
+  s = sg->get("METHOD").toString();
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -63,7 +63,7 @@ int CommandLINEARREG::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
   QList<Data *> list;
   list << in;
@@ -139,9 +139,9 @@ Data * CommandLINEARREG::getLR (QList<Data *> &list, int period, int method)
 Data * CommandLINEARREG::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT", QString());
-  sg->set("PERIOD", 14);
-  sg->set("METHOD", _method.at(0));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT", QVariant(QString()));
+  sg->set("PERIOD", QVariant(14));
+  sg->set("METHOD", QVariant(_method.at(0)));
   return sg;
 }

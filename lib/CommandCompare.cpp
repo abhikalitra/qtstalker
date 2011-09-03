@@ -36,7 +36,7 @@ CommandCompare::CommandCompare (QObject *p) : Command (p)
 int CommandCompare::runScript (Data *sg, Script *script)
 {
   // OUTPUT
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -45,7 +45,7 @@ int CommandCompare::runScript (Data *sg, Script *script)
   }
 
   // INPUT_1
-  QString s = sg->get("INPUT_1");
+  QString s = sg->get("INPUT_1").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -53,11 +53,11 @@ int CommandCompare::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int offset = sg->getInteger("INPUT_1_OFFSET");
+  int offset = sg->get("INPUT_1_OFFSET").toInt();
 
   // verify OP
   Operator top;
-  s = sg->get("OP");
+  s = sg->get("OP").toString();
   Operator::Type op = top.stringToOperator(s);
   if (op == -1)
   {
@@ -68,7 +68,7 @@ int CommandCompare::runScript (Data *sg, Script *script)
   // INPUT_2
   int valueFlag2 = FALSE;
   Data *in2 = 0;
-  s = sg->get("INPUT_2");
+  s = sg->get("INPUT_2").toString();
   bool ok;
   double value2 = s.toDouble(&ok);
   if (ok)
@@ -83,12 +83,12 @@ int CommandCompare::runScript (Data *sg, Script *script)
     }
   }
 
-  int offset2 = sg->getInteger("INPUT_2_OFFSET");
+  int offset2 = sg->get("INPUT_2_OFFSET").toInt();
 
   // RESULT_1
   int valueFlag3 = FALSE;
   Data *in3 = 0;
-  s = sg->get("RESULT_1");
+  s = sg->get("RESULT_1").toString();
   double value3 = s.toDouble(&ok);
   if (ok)
     valueFlag3++;
@@ -102,12 +102,12 @@ int CommandCompare::runScript (Data *sg, Script *script)
     }
   }
 
-  int offset3 = sg->getInteger("RESULT_1_OFFSET");
+  int offset3 = sg->get("RESULT_1_OFFSET").toInt();
 
   // INPUT_4
   int valueFlag4 = FALSE;
   Data *in4 = 0;
-  s = sg->get("RESULT_2");
+  s = sg->get("RESULT_2").toString();
   double value4 = s.toDouble(&ok);
   if (ok)
     valueFlag4++;
@@ -121,7 +121,7 @@ int CommandCompare::runScript (Data *sg, Script *script)
     }
   }
 
-  int offset4 = sg->getInteger("RESULT_2_OFFSET");
+  int offset4 = sg->get("RESULT_2_OFFSET").toInt();
 
   QList<Data *> list;
   list << in;
@@ -165,7 +165,7 @@ int CommandCompare::runScript (Data *sg, Script *script)
       if (! bar2)
         continue;
 
-      v2 = bar2->getDouble(CurveBar::_VALUE);
+      v2 = bar2->get(CurveBar::_VALUE).toDouble();
     }
 
     double v3 = 0;
@@ -181,7 +181,7 @@ int CommandCompare::runScript (Data *sg, Script *script)
       if (! bar3)
         continue;
 
-      v3 = bar3->getDouble(CurveBar::_VALUE);
+      v3 = bar3->get(CurveBar::_VALUE).toDouble();
     }
 
     double v4 = 0;
@@ -197,19 +197,19 @@ int CommandCompare::runScript (Data *sg, Script *script)
       if (! bar4)
         continue;
 
-      v4 = bar4->getDouble(CurveBar::_VALUE);
+      v4 = bar4->get(CurveBar::_VALUE).toDouble();
     }
 
-    if (top.test(bar->getDouble(CurveBar::_VALUE), op, v2))
+    if (top.test(bar->get(CurveBar::_VALUE).toDouble(), op, v2))
     {
       Data *b = new CurveBar;
-      b->set(CurveBar::_VALUE, v3);
+      b->set(CurveBar::_VALUE, QVariant(v3));
       line->set(keys.at(loop), b);
     }
     else
     {
       Data *b = new CurveBar;
-      b->set(CurveBar::_VALUE, v4);
+      b->set(CurveBar::_VALUE, QVariant(v4));
       line->set(keys.at(loop), b);
     }
   }
@@ -222,15 +222,15 @@ int CommandCompare::runScript (Data *sg, Script *script)
 Data * CommandCompare::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString());
-  sg->set("INPUT_1", QString());
-  sg->set("INPUT_1_OFFSET", 0);
-  sg->set("INPUT_2", QString());
-  sg->set("INPUT_2_OFFSET", 0);
-  sg->set("RESULT_1", QString());
-  sg->set("RESULT_1_OFFSET", 0);
-  sg->set("RESULT_2", QString());
-  sg->set("RESULT_2_OFFSET", 0);
-  sg->set("OP", QString("EQ"));
+  sg->set("OUTPUT", QVariant(QString()));
+  sg->set("INPUT_1", QVariant(QString()));
+  sg->set("INPUT_1_OFFSET", QVariant(0));
+  sg->set("INPUT_2", QVariant(QString()));
+  sg->set("INPUT_2_OFFSET", QVariant(0));
+  sg->set("RESULT_1", QVariant(QString()));
+  sg->set("RESULT_1_OFFSET", QVariant(0));
+  sg->set("RESULT_2", QVariant(QString()));
+  sg->set("RESULT_2_OFFSET", QVariant(0));
+  sg->set("OP", QVariant(QString("EQ")));
   return sg;
 }

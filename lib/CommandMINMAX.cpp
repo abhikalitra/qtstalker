@@ -39,7 +39,7 @@ CommandMINMAX::CommandMINMAX (QObject *p) : Command (p)
 
 int CommandMINMAX::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT");
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {
@@ -47,7 +47,7 @@ int CommandMINMAX::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT");
+  QString s = sg->get("INPUT").toString();
   Data *in = script->data(s);
   if (! in)
   {
@@ -55,9 +55,9 @@ int CommandMINMAX::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  int period = sg->getInteger("PERIOD");
+  int period = sg->get("PERIOD").toInt();
 
-  s = sg->get("METHOD");
+  s = sg->get("METHOD").toString();
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -128,9 +128,9 @@ Data * CommandMINMAX::getMINMAX (Data *in, int period, int method)
 Data * CommandMINMAX::settings ()
 {
   Data *sg = new Data;
-  sg->set("OUTPUT", QString("min"));
-  sg->set("METHOD", QString("MIN"));
-  sg->set("INPUT", QString("close"));
-  sg->set("PERIOD", 10);
+  sg->set("OUTPUT", QVariant(QString("min")));
+  sg->set("METHOD", QVariant(QString("MIN")));
+  sg->set("INPUT", QVariant(QString("close")));
+  sg->set("PERIOD", QVariant(10));
   return sg;
 }
