@@ -1276,3 +1276,10 @@
 
            Designed the data classes to all be related so IPC works simply with common base classes.
 
+*****************************************************************************************************************************
+
+20110904:  Completed base system. Will now work on refining the command syntax and bug fixes. Will be adding scripts
+           to provide a basic running system.
+
+           Removed docs from source. Docs will be moved to a new website once they have been revised.
+
