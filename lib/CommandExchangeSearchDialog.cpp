@@ -21,7 +21,6 @@
 
 #include "CommandExchangeSearchDialog.h"
 #include "Script.h"
-#include "SettingString.h"
 #include "ExchangeSearchDialog.h"
 
 #include <QtDebug>
@@ -32,36 +31,21 @@ CommandExchangeSearchDialog::CommandExchangeSearchDialog (QObject *p) : Command 
   _isDialog = 1;
 }
 
-int CommandExchangeSearchDialog::runScript (void *d)
+int CommandExchangeSearchDialog::runScript (Data *sg, Script *)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
-//  QStringList l;
-//  l << "QtStalker" + script->session() + ":" << tr("Select File");
-
   ExchangeSearchDialog dialog(0);
   int rc = dialog.exec();
   if (rc == QDialog::Rejected)
     return _ERROR;
 
-  Setting *set = sg->get("EXCHANGE");
-  set->setString(dialog.exchange());
+  sg->set("EXCHANGE", QVariant(dialog.exchange()));
 
   return _OK;
 }
 
-SettingGroup * CommandExchangeSearchDialog::settings ()
+Data * CommandExchangeSearchDialog::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(QString());
-  ss->setKey("EXCHANGE");
-  sg->set(ss);
-
+  Data *sg = new Data;
+  sg->set("EXCHANGE", QVariant(QString()));
   return sg;
 }

@@ -30,8 +30,8 @@ class CommandSelectDialog : public Command
 
   public:
     CommandSelectDialog (QObject *);
-    SettingGroup * settings ();
-    int runScript (void *);
+    int runScript (Data *, Script *);
+    Data * settings ();
 };
 
 #endif

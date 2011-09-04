@@ -40,9 +40,9 @@
 #include "CommandCompare.h"
 #include "CommandCORREL.h"
 #include "CommandCSV.h"
-//#include "CommandExchangeSearchDialog.h"
+#include "CommandExchangeSearchDialog.h"
 #include "CommandFI.h"
-//#include "CommandFileDialog.h"
+#include "CommandFileDialog.h"
 #include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandLINEARREG.h"
@@ -66,7 +66,7 @@
 #include "CommandSAR.h"
 #include "CommandScriptDone.h"
 #include "CommandScriptStart.h"
-//#include "CommandSelectDialog.h"
+#include "CommandSelectDialog.h"
 #include "CommandSell.h"
 #include "CommandShift.h"
 #include "CommandSINE.h"
@@ -77,7 +77,7 @@
 #include "CommandSZ.h"
 #include "CommandSymbol.h"
 #include "CommandSymbolCurrent.h"
-//#include "CommandSymbolDialog.h"
+#include "CommandSymbolDialog.h"
 #include "CommandT3.h"
 #include "CommandText.h"
 #include "CommandTHERM.h"
@@ -211,13 +211,13 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _DEBUG:
       break;
     case _EXCHANGE_SEARCH_DIALOG:
-//      c = new CommandExchangeSearchDialog(p);
+      c = new CommandExchangeSearchDialog(p);
       break;
     case _FI:
       c = new CommandFI(p);
       break;
     case _FILE_DIALOG:
-//      c = new CommandFileDialog(p);
+      c = new CommandFileDialog(p);
       break;
     case _HT:
       c = new CommandHT(p);
@@ -286,7 +286,7 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandScriptStart(p);
       break;
     case _SELECT_DIALOG:
-//      c = new CommandSelectDialog(p);
+      c = new CommandSelectDialog(p);
       break;
     case _SHIFT:
       c = new CommandShift(p);
@@ -313,7 +313,7 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandSymbolCurrent(p);
       break;
     case _SYMBOL_DIALOG:
-//      c = new CommandSymbolDialog(p);
+      c = new CommandSymbolDialog(p);
       break;
     case _T3:
       c = new CommandT3(p);

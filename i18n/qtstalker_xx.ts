@@ -217,10 +217,6 @@ qtstalker.sourceforge.net</source>
         <source>Add Indicator</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Select Indicator Script</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ConfigureDialog</name>

@@ -30,8 +30,8 @@ class CommandSymbolDialog : public Command
 
   public:
     CommandSymbolDialog (QObject *);
-    SettingGroup * settings ();
-    int runScript (void *);
+    int runScript (Data *, Script *);
+    Data * settings ();
 };
 
 #endif

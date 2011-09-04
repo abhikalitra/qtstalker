@@ -22,9 +22,6 @@
 #include "CommandSelectDialog.h"
 #include "SelectDialog.h"
 #include "Script.h"
-#include "SettingString.h"
-#include "SettingList.h"
-#include "SettingBool.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -35,26 +32,16 @@ CommandSelectDialog::CommandSelectDialog (QObject *p) : Command (p)
   _isDialog = 1;
 }
 
-int CommandSelectDialog::runScript (void *d)
+int CommandSelectDialog::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
   // mode
-  bool mode = sg->get("MODE")->getBool();
+  bool mode = sg->get("MODE").toBool();
 
   // title
-  QString title = sg->get("TITLE")->getString();
+  QString title = sg->get("TITLE").toString();
 
   // list
-  QString key = sg->get("LIST")->getString();
-  QStringList items;
-  Setting *set = script->setting(key);
-  if (set)
-    items = set->getList();
+  QStringList items = sg->get("LIST").toStringList();
 
   QStringList l;
   l << "QtStalker" + script->session() + ":" << tr("Select");
@@ -64,45 +51,22 @@ int CommandSelectDialog::runScript (void *d)
   dialog->setMode(mode);
   dialog->setTitle(title);
   dialog->setItems(items);
-//  connect(this, SIGNAL(signalKill()), dialog, SLOT(reject()));
-//  connect(dialog, SIGNAL(rejected()), this, SIGNAL(signalResume()));
-//  connect(dialog, SIGNAL(accepted()), this, SIGNAL(signalResume()));
-//  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(command2(QStringList)));
-
-qDebug() << "CommandSelectDialog::runScript: about to show dialog";
 
   int rc = dialog->exec();
   if (rc == QDialog::Accepted)
-  {
-    Setting *sl = sg->get("SELECTED");
-    sl->setList(dialog->selected());
-  }
+    sg->set("SELECTED", QVariant(dialog->selected()));
   else
     return _ERROR;
 
   return _OK;
 }
 
-SettingGroup * CommandSelectDialog::settings ()
+Data * CommandSelectDialog::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(Setting::_LIST, Setting::_NONE, QString());
-  ss->setKey("LIST");
-  sg->set(ss);
-
-  ss = new SettingString(QString());
-  ss->setKey("TITLE");
-  sg->set(ss);
-
-  SettingBool *sb = new SettingBool(FALSE);
-  sb->setKey("MODE");
-  sg->set(sb);
-
-  SettingList *sl = new SettingList(Setting::_NONE, Setting::_LIST, QStringList(), QString());
-  sl->setKey("SELECTED");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("LIST", QVariant(QStringList()));
+  sg->set("TITLE", QVariant(QString()));
+  sg->set("MODE", QVariant(FALSE));
+  sg->set("SELECTED", QVariant(QStringList()));
   return sg;
 }

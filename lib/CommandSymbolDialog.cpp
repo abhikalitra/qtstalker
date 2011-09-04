@@ -21,7 +21,6 @@
 
 #include "CommandSymbolDialog.h"
 #include "Script.h"
-#include "SettingList.h"
 #include "SymbolDialog.h"
 
 #include <QtDebug>
@@ -32,33 +31,21 @@ CommandSymbolDialog::CommandSymbolDialog (QObject *p) : Command (p)
   _isDialog = 1;
 }
 
-int CommandSymbolDialog::runScript (void *d)
+int CommandSymbolDialog::runScript (Data *sg, Script *)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
   SymbolDialog dialog(0);
   int rc = dialog.exec();
   if (rc == QDialog::Rejected)
     return _ERROR;
 
-  Setting *set = sg->get("SYMBOLS");
-  set->setList(dialog.symbols());
+  sg->set("SYMBOLS", QVariant(dialog.symbols()));
 
   return _OK;
 }
 
-SettingGroup * CommandSymbolDialog::settings ()
+Data * CommandSymbolDialog::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingList *sl = new SettingList(QStringList(), QString());
-  sl->setKey("SYMBOLS");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("SYMBOLS", QVariant(QStringList()));
   return sg;
 }

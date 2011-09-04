@@ -21,7 +21,6 @@
 
 #include "CommandFileDialog.h"
 #include "Script.h"
-#include "SettingFile.h"
 
 #include <QtDebug>
 #include <QFileDialog>
@@ -32,14 +31,8 @@ CommandFileDialog::CommandFileDialog (QObject *p) : Command (p)
   _isDialog = 1;
 }
 
-int CommandFileDialog::runScript (void *d)
+int CommandFileDialog::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
   QStringList l;
   l << "QtStalker" + script->session() + ":" << tr("Select File");
 
@@ -51,20 +44,14 @@ int CommandFileDialog::runScript (void *d)
   if (! files.count())
     return _ERROR;
 
-  Setting *set = sg->get("FILES");
-  set->setList(files);
+  sg->set("FILES", QVariant(files));
 
   return _OK;
 }
 
-SettingGroup * CommandFileDialog::settings ()
+Data * CommandFileDialog::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingFile *sf = new SettingFile(QStringList());
-  sf->setKey("FILES");
-  sg->set(sf);
-
+  Data *sg = new Data;
+  sg->set("FILE", QVariant(QStringList()));
   return sg;
 }

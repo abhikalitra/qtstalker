@@ -30,8 +30,8 @@ class CommandExchangeSearchDialog : public Command
 
   public:
     CommandExchangeSearchDialog (QObject *);
-    SettingGroup * settings ();
-    int runScript (void *);
+    int runScript (Data *, Script *);
+    Data * settings ();
 };
 
 #endif
