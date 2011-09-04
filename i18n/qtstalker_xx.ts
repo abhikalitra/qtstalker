@@ -135,17 +135,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>CommandDialog</name>
-    <message>
-        <source>Insert Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CommandFileDialog</name>
     <message>
         <source>Select File</source>
@@ -777,6 +766,86 @@ qtstalker.sourceforge.net</source>
         <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Edit Buy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Yahoo History</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjusted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CSV File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit HLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Retracement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Levels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Sell</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit TLine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit VLine</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -916,10 +985,6 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enter script timer name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -929,6 +994,29 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Select script timer to delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScriptRunDialog</name>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No script file selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command missing</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -948,6 +1036,18 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Launch every X seconds</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No script file selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

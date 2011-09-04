@@ -36,7 +36,7 @@ class QtStalkerScript : public QObject
   signals:
 
   public:
-    QtStalkerScript (QString session, QString file);
+    QtStalkerScript (QString session, QString command, QString file);
     ~QtStalkerScript ();
     void done ();
 

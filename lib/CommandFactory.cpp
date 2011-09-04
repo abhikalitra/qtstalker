@@ -29,7 +29,7 @@
 #include "CommandBBANDS.h"
 #include "CommandBETA.h"
 #include "CommandBOP.h"
-//#include "CommandBuy.h"
+#include "CommandBuy.h"
 #include "CommandCandlePattern.h"
 #include "CommandCCI.h"
 #include "CommandChart.h"
@@ -39,7 +39,7 @@
 #include "CommandColor.h"
 #include "CommandCompare.h"
 #include "CommandCORREL.h"
-//#include "CommandCSV.h"
+#include "CommandCSV.h"
 //#include "CommandExchangeSearchDialog.h"
 #include "CommandFI.h"
 //#include "CommandFileDialog.h"
@@ -60,15 +60,14 @@
 #include "CommandPlotOHLC.h"
 #include "CommandPlotLine.h"
 #include "CommandPlotHistogram.h"
-//#include "CommandRetracement.h"
+#include "CommandRetracement.h"
 #include "CommandROC.h"
 #include "CommandRSI.h"
 #include "CommandSAR.h"
 #include "CommandScriptDone.h"
 #include "CommandScriptStart.h"
 //#include "CommandSelectDialog.h"
-//#include "CommandSell.h"
-//#include "CommandSettingGet.h"
+#include "CommandSell.h"
 #include "CommandShift.h"
 #include "CommandSINE.h"
 #include "CommandSTDDEV.h"
@@ -76,13 +75,13 @@
 #include "CommandStochRSI.h"
 #include "CommandStochSlow.h"
 #include "CommandSZ.h"
-//#include "CommandSymbol.h"
+#include "CommandSymbol.h"
 #include "CommandSymbolCurrent.h"
 //#include "CommandSymbolDialog.h"
 #include "CommandT3.h"
-//#include "CommandText.h"
+#include "CommandText.h"
 #include "CommandTHERM.h"
-//#include "CommandTLine.h"
+#include "CommandTLine.h"
 #include "CommandTRIX.h"
 #include "CommandTypicalPrice.h"
 #include "CommandULTOSC.h"
@@ -90,10 +89,10 @@
 #include "CommandVBP.h"
 #include "CommandVFI.h"
 #include "CommandVIDYA.h"
-//#include "CommandVLine.h"
+#include "CommandVLine.h"
 #include "CommandWeightedClose.h"
 #include "CommandWILLR.h"
-//#include "CommandYahooHistory.h"
+#include "CommandYahooHistory.h"
 
 #include <QDebug>
 
@@ -115,7 +114,7 @@ CommandFactory::CommandFactory ()
   _types << "NORMALIZE";
   _types << "PO" << "PLOT_LINE" << "PLOT_HISTOGRAM" << "PLOT_OHLC";
   _types << "ROC" << "RSI";
-  _types << "SAR" << "SCRIPT_DONE" << "SCRIPT_START" << "SELECT_DIALOG" << "SETTING_GET" << "SHIFT" << "STDDEV";
+  _types << "SAR" << "SCRIPT_DONE" << "SCRIPT_START" << "SELECT_DIALOG" << "SHIFT" << "STDDEV";
   _types << "STOCH_FAST" << "STOCH_RSI" << "STOCH_SLOW" << "SZ";
   _types << "SYMBOL" << "SYMBOL_CURRENT" << "SYMBOL_DIALOG";
   _types << "T3" << "THERM" << "TRIX" << "TYPICAL_PRICE";
@@ -168,25 +167,25 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandChart(p);
       break;
     case _CHART_OBJECT_BUY:
-//      c = new CommandBuy(p);
+      c = new CommandBuy(p);
       break;
     case _CHART_OBJECT_HLINE:
       c = new CommandHLine(p);
       break;
     case _CHART_OBJECT_RETRACEMENT:
-//      c = new CommandRetracement(p);
+      c = new CommandRetracement(p);
       break;
     case _CHART_OBJECT_SELL:
-//      c = new CommandSell(p);
+      c = new CommandSell(p);
       break;
     case _CHART_OBJECT_TEXT:
-//      c = new CommandText(p);
+      c = new CommandText(p);
       break;
     case _CHART_OBJECT_TLINE:
-//      c = new CommandTLine(p);
+      c = new CommandTLine(p);
       break;
     case _CHART_OBJECT_VLINE:
-//      c = new CommandVLine(p);
+      c = new CommandVLine(p);
       break;
     case _CHART_PANEL_REFRESH:
       c = new CommandChartPanelRefresh(p);
@@ -207,7 +206,7 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandCORREL(p);
       break;
     case _CSV:
-//      c = new CommandCSV(p);
+      c = new CommandCSV(p);
       break;
     case _DEBUG:
       break;
@@ -289,9 +288,6 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _SELECT_DIALOG:
 //      c = new CommandSelectDialog(p);
       break;
-    case _SETTING_GET:
-//      c = new CommandSettingGet(p);
-      break;
     case _SHIFT:
       c = new CommandShift(p);
       break;
@@ -311,7 +307,7 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandSZ(p);
       break;
     case _SYMBOL:
-//      c = new CommandSymbol(p);
+      c = new CommandSymbol(p);
       break;
     case _SYMBOL_CURRENT:
       c = new CommandSymbolCurrent(p);
@@ -353,7 +349,7 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandWILLR(p);
       break;
     case _YAHOO_HISTORY:
-//      c = new CommandYahooHistory(p);
+      c = new CommandYahooHistory(p);
       break;
     default:
       break;

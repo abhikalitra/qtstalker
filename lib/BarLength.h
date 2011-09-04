@@ -50,6 +50,7 @@ class BarLength
     BarLength ();
     QStringList & list ();
     QString barLengthText (BarLength::Length);
+    int stringToType (QString);
 
   protected:
     QStringList _list;

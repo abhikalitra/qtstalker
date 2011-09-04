@@ -45,6 +45,9 @@ void ScriptTimerDialog::createGUI ()
   _file = new FileButton(this);
   _form->addRow(tr("Script File"), _file);
 
+  _command = new LineEdit(this);
+  _form->addRow(tr("Command"), _command);
+
   _startup = new QCheckBox;
   _form->addRow(tr("Launch at application start"), _startup);
 
@@ -60,12 +63,23 @@ void ScriptTimerDialog::done ()
 
   QString file;
   QStringList l = _file->files();
-  if (l.count())
+  if (! l.count())
+  {
+    _message->setText(tr("No script file selected"));
+    return;
+  }
+  else
     file = l.at(0);
+
+  if (_command->text().isEmpty())
+  {
+    _message->setText(tr("Command missing"));
+    return;
+  }
 
   ScriptDataBase db;
   db.transaction();
-  db.save(_name, file, startup, interval);
+  db.save(_name, file, startup, interval, _command->text());
   db.commit();
 
   saveSettings();
@@ -78,8 +92,8 @@ void ScriptTimerDialog::done ()
 void ScriptTimerDialog::setGUI ()
 {
   ScriptDataBase db;
-  QString file, startup, interval;
-  if (db.load(_name, file, startup, interval))
+  QString file, startup, interval, command;
+  if (db.load(_name, file, startup, interval, command))
     return;
 
   bool b = FALSE;
@@ -92,4 +106,6 @@ void ScriptTimerDialog::setGUI ()
   QStringList l;
   l << file;
   _file->setFiles(l);
+
+  _command->setText(command);
 }

@@ -30,13 +30,14 @@ class ScriptTimer : public QTimer
   Q_OBJECT
 
   signals:
-    void signalStartScript (QString);
+    void signalStartScript (QString, QString);
 
   public:
     ScriptTimer (QObject *);
     void setIntervalString (QString);
     void setFile (QString);
     void setName (QString);
+    void setCommand (QString);
 
   public slots:
     void startScript ();
@@ -44,6 +45,7 @@ class ScriptTimer : public QTimer
   private:
     QString _file;
     QString _name;
+    QString _command;
 };
 
 #endif

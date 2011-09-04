@@ -19,19 +19,19 @@
  *  USA.
  */
 
-#include "CommandBuy.h"
+#include "CommandText.h"
 #include "ChartObjectData.h"
 #include "Script.h"
 
 #include <QtDebug>
 #include <QDateTime>
 
-CommandBuy::CommandBuy (QObject *p) : Command (p)
+CommandText::CommandText (QObject *p) : Command (p)
 {
-  _type = "CHART_OBJECT_BUY";
+  _type = "CHART_OBJECT_TEXT";
 }
 
-int CommandBuy::runScript (Data *sg, Script *script)
+int CommandText::runScript (Data *sg, Script *script)
 {
   // verify DATE
   QString s = sg->get("DATE").toString();
@@ -60,6 +60,9 @@ int CommandBuy::runScript (Data *sg, Script *script)
   }
   double price = v.toDouble();
 
+  // verify TEXT
+  QString text = sg->get("TEXT").toString();
+
   // CHART
   QString chart = sg->get("CHART").toString();
 
@@ -75,11 +78,12 @@ int CommandBuy::runScript (Data *sg, Script *script)
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_TYPE, QVariant(QString("Buy")));
+  co->set(ChartObjectData::_TYPE, QVariant(QString("Text")));
   co->set(ChartObjectData::_DATE, QVariant(dt));
   co->set(ChartObjectData::_COLOR, QVariant(color));
   co->set(ChartObjectData::_PRICE, QVariant(price));
   co->set(ChartObjectData::_CHART, QVariant(chart));
+  co->set(ChartObjectData::_TEXT, QVariant(text));
   co->set(ChartObjectData::_Z, QVariant(z));
   co->set(ChartObjectData::_ID, QVariant(id));
   co->set(ChartObjectData::_RO, QVariant(TRUE));
@@ -89,13 +93,14 @@ int CommandBuy::runScript (Data *sg, Script *script)
   return _OK;
 }
 
-Data * CommandBuy::settings ()
+Data * CommandText::settings ()
 {
   Data *sg = new Data;
   sg->set("DATE", QVariant(QDateTime::currentDateTime()));
   sg->set("CHART", QVariant(QString()));
   sg->set("PRICE", QVariant(0));
   sg->set("COLOR", QVariant("red"));
+  sg->set("TEXT", QVariant(QString("Text")));
   sg->set("Z", QVariant(1));
   return sg;
 }

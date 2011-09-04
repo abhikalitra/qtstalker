@@ -640,13 +640,10 @@ void Plot::chartObjectDialog ()
   if (_chartObjectDialog)
     return;
 
-/*
-  _chartObjectDialog = new CommandDialog(this);
-  _chartObjectDialog->setWidgets(_selected->settings());
+  _chartObjectDialog = _selected->dialog(this);
   connect(_chartObjectDialog, SIGNAL(accepted()), this, SLOT(chartObjectDialog2()));
   connect(_chartObjectDialog, SIGNAL(rejected()), this, SLOT(chartObjectDialog3()));
   _chartObjectDialog->show();
-*/
 }
 
 void Plot::chartObjectDialog2 ()

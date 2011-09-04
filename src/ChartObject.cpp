@@ -234,6 +234,12 @@ int ChartObject::create ()
   return 0;
 }
 
+// virtual
+DataDialog * ChartObject::dialog (QWidget *)
+{
+  return 0;
+}
+
 int ChartObject::save ()
 {
   if (_settings->get(ChartObjectData::_RO).toBool())

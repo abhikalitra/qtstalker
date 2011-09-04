@@ -31,7 +31,7 @@
 #include <QFile>
 #include <QDateTime>
 
-QtStalkerScript::QtStalkerScript (QString session, QString file)
+QtStalkerScript::QtStalkerScript (QString session, QString command, QString file)
 {
   _dummyFlag = 0;
   _stop = 0;
@@ -41,6 +41,7 @@ QtStalkerScript::QtStalkerScript (QString session, QString file)
   _script = new Script(this);
   _script->setSession(session);
   _script->setFile(file);
+  _script->setCommand(command);
   _script->setName(fi.baseName());
 
   QTimer::singleShot(1, this, SLOT(run()));
@@ -55,7 +56,7 @@ void QtStalkerScript::run ()
   QProcess pro;
   connect(&pro, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(scriptFinished(int, QProcess::ExitStatus)));
 
-  QString s = "perl " + _script->file();
+  QString s = _script->command() + " " + _script->file();
   pro.start(s);
   if (! pro.waitForStarted())
   {

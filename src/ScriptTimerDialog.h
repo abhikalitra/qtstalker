@@ -29,6 +29,7 @@
 
 #include "Dialog.h"
 #include "FileButton.h"
+#include "LineEdit.h"
 
 class ScriptTimerDialog : public Dialog
 {
@@ -48,6 +49,7 @@ class ScriptTimerDialog : public Dialog
   private:
     QString _name;
     FileButton *_file;
+    LineEdit *_command;
     QCheckBox *_startup;
     QSpinBox *_interval;
 };

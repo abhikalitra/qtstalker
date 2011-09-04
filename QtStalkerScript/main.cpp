@@ -29,7 +29,7 @@
 
 int main(int argc, char *argv[])
 {
-  if (argc != 3)
+  if (argc != 4)
   {
     qDebug() << "QtStalkerScript::main: invalid args" << argc;
     exit(1);
@@ -37,6 +37,7 @@ int main(int argc, char *argv[])
 
   int pos = 1;
   QString session = argv[pos++];
+  QString command = argv[pos++];
   QString file = argv[pos++];
 
   QApplication a(argc, argv);
@@ -50,6 +51,6 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  QtStalkerScript app(session, file);
+  QtStalkerScript app(session, command, file);
   return a.exec();
 }

@@ -69,6 +69,10 @@ Data * CommandShift::getShift (Data *in, int period)
   {
     Data *bar = in->getData(keys.at(loop));
 
+    int index = keys.at(loop) + period;
+    if (index < 0)
+      continue;
+
     Data *b = new CurveBar;
     b->set(CurveBar::_VALUE, bar->get(CurveBar::_VALUE));
     line->set(keys.at(loop) + period, b);

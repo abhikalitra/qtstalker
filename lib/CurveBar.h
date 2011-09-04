@@ -32,15 +32,15 @@ class CurveBar : public Data
   public:
     enum Parm
     {
-      _DATE,
-      _OPEN,
-      _HIGH,
-      _LOW,
-      _CLOSE,
-      _VOLUME,
-      _OI,
-      _COLOR,
-      _VALUE
+      _DATE = -10,
+      _OPEN = -20,
+      _HIGH = -30,
+      _LOW = -40,
+      _CLOSE = -50,
+      _VOLUME = -60,
+      _OI = -70,
+      _COLOR = -80,
+      _VALUE = -90
     };
 
     CurveBar ();

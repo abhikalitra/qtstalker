@@ -39,13 +39,14 @@ void ScriptDataBase::init ()
   s.append(", file TEXT");
   s.append(", startup INT");
   s.append(", runInterval INT");
+  s.append(", command TEXT");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
     qDebug() << "ScriptDataBase::init: " << q.lastError().text();
 }
 
-int ScriptDataBase::load (QString name, QString &file, QString &startup, QString &interval)
+int ScriptDataBase::load (QString name, QString &file, QString &startup, QString &interval, QString &command)
 {
   if (name.isEmpty())
     return 1;
@@ -53,9 +54,10 @@ int ScriptDataBase::load (QString name, QString &file, QString &startup, QString
   file.clear();
   startup.clear();
   interval.clear();
+  command.clear();
 
   QSqlQuery q(_db);
-  QString s = "SELECT file,startup,runInterval FROM " + _table + " WHERE name='" + name + "'";
+  QString s = "SELECT file,startup,runInterval,command FROM " + _table + " WHERE name='" + name + "'";
   q.exec(s);
   if (q.lastError().isValid())
   {
@@ -69,12 +71,13 @@ int ScriptDataBase::load (QString name, QString &file, QString &startup, QString
     file = q.value(pos++).toString();
     startup = q.value(pos++).toString();
     interval = q.value(pos++).toString();
+    command = q.value(pos++).toString();
   }
 
   return 0;
 }
 
-int ScriptDataBase::save (QString name, QString file, QString startup, QString interval)
+int ScriptDataBase::save (QString name, QString file, QString startup, QString interval, QString command)
 {
   if (name.isEmpty())
     return 1;
@@ -85,6 +88,7 @@ int ScriptDataBase::save (QString name, QString file, QString startup, QString i
   s.append(",'" + file + "'");
   s.append("," + startup);
   s.append("," + interval);
+  s.append(",'" + command + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

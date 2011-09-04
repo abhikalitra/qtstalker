@@ -19,26 +19,19 @@
  *  USA.
  */
 
-#include "BarLength.h"
+#ifndef COMMAND_TLINE_HPP
+#define COMMAND_TLINE_HPP
 
-#include <QtDebug>
+#include "Command.h"
 
-BarLength::BarLength ()
+class CommandTLine : public Command
 {
-  _list << "0" << "1" << "5" << "10" << "15" << "30" << "60" << "D" << "W" << "M";
-}
+  Q_OBJECT
 
-QStringList & BarLength::list ()
-{
-  return _list;
-}
+  public:
+    CommandTLine (QObject *);
+    int runScript (Data *, Script *);
+    Data * settings ();
+};
 
-QString BarLength::barLengthText (BarLength::Length k)
-{
-  return _list.at((int) k);
-}
-
-int BarLength::stringToType (QString d)
-{
-  return _list.indexOf(d);
-}
+#endif

@@ -32,7 +32,7 @@ CommandCSV::CommandCSV (QObject *p) : Command (p)
 {
   _type = "CSV";
 
-  _formatType << "SYMBOL" << "NAME" << "DATE" << "OPEN" << "HIGH" << "LOW" << "CLOSE" << "VOLUME" << "OI";
+  _formatType << "EXCHANGE" << "SYMBOL" << "NAME" << "DATE" << "OPEN" << "HIGH" << "LOW" << "CLOSE" << "VOLUME" << "OI";
 
   _delimiterType << tr("Comma") << tr("Semicolon");
 }
@@ -119,7 +119,7 @@ int CommandCSV::runScript (Data *sg, Script *)
         continue;
       }
 
-      QString symbol, name;
+      QString symbol, name, exchange;
       if (fileNameFlag)
       {
         symbol = fileNameSymbol;
@@ -134,6 +134,9 @@ int CommandCSV::runScript (Data *sg, Script *)
       {
         switch ((FormatType) _formatType.indexOf(format.at(loop2)))
         {
+          case _EXCHANGE:
+            exchange = data.at(loop2).trimmed();
+            break;
           case _SYMBOL:
             symbol = data.at(loop2).trimmed();
             break;
@@ -215,23 +218,32 @@ int CommandCSV::runScript (Data *sg, Script *)
         continue;
       }
 
-      if (symbol.isEmpty())
+      if (exchange.isEmpty())
       {
-        qDebug() << _type << "::runScript: empty SYMBOL" << s;
+        qDebug() << _type << "::runScript: invalid EXCHANGE" << exchange;
         delete bar;
         continue;
       }
 
-      Data *bd = symbols.value(symbol);
+      if (symbol.isEmpty())
+      {
+        qDebug() << _type << "::runScript: invalid SYMBOL" << symbol;
+        delete bar;
+        continue;
+      }
+
+      QString key = exchange + ":" + symbol;
+      Data *bd = symbols.value(key);
       if (! bd)
       {
         bd = new Symbol;
+        bd->set(Symbol::_EXCHANGE, QVariant(exchange));
         bd->set(Symbol::_SYMBOL, QVariant(symbol));
         bd->set(Symbol::_TYPE, QVariant(typ));
         if (! name.isEmpty())
           bd->set(Symbol::_NAME, QVariant(name));
 
-        symbols.insert(symbol, bd);
+        symbols.insert(key, bd);
       }
 
       bd->append(bar);
@@ -264,7 +276,7 @@ Data * CommandCSV::settings ()
   sg->set("FORMAT", QVariant(QString()));
   sg->set("DATE_FORMAT", QVariant(QString()));
   sg->set("DELIMITER", QVariant(QString("Comma")));
-  sg->set("STOCK", QVariant(QString("Stock")));
+  sg->set("TYPE", QVariant(QString("Stock")));
   sg->set("FILENAME_AS_SYMBOL", QVariant(FALSE));
   return sg;
 }

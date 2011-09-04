@@ -19,26 +19,32 @@
  *  USA.
  */
 
-#include "BarLength.h"
+#ifndef SCRIPT_RUN_DIALOG_HPP
+#define SCRIPT_RUN_DIALOG_HPP
 
-#include <QtDebug>
+#include <QStringList>
 
-BarLength::BarLength ()
+#include "Dialog.h"
+#include "FileButton.h"
+#include "LineEdit.h"
+
+class ScriptRunDialog : public Dialog
 {
-  _list << "0" << "1" << "5" << "10" << "15" << "30" << "60" << "D" << "W" << "M";
-}
+  Q_OBJECT
 
-QStringList & BarLength::list ()
-{
-  return _list;
-}
+  signals:
+    void signalDone (QString, QString);
 
-QString BarLength::barLengthText (BarLength::Length k)
-{
-  return _list.at((int) k);
-}
+  public:
+    ScriptRunDialog (QWidget *, QString file, QString command);
+    void createGUI ();
 
-int BarLength::stringToType (QString d)
-{
-  return _list.indexOf(d);
-}
+  public slots:
+    void done ();
+
+  private:
+    FileButton *_file;
+    LineEdit *_text;
+};
+
+#endif

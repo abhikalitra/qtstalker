@@ -19,19 +19,19 @@
  *  USA.
  */
 
-#include "CommandBuy.h"
+#include "CommandVLine.h"
 #include "ChartObjectData.h"
 #include "Script.h"
 
 #include <QtDebug>
 #include <QDateTime>
 
-CommandBuy::CommandBuy (QObject *p) : Command (p)
+CommandVLine::CommandVLine (QObject *p) : Command (p)
 {
-  _type = "CHART_OBJECT_BUY";
+  _type = "CHART_OBJECT_VLINE";
 }
 
-int CommandBuy::runScript (Data *sg, Script *script)
+int CommandVLine::runScript (Data *sg, Script *script)
 {
   // verify DATE
   QString s = sg->get("DATE").toString();
@@ -51,20 +51,11 @@ int CommandBuy::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  // verify PRICE
-  QVariant v = sg->get("PRICE");
-  if (! v.canConvert(QVariant::Double))
-  {
-    qDebug() << _type << "::runScript: invalid PRICE" << v.toString();
-    return _ERROR;
-  }
-  double price = v.toDouble();
-
   // CHART
   QString chart = sg->get("CHART").toString();
 
   // verify Z
-  v = sg->get("Z");
+  QVariant v = sg->get("Z");
   if (! v.canConvert(QVariant::Int))
   {
     qDebug() << _type << "::runScript: invalid Z" << v.toString();
@@ -75,10 +66,9 @@ int CommandBuy::runScript (Data *sg, Script *script)
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_TYPE, QVariant(QString("Buy")));
+  co->set(ChartObjectData::_TYPE, QVariant(QString("VLine")));
   co->set(ChartObjectData::_DATE, QVariant(dt));
   co->set(ChartObjectData::_COLOR, QVariant(color));
-  co->set(ChartObjectData::_PRICE, QVariant(price));
   co->set(ChartObjectData::_CHART, QVariant(chart));
   co->set(ChartObjectData::_Z, QVariant(z));
   co->set(ChartObjectData::_ID, QVariant(id));
@@ -89,12 +79,11 @@ int CommandBuy::runScript (Data *sg, Script *script)
   return _OK;
 }
 
-Data * CommandBuy::settings ()
+Data * CommandVLine::settings ()
 {
   Data *sg = new Data;
   sg->set("DATE", QVariant(QDateTime::currentDateTime()));
   sg->set("CHART", QVariant(QString()));
-  sg->set("PRICE", QVariant(0));
   sg->set("COLOR", QVariant("red"));
   sg->set("Z", QVariant(1));
   return sg;

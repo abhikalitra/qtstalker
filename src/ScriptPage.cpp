@@ -27,6 +27,7 @@
 #include "ScriptDataBase.h"
 #include "Script.h"
 #include "ScriptTimerDialog.h"
+#include "ScriptRunDialog.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -180,22 +181,33 @@ void ScriptPage::queStatus ()
 void ScriptPage::runScript ()
 {
   QSettings settings(g_localSettings);
+  QStringList l;
+  l << settings.value("script_panel_last_external_script").toString();
 
+  ScriptRunDialog *dialog = new ScriptRunDialog(this,
+                                                settings.value("script_panel_last_external_script").toString(),
+                                                QString("perl"));
+  connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(runScript(QString, QString)));
+  dialog->show();
+
+/*
   QFileDialog *dialog = new QFileDialog(this);
   dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("Select Script"));
   dialog->setDirectory(settings.value("script_panel_last_external_script").toString());
   connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(runScript(QString)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
+*/
 }
 
-void ScriptPage::runScript (QString d)
+void ScriptPage::runScript (QString file, QString command)
 {
-  QFileInfo fi(d);
+  QFileInfo fi(file);
 
   Script script(this);
   script.setName(fi.baseName());
-  script.setFile(d);
+  script.setFile(file);
+  script.setCommand(command);
   script.setSession(g_session);
 
   if (script.run())
@@ -215,7 +227,7 @@ void ScriptPage::runScript (QString d)
   g_parent->statusBar()->showMessage(l.join(" "));
 
   QSettings settings(g_localSettings);
-  settings.setValue("script_panel_last_external_script", d);
+  settings.setValue("script_panel_last_external_script", file);
   settings.sync();
 }
 
@@ -309,11 +321,11 @@ void ScriptPage::setupScriptTimers ()
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    QString file, startup, interval;
-    if (db.load(l.at(loop), file, startup, interval))
+    QString file, startup, interval, command;
+    if (db.load(l.at(loop), file, startup, interval, command))
       continue;
 
-    addScriptTimer(l.at(loop), file, interval);
+    addScriptTimer(l.at(loop), file, interval, command);
   }
 }
 
@@ -394,19 +406,19 @@ void ScriptPage::editScriptTimer3 (QString d)
   if (! st)
   {
     ScriptDataBase db;
-    QString file, startup, interval;
-    if (db.load(d, file, startup, interval))
+    QString file, startup, interval, command;
+    if (db.load(d, file, startup, interval, command))
       return;
 
     if (interval.toInt() > 0)
-      addScriptTimer(d, file, interval);
+      addScriptTimer(d, file, interval, command);
 
     return;
   }
 
   ScriptDataBase db;
-  QString file, startup, interval;
-  if (db.load(d, file, startup, interval))
+  QString file, startup, interval, command;
+  if (db.load(d, file, startup, interval, command))
     return;
 
   if (interval == "0")
@@ -470,20 +482,21 @@ void ScriptPage::runStartupScripts ()
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    QString file, startup, interval;
-    if (db.load(l.at(loop), file, startup, interval))
+    QString file, startup, interval, command;
+    if (db.load(l.at(loop), file, startup, interval, command))
       continue;
 
-    runScript(l.at(loop));
+    runScript(l.at(loop), command);
   }
 }
 
-void ScriptPage::addScriptTimer (QString name, QString file, QString interval)
+void ScriptPage::addScriptTimer (QString name, QString file, QString interval, QString command)
 {
   ScriptTimer *st = new ScriptTimer(this);
-  connect(st, SIGNAL(signalStartScript(QString)), this, SLOT(runScript(QString)));
+  connect(st, SIGNAL(signalStartScript(QString, QString)), this, SLOT(runScript(QString, QString)));
   st->setName(name);
   st->setFile(file);
+  st->setCommand(command);
   st->setIntervalString(interval);
   _timers.insert(name, st);
   st->start();

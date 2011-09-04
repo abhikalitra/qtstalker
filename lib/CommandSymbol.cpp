@@ -22,13 +22,12 @@
 #include "CommandSymbol.h"
 #include "Strip.h"
 #include "QuoteDataBase.h"
-#include "Globals.h"
 #include "DateRange.h"
 #include "BarLength.h"
 #include "Script.h"
-#include "SettingCurve.h"
-#include "SettingString.h"
-#include "SettingList.h"
+#include "Symbol.h"
+#include "CurveData.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -37,181 +36,142 @@ CommandSymbol::CommandSymbol (QObject *p) : Command (p)
   _type = "SYMBOL";
 }
 
-int CommandSymbol::runScript (void *d)
+int CommandSymbol::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
-
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
-
   // symbol
-  BarData bd;
-  QString s = sg->get("SYMBOL")->getString();
-  if (bd.setKey(s))
+  QString s = sg->get("SYMBOL").toString();
+  QStringList tl = s.split(":");
+  if (tl.count() != 2)
   {
     qDebug() << _type << "::runScript: invalid SYMBOL" << s;
     return _ERROR;
   }
+  QString symbol = tl.at(0);
+  QString exchange = tl.at(1);
 
   // length
-  s = sg->get("LENGTH")->getString();
+  s = sg->get("LENGTH").toString();
   BarLength bl;
-  QStringList l = bl.list();
-  int length = l.indexOf(s);
+  int length = bl.stringToType(s);
   if (length == -1)
   {
     qDebug() << _type << "::runScript: invalid LENGTH" << s;
     return _ERROR;
   }
-  else
-    bd.setBarLength((BarLength::Length) length);
 
   // range
-  s = sg->get("RANGE")->getString();
+  s = sg->get("RANGE").toString();
   DateRange dr;
-  l = dr.list();
-  int range = l.indexOf(s);
+  int range = dr.toType(s);
   if (range == -1)
   {
     qDebug() << _type << "::runScript: invalid RANGE" << s;
     return _ERROR;
   }
-  else
-    bd.setRange(range);
 
   // date
-  s = sg->get("DATE")->getString();
-  Curve *dline = new Curve;
-  dline->setLabel(s);
-  script->setCurve(s, dline);
+  s = sg->get("DATE").toString();
+  Data *dline = new CurveData;
+  script->setData(s, dline);
 
   // open
-  s = sg->get("OPEN")->getString();
-  Curve *oline = new Curve;
-  oline->setLabel(s);
-  script->setCurve(s, oline);
+  s = sg->get("OPEN").toString();
+  Data *oline = new CurveData;
+  script->setData(s, oline);
 
   // high
-  s = sg->get("HIGH")->getString();
-  Curve *hline = new Curve;
-  hline->setLabel(s);
-  script->setCurve(s, hline);
+  s = sg->get("HIGH").toString();
+  Data *hline = new CurveData;
+  script->setData(s, hline);
 
   // low
-  s = sg->get("LOW")->getString();
-  Curve *lline = new Curve;
-  lline->setLabel(s);
-  script->setCurve(s, lline);
+  s = sg->get("LOW").toString();
+  Data *lline = new CurveData;
+  script->setData(s, lline);
 
   // close
-  s = sg->get("CLOSE")->getString();
-  Curve *cline = new Curve;
-  cline->setLabel(s);
-  script->setCurve(s, cline);
+  s = sg->get("CLOSE").toString();
+  Data *cline = new CurveData;
+  script->setData(s, cline);
 
   // volume
-  s = sg->get("VOLUME")->getString();
-  Curve *vline = new Curve;
-  vline->setLabel(s);
-  script->setCurve(s, vline);
+  s = sg->get("VOLUME").toString();
+  Data *vline = new CurveData;
+  script->setData(s, vline);
 
   // oi
-  s = sg->get("OI")->getString();
-  Curve *iline = new Curve;
-  iline->setLabel(s);
-  script->setCurve(s, iline);
+  s = sg->get("OI").toString();
+  Data *iline = new CurveData;
+  script->setData(s, iline);
+
+  Data *bd = new Symbol;
+  bd->set(Symbol::_EXCHANGE, QVariant(symbol));
+  bd->set(Symbol::_SYMBOL, QVariant(exchange));
+  bd->set(Symbol::_LENGTH, QVariant(length));
+  bd->set(Symbol::_START_DATE, QVariant(QDateTime()));
+  bd->set(Symbol::_END_DATE, QVariant(QDateTime()));
+  bd->set(Symbol::_RANGE, QVariant(range));
 
   // load quotes
   QuoteDataBase db;
-  if (db.getBars(&bd))
+  if (db.getBars(bd))
   {
     qDebug() << _type << "::runScript: QuoteDataBase error";
+    delete bd;
     return _ERROR;
   }
 
   int loop = 0;
-  for (; loop < bd.count(); loop++)
+  QList<int> barKeys = bd->barKeys();
+  for (; loop < barKeys.count(); loop++)
   {
-    Bar *b = bd.bar(loop);
-    if (! b)
-      continue;
+    Data *b = bd->getData(barKeys.at(loop));
 
-    if (dline)
-    {
-      CurveBar *cb = new CurveBar;
-      cb->setDateTime(b->date());
-      dline->setBar(loop, cb);
-    }
+    Data *cb = new CurveBar;
+    cb->set(CurveBar::_DATE, b->get(CurveBar::_DATE));
+    dline->set(loop, cb);
 
-    if (oline)
-      oline->setBar(loop, new CurveBar(b->open()));
+    cb = new CurveBar;
+    cb->set(CurveBar::_VALUE, b->get(CurveBar::_OPEN));
+    oline->set(loop, cb);
 
-    if (hline)
-      hline->setBar(loop, new CurveBar(b->high()));
+    cb = new CurveBar;
+    cb->set(CurveBar::_VALUE, b->get(CurveBar::_HIGH));
+    hline->set(loop, cb);
 
-    if (lline)
-      lline->setBar(loop, new CurveBar(b->low()));
+    cb = new CurveBar;
+    cb->set(CurveBar::_VALUE, b->get(CurveBar::_LOW));
+    lline->set(loop, cb);
 
-    if (cline)
-      cline->setBar(loop, new CurveBar(b->close()));
+    cb = new CurveBar;
+    cb->set(CurveBar::_VALUE, b->get(CurveBar::_CLOSE));
+    cline->set(loop, cb);
 
-    if (vline)
-      vline->setBar(loop, new CurveBar(b->volume()));
+    cb = new CurveBar;
+    cb->set(CurveBar::_VALUE, b->get(CurveBar::_VOLUME));
+    vline->set(loop, cb);
 
-    if (iline)
-      iline->setBar(loop, new CurveBar(b->oi()));
+    cb = new CurveBar;
+    cb->set(CurveBar::_VALUE, b->get(CurveBar::_OI));
+    iline->set(loop, cb);
   }
+
+  delete bd;
 
   return _OK;
 }
 
-SettingGroup * CommandSymbol::settings ()
+Data * CommandSymbol::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingString *ss = new SettingString(QString());
-  ss->setKey("SYMBOL");
-  sg->set(ss);
-
-  SettingCurve *sc = new SettingCurve(QString("date"));
-  sc->setKey("DATE");
-  sg->set(sc);
-
-  sc = new SettingCurve(QString("open"));
-  sc->setKey("OPEN");
-  sg->set(sc);
-
-  sc = new SettingCurve(QString("high"));
-  sc->setKey("HIGH");
-  sg->set(sc);
-
-  sc = new SettingCurve(QString("low"));
-  sc->setKey("LOW");
-  sg->set(sc);
-
-  sc = new SettingCurve(QString("close"));
-  sc->setKey("CLOSE");
-  sg->set(sc);
-
-  sc = new SettingCurve(QString("volume"));
-  sc->setKey("VOLUME");
-  sg->set(sc);
-
-  sc = new SettingCurve(QString("oi"));
-  sc->setKey("OI");
-  sg->set(sc);
-
-  BarLength bl;
-  SettingList *sl = new SettingList(bl.list(), QString());
-  sl->setKey("LENGTH");
-  sg->set(sl);
-
-  DateRange dr;
-  sl = new SettingList(dr.list(), QString());
-  sl->setKey("RANGE");
-  sg->set(sl);
-
+  Data *sg = new Data;
+  sg->set("DATE", QVariant(QString("date")));
+  sg->set("OPEN", QVariant(QString("open")));
+  sg->set("HIGH", QVariant(QString("high")));
+  sg->set("LOW", QVariant(QString("low")));
+  sg->set("CLOSE", QVariant(QString("close")));
+  sg->set("VOLUME", QVariant(QString("volume")));
+  sg->set("OI", QVariant(QString("oi")));
+  sg->set("LENGTH", QVariant(QString("D")));
+  sg->set("RANGE", QVariant(QString("1 Year")));
   return sg;
 }

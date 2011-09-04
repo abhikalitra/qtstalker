@@ -353,3 +353,65 @@ int ChartObjectTLine::create ()
   g_parent->statusBar()->showMessage(QObject::tr("Select TLine starting point..."));
   return 0;
 }
+
+DataDialog * ChartObjectTLine::dialog (QWidget *p)
+{
+  DataDialog *dialog = new DataDialog(p, _settings);
+
+  QStringList l;
+  l << "QtStalker" + g_session + ":" << QObject::tr("Edit TLine");
+  dialog->setWindowTitle(l.join(" "));
+
+  dialog->addTab(QObject::tr("Settings"));
+  int tab = 0;
+
+  dialog->setDateTime(tab,
+                      QString::number(ChartObjectData::_DATE),
+                      QObject::tr("Start Date"),
+                      _settings->get(ChartObjectData::_DATE).toDateTime(),
+                      QString());
+
+  dialog->setDateTime(tab,
+                      QString::number(ChartObjectData::_DATE2),
+                      QObject::tr("End Date"),
+                      _settings->get(ChartObjectData::_DATE2).toDateTime(),
+                      QString());
+
+  dialog->setColor(tab,
+                   QString::number(ChartObjectData::_COLOR),
+                   QObject::tr("Color"),
+                   QColor(_settings->get(ChartObjectData::_COLOR).toString()),
+                   QString());
+
+  dialog->setDouble(tab,
+                    QString::number(ChartObjectData::_PRICE),
+                    QObject::tr("Start Price"),
+                    _settings->get(ChartObjectData::_PRICE).toDouble(),
+                    99999999.0,
+                    -99999999.0,
+                    QString());
+
+  dialog->setDouble(tab,
+                    QString::number(ChartObjectData::_PRICE2),
+                    QObject::tr("End Price"),
+                    _settings->get(ChartObjectData::_PRICE2).toDouble(),
+                    99999999.0,
+                    -99999999.0,
+                    QString());
+
+  dialog->setBool(tab,
+                  QString::number(ChartObjectData::_EXTEND),
+                  QString("Extend"),
+                  _settings->get(ChartObjectData::_EXTEND).toBool(),
+                  QString());
+
+  dialog->setInteger(tab,
+                     QString::number(ChartObjectData::_Z),
+                     QString("Z"),
+                     _settings->get(ChartObjectData::_Z).toInt(),
+                     99,
+                     -1,
+                     QString());
+
+  return dialog;
+}

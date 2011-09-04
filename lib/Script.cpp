@@ -43,6 +43,7 @@ void Script::clear ()
   _session.clear();
   _name.clear();
   _file.clear();
+  _command.clear();
   _pid = -1;
 }
 
@@ -92,10 +93,10 @@ QString & Script::file ()
 
 int Script::run ()
 {
-qDebug() << "Script::run" << _session << _file;
+qDebug() << "Script::run" << _session << _command << _file;
 
   QStringList args;
-  args << _session << _file;
+  args << _session << _command << _file;
 
   bool ok = QProcess::startDetached("QtStalkerScript", args, QString(), &_pid);
   if (! ok)
@@ -109,10 +110,10 @@ qDebug() << "Script::run" << _session << _file;
 
 int Script::runWait ()
 {
-qDebug() << "Script::runWait" << _session << _file;
+qDebug() << "Script::runWait" << _session << _command << _file;
 
   QStringList args;
-  args << _session << _file;
+  args << _session << _command << _file;
 
   int rc = QProcess::execute("QtStalkerScript", args);
   if (rc)
@@ -176,4 +177,14 @@ int Script::nextROID ()
   low--;
 
   return low;
+}
+
+void Script::setCommand (QString d)
+{
+  _command = d;
+}
+
+QString Script::command ()
+{
+  return _command;
 }

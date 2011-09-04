@@ -276,8 +276,13 @@ void QtstalkerApp::loadChart (QString symbol)
   int loop = 0;
   for (; loop < il.count(); loop++)
   {
+    QStringList tl = il.at(loop).split(":");
+    if (tl.count() != 2)
+      continue;
+
     Script script(this);
-    script.setFile(il.at(loop));
+    script.setFile(tl.at(0));
+    script.setCommand(tl.at(1));
     script.setSession(g_session);
     script.run();
   }

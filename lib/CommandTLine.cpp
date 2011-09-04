@@ -19,19 +19,19 @@
  *  USA.
  */
 
-#include "CommandBuy.h"
+#include "CommandTLine.h"
 #include "ChartObjectData.h"
 #include "Script.h"
 
 #include <QtDebug>
 #include <QDateTime>
 
-CommandBuy::CommandBuy (QObject *p) : Command (p)
+CommandTLine::CommandTLine (QObject *p) : Command (p)
 {
-  _type = "CHART_OBJECT_BUY";
+  _type = "CHART_OBJECT_TLINE";
 }
 
-int CommandBuy::runScript (Data *sg, Script *script)
+int CommandTLine::runScript (Data *sg, Script *script)
 {
   // verify DATE
   QString s = sg->get("DATE").toString();
@@ -39,6 +39,15 @@ int CommandBuy::runScript (Data *sg, Script *script)
   if (! dt.isValid())
   {
     qDebug() << _type << "::runScript: invalid DATE" << s;
+    return _ERROR;
+  }
+
+  // verify DATE2
+  s = sg->get("DATE_2").toString();
+  QDateTime dt2 = QDateTime::fromString(s, Qt::ISODate);
+  if (! dt2.isValid())
+  {
+    qDebug() << _type << "::runScript: invalid DATE_2" << s;
     return _ERROR;
   }
 
@@ -60,6 +69,15 @@ int CommandBuy::runScript (Data *sg, Script *script)
   }
   double price = v.toDouble();
 
+  // verify PRICE_2
+  v = sg->get("PRICE_2");
+  if (! v.canConvert(QVariant::Double))
+  {
+    qDebug() << _type << "::runScript: invalid PRICE_2" << v.toString();
+    return _ERROR;
+  }
+  double price2 = v.toDouble();
+
   // CHART
   QString chart = sg->get("CHART").toString();
 
@@ -75,10 +93,12 @@ int CommandBuy::runScript (Data *sg, Script *script)
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_TYPE, QVariant(QString("Buy")));
+  co->set(ChartObjectData::_TYPE, QVariant(QString("TLine")));
   co->set(ChartObjectData::_DATE, QVariant(dt));
+  co->set(ChartObjectData::_DATE2, QVariant(dt2));
   co->set(ChartObjectData::_COLOR, QVariant(color));
   co->set(ChartObjectData::_PRICE, QVariant(price));
+  co->set(ChartObjectData::_PRICE2, QVariant(price2));
   co->set(ChartObjectData::_CHART, QVariant(chart));
   co->set(ChartObjectData::_Z, QVariant(z));
   co->set(ChartObjectData::_ID, QVariant(id));
@@ -89,12 +109,14 @@ int CommandBuy::runScript (Data *sg, Script *script)
   return _OK;
 }
 
-Data * CommandBuy::settings ()
+Data * CommandTLine::settings ()
 {
   Data *sg = new Data;
   sg->set("DATE", QVariant(QDateTime::currentDateTime()));
+  sg->set("DATE_2", QVariant(QDateTime::currentDateTime()));
   sg->set("CHART", QVariant(QString()));
   sg->set("PRICE", QVariant(0));
+  sg->set("PRICE_2", QVariant(0));
   sg->set("COLOR", QVariant("red"));
   sg->set("Z", QVariant(1));
   return sg;

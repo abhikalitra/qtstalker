@@ -132,3 +132,45 @@ int ChartObjectBuy::create ()
   g_parent->statusBar()->showMessage(QObject::tr("Place Buy object..."));
   return 0;
 }
+
+DataDialog * ChartObjectBuy::dialog (QWidget *p)
+{
+  DataDialog *dialog = new DataDialog(p, _settings);
+
+  QStringList l;
+  l << "QtStalker" + g_session + ":" << QObject::tr("Edit Buy");
+  dialog->setWindowTitle(l.join(" "));
+
+  dialog->addTab(QObject::tr("Settings"));
+  int tab = 0;
+
+  dialog->setDateTime(tab,
+                      QString::number(ChartObjectData::_DATE),
+                      QObject::tr("Date"),
+                      _settings->get(ChartObjectData::_DATE).toDateTime(),
+                      QString());
+
+  dialog->setColor(tab,
+                   QString::number(ChartObjectData::_COLOR),
+                   QObject::tr("Color"),
+                   QColor(_settings->get(ChartObjectData::_COLOR).toString()),
+                   QString());
+
+  dialog->setDouble(tab,
+                    QString::number(ChartObjectData::_PRICE),
+                    QObject::tr("Price"),
+                    _settings->get(ChartObjectData::_PRICE).toDouble(),
+                    99999999.0,
+                    -99999999.0,
+                    QString());
+
+  dialog->setInteger(tab,
+                     QString::number(ChartObjectData::_Z),
+                     QString("Z"),
+                     _settings->get(ChartObjectData::_Z).toInt(),
+                     99,
+                     -1,
+                     QString());
+
+  return dialog;
+}

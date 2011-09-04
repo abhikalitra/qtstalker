@@ -43,5 +43,6 @@ Data * CommandScriptStart::settings ()
 {
   Data *sg = new Data;
   sg->set("SCRIPT", QVariant(QString()));
+  sg->set("COMMAND", QVariant(QString("perl")));
   return sg;
 }

@@ -20,12 +20,8 @@
  */
 
 #include "CommandYahooHistory.h"
-#include "SettingString.h"
-#include "SettingDateTime.h"
-#include "SettingBool.h"
-#include "SettingFile.h"
 #include "Script.h"
-#include "CommandDialog.h"
+#include "DataDialog.h"
 
 #include <QDebug>
 #include <QtNetwork>
@@ -37,16 +33,23 @@ CommandYahooHistory::CommandYahooHistory (QObject *p) : Command (p)
   _isDialog = 1;
 }
 
-int CommandYahooHistory::runScript (void *d)
+int CommandYahooHistory::runScript (Data *sg, Script *script)
 {
-  Script *script = (Script *) d;
+  DataDialog *dialog = new DataDialog(0, sg);
 
-  SettingGroup *sg = script->settingGroup(script->currentStep());
-  if (! sg)
-    return _ERROR;
+  QStringList l;
+  l << "QtStalker" + script->session() + ":" << QObject::tr("Yahoo History");
+  dialog->setWindowTitle(l.join(" "));
 
-  CommandDialog *dialog = new CommandDialog(0);
-  dialog->setWidgets(sg);
+  dialog->addTab(QObject::tr("Settings"));
+  int tab = 0;
+
+  dialog->setDateTime(tab, QString("DATE_START"), QObject::tr("Start Date"), sg->get("DATE_START").toDateTime(), QString());
+  dialog->setDateTime(tab, QString("DATE_END"), QObject::tr("End Date"), sg->get("DATE_END").toDateTime(), QString());
+  dialog->setBool(tab, QString("ADJUSTED"), QObject::tr("Adjusted"), sg->get("ADJUSTED").toBool(), QString());
+  dialog->setFile(tab, QString("SYMBOL_FILE"), QObject::tr("Symbol File"), sg->get("SYMBOL_FILE").toStringList(), QString());
+  dialog->setText(tab, QString("CSV_FILE"), QObject::tr("CSV File"), sg->get("CSV_FILE").toString(), QString());
+
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)
   {
@@ -54,20 +57,19 @@ int CommandYahooHistory::runScript (void *d)
     return _ERROR;
   }
 
-  QDateTime sd = sg->get("DATE_START")->getDateTime();
+  QDateTime sd = sg->get("DATE_START").toDateTime();
+  QDateTime ed = sg->get("DATE_END").toDateTime();
+  bool adjusted = sg->get("ADJUSTED").toBool();
+  QString outFile = sg->get("CSV_FILE").toString();
+  QStringList symbolFiles = sg->get("SYMBOL_FILE").toStringList();
 
-  QDateTime ed = sg->get("DATE_END")->getDateTime();
+  delete dialog;
 
-  bool adjusted = sg->get("ADJUSTED")->getBool();
-
-  QStringList symbolFiles = sg->get("SYMBOL_FILE")->getList();
   if (! symbolFiles.count())
   {
     qDebug() << _type << "::runScript: SYMBOL_FILE missing";
     return _ERROR;
   }
-
-  QString outFile = sg->get("CSV_FILE")->getString();
 
   QFile f2(outFile);
   if (! f2.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -191,7 +193,7 @@ void CommandYahooHistory::parse (QByteArray &ba, QString &symbol, QString &name,
     }
 
     QStringList tl;
-    tl << "YAHOO:" + symbol << name << l.at(0) << l.at(1) << l.at(2) << l.at(3) << l.at(4) << l.at(5);
+    tl << "YAHOO" << symbol << name << l.at(0) << l.at(1) << l.at(2) << l.at(3) << l.at(4) << l.at(5);
 
     out << tl.join(";") << "\n";
   }
@@ -224,30 +226,13 @@ int CommandYahooHistory::downloadName (QString symbol, QString &name)
   return _OK;
 }
 
-SettingGroup * CommandYahooHistory::settings ()
+Data * CommandYahooHistory::settings ()
 {
-  SettingGroup *sg = new SettingGroup;
-  sg->setCommand(_type);
-
-  SettingDateTime *sdt = new SettingDateTime(QDateTime::currentDateTime());
-  sdt->setKey("DATE_START");
-  sg->set(sdt);
-
-  sdt = new SettingDateTime(QDateTime::currentDateTime());
-  sdt->setKey("DATE_END");
-  sg->set(sdt);
-
-  SettingFile *sf = new SettingFile(QStringList());
-  sf->setKey("SYMBOL_FILE");
-  sg->set(sf);
-
-  SettingString *ss = new SettingString(QString());
-  ss->setKey("CSV_FILE");
-  sg->set(ss);
-
-  SettingBool *sb = new SettingBool(TRUE);
-  sb->setKey("ADJUSTED");
-  sg->set(sb);
-
+  Data *sg = new Data;
+  sg->set("DATE_START", QVariant(QDateTime::currentDateTime()));
+  sg->set("DATE_END", QVariant(QDateTime::currentDateTime()));
+  sg->set("SYMBOL_FILE", QVariant(QStringList()));
+  sg->set("CSV_FILE", QVariant(QString()));
+  sg->set("ADJUSTED", QVariant(TRUE));
   return sg;
 }

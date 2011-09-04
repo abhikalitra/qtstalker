@@ -143,3 +143,39 @@ int ChartObjectHLine::highLow (int, int, double &high, double &low)
   low = d;
   return 0;
 }
+
+DataDialog * ChartObjectHLine::dialog (QWidget *p)
+{
+  DataDialog *dialog = new DataDialog(p, _settings);
+
+  QStringList l;
+  l << "QtStalker" + g_session + ":" << QObject::tr("Edit HLine");
+  dialog->setWindowTitle(l.join(" "));
+
+  dialog->addTab(QObject::tr("Settings"));
+  int tab = 0;
+
+  dialog->setColor(tab,
+                   QString::number(ChartObjectData::_COLOR),
+                   QObject::tr("Color"),
+                   QColor(_settings->get(ChartObjectData::_COLOR).toString()),
+                   QString());
+
+  dialog->setDouble(tab,
+                    QString::number(ChartObjectData::_PRICE),
+                    QObject::tr("Price"),
+                    _settings->get(ChartObjectData::_PRICE).toDouble(),
+                    99999999.0,
+                    -99999999.0,
+                    QString());
+
+  dialog->setInteger(tab,
+                     QString::number(ChartObjectData::_Z),
+                     QString("Z"),
+                     _settings->get(ChartObjectData::_Z).toInt(),
+                     99,
+                     -1,
+                     QString());
+
+  return dialog;
+}

@@ -30,12 +30,12 @@ CommandChartPanelRefresh::CommandChartPanelRefresh (QObject *p) : Command (p)
   _type = "CHART_PANEL_REFRESH";
 }
 
-int CommandChartPanelRefresh::runScript (Data *, Script *script)
+int CommandChartPanelRefresh::runScript (Data *sg, Script *script)
 {
-  IPCMessage ipcm(script->session(), _type, "*", script->file(), QString());
+  IPCMessage ipcm(script->session(), _type, "*", script->file(), sg->type());
 
   MessageSend ms(this);
-  ms.send(ipcm, QString());
+  ms.send(ipcm, sg->toString());
 
   return _OK;
 }

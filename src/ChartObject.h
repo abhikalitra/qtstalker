@@ -30,6 +30,7 @@
 
 #include "Data.h"
 #include "Message.h"
+#include "DataDialog.h"
 
 class ChartObject : public QwtPlotItem
 {
@@ -49,6 +50,7 @@ class ChartObject : public QwtPlotItem
     virtual void move (QPoint);
     virtual void click (int, QPoint);
     virtual int create ();
+    virtual DataDialog * dialog (QWidget *);
 
     int rtti () const;
     int isSelected (QPoint);

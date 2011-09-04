@@ -31,6 +31,7 @@ class CommandCSV : public Command
   public:
     enum FormatType
     {
+      _EXCHANGE,
       _SYMBOL,
       _NAME,
       _DATE,

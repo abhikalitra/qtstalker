@@ -47,5 +47,11 @@ void ScriptTimer::setName (QString d)
 
 void ScriptTimer::startScript ()
 {
-  emit signalStartScript(_file);
+  emit signalStartScript(_file, _command);
 }
+
+void ScriptTimer::setCommand (QString d)
+{
+  _command = d;
+}
+

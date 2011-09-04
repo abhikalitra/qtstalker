@@ -48,6 +48,8 @@ class Script : public QObject
     int count ();
     QList<QString> dataKeys ();
     int nextROID ();
+    void setCommand (QString);
+    QString command ();
 
   public slots:
     int run ();
@@ -59,6 +61,7 @@ class Script : public QObject
     QString _session;
     QString _name;
     QString _file;
+    QString _command;
     QHash<QString, Data *> _data;
 };
 

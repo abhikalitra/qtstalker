@@ -236,6 +236,37 @@ int QuoteDataBase::setBars (Data *symbol)
     if (q.next()) // record exists, use update
     {
       s = "UPDATE " + symbol->get(Symbol::_TABLE).toString() + " SET ";
+
+      QStringList tl;
+      QString ts = bar->get(CurveBar::_OPEN).toString();
+      if (! ts.isEmpty())
+        tl << "open=" + ts;
+
+      ts = bar->get(CurveBar::_HIGH).toString();
+      if (! ts.isEmpty())
+        tl << "high=" + ts;
+
+      ts = bar->get(CurveBar::_LOW).toString();
+      if (! ts.isEmpty())
+        tl << "low=" + ts;
+
+      ts = bar->get(CurveBar::_CLOSE).toString();
+      if (! ts.isEmpty())
+        tl << "close=" + ts;
+
+      ts = bar->get(CurveBar::_VOLUME).toString();
+      if (! ts.isEmpty())
+        tl << "volume=" + ts;
+
+      ts = bar->get(CurveBar::_OI).toString();
+      if (! ts.isEmpty())
+        tl << "oi=" + ts;
+
+      s.append(tl.join(","));
+
+      s.append(" WHERE date=" + date);
+/*
+      s = "UPDATE " + symbol->get(Symbol::_TABLE).toString() + " SET ";
       s.append("open=" + bar->get(CurveBar::_OPEN).toString());
       s.append(", high=" + bar->get(CurveBar::_HIGH).toString());
       s.append(", low=" + bar->get(CurveBar::_LOW).toString());
@@ -243,9 +274,54 @@ int QuoteDataBase::setBars (Data *symbol)
       s.append(", volume=" + bar->get(CurveBar::_VOLUME).toString());
       s.append(", oi=" + bar->get(CurveBar::_OI).toString());
       s.append(" WHERE date=" + date);
+*/
     }
     else // new record, use insert
     {
+      s = "INSERT INTO " + symbol->get(Symbol::_TABLE).toString() + " (date,open,high,low,close,volume,oi) VALUES(";
+
+      QStringList tl;
+      tl << date;
+
+      QString ts = bar->get(CurveBar::_OPEN).toString();
+      if (! ts.isEmpty())
+        tl << ts;
+      else
+        tl << "0";
+
+      ts = bar->get(CurveBar::_HIGH).toString();
+      if (! ts.isEmpty())
+        tl << ts;
+      else
+        tl << "0";
+
+      ts = bar->get(CurveBar::_LOW).toString();
+      if (! ts.isEmpty())
+        tl << ts;
+      else
+        tl << "0";
+
+      ts = bar->get(CurveBar::_CLOSE).toString();
+      if (! ts.isEmpty())
+        tl << ts;
+      else
+        tl << "0";
+
+      ts = bar->get(CurveBar::_VOLUME).toString();
+      if (! ts.isEmpty())
+        tl << ts;
+      else
+        tl << "0";
+
+      ts = bar->get(CurveBar::_OI).toString();
+      if (! ts.isEmpty())
+        tl << ts;
+      else
+        tl << "0";
+
+      s.append(tl.join(","));
+      s.append(")");
+/*
       s = "INSERT INTO " + symbol->get(Symbol::_TABLE).toString() + " (date,open,high,low,close,volume,oi) VALUES(";
       s.append(date);
       s.append("," + bar->get(CurveBar::_OPEN).toString());
@@ -255,6 +331,7 @@ int QuoteDataBase::setBars (Data *symbol)
       s.append("," + bar->get(CurveBar::_VOLUME).toString());
       s.append("," + bar->get(CurveBar::_OI).toString());
       s.append(")");
+*/
     }
 
     q.exec(s);

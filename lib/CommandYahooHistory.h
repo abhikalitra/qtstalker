@@ -37,8 +37,8 @@ class CommandYahooHistory : public Command
 
   public:
     CommandYahooHistory (QObject *);
-    int runScript (void *);
-    SettingGroup * settings ();
+    int runScript (Data *, Script *);
+    Data * settings ();
     void getUrl (QDateTime &, QDateTime &, QString &symbol, QString &url);
     void parse (QByteArray &ba, QString &symbol, QString &name, QTextStream &out, bool adjusted);
     int downloadName (QString symbol, QString &name);

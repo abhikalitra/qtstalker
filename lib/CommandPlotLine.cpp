@@ -114,7 +114,7 @@ Data * CommandPlotLine::settings ()
   sg->set("OUTPUT", QVariant(QString()));
   sg->set("INPUT", QVariant(QString("close")));
   sg->set("STYLE", QVariant(QString("Line")));
-  sg->set("COLOR", QVariant(Qt::red));
+  sg->set("COLOR", QVariant(QString("red")));
   sg->set("Z", QVariant(-1));
   sg->set("PEN", QVariant(1));
   return sg;

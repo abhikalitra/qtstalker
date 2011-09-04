@@ -34,8 +34,8 @@ class ScriptDataBase : public DataBase
   public:
     ScriptDataBase ();
     void init ();
-    int load (QString name, QString &file, QString &startup, QString &interval);
-    int save (QString name, QString file, QString startup, QString interval);
+    int load (QString name, QString &file, QString &startup, QString &interval, QString &command);
+    int save (QString name, QString file, QString startup, QString interval, QString command);
     int remove (QStringList &);
     int search (QString startup, QString interval, QStringList &);
 };

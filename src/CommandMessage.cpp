@@ -74,7 +74,7 @@ int CommandMessage::message (IPCMessage m, QString d)
       delete dg;
       break;
     case CommandFactory::_SCRIPT_START:
-      g_scriptPanel->runScript(dg->get("SCRIPT").toString());
+      g_scriptPanel->runScript(dg->get("SCRIPT").toString(), dg->get("COMMAND").toString());
       delete dg;
       break;
     case CommandFactory::_DEBUG:

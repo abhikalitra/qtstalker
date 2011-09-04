@@ -66,7 +66,7 @@ class ScriptPage : public QWidget
     void queRightClick (const QPoint &);
     void queStatus ();
     void runScript ();
-    void runScript (QString);
+    void runScript (QString file, QString command);
     void done (QString);
     void cancel ();
     void cancel (QString);
@@ -84,7 +84,7 @@ class ScriptPage : public QWidget
     void deleteScriptTimer ();
     void deleteScriptTimer2 (QStringList);
     void runStartupScripts ();
-    void addScriptTimer (QString name, QString file, QString interval);
+    void addScriptTimer (QString name, QString file, QString interval, QString command);
 
   protected:
     QListWidget *_queList;

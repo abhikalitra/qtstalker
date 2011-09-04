@@ -19,19 +19,19 @@
  *  USA.
  */
 
-#include "CommandBuy.h"
+#include "CommandSell.h"
 #include "ChartObjectData.h"
 #include "Script.h"
 
 #include <QtDebug>
 #include <QDateTime>
 
-CommandBuy::CommandBuy (QObject *p) : Command (p)
+CommandSell::CommandSell (QObject *p) : Command (p)
 {
-  _type = "CHART_OBJECT_BUY";
+  _type = "CHART_OBJECT_SELL";
 }
 
-int CommandBuy::runScript (Data *sg, Script *script)
+int CommandSell::runScript (Data *sg, Script *script)
 {
   // verify DATE
   QString s = sg->get("DATE").toString();
@@ -75,7 +75,7 @@ int CommandBuy::runScript (Data *sg, Script *script)
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_TYPE, QVariant(QString("Buy")));
+  co->set(ChartObjectData::_TYPE, QVariant(QString("Sell")));
   co->set(ChartObjectData::_DATE, QVariant(dt));
   co->set(ChartObjectData::_COLOR, QVariant(color));
   co->set(ChartObjectData::_PRICE, QVariant(price));
@@ -89,7 +89,7 @@ int CommandBuy::runScript (Data *sg, Script *script)
   return _OK;
 }
 
-Data * CommandBuy::settings ()
+Data * CommandSell::settings ()
 {
   Data *sg = new Data;
   sg->set("DATE", QVariant(QDateTime::currentDateTime()));
