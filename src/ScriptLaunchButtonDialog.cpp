@@ -24,7 +24,7 @@
 
 #include <QtDebug>
 
-ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString script, QString icon, int use) : Dialog (p)
+ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString command, QString script, QString icon, int use) : Dialog (p)
 {
   _keySize = "script_launch_button_dialog_window_size";
   _keyPos = "script_launch_button_dialog_window_position";
@@ -38,6 +38,8 @@ ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString script, 
   QStringList l;
   l << script;
   _script->setFiles(l);
+
+  _command->setText(command);
 
   _icon->setFile(icon);
 
@@ -55,8 +57,13 @@ ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString script, 
 
 void ScriptLaunchButtonDialog::createMainPage ()
 {
+  // file button
   _script = new FileButton(this);
-  _form->addRow(tr("Script"), _script);
+  _form->addRow(tr("Script File"), _script);
+
+  // command
+  _command = new LineEdit(this);
+  _form->addRow(tr("Command"), _command);
 
   // icon
   _icon = new IconButton(this, QString());
@@ -75,7 +82,7 @@ void ScriptLaunchButtonDialog::done ()
   if (l.count())
     script = l.at(0);
 
-  emit signalDone(script, _icon->file(), (int) _useIcon->isChecked());
+  emit signalDone(_command->text(), script, _icon->file(), (int) _useIcon->isChecked());
 
   saveSettings();
 

@@ -7,6 +7,7 @@ QMAKE_CXXFLAGS += -rdynamic -ffast-math
 
 #headers
 HEADERS += AboutDialog.h
+HEADERS += AddIndicator.h
 
 HEADERS += BarLengthButton.h
 HEADERS += BarSpaceButton.h
@@ -42,6 +43,7 @@ HEADERS += Globals.h
 HEADERS += GridButton.h
 HEADERS += GroupPage.h
 
+HEADERS += IndicatorDataBase.h
 HEADERS += InfoPanel.h
 
 HEADERS += PickerMachine.h
@@ -55,6 +57,7 @@ HEADERS += Qtstalker.h
 
 HEADERS += RecentCharts.h
 #HEADERS += RefreshButton.h
+HEADERS += RemoveIndicator.h
 
 HEADERS += ScriptLaunchButton.h
 HEADERS += ScriptLaunchButtonDialog.h
@@ -68,6 +71,7 @@ HEADERS += SidePanel.h
 #sources
 
 SOURCES += AboutDialog.cpp
+SOURCES += AddIndicator.cpp
 
 SOURCES += BarLengthButton.cpp
 SOURCES += BarSpaceButton.cpp
@@ -103,6 +107,7 @@ SOURCES += Globals.cpp
 SOURCES += GridButton.cpp
 SOURCES += GroupPage.cpp
 
+SOURCES += IndicatorDataBase.cpp
 SOURCES += InfoPanel.cpp
 
 SOURCES += main.cpp
@@ -118,6 +123,7 @@ SOURCES += Qtstalker.cpp
 
 SOURCES += RecentCharts.cpp
 #SOURCES += RefreshButton.cpp
+SOURCES += RemoveIndicator.cpp
 
 SOURCES += ScriptLaunchButton.cpp
 SOURCES += ScriptLaunchButtonDialog.cpp

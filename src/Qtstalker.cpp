@@ -59,6 +59,7 @@
 #include "BarLength.h"
 #include "CommandMessage.h"
 #include "Symbol.h"
+#include "IndicatorDataBase.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -272,17 +273,18 @@ void QtstalkerApp::loadChart (QString symbol)
   g_controlPanel->setStart(g_currentSymbol->barKeyCount(), 0, 0);
 
   // run indicators
-  QStringList il = settings.value("indicators").toStringList();
+  IndicatorDataBase i;
+  QStringList il = i.indicators();
   int loop = 0;
   for (; loop < il.count(); loop++)
   {
-    QStringList tl = il.at(loop).split(":");
-    if (tl.count() != 2)
+    QString command;
+    if (i.indicator(il.at(loop), command))
       continue;
 
     Script script(this);
-    script.setFile(tl.at(0));
-    script.setCommand(tl.at(1));
+    script.setFile(il.at(loop));
+    script.setCommand(command);
     script.setSession(g_session);
     script.run();
   }
@@ -423,36 +425,6 @@ void QtstalkerApp::messageSlot (QString m, QString d)
     return;
   }
 }
-
-/*
-void QtstalkerApp::messageSlot (QString m, QString d)
-{
-  qDebug() << "QtstalkerApp::messageSlot:" << m;
-
-  IPCMessage ipcm;
-  if (ipcm.fromString(m))
-  {
-    qDebug() << "QtstalkerApp::messageSlot: invalid message" << m;
-    return;
-  }
-
-  // ignore message from another session
-  if (ipcm.session() != g_session)
-    return;
-
-  CommandFactory fac;
-  Command *com = fac.command(this, ipcm.command());
-  if (! com)
-  {
-    qDebug() << "QtstalkerApp::messageSlot: invalid command" << ipcm.command();
-    return;
-  }
-
-  com->message(ipcm, d);
-
-  delete com;
-}
-*/
 
 void QtstalkerApp::actionSlot (QString command, QString d)
 {

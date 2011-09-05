@@ -22,6 +22,8 @@
 #include "PlotMenu.h"
 #include "ConfirmDialog.h"
 #include "Globals.h"
+#include "RemoveIndicator.h"
+#include "AddIndicator.h"
 
 #include "../pics/buyarrow.xpm"
 #include "../pics/sellarrow.xpm"
@@ -172,28 +174,12 @@ void PlotMenu::setCOMenuStatus (bool status)
 
 void PlotMenu::addIndicator ()
 {
-  g_controlPanel->configureButton()->addIndicator();
+  AddIndicator *ai = new AddIndicator(this);
+  ai->run();
 }
 
 void PlotMenu::removeIndicator ()
 {
-  ConfirmDialog *dialog = new ConfirmDialog(this);
-  dialog->setMessage(tr("Confirm indicator removal"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(removeIndicator2()));
-  dialog->show();
-}
-
-void PlotMenu::removeIndicator2 ()
-{
-  Plot *p = g_plotGroup->plot(_plotName);
-  if (! p)
-    return;
-
-  QSettings settings(g_localSettings);
-  QStringList l = settings.value("indicators").toStringList();
-  l.removeAll(p->scriptFile());
-  settings.setValue("indicators", l);
-  settings.sync();
-
-  g_plotGroup->removePlot(_plotName);
+  RemoveIndicator *ri = new RemoveIndicator(g_parent, _plotName);
+  ri->run();
 }

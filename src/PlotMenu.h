@@ -61,7 +61,6 @@ class PlotMenu : public QMenu
     void deleteAllChartObjects2 ();
     void addIndicator ();
     void removeIndicator ();
-    void removeIndicator2 ();
 
   private:
     QString _plotName;

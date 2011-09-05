@@ -29,16 +29,17 @@
 #include "IconButton.h"
 #include "Dialog.h"
 #include "FileButton.h"
+#include "LineEdit.h"
 
 class ScriptLaunchButtonDialog : public Dialog
 {
   Q_OBJECT
 
   signals:
-    void signalDone (QString, QString, int);
+    void signalDone (QString, QString, QString, int);
 
   public:
-    ScriptLaunchButtonDialog (QWidget *, QString script, QString icon, int);
+    ScriptLaunchButtonDialog (QWidget *, QString command, QString script, QString icon, int);
     void createMainPage ();
 
   public slots:
@@ -48,6 +49,7 @@ class ScriptLaunchButtonDialog : public Dialog
   private:
     IconButton *_icon;
     FileButton *_script;
+    LineEdit *_command;
     QCheckBox *_useIcon;
 };
 

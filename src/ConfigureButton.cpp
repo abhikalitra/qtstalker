@@ -24,7 +24,7 @@
 #include "AboutDialog.h"
 #include "ConfigureDialog.h"
 #include "Globals.h"
-#include "ScriptRunDialog.h"
+#include "AddIndicator.h"
 
 #include "../pics/about.xpm"
 #include "../pics/help.xpm"
@@ -127,37 +127,6 @@ void ConfigureButton::configureDialog ()
 
 void ConfigureButton::addIndicator ()
 {
-  QSettings settings(g_localSettings);
-
-  QStringList l;
-  l << settings.value("indicator_dialog_last_script").toString();
-
-  ScriptRunDialog *dialog = new ScriptRunDialog(this,
-                                                settings.value("script_panel_last_external_script").toString(),
-                                                QString("perl"));
-  connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(addIndicator2(QString, QString)));
-  dialog->show();
-
-/*
-  QSettings settings(g_localSettings);
-
-  QFileDialog *dialog = new QFileDialog(this);
-  dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("Select Indicator Script"));
-  dialog->setDirectory(settings.value("indicator_dialog_last_script").toString());
-  connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(addIndicator2(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-*/
-}
-
-void ConfigureButton::addIndicator2 (QString file, QString command)
-{
-  QSettings settings(g_localSettings);
-  QStringList l = settings.value("indicators").toStringList();
-  l << file + ":" + command;
-  settings.setValue("indicators", l);
-  settings.setValue("indicator_dialog_last_script", file);
-  settings.sync();
-
-  g_sidePanel->reloadChart();
+  AddIndicator *ai = new AddIndicator(this);
+  ai->run();
 }

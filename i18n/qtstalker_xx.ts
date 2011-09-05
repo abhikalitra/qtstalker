@@ -643,10 +643,6 @@ qtstalker.sourceforge.net</source>
         <source>Remove Indicator</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Confirm indicator removal</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QObject</name>
@@ -885,6 +881,13 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>RemoveIndicator</name>
+    <message>
+        <source>Confirm indicator removal</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ScriptLaunchButton</name>
     <message>
         <source>&amp;Configure</source>
@@ -893,10 +896,6 @@ qtstalker.sourceforge.net</source>
 </context>
 <context>
     <name>ScriptLaunchButtonDialog</name>
-    <message>
-        <source>Script</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Icon</source>
         <translation type="unfinished"></translation>
@@ -907,6 +906,14 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Use Icon</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -19,36 +19,23 @@
  *  USA.
  */
 
-#ifndef SCRIPT_LAUNCH_BUTTON_HPP
-#define SCRIPT_LAUNCH_BUTTON_HPP
+#ifndef ADD_INDICATOR_HPP
+#define ADD_INDICATOR_HPP
 
-#include <QToolButton>
-#include <QString>
-#include <QMenu>
+#include <QObject>
 
-class ScriptLaunchButton : public QToolButton
+class AddIndicator : public QObject
 {
   Q_OBJECT
 
-  signals:
-    void signalButtonClicked (QString, QString);
-
   public:
-    ScriptLaunchButton (int);
+    AddIndicator (QObject *p);
+    void run ();
 
   public slots:
-    void buttonClicked ();
-    void configure ();
-    void configure2 (QString, QString, QString, int);
-    void contextMenu ();
-
-  private:
-    int _position;
-    QString _scriptName;
-    QString _command;
-    QString _icon;
-    int _useIcon;
-    QMenu *_menu;
+    void addIndicator ();
+    void addIndicator2 (QString command, QString file);
+    void done ();
 };
 
 #endif

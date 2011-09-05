@@ -19,36 +19,27 @@
  *  USA.
  */
 
-#ifndef SCRIPT_LAUNCH_BUTTON_HPP
-#define SCRIPT_LAUNCH_BUTTON_HPP
+#ifndef REMOVE_INDICATOR_HPP
+#define REMOVE_INDICATOR_HPP
 
-#include <QToolButton>
 #include <QString>
-#include <QMenu>
+#include <QObject>
 
-class ScriptLaunchButton : public QToolButton
+class RemoveIndicator : public QObject
 {
   Q_OBJECT
 
-  signals:
-    void signalButtonClicked (QString, QString);
-
   public:
-    ScriptLaunchButton (int);
+    RemoveIndicator (QObject *p, QString indicator);
+    void run ();
 
   public slots:
-    void buttonClicked ();
-    void configure ();
-    void configure2 (QString, QString, QString, int);
-    void contextMenu ();
+    void remove ();
+    void remove2 ();
+    void done ();
 
   private:
-    int _position;
-    QString _scriptName;
-    QString _command;
-    QString _icon;
-    int _useIcon;
-    QMenu *_menu;
+    QString _indicator;
 };
 
 #endif
