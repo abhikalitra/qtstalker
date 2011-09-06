@@ -99,7 +99,7 @@ Plot::Plot (QString name, QWidget *mw) : QwtPlot (mw)
 
   _menu = new PlotMenu(this, _name);
   connect(_menu, SIGNAL(signalNewChartObject(QString)), this, SLOT(chartObjectNew(QString)));
-  connect(_menu, SIGNAL(signalDeleteAllChartObjects()), this, SLOT(deleteAllChartObjects()));
+//  connect(_menu, SIGNAL(signalDeleteAllChartObjects()), this, SLOT(deleteAllChartObjects()));
 
   // chart object menu
   _chartObjectMenu = new QMenu(this);

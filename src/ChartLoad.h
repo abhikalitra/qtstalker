@@ -19,18 +19,19 @@
  *  USA.
  */
 
-#ifndef COMMAND_MESSAGE_HPP
-#define COMMAND_MESSAGE_HPP
+#ifndef CHART_LOAD_HPP
+#define CHART_LOAD_HPP
 
 #include <QString>
 
-#include "IPCMessage.h"
-
-class CommandMessage
+class ChartLoad
 {
   public:
-    CommandMessage ();
-    int message (IPCMessage, QString);
+    ChartLoad (QString);
+    int run ();
+
+  private:
+    QString _symbol;
 };
 
 #endif

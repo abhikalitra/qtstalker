@@ -12,8 +12,11 @@ HEADERS += AddIndicator.h
 HEADERS += BarLengthButton.h
 HEADERS += BarSpaceButton.h
 
+HEADERS += Chart.h
+HEADERS += ChartLoad.h
 HEADERS += ChartObject.h
 HEADERS += ChartObjectBuy.h
+HEADERS += ChartObjectDeleteAll.h
 HEADERS += ChartObjectFactory.h
 HEADERS += ChartObjectHLine.h
 HEADERS += ChartObjectRetracement.h
@@ -22,6 +25,7 @@ HEADERS += ChartObjectText.h
 HEADERS += ChartObjectTLine.h
 HEADERS += ChartObjectVLine.h
 HEADERS += ChartPage.h
+HEADERS += ChartUpdate.h
 HEADERS += CommandMessage.h
 HEADERS += ConfigureButton.h
 HEADERS += ConfigureDialog.h
@@ -41,6 +45,9 @@ HEADERS += DockWidget.h
 
 HEADERS += Globals.h
 HEADERS += GridButton.h
+HEADERS += GroupAdd.h
+HEADERS += GroupDelete.h
+HEADERS += GroupNew.h
 HEADERS += GroupPage.h
 
 HEADERS += IndicatorDataBase.h
@@ -56,7 +63,6 @@ HEADERS += PlotScaleDraw.h
 HEADERS += Qtstalker.h
 
 HEADERS += RecentCharts.h
-#HEADERS += RefreshButton.h
 HEADERS += RemoveIndicator.h
 
 HEADERS += ScriptLaunchButton.h
@@ -67,6 +73,7 @@ HEADERS += ScriptTimer.h
 HEADERS += ScriptTimerDialog.h
 HEADERS += Setup.h
 HEADERS += SidePanel.h
+HEADERS += SymbolDelete.h
 
 #sources
 
@@ -76,8 +83,11 @@ SOURCES += AddIndicator.cpp
 SOURCES += BarLengthButton.cpp
 SOURCES += BarSpaceButton.cpp
 
+SOURCES += Chart.cpp
+SOURCES += ChartLoad.cpp
 SOURCES += ChartObject.cpp
 SOURCES += ChartObjectBuy.cpp
+SOURCES += ChartObjectDeleteAll.cpp
 SOURCES += ChartObjectFactory.cpp
 SOURCES += ChartObjectHLine.cpp
 SOURCES += ChartObjectRetracement.cpp
@@ -86,6 +96,7 @@ SOURCES += ChartObjectText.cpp
 SOURCES += ChartObjectTLine.cpp
 SOURCES += ChartObjectVLine.cpp
 SOURCES += ChartPage.cpp
+SOURCES += ChartUpdate.cpp
 SOURCES += CommandMessage.cpp
 SOURCES += ConfigureButton.cpp
 SOURCES += ConfigureDialog.cpp
@@ -105,6 +116,9 @@ SOURCES += DockWidget.cpp
 
 SOURCES += Globals.cpp
 SOURCES += GridButton.cpp
+SOURCES += GroupAdd.cpp
+SOURCES += GroupDelete.cpp
+SOURCES += GroupNew.cpp
 SOURCES += GroupPage.cpp
 
 SOURCES += IndicatorDataBase.cpp
@@ -122,7 +136,6 @@ SOURCES += PlotScaleDraw.cpp
 SOURCES += Qtstalker.cpp
 
 SOURCES += RecentCharts.cpp
-#SOURCES += RefreshButton.cpp
 SOURCES += RemoveIndicator.cpp
 
 SOURCES += ScriptLaunchButton.cpp
@@ -133,6 +146,7 @@ SOURCES += ScriptTimer.cpp
 SOURCES += ScriptTimerDialog.cpp
 SOURCES += Setup.cpp
 SOURCES += SidePanel.cpp
+SOURCES += SymbolDelete.cpp
 
 
 TARGET = qtstalker

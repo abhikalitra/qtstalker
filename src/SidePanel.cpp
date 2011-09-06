@@ -47,8 +47,8 @@ void SidePanel::createTabs ()
   g_chartPanel = new ChartPage(this);
   connect(g_chartPanel, SIGNAL(fileSelected(QString)), this, SIGNAL(signalLoadChart(QString)));
   connect(g_chartPanel, SIGNAL(addRecentChart(QString)), this, SIGNAL(signalRecentChart(QString)));
-  connect(g_chartPanel, SIGNAL(signalReloadChart()), this, SIGNAL(signalReloadChart()));
-  connect(g_chartPanel, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
+//  connect(g_chartPanel, SIGNAL(signalReloadChart()), this, SIGNAL(signalReloadChart()));
+//  connect(g_chartPanel, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
 //  connect(g_middleMan, SIGNAL(signalChartPanelRefresh()), g_chartPanel, SLOT(updateList()));
 //  connect(g_middleMan, SIGNAL(signalChartPanelSearch(QString, QString)), g_chartPanel, SLOT(setSearch(QString, QString)));
   addTab(g_chartPanel, QIcon(chart_xpm), QString());
@@ -57,7 +57,7 @@ void SidePanel::createTabs ()
   // group tab
   g_groupPanel = new GroupPage(this);
   connect(g_groupPanel, SIGNAL(fileSelected(QString)), this, SIGNAL(signalLoadChart(QString)));
-  connect(g_chartPanel, SIGNAL(signalAddToGroup()), g_groupPanel, SLOT(updateGroups()));
+//  connect(g_chartPanel, SIGNAL(signalAddToGroup()), g_groupPanel, SLOT(updateGroups()));
   connect(g_groupPanel, SIGNAL(addRecentChart(QString)), this, SIGNAL(signalRecentChart(QString)));
   connect(g_groupPanel, SIGNAL(signalMessage(QString)), this, SIGNAL(signalStatusMessage(QString)));
 //  connect(g_middleMan, SIGNAL(signalGroupPanelRefresh()), g_groupPanel, SLOT(updateGroups()));

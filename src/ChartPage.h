@@ -36,10 +36,7 @@ class ChartPage : public QWidget
 
   signals:
     void fileSelected (QString);
-    void signalAddToGroup ();
-    void signalReloadChart ();
     void addRecentChart (QString);
-    void signalMessage (QString);
 
   public:
     enum Action
@@ -62,14 +59,12 @@ class ChartPage : public QWidget
     void rightClick (const QPoint &);
     void chartOpened (QString);
     void addToGroup ();
-    void addToGroup2 (QStringList);
     void updateList ();
     void symbolSearch ();
     void setSearch (QString exchange, QString symbol);
     void allButtonPressed ();
     void buttonStatus ();
     void deleteSymbol ();
-    void deleteSymbol2 ();
     void itemClicked (QListWidgetItem *);
 
   protected:
@@ -81,4 +76,3 @@ class ChartPage : public QWidget
 };
 
 #endif
-

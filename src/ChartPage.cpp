@@ -22,12 +22,10 @@
 #include "ChartPage.h"
 #include "Globals.h"
 #include "QuoteDataBase.h"
-#include "GroupDataBase.h"
 #include "SymbolDialog.h"
-#include "ConfirmDialog.h"
-#include "SelectDialog.h"
-#include "Script.h"
 #include "Symbol.h"
+#include "GroupAdd.h"
+#include "SymbolDelete.h"
 
 #include "../pics/add.xpm"
 #include "../pics/search.xpm"
@@ -58,7 +56,6 @@ ChartPage::ChartPage (QWidget *p) : QWidget (p)
   _nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
   _nav->setSortingEnabled(TRUE);
   connect(_nav, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(itemClicked(QListWidgetItem *)));
-//  connect(_nav, SIGNAL(signalSymbolSelected(BarData)), this, SLOT(chartOpened(BarData)));
   connect(_nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
   vbox->addWidget(_nav);
 
@@ -133,14 +130,6 @@ void ChartPage::createMenu ()
 void ChartPage::chartOpened (QString d)
 {
   emit fileSelected(d);
-
-/*
-  Script pro;
-  pro.setName("ChartPanelSymbolSelected");
-  pro.load();
-  pro.run();
-*/
-
   emit addRecentChart(d);
 }
 
@@ -155,43 +144,13 @@ void ChartPage::addToGroup ()
   if (! l.count())
     return;
 
-  QStringList l2;
-  GroupDataBase db;
-  db.names(l2);
-
-  SelectDialog *dialog = new SelectDialog(this);
-  dialog->setItems(l2);
-  dialog->setTitle(tr("Groups"));
-  dialog->setMode(1);
-
-  l2.clear();
-  l2 << "QtStalker" + g_session + ":" << tr("Add To Group");
-  dialog->setWindowTitle(l2.join(" "));
-  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(addToGroup2(QStringList)));
-  dialog->show();
-}
-
-void ChartPage::addToGroup2 (QStringList gl)
-{
-  GroupDataBase db;
-  QStringList g;
-  db.load(gl.at(0), g);
-
-  QList<QListWidgetItem *> l = _nav->selectedItems();
+  QStringList tl;
   int loop = 0;
   for (; loop < l.count(); loop++)
-    g << l.at(loop)->text();
+    tl << l.at(loop)->text();
 
-  g.removeDuplicates();
-
-  db.transaction();
-
-  QStringList tl;
-  tl << gl.at(0);
-  db.remove(tl);
-
-  db.save(gl.at(0), g);
-  db.commit();
+  GroupAdd *ga = new GroupAdd(this, tl);
+  ga->run();
 }
 
 void ChartPage::updateList ()
@@ -286,40 +245,14 @@ void ChartPage::deleteSymbol ()
   if (! l.count())
     return;
 
-  ConfirmDialog *dialog = new ConfirmDialog(this);
-  dialog->setMessage(tr("Confirm symbol delete."));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteSymbol2()));
-  dialog->show();
-}
-
-void ChartPage::deleteSymbol2 ()
-{
-  QList<QListWidgetItem *> l = _nav->selectedItems();
-  if (! l.count())
-    return;
-
-  QuoteDataBase db;
-  db.transaction();
-
-  Data *bd = new Symbol;
-  QStringList l2;
+  QStringList tl;
   int loop = 0;
   for (; loop < l.count(); loop++)
-  {
-    QStringList tl = l.at(loop)->text().split(":");
-    if (tl.count() != 2)
-      continue;
+    tl << l.at(loop)->text();
 
-    bd->set(Symbol::_EXCHANGE, tl.at(0));
-    bd->set(Symbol::_SYMBOL, tl.at(1));
-    db.deleteSymbol(bd);
-  }
-
-  delete bd;
-
-  db.commit();
-
-  updateList();
+  SymbolDelete *sd = new SymbolDelete(this, tl);
+  connect(sd, SIGNAL(signalDone()), this, SLOT(updateList()));
+  sd->run();
 }
 
 void ChartPage::setBusyFlag (int)

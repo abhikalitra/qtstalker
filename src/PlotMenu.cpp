@@ -24,6 +24,7 @@
 #include "Globals.h"
 #include "RemoveIndicator.h"
 #include "AddIndicator.h"
+#include "ChartObjectDeleteAll.h"
 
 #include "../pics/buyarrow.xpm"
 #include "../pics/sellarrow.xpm"
@@ -36,7 +37,6 @@
 #include "../pics/add.xpm"
 
 #include <QtDebug>
-#include <QSettings>
 
 PlotMenu::PlotMenu (QWidget *p, QString pn) : QMenu (p)
 {
@@ -151,15 +151,8 @@ void PlotMenu::createMenus ()
 
 void PlotMenu::deleteAllChartObjects ()
 {
-  ConfirmDialog *dialog = new ConfirmDialog(this);
-  dialog->setMessage(tr("Confirm all chart objects delete"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteAllChartObjects2()));
-  dialog->show();
-}
-
-void PlotMenu::deleteAllChartObjects2 ()
-{
-  emit signalDeleteAllChartObjects();
+  ChartObjectDeleteAll *d = new ChartObjectDeleteAll(g_parent, _plotName);
+  d->run();
 }
 
 void PlotMenu::chartObjectMenuSelected (QAction *a)

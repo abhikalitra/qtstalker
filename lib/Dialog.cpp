@@ -33,6 +33,7 @@ Dialog::Dialog (QWidget *p) : QDialog (p)
   // main vbox
   _vbox = new QVBoxLayout;
   _vbox->setSpacing(5);
+  _vbox->setMargin(5);
   setLayout(_vbox);
 
   // form layout

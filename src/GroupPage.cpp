@@ -24,9 +24,10 @@
 #include "GroupDataBase.h"
 #include "QuoteDataBase.h"
 #include "GroupEditDialog.h"
-#include "SelectDialog.h"
-#include "NewDialog.h"
 #include "Symbol.h"
+#include "GroupAdd.h"
+#include "GroupNew.h"
+#include "GroupDelete.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -119,19 +120,9 @@ void GroupPage::createButtonMenu ()
 
 void GroupPage::newGroup ()
 {
-  GroupDataBase db;
-  QStringList l;
-  db.names(l);
-
-  NewDialog *dialog = new NewDialog(this);
-  dialog->setItems(l);
-  dialog->setTitle(tr("Enter new group name"));
-  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(editDialog(QString)));
-
-  l.clear();
-  l << "QtStalker" + g_session + ":" << tr("New Group");
-  dialog->setWindowTitle(l.join(" "));
-  dialog->show();
+  GroupNew *gn = new GroupNew(this);
+  connect(gn, SIGNAL(signalDone()), this, SLOT(updateGroups()));
+  gn->run();
 }
 
 void GroupPage::editDialog (QString d)
@@ -148,29 +139,9 @@ void GroupPage::editGroup ()
 
 void GroupPage::deleteGroup ()
 {
-  SelectDialog *dialog = new SelectDialog(this);
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << tr("Delete Group");
-  dialog->setWindowTitle(l.join(" "));
-
-  GroupDataBase db;
-  db.names(l);
-  dialog->setItems(l);
-
-  dialog->setTitle(tr("Groups"));
-  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(deleteGroup2(QStringList)));
-  dialog->show();
-}
-
-void GroupPage::deleteGroup2 (QStringList l)
-{
-  GroupDataBase db;
-  db.transaction();
-  db.remove(l);
-  db.commit();
-
-  updateGroups();
+  GroupDelete *gd = new GroupDelete(this);
+  connect(gd, SIGNAL(signalDone()), this, SLOT(updateGroups()));
+  gd->run();
 }
 
 void GroupPage::groupSelected (int i)
@@ -240,46 +211,14 @@ void GroupPage::addToGroup ()
   if (! l.count())
     return;
 
-  GroupDataBase db;
-  QStringList l2;
-  db.names(l2);
-
-  SelectDialog *dialog = new SelectDialog(this);
-  dialog->setItems(l2);
-  dialog->setTitle(tr("Groups"));
-  dialog->setMode(1);
-  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(addToGroup2(QStringList)));
-
-  l2.clear();
-  l2 << "QtStalker" + g_session + ":" << tr("Add To Group");
-  dialog->setWindowTitle(l2.join(" "));
-
-  dialog->show();
-}
-
-void GroupPage::addToGroup2 (QStringList gl)
-{
-  GroupDataBase db;
-  QStringList g;
-  db.load(gl.at(0), g);
-
-  QList<QListWidgetItem *> l = _nav->selectedItems();
+  QStringList tl;
   int loop = 0;
   for (; loop < l.count(); loop++)
-    g << l.at(loop)->text();
+    tl << l.at(loop)->text();
 
-  g.removeDuplicates();
-
-  db.transaction();
-
-  QStringList tl;
-  tl << gl.at(0);
-  db.remove(tl);
-
-  db.save(gl.at(0), g);
-  db.commit();
-
-  updateList();
+  GroupAdd *ga = new GroupAdd(this, tl);
+  connect(ga, SIGNAL(signalDone()), this, SLOT(updateList()));
+  ga->run();
 }
 
 void GroupPage::updateList ()

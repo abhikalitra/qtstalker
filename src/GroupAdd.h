@@ -19,52 +19,30 @@
  *  USA.
  */
 
-#ifndef PLOT_MENU_HPP
-#define PLOT_MENU_HPP
+#ifndef GROUP_ADD_HPP
+#define GROUP_ADD_HPP
 
-#include <QString>
-#include <QMenu>
-#include <QAction>
-#include <QHash>
+#include <QStringList>
+#include <QObject>
 
-class PlotMenu : public QMenu
+class GroupAdd : public QObject
 {
   Q_OBJECT
 
   signals:
-    void signalNewChartObject (QString);
-//    void signalDeleteAllChartObjects ();
+    void signalDone();
 
   public:
-    enum Action
-    {
-      _BUY_CHART_OBJECT,
-      _HLINE_CHART_OBJECT,
-      _RETRACEMENT_CHART_OBJECT,
-      _SELL_CHART_OBJECT,
-      _TEXT_CHART_OBJECT,
-      _TLINE_CHART_OBJECT,
-      _VLINE_CHART_OBJECT,
-      _DELETE_ALL_CHART_OBJECTS,
-      _ADD_INDICATOR,
-      _REMOVE_INDICATOR
-    };
-
-    PlotMenu (QWidget *, QString);
-    void createActions ();
-    void createMenus ();
-    void setCOMenuStatus (bool);
+    GroupAdd (QObject *p, QStringList);
+    void run ();
 
   public slots:
-    void chartObjectMenuSelected (QAction *);
-    void deleteAllChartObjects ();
-    void addIndicator ();
-    void removeIndicator ();
+    void add ();
+    void add2 (QStringList);
+    void done ();
 
   private:
-    QString _plotName;
-    QMenu *_coListMenu;
-    QHash<int, QAction *> _actions;
+    QStringList _symbols;
 };
 
 #endif

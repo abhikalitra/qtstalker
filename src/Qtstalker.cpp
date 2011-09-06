@@ -40,8 +40,6 @@
 #include "Qtstalker.h"
 #include "Setup.h"
 #include "Globals.h"
-#include "QuoteDataBase.h"
-#include "ScriptDataBase.h"
 #include "InfoPanel.h"
 #include "DockWidget.h"
 #include "RefreshButton.h"
@@ -49,17 +47,14 @@
 #include "BarLengthButton.h"
 #include "BarSpaceButton.h"
 #include "DateRangeControl.h"
-#include "ChartObjectDataBase.h"
 #include "CommandAdaptor.h"
 #include "CommandInterface.h"
 #include "CommandFactory.h"
 #include "IPCMessage.h"
-#include "SharedMemory.h"
-#include "PlotGroup.h"
 #include "BarLength.h"
 #include "CommandMessage.h"
 #include "Symbol.h"
-#include "IndicatorDataBase.h"
+#include "ChartLoad.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -232,64 +227,12 @@ void QtstalkerApp::save()
 
 void QtstalkerApp::loadChart (QString symbol)
 {
-  // do all the stuff we need to do to load a chart
-
-  QStringList tl = symbol.split(":");
-  if (tl.count() != 2)
+  ChartLoad cl(symbol);
+  if (cl.run())
     return;
-
-  g_currentSymbol->clear();
-  g_currentSymbol->set(Symbol::_EXCHANGE, QVariant(tl.at(0)));
-  g_currentSymbol->set(Symbol::_SYMBOL, QVariant(tl.at(1)));
-  g_currentSymbol->set(Symbol::_LENGTH, QVariant(g_controlPanel->barLengthButton()->length()));
-  g_currentSymbol->set(Symbol::_START_DATE, QVariant(QDateTime()));
-  g_currentSymbol->set(Symbol::_END_DATE, QVariant(QDateTime()));
-  g_currentSymbol->set(Symbol::_RANGE, QVariant(g_controlPanel->dateRangeControl()->dateRange()));
-
-  QuoteDataBase db;
-  if (db.getBars(g_currentSymbol))
-  {
-    qDebug() << "QtstalkerApp::loadChart: QuoteDataBase error";
-    return;
-  }
-
-//qDebug() << g_currentSymbol->toString();
-
-  SharedMemory sm;
-  if (sm.setData(g_sharedCurrentSymbol, g_currentSymbol->toString()))
-  {
-    qDebug() << "QtstalkerApp::loadChart: error creating shared memory";
-    return;
-  }
-
-  // update settings file
-  QSettings settings(g_localSettings);
-  settings.setValue("current_symbol", symbol);
-  settings.sync();
 
   setWindowTitle(getWindowCaption());
   statusMessage(QString());
-
-  g_controlPanel->setStart(g_currentSymbol->barKeyCount(), 0, 0);
-
-  // run indicators
-  IndicatorDataBase i;
-  QStringList il = i.indicators();
-  int loop = 0;
-  for (; loop < il.count(); loop++)
-  {
-    QString command;
-    if (i.indicator(il.at(loop), command))
-      continue;
-
-    Script script(this);
-    script.setFile(il.at(loop));
-    script.setCommand(command);
-    script.setSession(g_session);
-    script.run();
-  }
-
-  g_sidePanel->setBusyFlag(0);
 }
 
 QString QtstalkerApp::getWindowCaption ()

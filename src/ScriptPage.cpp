@@ -189,15 +189,6 @@ void ScriptPage::runScript ()
                                                 QString("perl"));
   connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(runScript(QString, QString)));
   dialog->show();
-
-/*
-  QFileDialog *dialog = new QFileDialog(this);
-  dialog->setWindowTitle("QtStalker" + g_session + ": " + tr("Select Script"));
-  dialog->setDirectory(settings.value("script_panel_last_external_script").toString());
-  connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(runScript(QString)));
-  connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  dialog->show();
-*/
 }
 
 void ScriptPage::runScript (QString file, QString command)
@@ -340,7 +331,7 @@ void ScriptPage::shutDown ()
     QStringList args;
     args << QString::number(it.value());
 
-    QProcess::startDetached("kill", args);
+    QProcess::startDetached("kill -9 ", args);
   }
 }
 
