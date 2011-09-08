@@ -19,21 +19,26 @@
  *  USA.
  */
 
-#ifndef COMMAND_CORREL_HPP
-#define COMMAND_CORREL_HPP
+#ifndef OHLC_STYLE_HPP
+#define OHLC_STYLE_HPP
 
-#include "Command.h"
+#include <QStringList>
 
-class CommandCORREL : public Command
+class OHLCStyle
 {
-  Q_OBJECT
-
   public:
-    CommandCORREL (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
-    Data * getCORREL (QList<Data *> &, int period);
-    Data * getIndex (QString, Script *);
+    enum Style
+    {
+      _OHLC,
+      _CANDLE
+    };
+
+    OHLCStyle ();
+    QStringList list ();
+    int stringToStyle (QString);
+
+  protected:
+    QStringList _styles;
 };
 
 #endif

@@ -23,6 +23,7 @@
 #include "Globals.h"
 #include "IndicatorDataBase.h"
 #include "ScriptRunDialog.h"
+#include "Script.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -63,7 +64,12 @@ void AddIndicator::addIndicator2 (QString file, QString command)
   settings.setValue("add_indicator_last_command", command);
   settings.sync();
 
-  g_sidePanel->reloadChart();
+  // launch indicator
+  Script script(0);
+  script.setFile(file);
+  script.setCommand(command);
+  script.setSession(g_session);
+  script.run();
 
   done();
 }

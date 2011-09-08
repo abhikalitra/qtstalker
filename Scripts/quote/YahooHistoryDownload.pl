@@ -7,7 +7,7 @@ $csvFile = '/tmp/yahoo_csv';
 
 $|=1;
 
-#show the dialog
+# show the dialog
 $command = "COMMAND=YAHOO_HISTORY;
             DATE_START=;
             DATE_END=;

@@ -32,9 +32,6 @@ class CommandPlotHistogram : public Command
     CommandPlotHistogram (QObject *);
     Data * settings ();
     int runScript (Data *, Script *);
-
-  private:
-    QStringList _types;
 };
 
 #endif

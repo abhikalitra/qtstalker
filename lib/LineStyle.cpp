@@ -19,21 +19,21 @@
  *  USA.
  */
 
-#ifndef COMMAND_CORREL_HPP
-#define COMMAND_CORREL_HPP
+#include "LineStyle.h"
 
-#include "Command.h"
+#include <QDebug>
 
-class CommandCORREL : public Command
+LineStyle::LineStyle ()
 {
-  Q_OBJECT
+  _styles << "Dash" << "Dot" << "Line";
+}
 
-  public:
-    CommandCORREL (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
-    Data * getCORREL (QList<Data *> &, int period);
-    Data * getIndex (QString, Script *);
-};
+QStringList LineStyle::list ()
+{
+  return _styles;
+}
 
-#endif
+int LineStyle::stringToStyle (QString d)
+{
+  return _styles.indexOf(d);
+}

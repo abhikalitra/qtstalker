@@ -41,8 +41,11 @@ void RemoveIndicator::run ()
 
 void RemoveIndicator::remove ()
 {
+  QStringList mess;
+  mess << tr("Confirm indicator removal") << _indicator;
+
   ConfirmDialog *dialog = new ConfirmDialog(0);
-  dialog->setMessage(tr("Confirm indicator removal"));
+  dialog->setMessage(mess.join(" "));
   connect(dialog, SIGNAL(accepted()), this, SLOT(remove2()));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
   dialog->show();

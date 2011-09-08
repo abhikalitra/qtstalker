@@ -69,6 +69,13 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>ChartObjectDeleteAll</name>
+    <message>
+        <source>Confirm delete all chart objects from selected indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChartPage</name>
     <message>
         <source>Symbol Search</source>
@@ -108,18 +115,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Unselect All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add To Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm symbol delete.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -439,6 +434,28 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>GroupAdd</name>
+    <message>
+        <source>Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add To Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GroupDelete</name>
+    <message>
+        <source>Delete Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>GroupEditDialog</name>
     <message>
         <source>Edit Group</source>
@@ -462,6 +479,17 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Unselect All</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>GroupNew</name>
+    <message>
+        <source>Enter new group name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -501,26 +529,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>&amp;Delete Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter new group name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add To Group</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -621,10 +629,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Delete All Chart Objects</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm all chart objects delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1088,6 +1092,13 @@ qtstalker.sourceforge.net</source>
     <name>SymbolButton</name>
     <message>
         <source> Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SymbolDelete</name>
+    <message>
+        <source>Confirm symbol delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

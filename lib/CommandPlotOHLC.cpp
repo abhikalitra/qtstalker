@@ -23,14 +23,13 @@
 #include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "OHLCStyle.h"
 
 #include <QtDebug>
 
 CommandPlotOHLC::CommandPlotOHLC (QObject *p) : Command (p)
 {
   _type = "PLOT_OHLC";
-
-  _types << "OHLC" << "Candle";
 }
 
 int CommandPlotOHLC::runScript (Data *sg, Script *script)
@@ -89,8 +88,9 @@ int CommandPlotOHLC::runScript (Data *sg, Script *script)
 //qDebug() << "CommandPlotOHLC::runScript:" << keys.count();
 
   // style
+  OHLCStyle ls;
   s = sg->get("STYLE").toString();
-  if (_types.indexOf(s) == -1)
+  if (ls.stringToStyle(s) == -1)
   {
     qDebug() << _type << "::runScript: invalid STYLE" << s;
     return _ERROR;

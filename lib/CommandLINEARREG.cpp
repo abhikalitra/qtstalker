@@ -39,7 +39,7 @@ CommandLINEARREG::CommandLINEARREG (QObject *p) : Command (p)
 
 int CommandLINEARREG::runScript (Data *sg, Script *script)
 {
-  QString name = sg->get("OUPUT").toString();
+  QString name = sg->get("OUTPUT").toString();
   Data *line = script->data(name);
   if (line)
   {

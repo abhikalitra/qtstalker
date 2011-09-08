@@ -19,21 +19,21 @@
  *  USA.
  */
 
-#ifndef COMMAND_CORREL_HPP
-#define COMMAND_CORREL_HPP
+#include "HistogramStyle.h"
 
-#include "Command.h"
+#include <QDebug>
 
-class CommandCORREL : public Command
+HistogramStyle::HistogramStyle ()
 {
-  Q_OBJECT
+  _styles << "Histogram" << "Histogram Bar";
+}
 
-  public:
-    CommandCORREL (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
-    Data * getCORREL (QList<Data *> &, int period);
-    Data * getIndex (QString, Script *);
-};
+QStringList HistogramStyle::list ()
+{
+  return _styles;
+}
 
-#endif
+int HistogramStyle::stringToStyle (QString d)
+{
+  return _styles.indexOf(d);
+}

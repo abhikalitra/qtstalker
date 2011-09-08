@@ -25,6 +25,7 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "CurveType.h"
+#include "LineStyle.h"
 
 #include <QtDebug>
 
@@ -54,9 +55,9 @@ int CommandPlotLine::runScript (Data *sg, Script *script)
   }
 
   // style
-  CurveType ct;
+  LineStyle ls;
   s = sg->get("STYLE").toString();
-  if (ct.stringToType(s) == -1)
+  if (ls.stringToStyle(s) == -1)
   {
     qDebug() << _type << "::runScript: invalid STYLE" << s;
     return _ERROR;

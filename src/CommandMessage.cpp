@@ -42,11 +42,14 @@ int CommandMessage::message (IPCMessage m, QString d)
     return 1;
   }
 
-  if (dg->fromString(d))
+  if (! d.isEmpty())
   {
-    qDebug() << "CommandMessage::message: invalid data" << d;
-    delete dg;
-    return 1;
+    if (dg->fromString(d))
+    {
+      qDebug() << "CommandMessage::message: invalid data" << d;
+      delete dg;
+      return 1;
+    }
   }
 
   CommandFactory fac;

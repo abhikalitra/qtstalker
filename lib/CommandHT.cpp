@@ -154,6 +154,6 @@ Data * CommandHT::settings ()
   Data *sg = new Data;
   sg->set("OUTPUT", QVariant(QString()));
   sg->set("INPUT", QVariant(QString()));
-  sg->set("METHOD", QVariant(_method.at(0)));
+  sg->set("METHOD", QVariant(_method.at(2)));
   return sg;
 }

@@ -33,6 +33,7 @@ class CommandBETA : public Command
     int runScript (Data *, Script *);
     Data * settings ();
     Data * getBETA (QList<Data *> &, int period);
+    Data * getIndex (QString, Script *);
 };
 
 #endif

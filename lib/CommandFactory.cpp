@@ -49,7 +49,6 @@
 #include "CommandMA.h"
 #include "CommandMACD.h"
 #include "CommandMAMA.h"
-#include "CommandMAVP.h"
 #include "CommandMedianPrice.h"
 #include "CommandMINMAX.h"
 #include "CommandMFI.h"
@@ -110,7 +109,7 @@ CommandFactory::CommandFactory ()
   _types << "FI" << "FILE_DIALOG";
   _types << "HT" << "HT_PHASOR" << "HT_SINE";
   _types << "LINEARREG";
-  _types << "MA" << "MACD" << "MAMA" << "MAVP" << "MEDIAN_PRICE" << "MINMAX" << "MFI" << "MOM";
+  _types << "MA" << "MACD" << "MAMA" << "MEDIAN_PRICE" << "MINMAX" << "MFI" << "MOM";
   _types << "NORMALIZE";
   _types << "PO" << "PLOT_LINE" << "PLOT_HISTOGRAM" << "PLOT_OHLC";
   _types << "ROC" << "RSI";
@@ -239,9 +238,6 @@ Command * CommandFactory::command (QObject *p, QString type)
       break;
     case _MAMA:
       c = new CommandMAMA(p);
-      break;
-    case _MAVP:
-      c = new CommandMAVP(p);
       break;
     case _MEDIAN_PRICE:
       c = new CommandMedianPrice(p);

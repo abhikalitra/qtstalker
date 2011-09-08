@@ -32,9 +32,6 @@ class CommandPlotOHLC : public Command
     CommandPlotOHLC (QObject *);
     Data * settings ();
     int runScript (Data *, Script *);
-
-  private:
-    QStringList _types;
 };
 
 #endif

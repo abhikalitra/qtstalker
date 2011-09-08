@@ -68,7 +68,6 @@ class CommandFactory
       _MA,
       _MACD,
       _MAMA,
-      _MAVP,
       _MEDIAN_PRICE,
       _MINMAX,
       _MFI,

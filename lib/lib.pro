@@ -46,7 +46,7 @@ HEADERS += CommandLINEARREG.h
 HEADERS += CommandMA.h
 HEADERS += CommandMACD.h
 HEADERS += CommandMAMA.h
-HEADERS += CommandMAVP.h
+#HEADERS += CommandMAVP.h
 HEADERS += CommandMedianPrice.h
 HEADERS += CommandMINMAX.h
 HEADERS += CommandMFI.h
@@ -112,11 +112,14 @@ HEADERS += FontButton.h
 HEADERS += GroupDataBase.h
 HEADERS += GroupEditDialog.h
 
+HEADERS += HistogramStyle.h
+
 HEADERS += IconButton.h
 HEADERS += InputType.h
 HEADERS += IPCMessage.h
 
 HEADERS += LineEdit.h
+HEADERS += LineStyle.h
 
 HEADERS += MAType.h
 HEADERS += Message.h
@@ -124,6 +127,7 @@ HEADERS += MessageSend.h
 
 HEADERS += NewDialog.h
 
+HEADERS += OHLCStyle.h
 HEADERS += Operator.h
 
 HEADERS += QuoteDataBase.h
@@ -179,7 +183,7 @@ SOURCES += CommandLINEARREG.cpp
 SOURCES += CommandMA.cpp
 SOURCES += CommandMACD.cpp
 SOURCES += CommandMAMA.cpp
-SOURCES += CommandMAVP.cpp
+#SOURCES += CommandMAVP.cpp
 SOURCES += CommandMedianPrice.cpp
 SOURCES += CommandMINMAX.cpp
 SOURCES += CommandMFI.cpp
@@ -245,17 +249,21 @@ SOURCES += FontButton.cpp
 SOURCES += GroupDataBase.cpp
 SOURCES += GroupEditDialog.cpp
 
+SOURCES += HistogramStyle.cpp
+
 SOURCES += IconButton.cpp
 SOURCES += InputType.cpp
 SOURCES += IPCMessage.cpp
 
 SOURCES += LineEdit.cpp
+SOURCES += LineStyle.cpp
 
 SOURCES += MAType.cpp
 SOURCES += MessageSend.cpp
 
 SOURCES += NewDialog.cpp
 
+SOURCES += OHLCStyle.cpp
 SOURCES += Operator.cpp
 
 SOURCES += QuoteDataBase.cpp

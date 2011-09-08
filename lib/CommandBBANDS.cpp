@@ -174,7 +174,7 @@ Data * CommandBBANDS::settings ()
   sg->set("OUTPUT_MIDDLE", QVariant(QString()));
   sg->set("OUTPUT_LOWER", QVariant(QString()));
   sg->set("INPUT", QVariant(QString()));
-  sg->set("PERIOD", QVariant(14));
+  sg->set("PERIOD", QVariant(20));
   sg->set("DEV_UP", QVariant(2.0));
   sg->set("DEV_DOWN", QVariant(2.0));
   sg->set("MA_TYPE", QVariant(QString("EMA")));

@@ -46,9 +46,9 @@ int CommandYahooHistory::runScript (Data *sg, Script *script)
 
   dialog->setDateTime(tab, QString("DATE_START"), QObject::tr("Start Date"), sg->get("DATE_START").toDateTime(), QString());
   dialog->setDateTime(tab, QString("DATE_END"), QObject::tr("End Date"), sg->get("DATE_END").toDateTime(), QString());
-  dialog->setBool(tab, QString("ADJUSTED"), QObject::tr("Adjusted"), sg->get("ADJUSTED").toBool(), QString());
   dialog->setFile(tab, QString("SYMBOL_FILE"), QObject::tr("Symbol File"), sg->get("SYMBOL_FILE").toStringList(), QString());
   dialog->setText(tab, QString("CSV_FILE"), QObject::tr("CSV File"), sg->get("CSV_FILE").toString(), QString());
+  dialog->setBool(tab, QString("ADJUSTED"), QObject::tr("Adjusted"), sg->get("ADJUSTED").toBool(), QString());
 
   int rc = dialog->exec();
   if (rc == QDialog::Rejected)

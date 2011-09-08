@@ -299,8 +299,7 @@ void QtstalkerApp::commandLineAsset ()
     return;
   }
 
-  QString s = l.at(0) + ":" + l.at(1);
-  loadChart(s);
+  loadChart(_clAsset);
 }
 
 /*
@@ -341,7 +340,11 @@ void QtstalkerApp::afterStartup ()
   {
     // display last viewed chart
     QSettings settings(g_localSettings);
-    loadChart(settings.value("current_symbol").toString());
+    QString symbol = settings.value("current_symbol").toString();
+    if (symbol.isEmpty())
+      return;
+
+    loadChart(symbol);
   }
 }
 

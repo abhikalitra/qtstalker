@@ -1283,3 +1283,8 @@
 
            Removed docs from source. Docs will be moved to a new website once they have been revised.
 
+*************************************************************************************************************************
+
+20110908:  Removed all old scripts from the source tree. Left 2 indicator scripts for the default install. All scripts will
+           be eventually stored at the script repository once the web site is up and running.
+

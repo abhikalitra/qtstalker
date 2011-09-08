@@ -29,7 +29,7 @@
 
 CommandPHASOR::CommandPHASOR (QObject *p) : Command (p)
 {
-  _type = "PHASOR";
+  _type = "HT_PHASOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)

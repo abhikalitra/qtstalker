@@ -24,14 +24,13 @@
 #include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "HistogramStyle.h"
 
 #include <QtDebug>
 
 CommandPlotHistogram::CommandPlotHistogram (QObject *p) : Command (p)
 {
   _type = "PLOT_HISTOGRAM";
-
-  _types << "Histogram" << "Histogram Bar";
 }
 
 int CommandPlotHistogram::runScript (Data *sg, Script *script)
@@ -96,8 +95,9 @@ int CommandPlotHistogram::runScript (Data *sg, Script *script)
   }
 
   // style
+  HistogramStyle ls;
   s = sg->get("STYLE").toString();
-  if (_types.indexOf(s) == -1)
+  if (ls.stringToStyle(s) == -1)
   {
     qDebug() << _type << "::runScript: invalid STYLE" << s;
     return _ERROR;

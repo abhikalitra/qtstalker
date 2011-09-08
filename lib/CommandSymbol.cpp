@@ -105,8 +105,8 @@ int CommandSymbol::runScript (Data *sg, Script *script)
   script->setData(s, iline);
 
   Data *bd = new Symbol;
-  bd->set(Symbol::_EXCHANGE, QVariant(symbol));
-  bd->set(Symbol::_SYMBOL, QVariant(exchange));
+  bd->set(Symbol::_EXCHANGE, QVariant(exchange));
+  bd->set(Symbol::_SYMBOL, QVariant(symbol));
   bd->set(Symbol::_LENGTH, QVariant(length));
   bd->set(Symbol::_START_DATE, QVariant(QDateTime()));
   bd->set(Symbol::_END_DATE, QVariant(QDateTime()));

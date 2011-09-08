@@ -29,7 +29,7 @@
 
 CommandSINE::CommandSINE (QObject *p) : Command (p)
 {
-  _type = "SINE";
+  _type = "HT_SINE";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)

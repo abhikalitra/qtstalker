@@ -24,8 +24,11 @@
 #include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "Symbol.h"
+#include "QuoteDataBase.h"
 
 #include <QtDebug>
+#include <QSettings>
 
 CommandBETA::CommandBETA (QObject *p) : Command (p)
 {
@@ -55,7 +58,7 @@ int CommandBETA::runScript (Data *sg, Script *script)
   }
 
   s = sg->get("INDEX").toString();
-  Data *in2 = script->data(s);
+  Data *in2 = getIndex(s, script);
   if (! in2)
   {
     qDebug() << _type << "::runScript: INDEX missing" << s;
@@ -71,6 +74,8 @@ int CommandBETA::runScript (Data *sg, Script *script)
     return _ERROR;
 
   script->setData(name, line);
+
+  delete in2;
 
   return _OK;
 }
@@ -131,4 +136,50 @@ Data * CommandBETA::settings ()
   sg->set("INDEX", QVariant(QString()));
   sg->set("PERIOD", QVariant(5));
   return sg;
+}
+
+Data * CommandBETA::getIndex (QString d, Script *script)
+{
+  if (d.isEmpty())
+    return 0;
+
+  QStringList tl = d.split(":");
+  if (tl.count() != 2)
+    return 0;
+
+  QSettings settings("QtStalker/qtstalkerrc" + script->session());
+
+  Data *bd = new Symbol;
+  bd->set(Symbol::_EXCHANGE, QVariant(tl.at(0)));
+  bd->set(Symbol::_SYMBOL, QVariant(tl.at(1)));
+  bd->set(Symbol::_LENGTH, QVariant(settings.value("bar_length").toInt()));
+  bd->set(Symbol::_START_DATE, QVariant(QDateTime()));
+  bd->set(Symbol::_END_DATE, QVariant(QDateTime()));
+  bd->set(Symbol::_RANGE, QVariant(settings.value("date_range").toInt()));
+
+  // load quotes
+  QuoteDataBase db;
+  if (db.getBars(bd))
+  {
+    qDebug() << _type << "::getIndex: QuoteDataBase error";
+    delete bd;
+    return 0;
+  }
+
+  Data *line = new CurveData;
+
+  int loop = 0;
+  QList<int> barKeys = bd->barKeys();
+  for (; loop < barKeys.count(); loop++)
+  {
+    Data *b = bd->getData(barKeys.at(loop));
+
+    CurveBar *cb = new CurveBar;
+    cb->set(CurveBar::_VALUE, b->get(CurveBar::_CLOSE));
+    line->set(loop, cb);
+  }
+
+  delete bd;
+
+  return line;
 }
