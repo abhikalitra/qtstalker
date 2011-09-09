@@ -44,8 +44,16 @@ int CommandYahooHistory::runScript (Data *sg, Script *script)
   dialog->addTab(QObject::tr("Settings"));
   int tab = 0;
 
-  dialog->setDateTime(tab, QString("DATE_START"), QObject::tr("Start Date"), sg->get("DATE_START").toDateTime(), QString());
-  dialog->setDateTime(tab, QString("DATE_END"), QObject::tr("End Date"), sg->get("DATE_END").toDateTime(), QString());
+  QDateTime dt = sg->get("DATE_START").toDateTime();
+  if (! dt.isValid())
+    dt = QDateTime::currentDateTime();
+  dialog->setDateTime(tab, QString("DATE_START"), QObject::tr("Start Date"), dt, QString());
+
+  dt = sg->get("DATE_END").toDateTime();
+  if (! dt.isValid())
+    dt = QDateTime::currentDateTime();
+  dialog->setDateTime(tab, QString("DATE_END"), QObject::tr("End Date"), dt, QString());
+
   dialog->setFile(tab, QString("SYMBOL_FILE"), QObject::tr("Symbol File"), sg->get("SYMBOL_FILE").toStringList(), QString());
   dialog->setText(tab, QString("CSV_FILE"), QObject::tr("CSV File"), sg->get("CSV_FILE").toString(), QString());
   dialog->setBool(tab, QString("ADJUSTED"), QObject::tr("Adjusted"), sg->get("ADJUSTED").toBool(), QString());
@@ -67,14 +75,14 @@ int CommandYahooHistory::runScript (Data *sg, Script *script)
 
   if (! symbolFiles.count())
   {
-    qDebug() << _type << "::runScript: SYMBOL_FILE missing";
+    _message << "SYMBOL_FILE missing";
     return _ERROR;
   }
 
   QFile f2(outFile);
   if (! f2.open(QIODevice::WriteOnly | QIODevice::Text))
   {
-    qDebug() << _type << "::runScript: file error" << outFile;
+    _message << "file error " + outFile;
     return _ERROR;
   }
   QTextStream out(&f2);
@@ -87,7 +95,7 @@ int CommandYahooHistory::runScript (Data *sg, Script *script)
     QFile f(symbolFiles.at(loop));
     if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      qDebug() << _type << "::runScript: file error" << symbolFiles.at(loop);
+      _message << "file error " + symbolFiles.at(loop);
       return _ERROR;
     }
 
@@ -161,7 +169,7 @@ void CommandYahooHistory::parse (QByteArray &ba, QString &symbol, QString &name,
     {
       QStringList tl;
       tl << symbol << tr("line") << QString::number(line) << tr("# of bar fields, record skipped");
-      emit signalMessage(tl.join(" "));
+      _message << tl.join(" ");
       error++;
       continue;
     }
@@ -174,7 +182,7 @@ void CommandYahooHistory::parse (QByteArray &ba, QString &symbol, QString &name,
       {
         QStringList tl;
         tl << symbol << tr("line") << QString::number(line) << tr("invalid adjusted close, record skipped");
-        emit signalMessage(tl.join(" "));
+        _message << tl.join(" ");
         error++;
         continue;
       }

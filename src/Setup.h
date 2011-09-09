@@ -36,8 +36,6 @@ class Setup
     void setupDefaultIndicators ();
     void setupDefaultScripts ();
     void setupExchanges ();
-    void setupFutures ();
-//    void scanPlugins ();
 };
 
 #endif

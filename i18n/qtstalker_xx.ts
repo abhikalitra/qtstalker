@@ -555,6 +555,13 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>MessageDialog</name>
+    <message>
+        <source>Messages</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>NewDialog</name>
     <message>
         <source>already exists</source>
@@ -668,14 +675,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Unable to launch Qt Assistant (%1)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

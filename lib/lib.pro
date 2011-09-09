@@ -46,7 +46,6 @@ HEADERS += CommandLINEARREG.h
 HEADERS += CommandMA.h
 HEADERS += CommandMACD.h
 HEADERS += CommandMAMA.h
-#HEADERS += CommandMAVP.h
 HEADERS += CommandMedianPrice.h
 HEADERS += CommandMINMAX.h
 HEADERS += CommandMFI.h
@@ -123,6 +122,7 @@ HEADERS += LineStyle.h
 
 HEADERS += MAType.h
 HEADERS += Message.h
+HEADERS += MessageDialog.h
 HEADERS += MessageSend.h
 
 HEADERS += NewDialog.h
@@ -183,7 +183,6 @@ SOURCES += CommandLINEARREG.cpp
 SOURCES += CommandMA.cpp
 SOURCES += CommandMACD.cpp
 SOURCES += CommandMAMA.cpp
-#SOURCES += CommandMAVP.cpp
 SOURCES += CommandMedianPrice.cpp
 SOURCES += CommandMINMAX.cpp
 SOURCES += CommandMFI.cpp
@@ -259,6 +258,7 @@ SOURCES += LineEdit.cpp
 SOURCES += LineStyle.cpp
 
 SOURCES += MAType.cpp
+SOURCES += MessageDialog.cpp
 SOURCES += MessageSend.cpp
 
 SOURCES += NewDialog.cpp

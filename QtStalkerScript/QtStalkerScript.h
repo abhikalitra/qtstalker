@@ -25,7 +25,6 @@
 #include <QObject>
 #include <QStringList>
 #include <QProcess>
-#include <QTextStream>
 
 #include "Script.h"
 
@@ -42,7 +41,7 @@ class QtStalkerScript : public QObject
 
   public slots:
     void run ();
-    void message (QString);
+    void message (QString command, QString mess);
     void scriptFinished (int, QProcess::ExitStatus);
 
   private:
@@ -50,7 +49,6 @@ class QtStalkerScript : public QObject
     Script *_script;
     QStringList _messages;
     int _stop;
-    QTextStream _msg;
 };
 
 #endif

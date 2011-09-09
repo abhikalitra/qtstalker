@@ -26,7 +26,8 @@
 
 #include <QDebug>
 #include <QFile>
-#include <QTextStream>
+//#include <QTextStream>
+#include <QMessageBox>
 
 Command::Command (QObject *p) : QObject (p)
 {
@@ -63,21 +64,7 @@ QString Command::returnString ()
   return _returnString;
 }
 
-void Command::message (QString session, QString command, QString member, QString data)
+QString Command::message ()
 {
-/*
-  Data data;
-  data.set("MESSAGE", d);
-
-  IPCMessage ipcm(session, "DEBUG", "*", QString(), data.type());
-  MessageSend ms(this);
-  ms.send(ipcm, data.toString());
-*/
-
-  QFile f("/tmp/QtStalkerScript.log");
-  if (! f.open(QIODevice::Append | QIODevice::Text))
-    return;
-
-  QTextStream out(&f);
-  out << session << ":" << command << ":" << member << ":" << data << "\n";
+  return _message.join("\n");
 }

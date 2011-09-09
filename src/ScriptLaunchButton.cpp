@@ -30,6 +30,7 @@
 #include <QInputDialog>
 #include <QSettings>
 #include <QDebug>
+#include <QFileInfo>
 
 ScriptLaunchButton::ScriptLaunchButton (int pos)
 {
@@ -37,12 +38,13 @@ ScriptLaunchButton::ScriptLaunchButton (int pos)
   _position = pos;
 
   QSettings settings(g_localSettings);
-  _command = settings.value("script_launch_button_command" + QString::number(_position)).toString();
-  _scriptName = settings.value("script_launch_button_file" + QString::number(_position)).toString();
+  _command = settings.value("script_launch_button_command_" + QString::number(_position)).toString();
+  _scriptName = settings.value("script_launch_button_file_" + QString::number(_position)).toString();
   _icon = settings.value("script_launch_button_icon_" + QString::number(_position)).toString();
   _useIcon = settings.value("script_launch_button_use_icon_" + QString::number(_position), 0).toInt();
 
-  setToolTip(_scriptName);
+  QFileInfo fi(_scriptName);
+  setToolTip(fi.baseName());
 
   setText(QString::number(_position));
 
@@ -88,8 +90,8 @@ void ScriptLaunchButton::configure2 (QString command, QString file, QString icon
     setIcon(QIcon());
 
   QSettings settings(g_localSettings);
-  settings.setValue("script_launch_button_command" + QString::number(_position), _command);
-  settings.setValue("script_launch_button_file" + QString::number(_position), _scriptName);
+  settings.setValue("script_launch_button_command_" + QString::number(_position), _command);
+  settings.setValue("script_launch_button_file_" + QString::number(_position), _scriptName);
   settings.setValue("script_launch_button_icon_" + QString::number(_position), _icon);
   settings.setValue("script_launch_button_use_icon_" + QString::number(_position), _useIcon);
   settings.sync();

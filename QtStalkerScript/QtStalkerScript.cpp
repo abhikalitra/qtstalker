@@ -22,13 +22,13 @@
 #include "QtStalkerScript.h"
 #include "CommandFactory.h"
 #include "Message.h"
+#include "MessageDialog.h"
 
 #include <QtDebug>
 #include <QCoreApplication>
 #include <QWidget>
 #include <QTimer>
 #include <QFileInfo>
-#include <QFile>
 #include <QDateTime>
 
 QtStalkerScript::QtStalkerScript (QString session, QString command, QString file)
@@ -64,10 +64,6 @@ void QtStalkerScript::run ()
     done();
     return;
   }
-
-  QFile f("/tmp/QtStalkerScript.log");
-  if (f.open(QIODevice::ReadOnly | QIODevice::Text))
-    _msg.setDevice(&f);
 
   _stop = 0;
   CommandFactory fac;
@@ -150,6 +146,8 @@ void QtStalkerScript::run ()
     if (! ts.isEmpty())
       s = ts + "\n";
 
+    message(com->type(), com->message());
+
     delete com;
     delete sg;
 
@@ -167,6 +165,17 @@ void QtStalkerScript::run ()
 
 void QtStalkerScript::done ()
 {
+  if (_messages.count())
+  {
+    QStringList wt;
+    wt << "QtStalkerScript(" + _script->session() + ")" << "Message";
+
+    MessageDialog dialog(0);
+    dialog.setWindowTitle(wt.join(" "));
+    dialog.setMessage(_messages.join("\n"));
+    dialog.exec();
+  }
+
   CommandFactory fac;
   Command *com = fac.command(this, "SCRIPT_DONE");
   if (com)
@@ -178,19 +187,24 @@ void QtStalkerScript::done ()
     delete sg;
   }
 
+/*
   QStringList l;
   l << QDateTime::currentDateTime().toString(Qt::ISODate);
   l << QObject::tr("Script");
   l << _script->name();
   l << QObject::tr("completed");
 qDebug() << l.join(" ");
+*/
 
   QCoreApplication::exit(0);
 }
 
-void QtStalkerScript::message (QString d)
+void QtStalkerScript::message (QString command, QString mess)
 {
-  _messages << d;
+  if (mess.isEmpty())
+    return;
+
+  _messages << command + ":" + mess;
 }
 
 void QtStalkerScript::scriptFinished (int code, QProcess::ExitStatus status)

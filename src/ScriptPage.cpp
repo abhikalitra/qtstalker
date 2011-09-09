@@ -191,7 +191,7 @@ void ScriptPage::runScript ()
   dialog->show();
 }
 
-void ScriptPage::runScript (QString file, QString command)
+void ScriptPage::runScript (QString command, QString file)
 {
   QFileInfo fi(file);
 
@@ -477,7 +477,7 @@ void ScriptPage::runStartupScripts ()
     if (db.load(l.at(loop), file, startup, interval, command))
       continue;
 
-    runScript(l.at(loop), command);
+    runScript(command, l.at(loop));
   }
 }
 

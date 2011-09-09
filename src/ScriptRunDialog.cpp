@@ -73,7 +73,7 @@ void ScriptRunDialog::done ()
 
   saveSettings();
 
-  emit signalDone(file, _text->text());
+  emit signalDone(_text->text(), file);
 
   accept();
 }

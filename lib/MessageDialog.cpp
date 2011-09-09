@@ -19,44 +19,38 @@
  *  USA.
  */
 
-#ifndef COMMAND_HPP
-#define COMMAND_HPP
+#include "MessageDialog.h"
 
-#include <QWidget>
+#include <QtDebug>
+#include <QGroupBox>
 
-#include "Message.h"
-#include "Script.h"
-
-class Command : public QObject
+MessageDialog::MessageDialog (QWidget *p) : Dialog (p)
 {
-  Q_OBJECT
+  _keySize = "message_dialog_window_size";
+  _keyPos = "message_dialog_window_position";
 
-  signals:
-    void signalMessage(QString);
+  createGUI();
 
-  public:
-    enum ReturnCode
-    {
-      _OK,
-      _ERROR,
-      _WAIT
-    };
+  loadSettings();
+}
 
-    Command (QObject *);
-    virtual int request (Message *, Message *);
-    virtual int runScript (Data *, Script *);
-    virtual Data * settings ();
+void MessageDialog::createGUI ()
+{
+  QGroupBox *gbox = new QGroupBox(tr("Messages"));
+  _vbox->insertWidget(0, gbox);
 
-    QString type ();
-    int isDialog ();
-    QString returnString ();
-    QString message ();
+  QVBoxLayout *vbox = new QVBoxLayout;
+  vbox->setSpacing(2);
+  gbox->setLayout(vbox);
 
-  protected:
-    QString _type;
-    int _isDialog;
-    QString _returnString;
-    QStringList _message;
-};
+  _messages = new QTextEdit;
+  vbox->addWidget(_messages);
 
-#endif
+  // hide uneeded base class widget to save some space
+  _message->hide();
+}
+
+void MessageDialog::setMessage (QString d)
+{
+  _messages->setText(d);
+}

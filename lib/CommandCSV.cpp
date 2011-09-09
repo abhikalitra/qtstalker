@@ -42,21 +42,21 @@ int CommandCSV::runScript (Data *sg, Script *)
   QStringList files = sg->get("CSV_FILE").toStringList();
   if (! files.count())
   {
-    qDebug() << _type << "::runScript: invalid CSV_FILE" << files;
+    _message << "invalid CSV_FILE " + sg->get("CSV_FILE").toString();
     return _ERROR;
   }
 
   QStringList format = sg->get("FORMAT").toString().split(",");
   if (! format.count())
   {
-    qDebug() << _type << "::runScript: invalid FORMAT" << format;
+    _message << "invalid FORMAT " + sg->get("FORMAT").toString();
     return _ERROR;
   }
 
   QString dateFormat = sg->get("DATE_FORMAT").toString();
   if (dateFormat.isEmpty())
   {
-    qDebug() << _type << "::runScript: invalid DATE_FORMAT" << dateFormat;
+    _message << "invalid DATE_FORMAT " + dateFormat;
     return _ERROR;
   }
 
@@ -71,7 +71,7 @@ int CommandCSV::runScript (Data *sg, Script *)
       delimiter = ";";
       break;
     default:
-      qDebug() << _type << "::runScript: invalid DELIMITER" << s;
+      _message << "invalid DELIMITER " + s;
       return _ERROR;
       break;
   }
@@ -79,7 +79,7 @@ int CommandCSV::runScript (Data *sg, Script *)
   QString typ = sg->get("TYPE").toString();
   if (typ.isEmpty())
   {
-    qDebug() << _type << "::runScript: invalid TYPE" << typ;
+    _message << "invalid TYPE " + typ;
     return _ERROR;
   }
 
@@ -93,7 +93,7 @@ int CommandCSV::runScript (Data *sg, Script *)
     QFile f(files.at(loop));
     if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      qDebug() << _type << "::runScript: CSV_FILE error" << files.at(loop);
+      _message << "CSV_FILE error " + files.at(loop);
       return _ERROR;
     }
 
@@ -115,7 +115,7 @@ int CommandCSV::runScript (Data *sg, Script *)
 
       if (format.count() != data.count())
       {
-        qDebug() << _type << "::runScript: invalid number of fields" << s;
+        _message << "invalid number of fields " + s;
         continue;
       }
 
@@ -148,7 +148,7 @@ int CommandCSV::runScript (Data *sg, Script *)
             QDateTime dt = QDateTime::fromString(data.at(loop2).trimmed(), dateFormat);
             if (! dt.isValid())
             {
-              qDebug() << _type << "::runScript: invalid DATE" << data.at(loop2);
+              _message << "invalid DATE " + data.at(loop2);
               flag++;
             }
             else
@@ -167,7 +167,7 @@ int CommandCSV::runScript (Data *sg, Script *)
             double t = s.toDouble(&ok);
             if (! ok)
             {
-              qDebug() << _type << "::runScript: invalid" << format.at(loop2) << data.at(loop2);
+              _message << "invalid " + format.at(loop2) + " " + data.at(loop2);
               flag++;
               break;
             }
@@ -200,7 +200,7 @@ int CommandCSV::runScript (Data *sg, Script *)
           }
           default:
           {
-            qDebug() << _type << "::runScript: invalid format";
+            _message << "invalid format";
             delete bar;
             qDeleteAll(symbols);
             return _ERROR;
@@ -220,14 +220,14 @@ int CommandCSV::runScript (Data *sg, Script *)
 
       if (exchange.isEmpty())
       {
-        qDebug() << _type << "::runScript: invalid EXCHANGE" << exchange;
+        _message << "invalid EXCHANGE " + exchange;
         delete bar;
         continue;
       }
 
       if (symbol.isEmpty())
       {
-        qDebug() << _type << "::runScript: invalid SYMBOL" << symbol;
+        _message << "invalid SYMBOL " + symbol;
         delete bar;
         continue;
       }

@@ -44,14 +44,14 @@ int CommandSymbolCurrent::runScript (Data *sg, Script *script)
   QString s;
   if (smd.data(sm, s))
   {
-    message(script->session(), _type, "::runScript: shared memory error", QString());
+    _message << "shared memory error";
     return _ERROR;
   }
 
   Data *bd = new Symbol;
   if (bd->fromString(s))
   {
-    message(script->session(), _type, "::runScript: Data::fromString error", s);
+    _message << "Data::fromString error " + s;
     delete bd;
     return _ERROR;
   }

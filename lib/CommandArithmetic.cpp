@@ -39,7 +39,7 @@ int CommandArithmetic::runScript (Data *sg, Script *script)
   Data *line = script->data(name);
   if (line)
   {
-    message(script->session(), _type, "::runScript: duplicate OUTPUT", name);
+    _message << "duplicate OUTPUT " + name;
     return _ERROR;
   }
 
@@ -48,7 +48,7 @@ int CommandArithmetic::runScript (Data *sg, Script *script)
   Data *in = script->data(s);
   if (! in)
   {
-    message(script->session(), _type, "::runScript: invalid INPUT_1", s);
+    _message << "invalid INPUT_1 " + s;
     return _ERROR;
   }
 
@@ -76,7 +76,7 @@ int CommandArithmetic::runScript (Data *sg, Script *script)
     in2 = script->data(s);
     if (! in2)
     {
-      message(script->session(), _type, "::runScript: invalid INPUT_2", s);
+      _message << "invalid INPUT_2 " + s;
       return _ERROR;
     }
   }
@@ -85,14 +85,14 @@ int CommandArithmetic::runScript (Data *sg, Script *script)
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    message(script->session(), _type, "::runScript: invalid METHOD", s);
+    _message << "invalid METHOD " + s;
     return _ERROR;
   }
 
   line = getArithmetic(in, in2, method);
   if (! line)
   {
-    message(script->session(), _type, "::runScript: getArithmetic error", name);
+    _message << "getArithmetic error " + name;
     if (delFlag)
       delete in2;
     return _ERROR;
@@ -115,7 +115,7 @@ Data * CommandArithmetic::getArithmetic (Data *in, Data *in2, int method)
   QList<int> keys;
   if (it.keys(list, keys))
   {
-    message(QString(), _type, "::getArithmetic", "invalid keys");
+    _message << "getArithmetic invalid keys";
     return 0;
   }
 

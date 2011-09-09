@@ -19,44 +19,24 @@
  *  USA.
  */
 
-#ifndef COMMAND_HPP
-#define COMMAND_HPP
+#ifndef MESSAGE_DIALOG_HPP
+#define MESSAGE_DIALOG_HPP
 
-#include <QWidget>
+#include <QTextEdit>
 
-#include "Message.h"
-#include "Script.h"
+#include "Dialog.h"
 
-class Command : public QObject
+class MessageDialog : public Dialog
 {
   Q_OBJECT
 
-  signals:
-    void signalMessage(QString);
-
   public:
-    enum ReturnCode
-    {
-      _OK,
-      _ERROR,
-      _WAIT
-    };
+    MessageDialog (QWidget *);
+    void createGUI ();
+    void setMessage (QString);
 
-    Command (QObject *);
-    virtual int request (Message *, Message *);
-    virtual int runScript (Data *, Script *);
-    virtual Data * settings ();
-
-    QString type ();
-    int isDialog ();
-    QString returnString ();
-    QString message ();
-
-  protected:
-    QString _type;
-    int _isDialog;
-    QString _returnString;
-    QStringList _message;
+  private:
+    QTextEdit *_messages;
 };
 
 #endif
