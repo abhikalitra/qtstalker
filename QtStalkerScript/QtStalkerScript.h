@@ -37,7 +37,6 @@ class QtStalkerScript : public QObject
   public:
     QtStalkerScript (QString session, QString command, QString file);
     ~QtStalkerScript ();
-    void done ();
 
   public slots:
     void run ();
@@ -45,10 +44,9 @@ class QtStalkerScript : public QObject
     void scriptFinished (int, QProcess::ExitStatus);
 
   private:
-    int _dummyFlag;
     Script *_script;
     QStringList _messages;
-    int _stop;
+    QProcess _pro;
 };
 
 #endif

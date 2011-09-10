@@ -96,7 +96,7 @@ int CommandYahooHistory::runScript (Data *sg, Script *script)
     if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
     {
       _message << "file error " + symbolFiles.at(loop);
-      return _ERROR;
+      continue;
     }
 
     while (! f.atEnd())

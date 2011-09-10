@@ -33,9 +33,6 @@
 
 QtStalkerScript::QtStalkerScript (QString session, QString command, QString file)
 {
-  _dummyFlag = 0;
-  _stop = 0;
-
   QFileInfo fi(file);
 
   _script = new Script(this);
@@ -44,37 +41,45 @@ QtStalkerScript::QtStalkerScript (QString session, QString command, QString file
   _script->setCommand(command);
   _script->setName(fi.baseName());
 
+  connect(&_pro, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(scriptFinished(int, QProcess::ExitStatus)));
+
+  // we need to create the parent gui thread and keep it running
+  // or else after the first dialog is deleted, the qt gui thread
+  // will terminate.
+  // we create a hidden window and keep it for the remainder of the
+  // script.
+  QWidget *w = new QWidget(0, Qt::WindowStaysOnBottomHint | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
+  w->setFixedSize(0, 0);
+  w->show();
+
   QTimer::singleShot(1, this, SLOT(run()));
 }
 
 QtStalkerScript::~QtStalkerScript ()
 {
+  _pro.kill();
 }
 
 void QtStalkerScript::run ()
 {
-  QProcess pro;
-  connect(&pro, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(scriptFinished(int, QProcess::ExitStatus)));
-
   QString s = _script->command() + " " + _script->file();
-  pro.start(s);
-  if (! pro.waitForStarted())
+  _pro.start(s);
+  if (! _pro.waitForStarted())
   {
     message("QtStalkerScript::run", "process not started");
-    done();
+    scriptFinished(0, QProcess::NormalExit);
     return;
   }
 
-  _stop = 0;
   CommandFactory fac;
 
   while (1)
   {
-    if (_stop)
+    if (_pro.state() == QProcess::NotRunning)
       break;
 
-    pro.waitForReadyRead(-1);
-    QByteArray ba = pro.readAllStandardOutput();
+    _pro.waitForReadyRead(-1);
+    QByteArray ba = _pro.readAllStandardOutput();
 //    qDebug() << ba;
     if (! ba.count())
       continue;
@@ -96,8 +101,7 @@ void QtStalkerScript::run ()
     if (! com)
     {
       message("QtStalkerScript::run", QString("command not found " + tsg.value("COMMAND")));
-      pro.kill();
-      done();
+      _pro.kill();
       return;
     }
 
@@ -114,32 +118,12 @@ void QtStalkerScript::run ()
           continue;
 
         message("QtStalkerScript::run", QString("invalid setting " + nkeys.at(loop) + " " + tsg.value(nkeys.at(loop))));
-        pro.kill();
-        done();
+        _pro.kill();
         delete sg;
         return;
       }
 
       sg->set(nkeys.at(loop), QVariant(tsg.value(nkeys.at(loop))));
-    }
-
-    if (com->isDialog())
-    {
-      // we need to create the parent gui thread and keep it running
-      // or else after the first dialog is deleted, the qt gui thread
-      // will terminate.
-      // we create a hidden window and keep it for the remainder of the
-      // script.
-      if (! _dummyFlag)
-      {
-        QWidget *w = new QWidget(0,
-                                 Qt::WindowStaysOnBottomHint
-                                 | Qt::FramelessWindowHint
-                                 | Qt::X11BypassWindowManagerHint);
-        w->setFixedSize(0, 0);
-        w->show();
-        _dummyFlag++;
-      }
     }
 
     s = "OK\n";
@@ -159,23 +143,27 @@ void QtStalkerScript::run ()
     // deal with it
     ba.clear();
     ba.append(s);
-    pro.write(ba);
-    pro.waitForBytesWritten(-1);
+    _pro.write(ba);
+    _pro.waitForBytesWritten(-1);
   }
-
-  pro.kill();
-
-  done();
 }
 
-void QtStalkerScript::done ()
+void QtStalkerScript::message (QString command, QString mess)
 {
+  if (mess.isEmpty())
+    return;
+
+  _messages << command + ":" + mess;
+}
+
+void QtStalkerScript::scriptFinished (int, QProcess::ExitStatus)
+{
+//  qDebug() << "CommandScript::scriptFinished" << code << status;
+
   if (_messages.count())
   {
-    _messages.prepend("Script: " + _script->file());
-
     QStringList wt;
-    wt << "QtStalkerScript(" + _script->session() + ")" << "Message";
+    wt << "QtStalkerScript(" + _script->session() + ")" << _script->name();
 
     MessageDialog dialog(0);
     dialog.setWindowTitle(wt.join(" "));
@@ -204,18 +192,4 @@ qDebug() << l.join(" ");
 */
 
   QCoreApplication::exit(0);
-}
-
-void QtStalkerScript::message (QString command, QString mess)
-{
-  if (mess.isEmpty())
-    return;
-
-  _messages << command + ":" + mess;
-}
-
-void QtStalkerScript::scriptFinished (int, QProcess::ExitStatus)
-{
-//  qDebug() << "CommandScript::scriptFinished" << code << status;
-  _stop = 1;
 }
