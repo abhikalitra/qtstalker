@@ -52,6 +52,6 @@ int CommandFileDialog::runScript (Data *sg, Script *script)
 Data * CommandFileDialog::settings ()
 {
   Data *sg = new Data;
-  sg->set("FILE", QVariant(QStringList()));
+  sg->set("FILES", QVariant(QStringList()));
   return sg;
 }

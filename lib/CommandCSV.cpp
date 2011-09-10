@@ -39,6 +39,7 @@ CommandCSV::CommandCSV (QObject *p) : Command (p)
 
 int CommandCSV::runScript (Data *sg, Script *)
 {
+  // CSV file
   QStringList files = sg->get("CSV_FILE").toStringList();
   if (! files.count())
   {
@@ -46,6 +47,7 @@ int CommandCSV::runScript (Data *sg, Script *)
     return _ERROR;
   }
 
+  // FORMAT
   QStringList format = sg->get("FORMAT").toString().split(",");
   if (! format.count())
   {
@@ -53,6 +55,7 @@ int CommandCSV::runScript (Data *sg, Script *)
     return _ERROR;
   }
 
+  // DATE_FORMAT
   QString dateFormat = sg->get("DATE_FORMAT").toString();
   if (dateFormat.isEmpty())
   {
@@ -60,6 +63,7 @@ int CommandCSV::runScript (Data *sg, Script *)
     return _ERROR;
   }
 
+  // DELIMITER
   QString delimiter;
   QString s = sg->get("DELIMITER").toString();
   switch ((DelimiterType) _delimiterType.indexOf(s))
@@ -76,6 +80,7 @@ int CommandCSV::runScript (Data *sg, Script *)
       break;
   }
 
+  // TYPE
   QString typ = sg->get("TYPE").toString();
   if (typ.isEmpty())
   {
@@ -83,10 +88,13 @@ int CommandCSV::runScript (Data *sg, Script *)
     return _ERROR;
   }
 
+  // FILENAME AS SYMBOL
   bool fileNameFlag = sg->get("FILENAME_AS_SYMBOL").toBool();
 
-  QHash<QString, Data *> symbols;
+  // EXCHANGE
+  QString exchange = sg->get("EXCHANGE").toString();
 
+  QHash<QString, Data *> symbols;
   int loop = 0;
   for (; loop < files.count(); loop++)
   {
@@ -119,12 +127,14 @@ int CommandCSV::runScript (Data *sg, Script *)
         continue;
       }
 
-      QString symbol, name, exchange;
+      QString symbol, name;
       if (fileNameFlag)
       {
         symbol = fileNameSymbol;
         name = fileNameSymbol;
       }
+
+      QString texchange = exchange;
 
       Data *bar = new CurveBar;
 
@@ -135,7 +145,7 @@ int CommandCSV::runScript (Data *sg, Script *)
         switch ((FormatType) _formatType.indexOf(format.at(loop2)))
         {
           case _EXCHANGE:
-            exchange = data.at(loop2).trimmed();
+            texchange = data.at(loop2).trimmed();
             break;
           case _SYMBOL:
             symbol = data.at(loop2).trimmed();
@@ -218,9 +228,9 @@ int CommandCSV::runScript (Data *sg, Script *)
         continue;
       }
 
-      if (exchange.isEmpty())
+      if (texchange.isEmpty())
       {
-        _message << "invalid EXCHANGE " + exchange;
+        _message << "invalid EXCHANGE " + texchange;
         delete bar;
         continue;
       }
@@ -232,12 +242,12 @@ int CommandCSV::runScript (Data *sg, Script *)
         continue;
       }
 
-      QString key = exchange + ":" + symbol;
+      QString key = texchange + ":" + symbol;
       Data *bd = symbols.value(key);
       if (! bd)
       {
         bd = new Symbol;
-        bd->set(Symbol::_EXCHANGE, QVariant(exchange));
+        bd->set(Symbol::_EXCHANGE, QVariant(texchange));
         bd->set(Symbol::_SYMBOL, QVariant(symbol));
         bd->set(Symbol::_TYPE, QVariant(typ));
         if (! name.isEmpty())
@@ -278,5 +288,6 @@ Data * CommandCSV::settings ()
   sg->set("DELIMITER", QVariant(QString("Comma")));
   sg->set("TYPE", QVariant(QString("Stock")));
   sg->set("FILENAME_AS_SYMBOL", QVariant(FALSE));
+  sg->set("EXCHANGE", QVariant(QString()));
   return sg;
 }

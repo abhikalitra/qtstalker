@@ -24,7 +24,7 @@
 #include "qtstalker_defines.h"
 #include "ExchangeDataBase.h"
 #include "Symbol.h"
-#include "AddIndicator.h"
+#include "IndicatorDataBase.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -125,16 +125,15 @@ void Setup::setupDefaults ()
 
 void Setup::setupDefaultIndicators ()
 {
-  AddIndicator ai(0);
-
   QString base = INSTALL_DATA_DIR;
   base.append("/qtstalker/indicator/");
 
+  IndicatorDataBase i;
   QString s = base + "OHLC_3MA.pl";
-  ai.addIndicator2(s, QString("perl"));
+  i.add("perl", s);
 
   s = base + "Volume.pl";
-  ai.addIndicator2(s, QString("perl"));
+  i.add("perl", s);
 }
 
 void Setup::setupDefaultScripts ()

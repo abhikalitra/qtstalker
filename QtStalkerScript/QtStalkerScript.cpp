@@ -60,7 +60,7 @@ void QtStalkerScript::run ()
   pro.start(s);
   if (! pro.waitForStarted())
   {
-    qDebug() << "QtStalkerScript::run: process not started";
+    message("QtStalkerScript::run", "process not started");
     done();
     return;
   }
@@ -75,7 +75,9 @@ void QtStalkerScript::run ()
 
     pro.waitForReadyRead(-1);
     QByteArray ba = pro.readAllStandardOutput();
-    qDebug() << ba;
+//    qDebug() << ba;
+    if (! ba.count())
+      continue;
 
     Message tsg;
     QString s(ba);
@@ -93,7 +95,7 @@ void QtStalkerScript::run ()
     Command *com = fac.command(this, tsg.value("COMMAND"));
     if (! com)
     {
-      qDebug() << "QtStalkerScript::run: command not found" << tsg.value("COMMAND");
+      message("QtStalkerScript::run", QString("command not found " + tsg.value("COMMAND")));
       pro.kill();
       done();
       return;
@@ -102,20 +104,23 @@ void QtStalkerScript::run ()
     Data *sg = com->settings();
 
     // merge settings and verify them
-    QList<QString> keys = tsg.keys();
-    for (loop = 0; loop < keys.count(); loop++)
+    QList<QString> dkeys = sg->dataKeys();
+    QList<QString> nkeys = tsg.keys();
+    for (loop = 0; loop < nkeys.count(); loop++)
     {
-      if (! sg->dataContains(keys.at(loop)))
-        continue;
-
-      if (sg->set(keys.at(loop), tsg.value(keys.at(loop))))
+      if (dkeys.indexOf(nkeys.at(loop)) == -1)
       {
-        qDebug() << "QtStalkerScript::run: invalid setting" << keys.at(loop) << tsg.value(keys.at(loop));
+        if (nkeys.at(loop) == "COMMAND")
+          continue;
+
+        message("QtStalkerScript::run", QString("invalid setting " + nkeys.at(loop) + " " + tsg.value(nkeys.at(loop))));
         pro.kill();
         done();
         delete sg;
         return;
       }
+
+      sg->set(nkeys.at(loop), QVariant(tsg.value(nkeys.at(loop))));
     }
 
     if (com->isDialog())
@@ -167,6 +172,8 @@ void QtStalkerScript::done ()
 {
   if (_messages.count())
   {
+    _messages.prepend("Script: " + _script->file());
+
     QStringList wt;
     wt << "QtStalkerScript(" + _script->session() + ")" << "Message";
 
@@ -207,8 +214,8 @@ void QtStalkerScript::message (QString command, QString mess)
   _messages << command + ":" + mess;
 }
 
-void QtStalkerScript::scriptFinished (int code, QProcess::ExitStatus status)
+void QtStalkerScript::scriptFinished (int, QProcess::ExitStatus)
 {
-  qDebug() << "CommandScript::scriptFinished" << code << status;
+//  qDebug() << "CommandScript::scriptFinished" << code << status;
   _stop = 1;
 }
