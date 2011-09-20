@@ -19,20 +19,25 @@
  *  USA.
  */
 
-#ifndef COMMAND_MAVP_HPP
-#define COMMAND_MAVP_HPP
+// ******************************************************
+// ******************************************************
 
-#include "Command.h"
+#ifndef SETTING_STRING_HPP
+#define SETTING_STRING_HPP
 
-class CommandMAVP : public Command
+#include "Setting.h"
+
+class SettingString : public Setting
 {
-  Q_OBJECT
-
   public:
-    CommandMAVP (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
-    Data * getMAVP (QList<Data *> &, int min, int max, int type);
+    SettingString (QString);
+    SettingString ();
+    int set (QString, void *);
+    QString toString ();
+    int set (QString);
+
+  protected:
+    QString _value;
 };
 
 #endif

@@ -30,8 +30,7 @@ class CommandWeightedClose : public Command
 
   public:
     CommandWeightedClose (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getWC (QList<Data *> &);
 };
 

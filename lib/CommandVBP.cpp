@@ -20,9 +20,12 @@
  */
 
 #include "CommandVBP.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
+#include "SettingDouble.h"
+#include "SettingColor.h"
 
 #include <QtDebug>
 #include <QHash>
@@ -32,43 +35,62 @@ CommandVBP::CommandVBP (QObject *p) : Command (p)
   _type = "VBP";
 }
 
-int CommandVBP::runScript (Data *sg, Script *script)
+int CommandVBP::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("CLOSE").toString();
-  Data *iclose = script->data(s);
+  s = sg->value("CLOSE");
+  Data *iclose = vdi.curve(script, s);
   if (! iclose)
   {
-    qDebug() << _type << "::runScript: invalid CLOSE" << s;
+    _message << "invalid CLOSE " + s;
     return _ERROR;
   }
 
-  s = sg->get("VOLUME").toString();
-  Data *ivol = script->data(s);
+  s = sg->value("VOLUME");
+  Data *ivol = vdi.curve(script, s);
   if (! ivol)
   {
-    qDebug() << _type << "::runScript: invalid VOLUME" << s;
+    _message << "invalid VOLUME " + s;
     return _ERROR;
   }
 
-  QColor upColor(sg->get("COLOR_UP").toString());
+  s = sg->value("COLOR_UP");
+  Setting *upColor = vdi.setting(SettingFactory::_COLOR, script, s);
+  if (! upColor)
+  {
+    _message << "invalid COLOR_UP " + s;
+    return _ERROR;
+  }
 
-  QColor downColor(sg->get("COLOR_DOWN").toString());
+  s = sg->value("COLOR_DOWN");
+  Setting *downColor = vdi.setting(SettingFactory::_COLOR, script, s);
+  if (! downColor)
+  {
+    _message << "invalid COLOR_DOWN " + s;
+    return _ERROR;
+  }
 
   QList<Data *> list;
   list << iclose << ivol;
-  line = getVBP(list, upColor, downColor);
+
+  Data *line = getVBP(list, upColor->toColor(), downColor->toColor());
   if (! line)
     return _ERROR;
 
-  script->setData(name, line);
+  script->setData(name->toString(), line);
 
   return _OK;
 }
@@ -78,9 +100,9 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
   if (list.count() != 2)
     return 0;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   // get close high/low
@@ -101,10 +123,10 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
   for (; loop < 12; loop++)
   {
     Data *set = new Data;
-    set->set("HIGH", QVariant(top));
-    set->set("LOW", QVariant(bottom));
-    set->set("UP", QVariant(0));
-    set->set("DOWN", QVariant(0));
+    set->set("HIGH", new SettingDouble(top));
+    set->set("LOW", new SettingDouble(bottom));
+    set->set("UP", new SettingDouble(0));
+    set->set("DOWN", new SettingDouble(0));
     hash.insert(loop, set);
 
     bottom = top + 0.01;
@@ -127,7 +149,7 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
       continue;
 
     int flag = 1;
-    if (cb->get(CurveBar::_VALUE).toDouble() < ycb->get(CurveBar::_VALUE).toDouble())
+    if (cb->get(CurveBar::_VALUE)->toDouble() < ycb->get(CurveBar::_VALUE)->toDouble())
       flag = 0;
 
     QHashIterator<int, Data *> it(hash);
@@ -136,12 +158,12 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
       it.next();
       Data *set = it.value();
 
-      if (cb->get(CurveBar::_VALUE).toDouble() >= set->get("LOW").toDouble() && cb->get(CurveBar::_VALUE).toDouble() <= set->get("HIGH").toDouble())
+      if (cb->get(CurveBar::_VALUE)->toDouble() >= set->get("LOW")->toDouble() && cb->get(CurveBar::_VALUE)->toDouble() <= set->get("HIGH")->toDouble())
       {
         if (flag)
-	  set->set("UP", QVariant(set->get("UP").toDouble() + vb->get(CurveBar::_VALUE).toDouble()));
+	  set->set("UP", new SettingDouble(set->get("UP")->toDouble() + vb->get(CurveBar::_VALUE)->toDouble()));
 	else
-	  set->set("DOWN", QVariant(set->get("DOWN").toDouble() + vb->get(CurveBar::_VALUE).toDouble()));
+	  set->set("DOWN", new SettingDouble(set->get("DOWN")->toDouble() + vb->get(CurveBar::_VALUE)->toDouble()));
 	break;
       }
     }
@@ -159,34 +181,23 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
       continue;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_HIGH, set->get("HIGH"));
-    b->set(CurveBar::_LOW, set->get("LOW"));
-    b->set(CurveBar::_OPEN, set->get("UP"));
-    b->set(CurveBar::_CLOSE, set->get("DOWN"));
-    b->set(CurveBar::_COLOR, QVariant(upColor.name()));
+    b->set(CurveBar::_HIGH, new SettingDouble(set->get("HIGH")->toDouble()));
+    b->set(CurveBar::_LOW, new SettingDouble(set->get("LOW")->toDouble()));
+    b->set(CurveBar::_OPEN, new SettingDouble(set->get("UP")->toDouble()));
+    b->set(CurveBar::_CLOSE, new SettingDouble(set->get("DOWN")->toDouble()));
+    b->set(CurveBar::_COLOR, new SettingColor(upColor));
     line->set(pos++, b);
 
     b = new CurveBar;
-    b->set(CurveBar::_HIGH, set->get("HIGH"));
-    b->set(CurveBar::_LOW, set->get("LOW"));
-    b->set(CurveBar::_OPEN, set->get("UP"));
-    b->set(CurveBar::_CLOSE, set->get("DOWN"));
-    b->set(CurveBar::_COLOR, QVariant(downColor.name()));
+    b->set(CurveBar::_HIGH, new SettingDouble(set->get("HIGH")->toDouble()));
+    b->set(CurveBar::_LOW, new SettingDouble(set->get("LOW")->toDouble()));
+    b->set(CurveBar::_OPEN, new SettingDouble(set->get("UP")->toDouble()));
+    b->set(CurveBar::_CLOSE, new SettingDouble(set->get("DOWN")->toDouble()));
+    b->set(CurveBar::_COLOR, new SettingColor(downColor));
     line->set(pos++, b);
   }
 
   qDeleteAll(hash);
 
   return line;
-}
-
-Data * CommandVBP::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("CLOSE", QVariant(QString()));
-  sg->set("VOLUME", QVariant(QString()));
-  sg->set("COLOR_UP", QVariant(Qt::green));
-  sg->set("COLOR_DOWN", QVariant(Qt::red));
-  return sg;
 }

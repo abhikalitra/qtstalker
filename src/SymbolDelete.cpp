@@ -24,6 +24,7 @@
 #include "QuoteDataBase.h"
 #include "Symbol.h"
 #include "ConfirmDialog.h"
+#include "SettingString.h"
 
 #include <QtDebug>
 #include <QTimer>
@@ -67,8 +68,8 @@ void SymbolDelete::remove2 ()
     if (tl.count() != 2)
       continue;
 
-    bd->set(Symbol::_EXCHANGE, tl.at(0));
-    bd->set(Symbol::_SYMBOL, tl.at(1));
+    bd->set(Symbol::_EXCHANGE, new SettingString(tl.at(0)));
+    bd->set(Symbol::_SYMBOL, new SettingString(tl.at(1)));
     db.deleteSymbol(bd);
   }
 

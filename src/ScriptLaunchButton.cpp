@@ -80,7 +80,8 @@ void ScriptLaunchButton::configure2 (QString command, QString file, QString icon
   _icon = icon;
   _useIcon = use;
 
-  setToolTip(_scriptName);
+  QFileInfo fi(_scriptName);
+  setToolTip(fi.baseName());
 
   setText(QString::number(_position));
 

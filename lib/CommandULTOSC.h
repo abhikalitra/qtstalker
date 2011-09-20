@@ -30,8 +30,7 @@ class CommandULTOSC : public Command
 
   public:
     CommandULTOSC (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getULTOSC (QList<Data *> &, int sp, int mp, int lp);
 };
 

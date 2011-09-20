@@ -30,8 +30,7 @@ class CommandShift : public Command
 
   public:
     CommandShift (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getShift (Data *, int);
 };
 

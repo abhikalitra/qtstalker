@@ -20,9 +20,11 @@
  */
 
 #include "CommandMedianPrice.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
+#include "SettingDouble.h"
 
 #include <QtDebug>
 
@@ -31,48 +33,55 @@ CommandMedianPrice::CommandMedianPrice (QObject *p) : Command (p)
   _type = "MEDIAN_PRICE";
 }
 
-int CommandMedianPrice::runScript (Data *sg, Script *script)
+int CommandMedianPrice::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT_1").toString();
-  Data *in = script->data(s);
+  s = sg->value("INPUT_1");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT_1 missing" << s;
+    _message << "INPUT_1 missing " + s;
     return _ERROR;
   }
 
-  s = sg->get("INPUT_2").toString();
-  Data *in2 = script->data(s);
+  s = sg->value("INPUT_2");
+  Data *in2 = vdi.curve(script, s);
   if (! in2)
   {
-    qDebug() << _type << "::runScript: INPUT_2 missing" << s;
+    _message << "INPUT_2 missing " + s;
     return _ERROR;
   }
 
   QList<Data *> list;
   list << in << in2;
-  line = getMP(list);
+
+  Data *line = getMP(list);
   if (! line)
     return _ERROR;
 
-  script->setData(name, line);
+  script->setData(name->toString(), line);
 
   return _OK;
 }
 
 Data * CommandMedianPrice::getMP (QList<Data *> &list)
 {
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   Data *line = new CurveData;
@@ -89,20 +98,11 @@ Data * CommandMedianPrice::getMP (QList<Data *> &list)
     if (! bar2)
       continue;
 
-    double t = (bar->get(CurveBar::_VALUE).toDouble() + bar2->get(CurveBar::_VALUE).toDouble()) / 2.0;
+    double t = (bar->get(CurveBar::_VALUE)->toDouble() + bar2->get(CurveBar::_VALUE)->toDouble()) / 2.0;
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, QVariant(t));
+    b->set(CurveBar::_VALUE, new SettingDouble(t));
     line->set(keys.at(loop), b);
   }
 
   return line;
-}
-
-Data * CommandMedianPrice::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("INPUT_1", QVariant(QString()));
-  sg->set("INPUT_2", QVariant(QString()));
-  return sg;
 }

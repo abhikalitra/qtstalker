@@ -20,21 +20,12 @@
  */
 
 #include "Command.h"
-#include "IPCMessage.h"
-#include "MessageSend.h"
-#include "Data.h"
-
-#include <QDebug>
-#include <QFile>
-//#include <QTextStream>
-#include <QMessageBox>
 
 Command::Command (QObject *p) : QObject (p)
 {
-  _isDialog = 0;
 }
 
-int Command::runScript (Data *, Script *)
+int Command::runScript (Message *, Script *)
 {
   return 0;
 }
@@ -44,19 +35,9 @@ int Command::request (Message *, Message *)
   return 0;
 }
 
-Data * Command::settings ()
-{
-  return 0;
-}
-
 QString Command::type ()
 {
   return _type;
-}
-
-int Command::isDialog ()
-{
-  return _isDialog;
 }
 
 QString Command::returnString ()

@@ -30,8 +30,7 @@ class CommandChart : public Command
 
   public:
     CommandChart (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
 };
 
 #endif

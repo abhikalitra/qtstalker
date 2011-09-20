@@ -1,8 +1,8 @@
 /*
  *  Qtstalker stock charter
- * 
+ *
  *  Copyright (C) 2001-2010 Stefan S. Stratigakos
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,38 +15,31 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, 
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
  *  USA.
  */
 
-#ifndef REFRESH_BUTTON_HPP
-#define REFRESH_BUTTON_HPP
+// ******************************************************
+// ******************************************************
 
-#include <QTimer>
-#include <QToolButton>
-#include <QMenu>
+#ifndef SETTING_DATETIME_HPP
+#define SETTING_DATETIME_HPP
 
-class RefreshButton : public QToolButton
+#include "Setting.h"
+
+class SettingDateTime : public Setting
 {
-  Q_OBJECT
-  
-  signals:
-    void signalRefresh ();
-
   public:
-    RefreshButton ();
-    
-  public slots:
-    void refreshChart (bool status);
-    void refreshUpdated (int);
-    void dialog ();
-    void changeText ();
-    void contextMenu ();
-    
-  private:
-    QTimer *_timer;
-    int _minutes;
-    QMenu *_menu;
+    SettingDateTime (QDateTime);
+    SettingDateTime ();
+    int set (QString, void *);
+    QString toString ();
+    QDateTime toDateTime ();
+    void set (QDateTime);
+    int set (QString);
+
+  protected:
+    QDateTime _value;
 };
 
 #endif

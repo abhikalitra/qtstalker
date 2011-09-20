@@ -65,14 +65,25 @@ void ScriptLaunchButtonDialog::createMainPage ()
   _command = new LineEdit(this);
   _form->addRow(tr("Command"), _command);
 
-  // icon
-  _icon = new IconButton(this, QString());
-  _form->addRow(tr("Icon"), _icon);
+  // icon widgets
+  QWidget *w = new QWidget;
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setSpacing(5);
+  hbox->setMargin(0);
+  w->setLayout(hbox);
 
   // use icon checkbox
   _useIcon = new QCheckBox;
-  _form->addRow(tr("Use Icon"), _useIcon);
+  hbox->addWidget(_useIcon);
+//  _form->addRow(tr("Use Icon"), _useIcon);
   connect(_useIcon, SIGNAL(toggled(bool)), this, SLOT(useIconToggled(bool)));
+
+  // icon
+  _icon = new IconButton(this, QString());
+  hbox->addWidget(_icon, 1, 0);
+//  _form->addRow(tr("Icon"), _icon);
+
+  _form->addRow(tr("Icon"), w);
 }
 
 void ScriptLaunchButtonDialog::done ()

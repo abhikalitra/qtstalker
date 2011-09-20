@@ -30,8 +30,7 @@ class CommandPHASOR : public Command
 
   public:
     CommandPHASOR (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     QList<Data *> getPHASOR (QList<Data *> &);
 };
 

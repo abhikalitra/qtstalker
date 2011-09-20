@@ -27,6 +27,9 @@
 #include "SharedMemory.h"
 #include "IndicatorDataBase.h"
 #include "Script.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+#include "SettingDateTime.h"
 
 #include <QStringList>
 #include <QVariant>
@@ -46,12 +49,12 @@ int ChartLoad::run ()
     return 1;
 
   g_currentSymbol->clear();
-  g_currentSymbol->set(Symbol::_EXCHANGE, QVariant(tl.at(0)));
-  g_currentSymbol->set(Symbol::_SYMBOL, QVariant(tl.at(1)));
-  g_currentSymbol->set(Symbol::_LENGTH, QVariant(g_controlPanel->barLengthButton()->length()));
-  g_currentSymbol->set(Symbol::_START_DATE, QVariant(QDateTime()));
-  g_currentSymbol->set(Symbol::_END_DATE, QVariant(QDateTime()));
-  g_currentSymbol->set(Symbol::_RANGE, QVariant(g_controlPanel->dateRangeControl()->dateRange()));
+  g_currentSymbol->set(Symbol::_EXCHANGE, new SettingString(tl.at(0)));
+  g_currentSymbol->set(Symbol::_SYMBOL, new SettingString(tl.at(1)));
+  g_currentSymbol->set(Symbol::_LENGTH, new SettingInteger(g_controlPanel->barLengthButton()->length()));
+  g_currentSymbol->set(Symbol::_START_DATE, new SettingDateTime(QDateTime()));
+  g_currentSymbol->set(Symbol::_END_DATE, new SettingDateTime(QDateTime()));
+  g_currentSymbol->set(Symbol::_RANGE, new SettingInteger(g_controlPanel->dateRangeControl()->dateRange()));
 
   QuoteDataBase db;
   if (db.getBars(g_currentSymbol))

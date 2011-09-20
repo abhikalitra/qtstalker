@@ -30,8 +30,7 @@ class CommandTypicalPrice : public Command
 
   public:
     CommandTypicalPrice (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getTP (QList<Data *> &);
 };
 

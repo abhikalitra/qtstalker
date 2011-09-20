@@ -20,19 +20,17 @@
  */
 
 #include "ConfirmDialog.h"
-//#include "Globals.h"
 
 #include <QtDebug>
 #include <QMessageBox>
 
 ConfirmDialog::ConfirmDialog (QWidget *p) : Dialog (p)
 {
-//  _keySize = "confirm_dialog_window_size";
+  _keySize = "confirm_dialog_window_size";
   _keyPos = "confirm_dialog_window_position";
 
   QStringList l;
-//  l << "QtStalker" << g_session << ":" << tr("Confirm");
-  l << "QtStalker" << ":" << tr("Confirm");
+  l << "QtStalker:" << tr("Confirm");
   setWindowTitle(l.join(" "));
 
   createGUI();
@@ -56,23 +54,23 @@ void ConfirmDialog::createGUI ()
   QLabel *label = new QLabel;
   label->setPixmap(mb.iconPixmap());
   vbox->addWidget(label);
-
   vbox->addStretch(1);
 
-  delete _message;
-  _message = new QLabel;
-  hbox->addWidget(_message);
-  hbox->addStretch(1);
+//  vbox = new QVBoxLayout;
+//  vbox->setSpacing(0);
+//  hbox->addLayout(vbox);
+
+  _text = new QTextEdit;
+  _text->setReadOnly(TRUE);
+  hbox->addWidget(_text);
+//  vbox->addStretch(1);
+
+//  hbox->addStretch(1);
+
+  _message->hide();
 }
 
 void ConfirmDialog::setMessage (QString d)
 {
-  _message->setText(d);
+  _text->setText(d);
 }
-
-/*
-void ConfirmDialog::setCommand (Command *c)
-{
-  _command = c;
-}
-*/

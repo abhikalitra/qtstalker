@@ -20,9 +20,11 @@
  */
 
 #include "CommandTypicalPrice.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
+#include "SettingDouble.h"
 
 #include <QtDebug>
 
@@ -31,47 +33,54 @@ CommandTypicalPrice::CommandTypicalPrice (QObject *p) : Command (p)
   _type = "TYPICAL_PRICE";
 }
 
-int CommandTypicalPrice::runScript (Data *sg, Script *script)
+int CommandTypicalPrice::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH").toString();
-  Data *ihigh = script->data(s);
+  s = sg->value("HIGH");
+  Data *ihigh = vdi.curve(script, s);
   if (! ihigh)
   {
-    qDebug() << _type << "::runScript: invalid HIGH" << s;
+    _message << "invalid HIGH " + s;
     return _ERROR;
   }
 
-  s = sg->get("LOW").toString();
-  Data *ilow = script->data(s);
+  s = sg->value("LOW");
+  Data *ilow = vdi.curve(script, s);
   if (! ilow)
   {
-    qDebug() << _type << "::runScript: invalid LOW" << s;
+    _message << "invalid LOW " + s;
     return _ERROR;
   }
 
-  s = sg->get("CLOSE").toString();
-  Data *iclose = script->data(s);
+  s = sg->value("CLOSE");
+  Data *iclose = vdi.curve(script, s);
   if (! iclose)
   {
-    qDebug() << _type << "::runScript: invalid CLOSE" << s;
+    _message << "invalid CLOSE " + s;
     return _ERROR;
   }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose;
-  line = getTP(list);
+
+  Data *line = getTP(list);
   if (! line)
     return _ERROR;
 
-  script->setData(name, line);
+  script->setData(name->toString(), line);
 
   return _OK;
 }
@@ -81,9 +90,9 @@ Data * CommandTypicalPrice::getTP (QList<Data *> &list)
   if (list.count() != 3)
     return 0;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   Data *line = new CurveData;
@@ -105,22 +114,14 @@ Data * CommandTypicalPrice::getTP (QList<Data *> &list)
     if (! cbar)
       continue;
 
-    double t = (hbar->get(CurveBar::_VALUE).toDouble() + lbar->get(CurveBar::_VALUE).toDouble() + cbar->get(CurveBar::_VALUE).toDouble()) / 3.0;
+    double t = (hbar->get(CurveBar::_VALUE)->toDouble() +
+                lbar->get(CurveBar::_VALUE)->toDouble() +
+                cbar->get(CurveBar::_VALUE)->toDouble()) / 3.0;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, QVariant(t));
+    b->set(CurveBar::_VALUE, new SettingDouble(t));
     line->set(keys.at(loop), b);
   }
 
   return line;
-}
-
-Data * CommandTypicalPrice::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("HIGH", QVariant(QString()));
-  sg->set("LOW", QVariant(QString()));
-  sg->set("CLOSE", QVariant(QString()));
-  return sg;
 }

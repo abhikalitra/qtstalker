@@ -21,6 +21,7 @@
 
 #include "Script.h"
 #include "ChartObjectData.h"
+#include "DataFactory.h"
 
 #include <QDebug>
 #include <QProcess>
@@ -45,6 +46,12 @@ void Script::clear ()
   _file.clear();
   _command.clear();
   _pid = -1;
+
+  qDeleteAll(_tsettings);
+  _tsettings.clear();
+
+  qDeleteAll(_tdata);
+  _tdata.clear();
 }
 
 void Script::setData (QString key, Data *d)
@@ -166,10 +173,10 @@ int Script::nextROID ()
   {
     it.next();
     Data *dg = it.value();
-    if (dg->type() != "CHART_OBJECT")
+    if (dg->type() != DataFactory::_CHART_OBJECT)
       continue;
 
-    int t = dg->get(ChartObjectData::_ID).toInt();
+    int t = dg->get(ChartObjectData::_ID)->toInteger();
     if (t < low)
       low = t;
   }
@@ -187,4 +194,14 @@ void Script::setCommand (QString d)
 QString Script::command ()
 {
   return _command;
+}
+
+void Script::setTSetting (Setting *d)
+{
+  _tsettings << d;
+}
+
+void Script::setTData (Data *d)
+{
+  _tdata << d;
 }

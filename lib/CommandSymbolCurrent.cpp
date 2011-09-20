@@ -25,6 +25,11 @@
 #include "Symbol.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "SettingString.h"
+#include "SettingDouble.h"
+#include "SettingDateTime.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 #include <QSharedMemory>
@@ -35,7 +40,7 @@ CommandSymbolCurrent::CommandSymbolCurrent (QObject *p) : Command (p)
   _type = "SYMBOL_CURRENT";
 }
 
-int CommandSymbolCurrent::runScript (Data *sg, Script *script)
+int CommandSymbolCurrent::runScript (Message *sg, Script *script)
 {
   QSettings settings("QtStalker/qtstalkerrc");
   QSharedMemory sm(settings.value("shared_memory_key").toString());
@@ -56,43 +61,86 @@ int CommandSymbolCurrent::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  // dump to disk
+  // dump to dialog
 //  message(script->session(), s);
 
   // date
-  s = sg->get("DATE").toString();
+  VerifyDataInput vdi;
+  s = sg->value("DATE");
+  Setting *set = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! set)
+  {
+    _message << "invalid DATE " + s;
+    return _ERROR;
+  }
   Data *dline = new CurveData;
-  script->setData(s, dline);
+  script->setData(set->toString(), dline);
 
   // open
-  s = sg->get("OPEN").toString();
+  s = sg->value("OPEN");
+  set = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! set)
+  {
+    _message << "invalid OPEN " + s;
+    return _ERROR;
+  }
   Data *oline = new CurveData;
-  script->setData(s, oline);
+  script->setData(set->toString(), oline);
 
   // high
-  s = sg->get("HIGH").toString();
+  s = sg->value("HIGH");
+  set = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! set)
+  {
+    _message << "invalid HIGH " + s;
+    return _ERROR;
+  }
   Data *hline = new CurveData;
-  script->setData(s, hline);
+  script->setData(set->toString(), hline);
 
   // low
-  s = sg->get("LOW").toString();
+  s = sg->value("LOW");
+  set = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! set)
+  {
+    _message << "invalid LOW " + s;
+    return _ERROR;
+  }
   Data *lline = new CurveData;
-  script->setData(s, lline);
+  script->setData(set->toString(), lline);
 
   // close
-  s = sg->get("CLOSE").toString();
+  s = sg->value("CLOSE");
+  set = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! set)
+  {
+    _message << "invalid CLOSE " + s;
+    return _ERROR;
+  }
   Data *cline = new CurveData;
-  script->setData(s, cline);
+  script->setData(set->toString(), cline);
 
   // volume
-  s = sg->get("VOLUME").toString();
+  s = sg->value("VOLUME");
+  set = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! set)
+  {
+    _message << "invalid VOLUME " + s;
+    return _ERROR;
+  }
   Data *vline = new CurveData;
-  script->setData(s, vline);
+  script->setData(set->toString(), vline);
 
   // oi
-  s = sg->get("OI").toString();
+  s = sg->value("OI");
+  set = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! set)
+  {
+    _message << "invalid OI " + s;
+    return _ERROR;
+  }
   Data *iline = new CurveData;
-  script->setData(s, iline);
+  script->setData(set->toString(), iline);
 
   int loop = 0;
   QList<int> barKeys = bd->barKeys();
@@ -101,48 +149,35 @@ int CommandSymbolCurrent::runScript (Data *sg, Script *script)
     Data *b = bd->getData(barKeys.at(loop));
 
     Data *db = new CurveBar;
-    db->set(CurveBar::_DATE, b->get(CurveBar::_DATE));
+    db->set(CurveBar::_DATE, new SettingDateTime(b->get(CurveBar::_DATE)->toDateTime()));
     dline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->get(CurveBar::_OPEN));
+    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_OPEN)->toDouble()));
     oline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->get(CurveBar::_HIGH));
+    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_HIGH)->toDouble()));
     hline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->get(CurveBar::_LOW));
+    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_LOW)->toDouble()));
     lline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->get(CurveBar::_CLOSE));
+    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_CLOSE)->toDouble()));
     cline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->get(CurveBar::_VOLUME));
+    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_VOLUME)->toDouble()));
     vline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, b->get(CurveBar::_OI));
+    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_OI)->toDouble()));
     iline->set(loop, db);
   }
 
   delete bd;
 
   return _OK;
-}
-
-Data * CommandSymbolCurrent::settings ()
-{
-  Data *sg = new Data;
-  sg->set("DATE", QVariant(QString("date")));
-  sg->set("OPEN", QVariant(QString("open")));
-  sg->set("HIGH", QVariant(QString("high")));
-  sg->set("LOW", QVariant(QString("low")));
-  sg->set("CLOSE", QVariant(QString("close")));
-  sg->set("VOLUME", QVariant(QString("volume")));
-  sg->set("OI", QVariant(QString("oi")));
-  return sg;
 }

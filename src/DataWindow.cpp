@@ -50,9 +50,9 @@ DataWindow::DataWindow (QWidget *p) : QDialog (p, 0)
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 
   QStringList l;
-  l << "QtStalker" + g_session << ":" << g_currentSymbol->get(Symbol::_EXCHANGE).toString();
-  l << ":" << g_currentSymbol->get(Symbol::_SYMBOL).toString();
-  l << "(" + g_currentSymbol->get(Symbol::_NAME).toString() + ")";
+  l << "QtStalker" + g_session << ":" << g_currentSymbol->get(Symbol::_EXCHANGE)->toString();
+  l << ":" << g_currentSymbol->get(Symbol::_SYMBOL)->toString();
+  l << "(" + g_currentSymbol->get(Symbol::_NAME)->toString() + ")";
   l << "-" << tr("Indicators");
   setWindowTitle(l.join(" "));
 }
@@ -100,7 +100,7 @@ void DataWindow::setPlot (Plot *p)
         _bars.insert(keys.at(loop), bar);
       }
 
-      switch ((CurveType::Type) ct.stringToType(d->get(CurveData::_TYPE).toString()))
+      switch ((CurveType::Type) ct.stringToType(d->get(CurveData::_TYPE)->toString()))
       {
         case CurveType::_OHLC:
         {
@@ -110,35 +110,35 @@ void DataWindow::setPlot (Plot *p)
           _headers.insert(tr("Close"), tr("Close"));
 
           QString s;
-          strip.strip(cb->get(CurveBar::_OPEN).toDouble(), 4, s);
+          strip.strip(cb->get(CurveBar::_OPEN)->toDouble(), 4, s);
           bar->insert(tr("Open"), s);
 
-          strip.strip(cb->get(CurveBar::_HIGH).toDouble(), 4, s);
+          strip.strip(cb->get(CurveBar::_HIGH)->toDouble(), 4, s);
           bar->insert(tr("High"), s);
 
-          strip.strip(cb->get(CurveBar::_LOW).toDouble(), 4, s);
+          strip.strip(cb->get(CurveBar::_LOW)->toDouble(), 4, s);
           bar->insert(tr("Low"), s);
 
-          strip.strip(cb->get(CurveBar::_CLOSE).toDouble(), 4, s);
+          strip.strip(cb->get(CurveBar::_CLOSE)->toDouble(), 4, s);
           bar->insert(tr("Close"), s);
           break;
         }
         case CurveType::_HISTOGRAM:
         {
-          _headers.insert(d->get(CurveData::_LABEL).toString(), d->get(CurveData::_LABEL).toString());
+          _headers.insert(d->get(CurveData::_LABEL)->toString(), d->get(CurveData::_LABEL)->toString());
 
           QString s;
-          strip.strip(cb->get(CurveBar::_HIGH).toDouble(), 4, s);
-          bar->insert(d->get(CurveData::_LABEL).toString(), s);
+          strip.strip(cb->get(CurveBar::_HIGH)->toDouble(), 4, s);
+          bar->insert(d->get(CurveData::_LABEL)->toString(), s);
           break;
         }
         default:
         {
-          _headers.insert(d->get(CurveData::_LABEL).toString(), d->get(CurveData::_LABEL).toString());
+          _headers.insert(d->get(CurveData::_LABEL)->toString(), d->get(CurveData::_LABEL)->toString());
 
           QString s;
-          strip.strip(cb->get(CurveBar::_VALUE).toDouble(), 4, s);
-          bar->insert(d->get(CurveData::_LABEL).toString(), s);
+          strip.strip(cb->get(CurveBar::_VALUE)->toDouble(), 4, s);
+          bar->insert(d->get(CurveData::_LABEL)->toString(), s);
           break;
         }
       }

@@ -30,8 +30,7 @@ class CommandRSI : public Command
 
   public:
     CommandRSI (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getRSI (QList<Data *> &, int);
 };
 

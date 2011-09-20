@@ -30,8 +30,7 @@ class CommandMACD : public Command
 
   public:
     CommandMACD (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     QList<Data *> getMACD (QList<Data *> &, int fp, int sp, int sigp, int fma, int sma, int sigma);
 };
 

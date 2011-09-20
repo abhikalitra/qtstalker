@@ -64,7 +64,7 @@ int CommandMessage::message (IPCMessage m, QString d)
       break;
     }
     case CommandFactory::_CHART_PANEL_REFRESH:
-      g_chartPanel->updateList();
+      g_chartPanel->refresh();
       delete dg;
       break;
     case CommandFactory::_CHART_UPDATE:
@@ -73,16 +73,16 @@ int CommandMessage::message (IPCMessage m, QString d)
       cu.run(m, dg);
       break;
     }
+    case CommandFactory::_GROUP_PANEL_REFRESH:
+      g_groupPanel->updateGroups();
+      delete dg;
+      break;
     case CommandFactory::_SCRIPT_DONE:
-      g_scriptPanel->done(dg->get("SCRIPT").toString());
+      g_scriptPanel->done(dg->get("SCRIPT")->toString());
       delete dg;
       break;
     case CommandFactory::_SCRIPT_START:
-      g_scriptPanel->runScript(dg->get("SCRIPT").toString(), dg->get("COMMAND").toString());
-      delete dg;
-      break;
-    case CommandFactory::_DEBUG:
-      qDebug() << dg->get("MESSAGE").toString();
+      g_scriptPanel->runScript(dg->get("SCRIPT")->toString(), dg->get("COMMAND")->toString());
       delete dg;
       break;
     default:

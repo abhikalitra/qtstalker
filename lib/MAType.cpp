@@ -23,6 +23,7 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "SettingDouble.h"
 
 #include <QDebug>
 
@@ -62,7 +63,7 @@ Data * MAType::getMA (Data *in, int period, int method)
   for (; loop < size; loop++)
   {
     Data *bar = in->getData(keys.at(loop));
-    input[loop] = (TA_Real) bar->get(CurveBar::_VALUE).toDouble();
+    input[loop] = (TA_Real) bar->get(CurveBar::_VALUE)->toDouble();
   }
 
   TA_RetCode rc = TA_MA(0, size - 1, &input[0], period, (TA_MAType) method, &outBeg, &outNb, &out[0]);
@@ -78,8 +79,8 @@ Data * MAType::getMA (Data *in, int period, int method)
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    CurveBar *b = new CurveBar;
-    b->set(CurveBar::_VALUE, out[outLoop]);
+    Data *b = new CurveBar;
+    b->set(CurveBar::_VALUE, new SettingDouble(out[outLoop]));
     line->set(keys.at(keyLoop), b);
 
     keyLoop--;
@@ -100,21 +101,21 @@ Data * MAType::getWilder (Data *in, int period)
   for (; loop < period; loop++)
   {
     Data *bar = in->getData(keys.at(loop));
-    t += bar->get(CurveBar::_VALUE).toDouble();
+    t += bar->get(CurveBar::_VALUE)->toDouble();
   }
   double yesterday = t / (double) period;
-  CurveBar *db = new CurveBar;
-  db->set(CurveBar::_VALUE, QVariant(yesterday));
+  Data *db = new CurveBar;
+  db->set(CurveBar::_VALUE, new SettingDouble(yesterday));
   line->set(keys.at(loop), db);
 
   for (; loop < keys.count(); loop++)
   {
     Data *bar = in->getData(keys.at(loop));
-    double t  = (yesterday * (period - 1) + bar->get(CurveBar::_VALUE).toDouble()) / (double) period;
+    double t  = (yesterday * (period - 1) + bar->get(CurveBar::_VALUE)->toDouble()) / (double) period;
     yesterday = t;
 
-    CurveBar *db = new CurveBar;
-    db->set(CurveBar::_VALUE, QVariant(t));
+    db = new CurveBar;
+    db->set(CurveBar::_VALUE, new SettingDouble(t));
     line->set(keys.at(loop), db);
   }
 

@@ -38,8 +38,7 @@ class CommandHT : public Command
     };
 
     CommandHT (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getHT (QList<Data *> &, int);
 
   protected:

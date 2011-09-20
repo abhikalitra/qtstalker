@@ -30,8 +30,7 @@ class CommandTHERM : public Command
 
   public:
     CommandTHERM (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getTHERM (QList<Data *> &);
 };
 

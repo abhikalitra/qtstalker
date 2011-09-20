@@ -24,6 +24,8 @@
 #include "MessageSend.h"
 #include "CurveData.h"
 #include "ChartObjectData.h"
+#include "SettingString.h"
+#include "DataFactory.h"
 
 #include <QtDebug>
 #include <QHash>
@@ -33,10 +35,32 @@ CommandChartUpdate::CommandChartUpdate (QObject *p) : Command (p)
   _type = "CHART_UPDATE";
 }
 
-int CommandChartUpdate::runScript (Data *sg, Script *script)
+int CommandChartUpdate::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("CHART").toString();
-  QString date = sg->get("DATE").toString();
+  Data d;
+  SettingString *name = new SettingString(QString("Chart"));
+  QString s = sg->value("CHART");
+  if (name->set(s, (void *) script))
+  {
+    if (name->set(s))
+    {
+      _message << "invalid CHART " + s;
+      return _ERROR;
+    }
+  }
+  d.set("CHART", name);
+
+  SettingString *date = new SettingString(QString("date"));
+  s = sg->value("DATE");
+  if (date->set(s, (void *) script))
+  {
+    if (date->set(s))
+    {
+      _message << "invalid DATE " + s;
+      return _ERROR;
+    }
+  }
+  d.set("DATE", date);
 
   QList<QString> keys = script->dataKeys();
 
@@ -45,63 +69,63 @@ int CommandChartUpdate::runScript (Data *sg, Script *script)
   {
     Data *dg = script->data(keys.at(loop));
 
-    if (dg->type() == "CURVE")
+    if (dg->type() == DataFactory::_CURVE)
     {
       // send dates to chart
-      if (keys.at(loop) == date)
+      if (keys.at(loop) == date->toString())
       {
         // specify which chart to set
-        dg->set(CurveData::_CHART, name);
+        dg->set(CurveData::_CHART, new SettingString(name->toString()));
 
-        IPCMessage ipcm(script->session(), _type, "CHART_DATE", script->file(), dg->type());
+        IPCMessage ipcm(script->session(), _type, "CHART_DATE", script->file(), QString::number(dg->type()));
         MessageSend ms(this);
         ms.send(ipcm, dg->toString());
         continue;
       }
 
-      if (dg->get(CurveData::_Z).toInt() < 0)
+      Setting *setting = dg->get(CurveData::_Z);
+      if (! setting)
+        continue;
+      if (setting->toInteger() < 0)
         continue;
 
-      if (dg->get(CurveData::_CHART).toString() != name)
+      setting = dg->get(CurveData::_CHART);
+      if (! setting)
+        continue;
+      if (setting->toString() != name->toString())
         continue;
 
-      QString type = dg->get(CurveData::_TYPE).toString();
-
-      IPCMessage ipcm(script->session(), _type, "CURVE", script->file(), dg->type());
+      IPCMessage ipcm(script->session(), _type, "CURVE", script->file(), QString::number(dg->type()));
       MessageSend ms(this);
       ms.send(ipcm, dg->toString());
       continue;
     }
 
-    if (dg->type() == "CHART_OBJECT")
+    if (dg->type() == DataFactory::_CHART_OBJECT)
     {
-      if (dg->get(ChartObjectData::_Z).toInt() < 0)
+      Setting *setting = dg->get(CurveData::_Z);
+      if (! setting)
+        continue;
+      if (setting->toInteger() < 0)
         continue;
 
-      if (dg->get(ChartObjectData::_CHART).toString() != name)
+      setting = dg->get(CurveData::_CHART);
+      if (! setting)
+        continue;
+      if (setting->toString() != name->toString())
         continue;
 
-      QString type = dg->get(ChartObjectData::_TYPE).toString();
-
-      IPCMessage ipcm(script->session(), _type, "CHART_OBJECT", script->file(), dg->type());
+      IPCMessage ipcm(script->session(), _type, "CHART_OBJECT", script->file(), QString::number(dg->type()));
       MessageSend ms(this);
       ms.send(ipcm, dg->toString());
     }
   }
 
   // send the update command
-  IPCMessage ipcm(script->session(), _type, "UPDATE", script->file(), sg->type());
+  IPCMessage ipcm(script->session(), _type, "UPDATE", script->file(), QString::number(d.type()));
 
   MessageSend ms(this);
-  ms.send(ipcm, sg->toString());
+  ms.send(ipcm, d.toString());
 
   return _OK;
-}
-
-Data * CommandChartUpdate::settings ()
-{
-  Data *sg = new Data;
-  sg->set("CHART", QVariant(QString()));
-  sg->set("DATE", QVariant(QString("date")));
-  return sg;
 }

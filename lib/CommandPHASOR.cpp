@@ -21,9 +21,12 @@
 
 #include "CommandPHASOR.h"
 #include "ta_libc.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -36,34 +39,46 @@ CommandPHASOR::CommandPHASOR (QObject *p) : Command (p)
     qDebug("CommandPHASOR::CommandPHASOR: error on TA_Initialize");
 }
 
-int CommandPHASOR::runScript (Data *sg, Script *script)
+int CommandPHASOR::runScript (Message *sg, Script *script)
 {
-  QString pname = sg->get("OUTPUT_PHASE").toString();
-  Data *line = script->data(pname);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT_PHASE");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_PHASE" << pname;
+    _message << "invalid OUTPUT_PHASE";
+    return _ERROR;
+  }
+  Setting *pname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! pname)
+  {
+    _message << "invalid OUTPUT_PHASE " + s;
     return _ERROR;
   }
 
-  QString qname = sg->get("OUTPUT_QUAD").toString();
-  line = script->data(qname);
-  if (line)
+  s = sg->value("OUTPUT_QUAD");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_QUAD" << qname;
+    _message << "invalid OUTPUT_QUAD";
+    return _ERROR;
+  }
+  Setting *qname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! qname)
+  {
+    _message << "invalid OUTPUT_QUAD " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT").toString();
-  Data *in = script->data(s);
+  s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    _message << "INPUT missing " + s;
     return _ERROR;
   }
 
   QList<Data *> list;
   list << in;
+
   QList<Data *> lines = getPHASOR(list);
   if (lines.count() != 2)
   {
@@ -71,11 +86,8 @@ int CommandPHASOR::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  Data *pline = lines.at(0);
-  script->setData(pname, pline);
-
-  Data *qline = lines.at(1);
-  script->setData(qname, qline);
+  script->setData(pname->toString(), lines.at(0));
+  script->setData(qname->toString(), lines.at(1));
 
   return _OK;
 }
@@ -86,9 +98,9 @@ QList<Data *> CommandPHASOR::getPHASOR (QList<Data *> &list)
   if (! list.count())
     return lines;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return lines;
 
   int size = keys.count();
@@ -98,7 +110,8 @@ QList<Data *> CommandPHASOR::getPHASOR (QList<Data *> &list)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &input[0], &input[0], &input[0], &input[0]);
+  TALibInput tai;
+  size = tai.fill1(list, keys, &input[0]);
   if (! size)
     return lines;
 
@@ -122,7 +135,9 @@ QList<Data *> CommandPHASOR::getPHASOR (QList<Data *> &list)
   lines << c;
   c = new CurveData;
   lines << c;
-  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble2(lines, keys, outNb, &out[0], &out2[0]))
   {
     qDeleteAll(lines);
     lines.clear();
@@ -130,13 +145,4 @@ QList<Data *> CommandPHASOR::getPHASOR (QList<Data *> &list)
   }
 
   return lines;
-}
-
-Data * CommandPHASOR::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT_PHASE", QVariant(QString()));
-  sg->set("OUTPUT_QUAD", QVariant(QString()));
-  sg->set("INPUT", QVariant(QString()));
-  return sg;
 }

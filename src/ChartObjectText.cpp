@@ -24,6 +24,12 @@
 #include "Globals.h"
 #include "DateScaleDraw.h"
 #include "ChartObjectData.h"
+#include "SettingDouble.h"
+#include "SettingDateTime.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+#include "SettingColor.h"
+#include "SettingFont.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -32,31 +38,30 @@
 
 ChartObjectText::ChartObjectText ()
 {
-  _settings->set(ChartObjectData::_TYPE, QVariant(QString("Text")));
-  _settings->set(ChartObjectData::_TEXT, QVariant(QString("Text")));
-  _settings->set(ChartObjectData::_DATE, QVariant(QDateTime::currentDateTime()));
-  _settings->set(ChartObjectData::_PRICE, QVariant(0));
-  _settings->set(ChartObjectData::_COLOR, QVariant(QString("red")));
-  _settings->set(ChartObjectData::_Z, QVariant(1));
-  _settings->set(ChartObjectData::_PEN, QVariant(1));
+  _settings->set(ChartObjectData::_TYPE, new SettingString(QString("Text")));
+  _settings->set(ChartObjectData::_TEXT, new SettingString(QString("Text")));
+  _settings->set(ChartObjectData::_DATE, new SettingDateTime(QDateTime::currentDateTime()));
+  _settings->set(ChartObjectData::_PRICE, new SettingDouble(0));
+  _settings->set(ChartObjectData::_COLOR, new SettingColor(QColor(Qt::red)));
+  _settings->set(ChartObjectData::_Z, new SettingInteger(1));
+  _settings->set(ChartObjectData::_PEN, new SettingInteger(1));
+
   QFont f;
-  _settings->set(ChartObjectData::_FONT, QVariant(f.toString()));
+  _settings->set(ChartObjectData::_FONT, new SettingFont(f.toString()));
 }
 
 void ChartObjectText::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE).toDateTime()));
+  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE)->toDateTime()));
 
-  int y = yMap.transform(_settings->get(ChartObjectData::_PRICE).toDouble());
+  int y = yMap.transform(_settings->get(ChartObjectData::_PRICE)->toDouble());
 
-  p->setPen(QColor(_settings->get(ChartObjectData::_COLOR).toString()));
+  p->setPen(_settings->get(ChartObjectData::_COLOR)->toColor());
 
-  QFont f;
-  f.fromString(_settings->get(ChartObjectData::_FONT).toString());
-  p->setFont(f);
+  p->setFont(_settings->get(ChartObjectData::_FONT)->toFont());
 
-  p->drawText(x, y, _settings->get(ChartObjectData::_TEXT).toString());
+  p->drawText(x, y, _settings->get(ChartObjectData::_TEXT)->toString());
 
   QFontMetrics fm = p->fontMetrics();
 
@@ -64,7 +69,7 @@ void ChartObjectText::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScale
 
   _selectionArea.append(QRegion(x,
 		                y - fm.height(),
-		                fm.width(_settings->get(ChartObjectData::_TEXT).toString(), -1),
+		                fm.width(_settings->get(ChartObjectData::_TEXT)->toString(), -1),
 		                fm.height(),
 		                QRegion::Rectangle));
 
@@ -82,7 +87,7 @@ void ChartObjectText::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScale
 		y - (fm.height() / 2),
 		_handleWidth,
 		_handleWidth,
-		QColor(_settings->get(ChartObjectData::_COLOR).toString()));
+		_settings->get(ChartObjectData::_COLOR)->toColor());
   }
 }
 
@@ -98,14 +103,14 @@ void ChartObjectText::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE, QVariant(dt));
+      _settings->set(ChartObjectData::_DATE, new SettingDateTime(dt));
 
       map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_PRICE, QVariant(map.invTransform((double) p.y())));
+      _settings->set(ChartObjectData::_PRICE, new SettingDouble(map.invTransform((double) p.y())));
 
       plot()->replot();
 
-      QString s = _settings->get(ChartObjectData::_DATE).toString() + " " + _settings->get(ChartObjectData::_PRICE).toString();
+      QString s = _settings->get(ChartObjectData::_DATE)->toString() + " " + _settings->get(ChartObjectData::_PRICE)->toString();
       g_parent->statusBar()->showMessage(s);
 
       _modified++;
@@ -126,59 +131,54 @@ int ChartObjectText::create ()
 
 int ChartObjectText::info (Message &info)
 {
-  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE).toString());
+  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE)->toString());
 
-  QDateTime dt = _settings->get(ChartObjectData::_DATE).toDateTime();
+  QDateTime dt = _settings->get(ChartObjectData::_DATE)->toDateTime();
   info.insert("D", dt.toString("yyyy-MM-dd"));
   info.insert("T", dt.toString("HH:mm:ss"));
 
-  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE).toString());
-  info.insert(QObject::tr("Text"), _settings->get(ChartObjectData::_TEXT).toString());
+  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE)->toString());
+  info.insert(QObject::tr("Text"), _settings->get(ChartObjectData::_TEXT)->toString());
 
   return 0;
 }
 
 DataDialog * ChartObjectText::dialog (QWidget *p)
 {
-  DataDialog *dialog = new DataDialog(p, _settings);
+  DataDialog *dialog = new DataDialog(p);
 
   QStringList l;
   l << "QtStalker" + g_session + ":" << QObject::tr("Edit Text");
   dialog->setWindowTitle(l.join(" "));
 
-  dialog->addTab(QObject::tr("Settings"));
   int tab = 0;
+  dialog->addTab(tab, QObject::tr("Settings"));
 
   dialog->setText(tab,
-                  QString::number(ChartObjectData::_TEXT),
                   QObject::tr("Text"),
-                  _settings->get(ChartObjectData::_TEXT).toString(),
+                  _settings->get(ChartObjectData::_TEXT)->toString(),
                   QString());
 
   dialog->setDateTime(tab,
-                      QString::number(ChartObjectData::_DATE),
                       QObject::tr("Date"),
-                      _settings->get(ChartObjectData::_DATE).toDateTime(),
+                      _settings->get(ChartObjectData::_DATE)->toDateTime(),
                       QString());
 
   dialog->setColor(tab,
-                   QString::number(ChartObjectData::_COLOR),
                    QObject::tr("Color"),
-                   QColor(_settings->get(ChartObjectData::_COLOR).toString()),
+                   _settings->get(ChartObjectData::_COLOR)->toColor(),
                    QString());
 
   dialog->setDouble(tab,
-                    QString::number(ChartObjectData::_PRICE),
                     QObject::tr("Price"),
-                    _settings->get(ChartObjectData::_PRICE).toDouble(),
+                    _settings->get(ChartObjectData::_PRICE)->toDouble(),
                     99999999.0,
                     -99999999.0,
                     QString());
 
   dialog->setInteger(tab,
-                     QString::number(ChartObjectData::_Z),
                      QString("Z"),
-                     _settings->get(ChartObjectData::_Z).toInt(),
+                     _settings->get(ChartObjectData::_Z)->toInteger(),
                      99,
                      -1,
                      QString());

@@ -42,6 +42,8 @@ class QtStalkerScript : public QObject
     void run ();
     void message (QString command, QString mess);
     void scriptFinished (int, QProcess::ExitStatus);
+    void scriptError (QProcess::ProcessError);
+    void readFromStderr ();
 
   private:
     Script *_script;

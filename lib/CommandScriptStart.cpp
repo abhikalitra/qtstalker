@@ -22,6 +22,7 @@
 #include "CommandScriptStart.h"
 #include "IPCMessage.h"
 #include "MessageSend.h"
+#include "SettingString.h"
 
 #include <QtDebug>
 
@@ -30,19 +31,36 @@ CommandScriptStart::CommandScriptStart (QObject *p) : Command (p)
   _type = "SCRIPT_START";
 }
 
-int CommandScriptStart::runScript (Data *sg, Script *script)
+int CommandScriptStart::runScript (Message *sg, Script *script)
 {
-  IPCMessage ipcm(script->session(), _type, "*", script->file(), sg->type());
+  Data d;
+  SettingString *name = new SettingString;
+  QString s = sg->value("SCRIPT");
+  if (name->set(s, (void *) script))
+  {
+    if (name->set(s))
+    {
+      _message << "invalid SCRIPT " + s;
+      return _ERROR;
+    }
+  }
+  d.set("SCRIPT", name);
+
+  SettingString *com = new SettingString(QString("perl"));
+  s = sg->value("COMMAND");
+  if (com->set(s, (void *) script))
+  {
+    if (com->set(s))
+    {
+      _message << "invalid COMMAND " + s;
+      return _ERROR;
+    }
+  }
+  d.set("COMMAND", com);
+
+  IPCMessage ipcm(script->session(), _type, "*", script->file(), QString::number(d.type()));
   MessageSend ms(this);
-  ms.send(ipcm, sg->toString());
+  ms.send(ipcm, d.toString());
 
   return _OK;
-}
-
-Data * CommandScriptStart::settings ()
-{
-  Data *sg = new Data;
-  sg->set("SCRIPT", QVariant(QString()));
-  sg->set("COMMAND", QVariant(QString("perl")));
-  return sg;
 }

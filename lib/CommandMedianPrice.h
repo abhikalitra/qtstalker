@@ -30,8 +30,7 @@ class CommandMedianPrice : public Command
 
   public:
     CommandMedianPrice (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getMP (QList<Data *> &);
 };
 

@@ -30,8 +30,7 @@ class CommandATR : public Command
 
   public:
     CommandATR (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getATR (QList<Data *> &, int);
 };
 

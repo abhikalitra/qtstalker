@@ -40,10 +40,10 @@ int ChartUpdate::run (IPCMessage mess, Data *dg)
 {
   if (mess.type() == "CHART_DATE")
   {
-    Plot *plot = g_plotGroup->plot(dg->get(CurveData::_CHART).toString());
+    Plot *plot = g_plotGroup->plot(dg->get(CurveData::_CHART)->toString());
     if (! plot)
     {
-      qDebug() << "ChartUpdate::chartUpdate: chart not found" << dg->get(CurveData::_CHART).toString();
+      qDebug() << "ChartUpdate::chartUpdate: chart not found" << dg->get(CurveData::_CHART)->toString();
       delete dg;
       return 1;
     }
@@ -59,7 +59,7 @@ int ChartUpdate::run (IPCMessage mess, Data *dg)
 
   if (mess.type() == "CURVE")
   {
-    QString type = dg->get(CurveData::_TYPE).toString();
+    QString type = dg->get(CurveData::_TYPE)->toString();
 
     CurveFactory fac;
     Curve *curve = fac.curve(type);
@@ -72,10 +72,10 @@ int ChartUpdate::run (IPCMessage mess, Data *dg)
 
     curve->setSettings(dg);
 
-    Plot *plot = g_plotGroup->plot(dg->get(CurveData::_CHART).toString());
+    Plot *plot = g_plotGroup->plot(dg->get(CurveData::_CHART)->toString());
     if (! plot)
     {
-      qDebug() << "ChartUpdate::chartUpdate: chart not found" << dg->get(CurveData::_CHART).toString();
+      qDebug() << "ChartUpdate::chartUpdate: chart not found" << dg->get(CurveData::_CHART)->toString();
       delete dg;
       return 1;
     }
@@ -87,7 +87,7 @@ int ChartUpdate::run (IPCMessage mess, Data *dg)
 
   if (mess.type() == "CHART_OBJECT")
   {
-    QString type = dg->get(ChartObjectData::_TYPE).toString();
+    QString type = dg->get(ChartObjectData::_TYPE)->toString();
 
     ChartObjectFactory fac;
     ChartObject *co = fac.chartObject(type);
@@ -102,10 +102,10 @@ int ChartUpdate::run (IPCMessage mess, Data *dg)
 //    co->setPlotName(sg.get("CHART")->getString());
 //    co->setReadOnly(TRUE);
 
-    Plot *plot = g_plotGroup->plot(dg->get(ChartObjectData::_CHART).toString());
+    Plot *plot = g_plotGroup->plot(dg->get(ChartObjectData::_CHART)->toString());
     if (! plot)
     {
-      qDebug() << "ChartUpdate::chartUpdate: chart not found" << dg->get(ChartObjectData::_CHART).toString();
+      qDebug() << "ChartUpdate::chartUpdate: chart not found" << dg->get(ChartObjectData::_CHART)->toString();
       delete co;
       delete dg;
       return 1;
@@ -118,7 +118,7 @@ int ChartUpdate::run (IPCMessage mess, Data *dg)
 
   if (mess.type() == "UPDATE")
   {
-    QString chart = dg->get("CHART").toString();
+    QString chart = dg->get("CHART")->toString();
 
     Plot *plot = g_plotGroup->plot(chart);
     if (! plot)
@@ -129,7 +129,7 @@ int ChartUpdate::run (IPCMessage mess, Data *dg)
     }
 
     // load chart objects from database
-    QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE).toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL).toString();
+    QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE)->toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL)->toString();
     ChartObjectDataBase codb;
     QHash<QString, Data *> chartObjects;
     if (! codb.load(chart, symbol, chartObjects))
@@ -140,7 +140,7 @@ int ChartUpdate::run (IPCMessage mess, Data *dg)
       {
         it.next();
         Data *dg = it.value();
-        ChartObject *co = fac.chartObject(dg->get(ChartObjectData::_TYPE).toString());
+        ChartObject *co = fac.chartObject(dg->get(ChartObjectData::_TYPE)->toString());
         if (! co)
           continue;
 

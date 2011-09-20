@@ -21,11 +21,18 @@
 
 #include "CommandBETA.h"
 #include "ta_libc.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "Symbol.h"
 #include "QuoteDataBase.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
+#include "SettingDouble.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+#include "SettingDateTime.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -39,43 +46,55 @@ CommandBETA::CommandBETA (QObject *p) : Command (p)
     qDebug("CommandBETA::CommandBETA: error on TA_Initialize");
 }
 
-int CommandBETA::runScript (Data *sg, Script *script)
+int CommandBETA::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT").toString();
-  Data *in = script->data(s);
+  s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    _message << "INPUT missing " + s;
     return _ERROR;
   }
 
-  s = sg->get("INDEX").toString();
+  s = sg->value("INDEX");
   Data *in2 = getIndex(s, script);
   if (! in2)
   {
-    qDebug() << _type << "::runScript: INDEX missing" << s;
+    _message << "invalid INDEX " + s;
+    return _ERROR;
+  }
+  script->setTData(in2);
+
+  s = sg->value("PERIOD");
+  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! period)
+  {
+    _message << "invalid PERIOD " + s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD").toInt();
-
   QList<Data *> list;
   list << in << in2;
-  line = getBETA(list, period);
+
+  Data *line = getBETA(list, period->toInteger());
   if (! line)
     return _ERROR;
 
-  script->setData(name, line);
-
-  delete in2;
+  script->setData(name->toString(), line);
 
   return _OK;
 }
@@ -85,9 +104,9 @@ Data * CommandBETA::getBETA (QList<Data *> &list, int period)
   if (list.count() != 2)
     return 0;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   int size = keys.count();
@@ -97,7 +116,8 @@ Data * CommandBETA::getBETA (QList<Data *> &list, int period)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &input[0], &input2[0], &input2[0], &input2[0]);
+  TALibInput tai;
+  size = tai.fill2(list, keys, &input[0], &input2[0]);
   if (! size)
     return 0;
 
@@ -119,7 +139,9 @@ Data * CommandBETA::getBETA (QList<Data *> &list, int period)
   QList<Data *> outs;
   Data *c = new CurveData;
   outs.append(c);
-  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
   {
     delete c;
     return 0;
@@ -127,17 +149,6 @@ Data * CommandBETA::getBETA (QList<Data *> &list, int period)
 
   return c;
 }
-
-Data * CommandBETA::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("INPUT", QVariant(QString()));
-  sg->set("INDEX", QVariant(QString()));
-  sg->set("PERIOD", QVariant(5));
-  return sg;
-}
-
 Data * CommandBETA::getIndex (QString d, Script *script)
 {
   if (d.isEmpty())
@@ -150,12 +161,12 @@ Data * CommandBETA::getIndex (QString d, Script *script)
   QSettings settings("QtStalker/qtstalkerrc" + script->session());
 
   Data *bd = new Symbol;
-  bd->set(Symbol::_EXCHANGE, QVariant(tl.at(0)));
-  bd->set(Symbol::_SYMBOL, QVariant(tl.at(1)));
-  bd->set(Symbol::_LENGTH, QVariant(settings.value("bar_length").toInt()));
-  bd->set(Symbol::_START_DATE, QVariant(QDateTime()));
-  bd->set(Symbol::_END_DATE, QVariant(QDateTime()));
-  bd->set(Symbol::_RANGE, QVariant(settings.value("date_range").toInt()));
+  bd->set(Symbol::_EXCHANGE, new SettingString(tl.at(0)));
+  bd->set(Symbol::_SYMBOL, new SettingString(tl.at(1)));
+  bd->set(Symbol::_LENGTH, new SettingInteger(settings.value("bar_length").toInt()));
+  bd->set(Symbol::_START_DATE, new SettingDateTime(QDateTime()));
+  bd->set(Symbol::_END_DATE, new SettingDateTime(QDateTime()));
+  bd->set(Symbol::_RANGE, new SettingInteger(settings.value("date_range").toInt()));
 
   // load quotes
   QuoteDataBase db;
@@ -174,8 +185,8 @@ Data * CommandBETA::getIndex (QString d, Script *script)
   {
     Data *b = bd->getData(barKeys.at(loop));
 
-    CurveBar *cb = new CurveBar;
-    cb->set(CurveBar::_VALUE, b->get(CurveBar::_CLOSE));
+    Data *cb = new CurveBar;
+    cb->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_CLOSE)->toDouble()));
     line->set(loop, cb);
   }
 

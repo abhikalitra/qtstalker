@@ -22,8 +22,14 @@
 #include "CommandCSV.h"
 #include "QuoteDataBase.h"
 #include "Symbol.h"
-#include "Script.h"
 #include "CurveBar.h"
+#include "SettingString.h"
+#include "SettingFile.h"
+#include "SettingBool.h"
+#include "SettingDouble.h"
+#include "SettingDateTime.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 #include <QFile>
@@ -37,26 +43,39 @@ CommandCSV::CommandCSV (QObject *p) : Command (p)
   _delimiterType << tr("Comma") << tr("Semicolon");
 }
 
-int CommandCSV::runScript (Data *sg, Script *)
+int CommandCSV::runScript (Message *sg, Script *script)
 {
   // CSV file
-  QStringList files = sg->get("CSV_FILE").toStringList();
-  if (! files.count())
+  VerifyDataInput vdi;
+  QString s = sg->value("CSV_FILE");
+  Setting *csv = vdi.setting(SettingFactory::_FILE, script, s);
+  if (! csv)
   {
-    _message << "invalid CSV_FILE " + sg->get("CSV_FILE").toString();
+    _message << "invalid CSV_FILE " + s;
     return _ERROR;
   }
+  QStringList files = csv->toList();
 
   // FORMAT
-  QStringList format = sg->get("FORMAT").toString().split(",");
-  if (! format.count())
+  s = sg->value("FORMAT");
+  Setting *formatSetting = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! formatSetting)
   {
-    _message << "invalid FORMAT " + sg->get("FORMAT").toString();
+    _message << "invalid FORMAT " + s;
+    return _ERROR;
+  }
+  QStringList format = formatSetting->toString().split(",");
+
+  // DATE_FORMAT
+  s = sg->value("DATE_FORMAT");
+  Setting *dateFormatSetting = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! dateFormatSetting)
+  {
+    _message << "invalid DATE_FORMAT " + s;
     return _ERROR;
   }
 
-  // DATE_FORMAT
-  QString dateFormat = sg->get("DATE_FORMAT").toString();
+  QString dateFormat = dateFormatSetting->toString();
   if (dateFormat.isEmpty())
   {
     _message << "invalid DATE_FORMAT " + dateFormat;
@@ -65,8 +84,15 @@ int CommandCSV::runScript (Data *sg, Script *)
 
   // DELIMITER
   QString delimiter;
-  QString s = sg->get("DELIMITER").toString();
-  switch ((DelimiterType) _delimiterType.indexOf(s))
+  s = sg->value("DELIMITER");
+  Setting *delimiterSetting = vdi.setting(SettingFactory::_LIST, script, s);
+  if (! delimiterSetting)
+  {
+    _message << "invalid DELIMITER " + s;
+    return _ERROR;
+  }
+
+  switch ((DelimiterType) _delimiterType.indexOf(delimiterSetting->toString()))
   {
     case _COMMA:
       delimiter = ",";
@@ -81,18 +107,29 @@ int CommandCSV::runScript (Data *sg, Script *)
   }
 
   // TYPE
-  QString typ = sg->get("TYPE").toString();
-  if (typ.isEmpty())
+  s = sg->value("TYPE");
+  Setting *typeSetting = vdi.setting(SettingFactory::_LIST, script, s);
+  if (! typeSetting)
   {
-    _message << "invalid TYPE " + typ;
+    _message << "invalid TYPE " + s;
     return _ERROR;
   }
 
   // FILENAME AS SYMBOL
-  bool fileNameFlag = sg->get("FILENAME_AS_SYMBOL").toBool();
+  s = sg->value("FILENAME_AS_SYMBOL");
+  Setting *fileNameFlag = vdi.setting(SettingFactory::_BOOL, script, s);
+  if (! fileNameFlag)
+  {
+    _message << "FILENAME_AS_SYMBOL " + s;
+    return _ERROR;
+  }
 
   // EXCHANGE
-  QString exchange = sg->get("EXCHANGE").toString();
+  QString exchange;
+  s = sg->value("EXCHANGE");
+  Setting *exchangeSetting = vdi.setting(SettingFactory::_STRING, script, s);
+  if (exchangeSetting)
+    exchange = exchangeSetting->toString();
 
   QHash<QString, Data *> symbols;
   int loop = 0;
@@ -106,7 +143,7 @@ int CommandCSV::runScript (Data *sg, Script *)
     }
 
     QString fileNameSymbol;
-    if (fileNameFlag)
+    if (fileNameFlag->toBool())
     {
       QFileInfo fi(files.at(loop));
       fileNameSymbol = fi.baseName();
@@ -128,7 +165,7 @@ int CommandCSV::runScript (Data *sg, Script *)
       }
 
       QString symbol, name;
-      if (fileNameFlag)
+      if (fileNameFlag->toBool())
       {
         symbol = fileNameSymbol;
         name = fileNameSymbol;
@@ -162,7 +199,7 @@ int CommandCSV::runScript (Data *sg, Script *)
               flag++;
             }
             else
-              bar->set(CurveBar::_DATE, QVariant(dt));
+              bar->set(CurveBar::_DATE, new SettingDateTime(dt));
             break;
           }
           case _OPEN:
@@ -185,22 +222,22 @@ int CommandCSV::runScript (Data *sg, Script *)
             switch ((FormatType) _formatType.indexOf(format.at(loop2)))
             {
               case _OPEN:
-                bar->set(CurveBar::_OPEN, QVariant(t));
+                bar->set(CurveBar::_OPEN, new SettingDouble(t));
                 break;
               case _HIGH:
-                bar->set(CurveBar::_HIGH, QVariant(t));
+                bar->set(CurveBar::_HIGH, new SettingDouble(t));
                 break;
               case _LOW:
-                bar->set(CurveBar::_LOW, QVariant(t));
+                bar->set(CurveBar::_LOW, new SettingDouble(t));
                 break;
               case _CLOSE:
-                bar->set(CurveBar::_CLOSE, QVariant(t));
+                bar->set(CurveBar::_CLOSE, new SettingDouble(t));
                 break;
               case _VOLUME:
-                bar->set(CurveBar::_VOLUME, QVariant(t));
+                bar->set(CurveBar::_VOLUME, new SettingDouble(t));
                 break;
               case _OI:
-                bar->set(CurveBar::_OI, QVariant(t));
+                bar->set(CurveBar::_OI, new SettingDouble(t));
                 break;
               default:
                 break;
@@ -247,11 +284,10 @@ int CommandCSV::runScript (Data *sg, Script *)
       if (! bd)
       {
         bd = new Symbol;
-        bd->set(Symbol::_EXCHANGE, QVariant(texchange));
-        bd->set(Symbol::_SYMBOL, QVariant(symbol));
-        bd->set(Symbol::_TYPE, QVariant(typ));
-        if (! name.isEmpty())
-          bd->set(Symbol::_NAME, QVariant(name));
+        bd->set(Symbol::_EXCHANGE, new SettingString(texchange));
+        bd->set(Symbol::_SYMBOL, new SettingString(symbol));
+        bd->set(Symbol::_TYPE, new SettingString(typeSetting->toString()));
+        bd->set(Symbol::_NAME, new SettingString(name));
 
         symbols.insert(key, bd);
       }
@@ -277,17 +313,4 @@ int CommandCSV::runScript (Data *sg, Script *)
   qDeleteAll(symbols);
 
   return _OK;
-}
-
-Data * CommandCSV::settings ()
-{
-  Data *sg = new Data;
-  sg->set("CSV_FILE", QVariant(QStringList()));
-  sg->set("FORMAT", QVariant(QString()));
-  sg->set("DATE_FORMAT", QVariant(QString()));
-  sg->set("DELIMITER", QVariant(QString("Comma")));
-  sg->set("TYPE", QVariant(QString("Stock")));
-  sg->set("FILENAME_AS_SYMBOL", QVariant(FALSE));
-  sg->set("EXCHANGE", QVariant(QString()));
-  return sg;
 }

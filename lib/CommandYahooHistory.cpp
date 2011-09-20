@@ -20,8 +20,9 @@
  */
 
 #include "CommandYahooHistory.h"
-#include "Script.h"
 #include "DataDialog.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
 
 #include <QDebug>
 #include <QtNetwork>
@@ -30,59 +31,66 @@
 CommandYahooHistory::CommandYahooHistory (QObject *p) : Command (p)
 {
   _type = "YAHOO_HISTORY";
-  _isDialog = 1;
 }
 
-int CommandYahooHistory::runScript (Data *sg, Script *script)
+int CommandYahooHistory::runScript (Message *sg, Script *script)
 {
-  DataDialog *dialog = new DataDialog(0, sg);
-
-  QStringList l;
-  l << "QtStalker" + script->session() + ":" << QObject::tr("Yahoo History");
-  dialog->setWindowTitle(l.join(" "));
-
-  dialog->addTab(QObject::tr("Settings"));
-  int tab = 0;
-
-  QDateTime dt = sg->get("DATE_START").toDateTime();
-  if (! dt.isValid())
-    dt = QDateTime::currentDateTime();
-  dialog->setDateTime(tab, QString("DATE_START"), QObject::tr("Start Date"), dt, QString());
-
-  dt = sg->get("DATE_END").toDateTime();
-  if (! dt.isValid())
-    dt = QDateTime::currentDateTime();
-  dialog->setDateTime(tab, QString("DATE_END"), QObject::tr("End Date"), dt, QString());
-
-  dialog->setFile(tab, QString("SYMBOL_FILE"), QObject::tr("Symbol File"), sg->get("SYMBOL_FILE").toStringList(), QString());
-  dialog->setText(tab, QString("CSV_FILE"), QObject::tr("CSV File"), sg->get("CSV_FILE").toString(), QString());
-  dialog->setBool(tab, QString("ADJUSTED"), QObject::tr("Adjusted"), sg->get("ADJUSTED").toBool(), QString());
-
-  int rc = dialog->exec();
-  if (rc == QDialog::Rejected)
+  // DATE_START
+  VerifyDataInput vdi;
+  QString s = sg->value("DATE_START");
+  Setting *sd = vdi.setting(SettingFactory::_DATETIME, script, s);
+  if (! sd)
   {
-    delete dialog;
+    _message << "invalid DATE_START " + s;
     return _ERROR;
   }
 
-  QDateTime sd = sg->get("DATE_START").toDateTime();
-  QDateTime ed = sg->get("DATE_END").toDateTime();
-  bool adjusted = sg->get("ADJUSTED").toBool();
-  QString outFile = sg->get("CSV_FILE").toString();
-  QStringList symbolFiles = sg->get("SYMBOL_FILE").toStringList();
+  // DATE_END
+  s = sg->value("DATE_END");
+  Setting *ed = vdi.setting(SettingFactory::_DATETIME, script, s);
+  if (! ed)
+  {
+    _message << "invalid DATE_END " + s;
+    return _ERROR;
+  }
 
-  delete dialog;
+  // ADJUSTED
+  s = sg->value("ADJUSTED");
+  Setting *adjusted = vdi.setting(SettingFactory::_BOOL, script, s);
+  if (! adjusted)
+  {
+    _message << "invalid ADJUSTED " + s;
+    return _ERROR;
+  }
 
+  // CSV_FILE
+  s = sg->value("CSV_FILE");
+  Setting *outFile = vdi.setting(SettingFactory::_FILE, script, s);
+  if (! outFile)
+  {
+    _message << "invalid CSV_FILE " + s;
+    return _ERROR;
+  }
+
+  // SYMBOL_FILE
+  s = sg->value("SYMBOL_FILE");
+  Setting *symbolFile = vdi.setting(SettingFactory::_FILE, script, s);
+  if (! symbolFile)
+  {
+    _message << "invalid SYMBOL_FILE " + s;
+    return _ERROR;
+  }
+  QStringList symbolFiles = symbolFile->toList();
   if (! symbolFiles.count())
   {
     _message << "SYMBOL_FILE missing";
     return _ERROR;
   }
 
-  QFile f2(outFile);
+  QFile f2(outFile->toString());
   if (! f2.open(QIODevice::WriteOnly | QIODevice::Text))
   {
-    _message << "file error " + outFile;
+    _message << "file error " + outFile->toString();
     return _ERROR;
   }
   QTextStream out(&f2);
@@ -112,7 +120,7 @@ int CommandYahooHistory::runScript (Data *sg, Script *script)
 
       // get the url
       QString url;
-      getUrl(sd, ed, symbol, url);
+      getUrl(sd->toDateTime(), ed->toDateTime(), symbol, url);
 
       // download the data
       QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
@@ -122,7 +130,7 @@ int CommandYahooHistory::runScript (Data *sg, Script *script)
 
       // parse the data and save quotes
       QByteArray ba = reply->readAll();
-      parse(ba, symbol, name, out, adjusted);
+      parse(ba, symbol, name, out, adjusted->toBool());
     }
 
     f.close();
@@ -131,7 +139,7 @@ int CommandYahooHistory::runScript (Data *sg, Script *script)
   return _OK;
 }
 
-void CommandYahooHistory::getUrl (QDateTime &sd, QDateTime &ed, QString &symbol, QString &url)
+void CommandYahooHistory::getUrl (QDateTime sd, QDateTime ed, QString symbol, QString &url)
 {
 //http://ichart.finance.yahoo.com/table.csv?s=AAPL&d=1&e=22&f=2011&g=d&a=8&b=7&c=1984&ignore=.csv
   url = "http://ichart.finance.yahoo.com/table.csv?s=";
@@ -232,15 +240,4 @@ int CommandYahooHistory::downloadName (QString symbol, QString &name)
   name = s;
 
   return _OK;
-}
-
-Data * CommandYahooHistory::settings ()
-{
-  Data *sg = new Data;
-  sg->set("DATE_START", QVariant(QDateTime::currentDateTime()));
-  sg->set("DATE_END", QVariant(QDateTime::currentDateTime()));
-  sg->set("SYMBOL_FILE", QVariant(QStringList()));
-  sg->set("CSV_FILE", QVariant(QString()));
-  sg->set("ADJUSTED", QVariant(TRUE));
-  return sg;
 }

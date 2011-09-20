@@ -50,8 +50,7 @@ class CommandCSV : public Command
     };
 
     CommandCSV (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
 
   private:
     QStringList _formatType;

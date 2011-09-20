@@ -44,6 +44,7 @@ void MessageDialog::createGUI ()
   gbox->setLayout(vbox);
 
   _messages = new QTextEdit;
+  _messages->setReadOnly(TRUE);
   vbox->addWidget(_messages);
 
   // hide uneeded base class widget to save some space

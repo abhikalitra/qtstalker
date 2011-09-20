@@ -20,10 +20,13 @@
  */
 
 #include "CommandColor.h"
-#include "Script.h"
 #include "Operator.h"
-#include "InputType.h"
+#include "VerifyDataInput.h"
+#include "DataFactory.h"
 #include "CurveBar.h"
+#include "DataSetting.h"
+#include "SettingColor.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -32,107 +35,81 @@ CommandColor::CommandColor (QObject *p) : Command (p)
   _type = "COLOR";
 }
 
-int CommandColor::runScript (Data *sg, Script *script)
+int CommandColor::runScript (Message *sg, Script *script)
 {
-  // verify INPUT_1
-  QString s = sg->get("INPUT_1").toString();
-  Data *line = script->data(s);
-  if (! line)
+  VerifyDataInput vdi;
+
+  // color
+  QString s = sg->value("COLOR");
+  Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
+  if (! color)
   {
-    qDebug() << _type << "::runScript: INPUT_1 not found" << s;
+    _message << "invalid COLOR " + s;
     return _ERROR;
   }
 
-  // get NAME_OFFSET
-  int offset = sg->get("INPUT_1_OFFSET").toInt();
+  // verify INPUT_1
+  s = sg->value("INPUT_1");
+  Data *line = vdi.curveAll(script, s);
+  if (! line)
+  {
+    _message << "INPUT_1 not found " + s;
+    return _ERROR;
+  }
+  int offset = line->offset();
 
   // verify OP
   Operator top;
-  s = sg->get("OP").toString();
+  s = sg->value("OP");
   Operator::Type op = top.stringToOperator(s);
   if (op == -1)
   {
-    qDebug() << _type << "::runScript: invalid OP" << s;
+    _message << "invalid OP " + s;
     return _ERROR;
   }
 
   // verify INPUT_2
-  int valueFlag2 = FALSE;
-  double value2 = 0;
-  Data *line2 = 0;
-  s = sg->get("INPUT_2").toString();
-  bool ok;
-  value2 = s.toDouble(&ok);
-  if (ok)
-    valueFlag2++;
-  else
+  s = sg->value("INPUT_2");
+  Data *line2 = vdi.curveAll(script, s);
+  if (! line2)
   {
-    line2 = script->data(s);
-    if (! line2)
-    {
-      qDebug() << _type << "::runScript: invalid INPUT_2" << s;
-      return _ERROR;
-    }
-  }
-
-  // get NAME_2_OFFSET
-  int offset2 = sg->get("INPUT_2_OFFSET").toInt();
-
-  // verify INPUT_3
-  s = sg->get("INPUT_3").toString();
-  Data *line3 = script->data(s);
-  if (! line3)
-  {
-    qDebug() << _type << "::runScript: INPUT_3 not found" << s;
+    _message << "invalid INPUT_2 " + s;
     return _ERROR;
   }
+  int offset2 = line2->offset();
 
-  // get NAME_3_OFFSET
-  int offset3 = sg->get("INPUT_3_OFFSET").toInt();
-
-  QString color = sg->get("COLOR").toString();
+  // verify INPUT_3
+  s = sg->value("INPUT_3");
+  Data *line3 = vdi.curve(script, s);
+  if (! line3)
+  {
+    _message << "INPUT_3 not found " + s;
+    return _ERROR;
+  }
+  int offset3 = line3->offset();
 
   QList<Data *> list;
-  list << line << line3;
-  if (! valueFlag2)
-    list << line2;
+  list << line << line2 << line3;
 
-  InputType it;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
   {
-    qDebug() << _type << "::runScript: invalid keys";
+    _message << "invalid keys";
     return _ERROR;
   }
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    int tloop = loop - offset;
-    if (tloop < 0)
-      continue;
-
-    Data *bar = line->getData(keys.at(tloop));
-    if (! bar)
+    double v = 0;
+    if (vdi.curveValue(line, keys, loop, offset, v))
       continue;
 
     double v2 = 0;
-    if (valueFlag2)
-      v2 = value2;
-    else
-    {
-      tloop = loop - offset2;
-      if (tloop < 0)
-        continue;
+    if (vdi.curveValue(line2, keys, loop, offset2, v2))
+      continue;
 
-      Data *bar2 = line2->getData(keys.at(tloop));
-      if (! bar2)
-        continue;
-
-      v2 = bar2->get(CurveBar::_VALUE).toDouble();
-    }
-
-    tloop = loop - offset3;
+    int tloop = loop - offset3;
     if (tloop < 0)
       continue;
 
@@ -140,23 +117,9 @@ int CommandColor::runScript (Data *sg, Script *script)
     if (! bar3)
       continue;
 
-    if (top.test(bar->get(CurveBar::_VALUE).toDouble(), op, v2))
-      bar3->set(CurveBar::_COLOR, QVariant(color));
+    if (top.test(v, op, v2))
+      bar3->set(CurveBar::_COLOR, new SettingColor(color->toColor()));
   }
 
   return _OK;
-}
-
-Data * CommandColor::settings ()
-{
-  Data *sg = new Data;
-  sg->set("INPUT_1", QVariant(QString()));
-  sg->set("INPUT_1_OFFSET", QVariant(0));
-  sg->set("INPUT_2", QVariant(QString()));
-  sg->set("INPUT_2_OFFSET", QVariant(0));
-  sg->set("INPUT_3", QVariant(QString()));
-  sg->set("INPUT_3_OFFSET", QVariant(0));
-  sg->set("OP", QVariant(QString("EQ")));
-  sg->set("COLOR", QVariant(QString("red")));
-  return sg;
 }

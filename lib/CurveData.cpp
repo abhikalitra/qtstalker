@@ -21,6 +21,8 @@
 
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "DataFactory.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 #include <QStringList>
@@ -39,9 +41,10 @@ void CurveData::clear ()
 {
   Data::clear();
 
-  _type = "CURVE";
+  _type = DataFactory::_CURVE;
   _startIndex = 99999999;
   _endIndex = -99999999;
+  _offset = 0;
 
   qDeleteAll(_bars);
   _bars.clear();
@@ -77,18 +80,26 @@ QString CurveData::toString ()
 {
   QStringList l;
 
-  QHashIterator<QString, QVariant> it(_data);
+  QHashIterator<QString, Setting *> it(_data);
   while (it.hasNext())
   {
     it.next();
-    l << it.key() + "=" + it.value().toString();
+    l << it.key() + ";" + QString::number(it.value()->type()) + ";" + it.value()->toString();
   }
 
   QHashIterator<int, Data *> it2(_bars);
   while (it2.hasNext())
   {
     it2.next();
-    l << QString::number(it2.key()) + "=" + it2.value()->toString();
+    Data *d = it2.value();
+
+    QList<QString> keys = d->dataKeys();
+    int loop = 0;
+    for (; loop < keys.count(); loop++)
+    {
+      Setting *set = d->get(keys.at(loop));
+      l << QString::number(it2.key()) + ";" + keys.at(loop) + ";" + QString::number(set->type()) + ";" + set->toString();
+    }
   }
 
   return l.join("\n");
@@ -100,12 +111,11 @@ int CurveData::fromString (QString d)
 
   QStringList l = d.split("\n");
 
+  SettingFactory fac;
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    QStringList tl = l.at(loop).split("=");
-    if (tl.count() != 2)
-      continue;
+    QStringList tl = l.at(loop).split(";");
 
     int k = tl.at(0).toInt();
 
@@ -114,16 +124,39 @@ int CurveData::fromString (QString d)
       case _LABEL:
       case _TYPE:
       case _CHART:
+      case _STYLE:
       case _Z:
       case _PEN:
-      case _STYLE:
-        _data.insert(tl.at(0), QVariant(tl.at(1)));
+      {
+        if (tl.count() != 3)
+          break;
+
+        Setting *set = fac.setting(tl.at(1));
+        if (! set)
+          break;
+
+        set->set(tl.at(2));
+        _data.insert(tl.at(0), set);
         break;
+      }
       default:
       {
-        CurveBar *b = new CurveBar;
-        b->fromString(tl.at(1));
-        set(k, b);
+        if (tl.count() != 4)
+          break;
+
+        Data *b = _bars.value(k);
+        if (! b)
+        {
+          b = new CurveBar;
+          set(k, b);
+        }
+
+        Setting *set = fac.setting(tl.at(2));
+        if (! set)
+          break;
+
+        set->set(tl.at(3));
+        b->set(tl.at(1).toInt(), set);
         break;
       }
     }
@@ -141,4 +174,14 @@ void CurveData::barKeyRange (int &start, int &end)
 {
   start = _startIndex;
   end = _endIndex;
+}
+
+void CurveData::setOffset (int d)
+{
+  _offset = d;
+}
+
+int CurveData::offset ()
+{
+  return _offset;
 }

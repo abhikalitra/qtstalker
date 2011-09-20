@@ -27,6 +27,7 @@
 #include <QObject>
 
 #include "Data.h"
+#include "Setting.h"
 
 class Script : public QObject
 {
@@ -50,6 +51,8 @@ class Script : public QObject
     int nextROID ();
     void setCommand (QString);
     QString command ();
+    void setTSetting (Setting *);
+    void setTData (Data *);
 
   public slots:
     int run ();
@@ -63,6 +66,8 @@ class Script : public QObject
     QString _file;
     QString _command;
     QHash<QString, Data *> _data;
+    QList<Setting *> _tsettings;
+    QList<Data *> _tdata;
 };
 
 #endif

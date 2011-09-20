@@ -24,6 +24,10 @@
 #include "Globals.h"
 #include "Strip.h"
 #include "ChartObjectData.h"
+#include "SettingDouble.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+#include "SettingColor.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -32,23 +36,23 @@
 
 ChartObjectHLine::ChartObjectHLine ()
 {
-  _settings->set(ChartObjectData::_TYPE, QVariant(QString("HLine")));
-  _settings->set(ChartObjectData::_PRICE, QVariant(0));
-  _settings->set(ChartObjectData::_COLOR, QVariant(QString("red")));
-  _settings->set(ChartObjectData::_Z, QVariant(1));
-  _settings->set(ChartObjectData::_PEN, QVariant(1));
+  _settings->set(ChartObjectData::_TYPE, new SettingString(QString("HLine")));
+  _settings->set(ChartObjectData::_PRICE, new SettingDouble(0));
+  _settings->set(ChartObjectData::_COLOR, new SettingColor(QColor(Qt::red)));
+  _settings->set(ChartObjectData::_Z, new SettingInteger(1));
+  _settings->set(ChartObjectData::_PEN, new SettingInteger(1));
 }
 
 void ChartObjectHLine::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap &yMap, const QRect &) const
 {
-  p->setPen(QColor(_settings->get(ChartObjectData::_COLOR).toString()));
+  p->setPen(_settings->get(ChartObjectData::_COLOR)->toColor());
 
-  int y = yMap.transform(_settings->get(ChartObjectData::_PRICE).toDouble());
+  int y = yMap.transform(_settings->get(ChartObjectData::_PRICE)->toDouble());
 
   // test start
   Strip strip;
   QString ts;
-  strip.strip(_settings->get(ChartObjectData::_PRICE).toDouble(), 4, ts);
+  strip.strip(_settings->get(ChartObjectData::_PRICE)->toDouble(), 4, ts);
   QString s = " " + ts; // prepend space so we can clearly read text
   QFontMetrics fm = p->fontMetrics();
   QRect rc = p->boundingRect(0, y - (fm.height() / 2), 1, 1, 0, s);
@@ -92,15 +96,15 @@ void ChartObjectHLine::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap
                   y - (_handleWidth / 2),
                   _handleWidth,
                   _handleWidth,
-                  QColor(_settings->get(ChartObjectData::_COLOR).toString()));
+                  _settings->get(ChartObjectData::_COLOR)->toColor());
     }
   }
 }
 
 int ChartObjectHLine::info (Message &info)
 {
-  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE).toString());
-  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE).toString());
+  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE)->toString());
+  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE)->toString());
   return 0;
 }
 
@@ -111,13 +115,13 @@ void ChartObjectHLine::move (QPoint p)
     case _MOVE:
     {
       QwtScaleMap map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_PRICE, QVariant(map.invTransform((double) p.y())));
+      _settings->set(ChartObjectData::_PRICE, new SettingDouble(map.invTransform((double) p.y())));
 
       plot()->replot();
 
       Strip strip;
       QString s;
-      strip.strip(_settings->get(ChartObjectData::_PRICE).toDouble(), 4, s);
+      strip.strip(_settings->get(ChartObjectData::_PRICE)->toDouble(), 4, s);
       g_parent->statusBar()->showMessage(s);
 
       _modified++;
@@ -138,7 +142,7 @@ int ChartObjectHLine::create ()
 
 int ChartObjectHLine::highLow (int, int, double &high, double &low)
 {
-  double d = _settings->get(ChartObjectData::_PRICE).toDouble();
+  double d = _settings->get(ChartObjectData::_PRICE)->toDouble();
   high = d;
   low = d;
   return 0;
@@ -146,33 +150,30 @@ int ChartObjectHLine::highLow (int, int, double &high, double &low)
 
 DataDialog * ChartObjectHLine::dialog (QWidget *p)
 {
-  DataDialog *dialog = new DataDialog(p, _settings);
+  DataDialog *dialog = new DataDialog(p);
 
   QStringList l;
   l << "QtStalker" + g_session + ":" << QObject::tr("Edit HLine");
   dialog->setWindowTitle(l.join(" "));
 
-  dialog->addTab(QObject::tr("Settings"));
   int tab = 0;
+  dialog->addTab(tab, QObject::tr("Settings"));
 
   dialog->setColor(tab,
-                   QString::number(ChartObjectData::_COLOR),
                    QObject::tr("Color"),
-                   QColor(_settings->get(ChartObjectData::_COLOR).toString()),
+                   _settings->get(ChartObjectData::_COLOR)->toColor(),
                    QString());
 
   dialog->setDouble(tab,
-                    QString::number(ChartObjectData::_PRICE),
                     QObject::tr("Price"),
-                    _settings->get(ChartObjectData::_PRICE).toDouble(),
+                    _settings->get(ChartObjectData::_PRICE)->toDouble(),
                     99999999.0,
                     -99999999.0,
                     QString());
 
   dialog->setInteger(tab,
-                     QString::number(ChartObjectData::_Z),
                      QString("Z"),
-                     _settings->get(ChartObjectData::_Z).toInt(),
+                     _settings->get(ChartObjectData::_Z)->toInteger(),
                      99,
                      -1,
                      QString());

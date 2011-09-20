@@ -30,8 +30,7 @@ class CommandVIDYA : public Command
 
   public:
     CommandVIDYA (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getVIDYA (QList<Data *> &, int, int);
     Data * getCMO (QList<Data *> &list, int);
 };

@@ -21,9 +21,12 @@
 
 #include "CommandMAMA.h"
 #include "ta_libc.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -36,50 +39,71 @@ CommandMAMA::CommandMAMA (QObject *p) : Command (p)
     qDebug("CommandMAMA::CommandMAMA: error on TA_Initialize");
 }
 
-int CommandMAMA::runScript (Data *sg, Script *script)
+int CommandMAMA::runScript (Message *sg, Script *script)
 {
-  QString mname = sg->get("OUTPUT_MAMA").toString();
-  Data *line = script->data(mname);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT_MAMA");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_MAMA" << mname;
+    _message << "invalid OUTPUT_MAMA";
+    return _ERROR;
+  }
+  Setting *mname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! mname)
+  {
+    _message << "invalid OUTPUT_MAMA " + s;
     return _ERROR;
   }
 
-  QString fname = sg->get("OUTPUT_FAMA").toString();
-  line = script->data(fname);
-  if (line)
+  s = sg->value("OUTPUT_FAMA");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_FAMA" << fname;
+    _message << "invalid OUTPUT_FAMA";
+    return _ERROR;
+  }
+  Setting *fname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! fname)
+  {
+    _message << "invalid OUTPUT_FAMA " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT").toString();
-  Data *in = script->data(s);
+  s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    _message << "INPUT missing " + s;
     return _ERROR;
   }
 
-  double flimit = sg->get("LIMIT_FAST").toDouble();
+  s = sg->value("LIMIT_FAST");
+  Setting *flimit = vdi.setting(SettingFactory::_DOUBLE, script, s);
+  if (! flimit)
+  {
+    _message << "invalid LIMIT_FAST " + s;
+    return _ERROR;
+  }
 
-  double slimit = sg->get("LIMIT_SLOW").toDouble();
+  s = sg->value("LIMIT_SLOW");
+  Setting *slimit = vdi.setting(SettingFactory::_DOUBLE, script, s);
+  if (! slimit)
+  {
+    _message << "invalid LIMIT_SLOW " + s;
+    return _ERROR;
+  }
 
   QList<Data *> list;
   list << in;
-  QList<Data *> lines = getMAMA(list, flimit, slimit);
+
+  QList<Data *> lines = getMAMA(list, flimit->toDouble(), slimit->toDouble());
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Data *mama = lines.at(0);
-  script->setData(mname, mama);
-
-  Data *fama = lines.at(1);
-  script->setData(fname, fama);
+  script->setData(mname->toString(), lines.at(0));
+  script->setData(fname->toString(), lines.at(1));
 
   return _OK;
 }
@@ -90,9 +114,9 @@ QList<Data *> CommandMAMA::getMAMA (QList<Data *> &list, double flimit, double s
   if (! list.count())
     return lines;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return lines;
 
   int size = keys.count();
@@ -102,7 +126,8 @@ QList<Data *> CommandMAMA::getMAMA (QList<Data *> &list, double flimit, double s
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  TALibInput tai;
+  size = tai.fill1(list, keys, &in[0]);
   if (! size)
     return lines;
 
@@ -127,7 +152,9 @@ QList<Data *> CommandMAMA::getMAMA (QList<Data *> &list, double flimit, double s
   lines << c;
   c = new CurveData;
   lines << c;
-  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble2(lines, keys, outNb, &out[0], &out2[0]))
   {
     qDeleteAll(lines);
     lines.clear();
@@ -135,15 +162,4 @@ QList<Data *> CommandMAMA::getMAMA (QList<Data *> &list, double flimit, double s
   }
 
   return lines;
-}
-
-Data * CommandMAMA::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT_MAMA", QVariant(QString()));
-  sg->set("OUTPUT_FAMA", QVariant(QString()));
-  sg->set("INPUT", QVariant(QString()));
-  sg->set("LIMIT_FAST", QVariant(0.5));
-  sg->set("LIMIT_SLOW", QVariant(0.05));
-  return sg;
 }

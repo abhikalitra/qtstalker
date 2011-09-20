@@ -48,12 +48,12 @@ void ScriptTimerDialog::createGUI ()
   _command = new LineEdit(this);
   _form->addRow(tr("Command"), _command);
 
-  _startup = new QCheckBox;
-  _form->addRow(tr("Launch at application start"), _startup);
-
   _interval = new QSpinBox;
   _interval->setMinimum(0);
   _form->addRow(tr("Launch every X seconds"), _interval);
+
+  _startup = new QCheckBox;
+  _form->addRow(tr("Launch at application start"), _startup);
 }
 
 void ScriptTimerDialog::done ()

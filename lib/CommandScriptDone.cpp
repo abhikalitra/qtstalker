@@ -22,6 +22,7 @@
 #include "CommandScriptDone.h"
 #include "IPCMessage.h"
 #include "MessageSend.h"
+#include "SettingString.h"
 
 #include <QtDebug>
 
@@ -30,18 +31,24 @@ CommandScriptDone::CommandScriptDone (QObject *p) : Command (p)
   _type = "SCRIPT_DONE";
 }
 
-int CommandScriptDone::runScript (Data *sg, Script *script)
+int CommandScriptDone::runScript (Message *sg, Script *script)
 {
-  IPCMessage ipcm(script->session(), _type, "*", script->file(), sg->type());
+  Data d;
+  SettingString *name = new SettingString;
+  QString s = sg->value("SCRIPT");
+  if (name->set(s, (void *) script))
+  {
+    if (name->set(s))
+    {
+      _message << "invalid SCRIPT " + s;
+      return _ERROR;
+    }
+  }
+  d.set("SCRIPT", name);
+
+  IPCMessage ipcm(script->session(), _type, "*", script->file(), QString::number(d.type()));
   MessageSend ms(this);
-  ms.send(ipcm, sg->toString());
+  ms.send(ipcm, d.toString());
 
   return _OK;
-}
-
-Data * CommandScriptDone::settings ()
-{
-  Data *sg = new Data;
-  sg->set("SCRIPT", QVariant(QString()));
-  return sg;
 }

@@ -21,9 +21,12 @@
 
 #include "CommandMINMAX.h"
 #include "ta_libc.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -37,46 +40,62 @@ CommandMINMAX::CommandMINMAX (QObject *p) : Command (p)
     qDebug("CommandMINMAX::CommandMINMAX: error on TA_Initialize");
 }
 
-int CommandMINMAX::runScript (Data *sg, Script *script)
+int CommandMINMAX::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT").toString();
-  Data *in = script->data(s);
+  s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    _message << "INPUT missing " + s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD").toInt();
+  s = sg->value("PERIOD");
+  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! period)
+  {
+    _message << "invalid PERIOD " + s;
+    return _ERROR;
+  }
 
-  s = sg->get("METHOD").toString();
+  s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    qDebug() << _type << "::runScript: invalid METHOD" << s;
+    _message << "invalid METHOD " + s;
     return _ERROR;
   }
 
-  line = getMINMAX(in, period, method);
+  Data *line = getMINMAX(in, period->toInteger(), method);
   if (! line)
     return _ERROR;
 
-  script->setData(name, line);
+  script->setData(name->toString(), line);
 
   return _OK;
 }
 
-Data * CommandMINMAX::getMINMAX (Data *in, int period, int method)
+Data * CommandMINMAX::getMINMAX (Data *in, int tperiod, int method)
 {
   QList<int> keys = in->barKeys();
+
+  int period = tperiod;
+  if (period == 0)
+    period = keys.count();
 
   int size = keys.count();
   TA_Real input[size];
@@ -84,11 +103,11 @@ Data * CommandMINMAX::getMINMAX (Data *in, int period, int method)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  InputType it;
   QList<Data *> list;
   list << in;
 
-  size = it.fill(list, keys, &input[0], &input[0], &input[0], &input[0]);
+  TALibInput tai;
+  size = tai.fill1(list, keys, &input[0]);
   if (! size)
     return 0;
 
@@ -116,21 +135,12 @@ Data * CommandMINMAX::getMINMAX (Data *in, int period, int method)
   Data *c = new CurveData;
   outs.append(c);
 
-  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+  TALibOutput tao;
+  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
   {
     delete c;
     return 0;
   }
 
   return c;
-}
-
-Data * CommandMINMAX::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString("min")));
-  sg->set("METHOD", QVariant(QString("MIN")));
-  sg->set("INPUT", QVariant(QString("close")));
-  sg->set("PERIOD", QVariant(10));
-  return sg;
 }

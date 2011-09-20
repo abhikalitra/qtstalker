@@ -30,8 +30,7 @@ class CommandBOP : public Command
 
   public:
     CommandBOP (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getBOP (QList<Data *> &);
 };
 

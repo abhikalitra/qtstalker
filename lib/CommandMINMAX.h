@@ -30,8 +30,7 @@ class CommandMINMAX : public Command
 
   public:
     CommandMINMAX (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getMINMAX (Data *, int, int);
 
   protected:

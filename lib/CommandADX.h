@@ -30,8 +30,7 @@ class CommandADX : public Command
 
   public:
     CommandADX (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getADX (QList<Data *> &, int period, int method);
 
   private:

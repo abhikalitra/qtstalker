@@ -30,8 +30,7 @@ class CommandStochFast : public Command
 
   public:
     CommandStochFast (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     QList<Data *> getSTOCHF (QList<Data *> &, int kperiod, int dperiod, int type);
 };
 

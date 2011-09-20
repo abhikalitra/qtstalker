@@ -28,13 +28,9 @@ class CommandChartPanelRefresh : public Command
 {
   Q_OBJECT
 
-  signals:
-    void signalDummy ();
-
   public:
     CommandChartPanelRefresh (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
 };
 
 #endif

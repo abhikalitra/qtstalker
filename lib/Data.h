@@ -25,22 +25,25 @@
 #ifndef DATA_HPP
 #define DATA_HPP
 
-#include <QVariant>
 #include <QHash>
+
+#include "Setting.h"
 
 class Data
 {
   public:
     Data ();
-    QString type ();
+    ~Data ();
+    int type ();
     bool dataContains (QString);
     int dataKeyCount ();
+
     virtual void clear ();
-    virtual int set (QString, QVariant);
-    virtual int set (int, QVariant);
+    virtual int set (QString, Setting *);
+    virtual int set (int, Setting *);
     virtual int set (int, Data *);
-    virtual QVariant get (QString);
-    virtual QVariant get (int);
+    virtual Setting * get (QString);
+    virtual Setting * get (int);
     virtual Data * getData (int);
     virtual QString toString ();
     virtual int fromString (QString);
@@ -50,10 +53,12 @@ class Data
     virtual int barKeyCount ();
     virtual void barKeyRange (int &, int &);
     virtual void append (Data *);
+    virtual void setOffset (int);
+    virtual int offset ();
 
   protected:
-    QHash<QString, QVariant> _data;
-    QString _type;
+    QHash<QString, Setting *> _data;
+    int _type;
 };
 
 #endif

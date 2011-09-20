@@ -20,11 +20,17 @@
  */
 
 #include "CommandPlotHistogram.h"
-#include "Script.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "HistogramStyle.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+#include "SettingDouble.h"
+#include "SettingColor.h"
+#include "DataFactory.h"
+#include "DataSetting.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -33,142 +39,117 @@ CommandPlotHistogram::CommandPlotHistogram (QObject *p) : Command (p)
   _type = "PLOT_HISTOGRAM";
 }
 
-int CommandPlotHistogram::runScript (Data *sg, Script *script)
+int CommandPlotHistogram::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  // OUTPUT
+  QString name = sg->value("OUTPUT");
+  if (name.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
     return _ERROR;
   }
 
-  // verify HIGH
-  int valueFlag = FALSE;
-  double value = 0;
-  Data *ihigh = 0;
-  QString s = sg->get("HIGH").toString();
-  bool ok;
-  value = s.toDouble(&ok);
-  if (ok)
-    valueFlag++;
-  else
+  // CHART
+  QString chart = sg->value("CHART");
+  if (chart.isEmpty())
   {
-    ihigh = script->data(s);
-    if (! ihigh)
-    {
-      qDebug() << _type << "::runScript: invalid HIGH" << s;
-      return _ERROR;
-    }
-  }
-
-  // verify LOW
-  int valueFlag2 = FALSE;
-  double value2 = 0;
-  Data *ilow = 0;
-  s = sg->get("LOW").toString();
-  value2 = s.toDouble(&ok);
-  if (ok)
-    valueFlag2++;
-  else
-  {
-    ilow = script->data(s);
-    if (! ilow)
-    {
-      qDebug() << _type << "::runScript: invalid LOW" << s;
-      return _ERROR;
-    }
-  }
-
-  QList<Data *> list;
-  if (! valueFlag)
-    list << ihigh;
-  if (! valueFlag2)
-    list << ilow;
-
-  InputType it;
-  QList<int> keys;
-  if (it.keys(list, keys))
-  {
-    qDebug() << _type << "::runScript: invalid keys";
+    _message << "invalid CHART";
     return _ERROR;
   }
 
   // style
   HistogramStyle ls;
-  s = sg->get("STYLE").toString();
-  if (ls.stringToStyle(s) == -1)
+  QString style = sg->value("STYLE");
+  if (ls.stringToStyle(style) == -1)
   {
-    qDebug() << _type << "::runScript: invalid STYLE" << s;
+    _message << "invalid STYLE " + style;
     return _ERROR;
   }
 
   // color
-  s = sg->get("COLOR").toString();
-  QColor c(s);
-  if (! c.isValid())
+  VerifyDataInput vdi;
+  QString s = sg->value("COLOR");
+  Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
+  if (! color)
   {
-    qDebug() << _type << "::runScript: invalid COLOR" << s;
+    _message << "invalid COLOR " + s;
     return _ERROR;
   }
 
-  line = new CurveData;
-  line->set(CurveData::_TYPE, QString("Histogram"));
-  line->set(CurveData::_Z, sg->get("Z"));
-  line->set(CurveData::_PEN, sg->get("PEN"));
-  line->set(CurveData::_LABEL, name);
-  line->set(CurveData::_CHART, sg->get("CHART"));
-  line->set(CurveData::_STYLE, sg->get("STYLE"));
+  // Z
+  s = sg->value("Z");
+  Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! z)
+  {
+    _message << "invalid Z " + s;
+    return _ERROR;
+  }
+
+  // PEN
+  s = sg->value("PEN");
+  Setting *pen = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! pen)
+  {
+    _message << "invalid PEN " + s;
+    return _ERROR;
+  }
+
+  // HIGH
+  s = sg->value("HIGH");
+  Data *ihigh = vdi.curveAll(script, s);
+  if (! ihigh)
+  {
+    _message << "invalid HIGH";
+    return _ERROR;
+  }
+
+  // LOW
+  s = sg->value("LOW");
+  Data *ilow = vdi.curveAll(script, s);
+  if (! ilow)
+  {
+    _message << "invalid LOW";
+    return _ERROR;
+  }
+
+  // keys
+  QList<Data *> list;
+  list << ihigh << ilow;
+
+  QList<int> keys;
+  if (vdi.curveKeys(list, keys))
+  {
+    _message << "invalid keys";
+    return _ERROR;
+  }
+
+  Data *line = new CurveData;
+  line->set(CurveData::_TYPE, new SettingString(QString("Histogram")));
+  line->set(CurveData::_Z, new SettingInteger(z->toInteger()));
+  line->set(CurveData::_PEN, new SettingInteger(pen->toInteger()));
+  line->set(CurveData::_LABEL, new SettingString(name));
+  line->set(CurveData::_CHART, new SettingString(chart));
+  line->set(CurveData::_STYLE, new SettingString(style));
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
     double v = 0;
-    if (valueFlag)
-      v = value;
-    else
-    {
-      Data *hbar = ihigh->getData(keys.at(loop));
-      if (! hbar)
-        continue;
-
-      v = hbar->get(CurveBar::_VALUE).toDouble();
-    }
+    if (vdi.curveValue(ihigh, keys, loop, 0, v))
+      continue;
 
     double v2 = 0;
-    if (valueFlag2)
-      v2 = value2;
-    else
-    {
-      Data *lbar = ilow->getData(keys.at(loop));
-      if (! lbar)
-        continue;
-
-      v2 = lbar->get(CurveBar::_VALUE).toDouble();
-    }
+    if (vdi.curveValue(ilow, keys, loop, 0, v2))
+      continue;
 
     Data *bar = new CurveBar;
-    bar->set(CurveBar::_HIGH, QVariant(v));
-    bar->set(CurveBar::_LOW, QVariant(v2));
-    bar->set(CurveBar::_COLOR, sg->get("COLOR"));
+    bar->set(CurveBar::_HIGH, new SettingDouble(v));
+    bar->set(CurveBar::_LOW, new SettingDouble(v2));
+    bar->set(CurveBar::_COLOR, new SettingColor(color->toColor()));
     line->set(keys.at(loop), bar);
   }
 
   script->setData(name, line);
 
   return _OK;
-}
-
-Data * CommandPlotHistogram::settings ()
-{
-  Data *sg = new Data;
-  sg->set("CHART", QVariant(QString()));
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("STYLE", QVariant(QString("Histogram Bar")));
-  sg->set("HIGH", QVariant(QString("high")));
-  sg->set("LOW", QVariant(QString("low")));
-  sg->set("COLOR", QVariant(QString("red")));
-  sg->set("Z", QVariant(-1));
-  sg->set("PEN", QVariant(1));
-  return sg;
 }

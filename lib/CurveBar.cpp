@@ -20,6 +20,7 @@
  */
 
 #include "CurveBar.h"
+#include "DataFactory.h"
 
 #include <QtDebug>
 
@@ -31,8 +32,7 @@ CurveBar::CurveBar ()
 void CurveBar::clear ()
 {
   Data::clear();
-
-  _type = "CURVE_BAR";
+  _type = DataFactory::_CURVE_BAR;
 }
 
 int CurveBar::highLow (double &h, double &l)
@@ -41,7 +41,7 @@ int CurveBar::highLow (double &h, double &l)
   h = -99999999;
   l = 99999999;
 
-  QHashIterator<QString, QVariant> it(_data);
+  QHashIterator<QString, Setting *> it(_data);
   while (it.hasNext())
   {
     it.next();
@@ -58,7 +58,7 @@ int CurveBar::highLow (double &h, double &l)
       case _OI:
       case _VALUE:
       {
-        double t = it.value().toDouble();
+        double t = it.value()->toDouble();
 
         if (t > h)
         {

@@ -23,9 +23,11 @@
    Dr. Alexander Elder's book _Come Into My Trading Room_, p.173 */
 
 #include "CommandSZ.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
+#include "SettingDouble.h"
 
 #include <QtDebug>
 
@@ -35,53 +37,78 @@ CommandSZ::CommandSZ (QObject *p) : Command (p)
   _method << "LONG" << "SHORT";
 }
 
-int CommandSZ::runScript (Data *sg, Script *script)
+int CommandSZ::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH").toString();
-  Data *ihigh = script->data(s);
+  s = sg->value("HIGH");
+  Data *ihigh = vdi.curve(script, s);
   if (! ihigh)
   {
-    qDebug() << _type << "::runScript: invalid HIGH" << s;
+    _message << "invalid HIGH " + s;
     return _ERROR;
   }
 
-  s = sg->get("LOW").toString();
-  Data *ilow = script->data(s);
+  s = sg->value("LOW");
+  Data *ilow = vdi.curve(script, s);
   if (! ilow)
   {
-    qDebug() << _type << "::runScript: invalid LOW" << s;
+    _message << "invalid LOW " + s;
     return _ERROR;
   }
 
-  s = sg->get("METHOD").toString();
+  s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    qDebug() << _type << "::runScript: invalid METHOD" << s;
+    _message << "invalid METHOD " + s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD").toInt();
+  s = sg->value("PERIOD");
+  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! period)
+  {
+    _message << "invalid PERIOD " + s;
+    return _ERROR;
+  }
 
-  int no_decline_period = sg->get("PERIOD_NO_DECLINE").toInt();
+  s = sg->value("PERIOD_NO_DECLINE");
+  Setting *no_decline_period = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! no_decline_period)
+  {
+    _message << "invalid PERIOD_NO_DECLINE " + s;
+    return _ERROR;
+  }
 
-  double coefficient = sg->get("COEFFICIENT").toDouble();
+  s = sg->value("COEFFICIENT");
+  Setting *coefficient = vdi.setting(SettingFactory::_DOUBLE, script, s);
+  if (! coefficient)
+  {
+    _message << "invalid COEFFICIENT " + s;
+    return _ERROR;
+  }
 
   QList<Data *> list;
   list << ihigh << ilow;
-  Data *pl = getSZ(list, method, period, no_decline_period, coefficient);
+
+  Data *pl = getSZ(list, method, period->toInteger(), no_decline_period->toInteger(), coefficient->toDouble());
   if (! pl)
     return _ERROR;
 
-  script->setData(name, pl);
+  script->setData(name->toString(), pl);
 
   return _OK;
 }
@@ -91,9 +118,9 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
   if (list.count() != 2)
     return 0;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   int display_uptrend = 0;
@@ -160,10 +187,10 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
       if (! plbar)
         continue;
 
-      double lo_curr = lbar->get(CurveBar::_VALUE).toDouble();
-      double lo_last = plbar->get(CurveBar::_VALUE).toDouble();
-      double hi_curr = hbar->get(CurveBar::_VALUE).toDouble();
-      double hi_last = phbar->get(CurveBar::_VALUE).toDouble();
+      double lo_curr = lbar->get(CurveBar::_VALUE)->toDouble();
+      double lo_last = plbar->get(CurveBar::_VALUE)->toDouble();
+      double hi_curr = hbar->get(CurveBar::_VALUE)->toDouble();
+      double hi_last = phbar->get(CurveBar::_VALUE)->toDouble();
       if (lo_last > lo_curr)
       {
         uptrend_noise_avg += lo_last - lo_curr;
@@ -189,8 +216,8 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     if (! plbar)
       continue;
 
-    double lo_last = plbar->get(CurveBar::_VALUE).toDouble();
-    double hi_last = phbar->get(CurveBar::_VALUE).toDouble();
+    double lo_last = plbar->get(CurveBar::_VALUE)->toDouble();
+    double hi_last = phbar->get(CurveBar::_VALUE)->toDouble();
     uptrend_stop = lo_last - coefficient * uptrend_noise_avg;
     dntrend_stop = hi_last + coefficient * dntrend_noise_avg;
 
@@ -218,11 +245,11 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     old_dntrend_stops[0] = dntrend_stop;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, QVariant(adjusted_uptrend_stop));
+    b->set(CurveBar::_VALUE, new SettingDouble(adjusted_uptrend_stop));
     sz_uptrend->set(keys.at(ipos), b);
 
     b = new CurveBar;
-    b->set(CurveBar::_VALUE, QVariant(adjusted_dntrend_stop));
+    b->set(CurveBar::_VALUE, new SettingDouble(adjusted_dntrend_stop));
     sz_dntrend->set(keys.at(ipos), b);
   }
 
@@ -240,17 +267,4 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
   }
 
   return pl;
-}
-
-Data * CommandSZ::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("HIGH", QVariant(QString()));
-  sg->set("LOW", QVariant(QString()));
-  sg->set("PERIOD", QVariant(10));
-  sg->set("PERIOD_NO_DECLINE", QVariant(2));
-  sg->set("COEFFICIENT", QVariant(2.0));
-  sg->set("METHOD", QVariant(_method.at(0)));
-  return sg;
 }

@@ -50,11 +50,14 @@ class CurveData : public Data
     int fromString (QString);
     int barKeyCount ();
     void barKeyRange (int &start, int &end);
+    void setOffset (int);
+    int offset ();
 
   protected:
     QHash<int, Data *> _bars;
     int _startIndex;
     int _endIndex;
+    int _offset;
 };
 
 #endif

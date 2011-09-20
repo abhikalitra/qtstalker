@@ -4,10 +4,6 @@
 <context>
     <name>AboutDialog</name>
     <message>
-        <source>Qtstalker version 0.37-dev (working title)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>
 Built using Qt </source>
         <translation type="unfinished"></translation>
@@ -31,6 +27,21 @@ Qt Assistant is licensed with GNU General Public License (GPL) version 3.</sourc
         <source>
 (C) 2001-2011 by Stefan Stratigakos
 qtstalker.sourceforge.net</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About QtStalker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>QtStalker version 0.37-dev (working title)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>AddIndicator</name>
+    <message>
+        <source>Add Indicator</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -126,6 +137,13 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Semicolon</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CommandDialog</name>
+    <message>
+        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -256,11 +274,20 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>App restart required to take effect</source>
+        <source>Antialias Plotting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Antialias Plotting</source>
+        <source>Plot Background Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Tab Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set plot antialiasing.
+App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -778,27 +805,11 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Yahoo History</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Start Date</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Adjusted</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbol File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>CSV File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -857,33 +868,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>RefreshButton</name>
-    <message>
-        <source>Set Chart Refresh Timer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter refresh rate in minutes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Refresh chart every </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> minutes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Right click mouse for options.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Refresh Rate</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>RemoveIndicator</name>
     <message>
         <source>Confirm indicator removal</source>
@@ -908,10 +892,6 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Use Icon</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -931,15 +911,7 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Configure Launch Button Rows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Columns</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Configure Launch Button Columns</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1148,19 +1120,19 @@ qtstalker.sourceforge.net</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select</source>
+        <source>Select all symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select All Items</source>
+        <source>Unselect all symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unselect</source>
+        <source>Add selected to symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Unselect All Items</source>
+        <source>Remove selected from symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

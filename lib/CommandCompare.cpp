@@ -21,10 +21,12 @@
 
 #include "CommandCompare.h"
 #include "Operator.h"
-#include "Script.h"
+#include "VerifyDataInput.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "InputType.h"
+#include "SettingDouble.h"
+#include "DataFactory.h"
+#include "DataSetting.h"
 
 #include <QtDebug>
 
@@ -33,183 +35,109 @@ CommandCompare::CommandCompare (QObject *p) : Command (p)
   _type = "COMPARE";
 }
 
-int CommandCompare::runScript (Data *sg, Script *script)
+int CommandCompare::runScript (Message *sg, Script *script)
 {
+  VerifyDataInput vdi;
+
   // OUTPUT
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  QString name = sg->value("OUTPUT");
+  if (name.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
     return _ERROR;
   }
 
   // INPUT_1
-  QString s = sg->get("INPUT_1").toString();
-  Data *in = script->data(s);
+  QString s = sg->value("INPUT_1");
+  Data *in = vdi.curveAll(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT_1 not found" << s;
+    _message << "invalid INPUT_1 " + s;
     return _ERROR;
   }
-
-  int offset = sg->get("INPUT_1_OFFSET").toInt();
+  int offset = in->offset();
 
   // verify OP
   Operator top;
-  s = sg->get("OP").toString();
+  s = sg->value("OP");
   Operator::Type op = top.stringToOperator(s);
   if (op == -1)
   {
-    qDebug() << _type << "::runScript: invalid OP" << s;
+    _message << "invalid OP " + s;
     return _ERROR;
   }
 
-  // INPUT_2
-  int valueFlag2 = FALSE;
-  Data *in2 = 0;
-  s = sg->get("INPUT_2").toString();
-  bool ok;
-  double value2 = s.toDouble(&ok);
-  if (ok)
-    valueFlag2++;
-  else
+  // verify INPUT_2
+  s = sg->value("INPUT_2");
+  Data *in2 = vdi.curveAll(script, s);
+  if (! in2)
   {
-    in2 = script->data(s);
-    if (! in2)
-    {
-      qDebug() << _type << "::runScript: INPUT_2 not found" << s;
-      return _ERROR;
-    }
+    _message << "invalid INPUT_2 " + s;
+    return _ERROR;
   }
+  int offset2 = in2->offset();
 
-  int offset2 = sg->get("INPUT_2_OFFSET").toInt();
-
-  // RESULT_1
-  int valueFlag3 = FALSE;
-  Data *in3 = 0;
-  s = sg->get("RESULT_1").toString();
-  double value3 = s.toDouble(&ok);
-  if (ok)
-    valueFlag3++;
-  else
+  // verify RESULT_1
+  s = sg->value("RESULT_1");
+  Data *in3 = vdi.curveAll(script, s);
+  if (! in3)
   {
-    in3 = script->data(s);
-    if (! in3)
-    {
-      qDebug() << _type << "::runScript: RESULT_1 not found" << s;
-      return _ERROR;
-    }
+    _message << "invalid RESULT_1 " + s;
+    return _ERROR;
   }
+  int offset3 = in3->offset();
 
-  int offset3 = sg->get("RESULT_1_OFFSET").toInt();
 
-  // INPUT_4
-  int valueFlag4 = FALSE;
-  Data *in4 = 0;
-  s = sg->get("RESULT_2").toString();
-  double value4 = s.toDouble(&ok);
-  if (ok)
-    valueFlag4++;
-  else
+  // verify RESULT_2
+  s = sg->value("RESULT_2");
+  Data *in4 = vdi.curveAll(script, s);
+  if (! in4)
   {
-    in4 = script->data(s);
-    if (! in4)
-    {
-      qDebug() << _type << "::runScript: RESULT_2 not found" << s;
-      return _ERROR;
-    }
+    _message << "invalid RESULT_4 " + s;
+    return _ERROR;
   }
-
-  int offset4 = sg->get("RESULT_2_OFFSET").toInt();
+  int offset4 = in4->offset();
 
   QList<Data *> list;
-  list << in;
-  if (! valueFlag2)
-    list << in2;
-  if (! valueFlag3)
-    list << in3;
-  if (! valueFlag4)
-    list << in4;
+  list << in << in2 << in3 << in4;
 
-  InputType it;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
   {
-    qDebug() << _type << "::runScript: invalid keys";
+    _message << "invalid keys";
     return _ERROR;
   }
 
-  line = new CurveData;
+  Data *line = new CurveData;
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    int tloop = loop - offset;
-    if (tloop < 0)
-      continue;
-
-    Data *bar = in->getData(keys.at(tloop));
-    if (! bar)
+    double v = 0;
+    if (vdi.curveValue(in, keys, loop, offset, v))
       continue;
 
     double v2 = 0;
-    if (valueFlag2)
-      v2 = value2;
-    else
-    {
-      tloop = loop - offset2;
-      if (tloop < 0)
-        continue;
-
-      Data *bar2 = in2->getData(keys.at(tloop));
-      if (! bar2)
-        continue;
-
-      v2 = bar2->get(CurveBar::_VALUE).toDouble();
-    }
+    if (vdi.curveValue(in2, keys, loop, offset2, v2))
+      continue;
 
     double v3 = 0;
-    if (valueFlag3)
-      v3 = value3;
-    else
-    {
-      tloop = loop - offset3;
-      if (tloop < 0)
-        continue;
-
-      Data *bar3 = in3->getData(keys.at(tloop));
-      if (! bar3)
-        continue;
-
-      v3 = bar3->get(CurveBar::_VALUE).toDouble();
-    }
+    if (vdi.curveValue(in3, keys, loop, offset3, v3))
+      continue;
 
     double v4 = 0;
-    if (valueFlag4)
-      v4 = value4;
-    else
-    {
-      tloop = loop - offset4;
-      if (tloop < 0)
-        continue;
+    if (vdi.curveValue(in4, keys, loop, offset4, v4))
+      continue;
 
-      Data *bar4 = in4->getData(keys.at(tloop));
-      if (! bar4)
-        continue;
-
-      v4 = bar4->get(CurveBar::_VALUE).toDouble();
-    }
-
-    if (top.test(bar->get(CurveBar::_VALUE).toDouble(), op, v2))
+    if (top.test(v, op, v2))
     {
       Data *b = new CurveBar;
-      b->set(CurveBar::_VALUE, QVariant(v3));
+      b->set(CurveBar::_VALUE, new SettingDouble(v3));
       line->set(keys.at(loop), b);
     }
     else
     {
       Data *b = new CurveBar;
-      b->set(CurveBar::_VALUE, QVariant(v4));
+      b->set(CurveBar::_VALUE, new SettingDouble(v4));
       line->set(keys.at(loop), b);
     }
   }
@@ -217,20 +145,4 @@ int CommandCompare::runScript (Data *sg, Script *script)
   script->setData(name, line);
 
   return _OK;
-}
-
-Data * CommandCompare::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("INPUT_1", QVariant(QString()));
-  sg->set("INPUT_1_OFFSET", QVariant(0));
-  sg->set("INPUT_2", QVariant(QString()));
-  sg->set("INPUT_2_OFFSET", QVariant(0));
-  sg->set("RESULT_1", QVariant(QString()));
-  sg->set("RESULT_1_OFFSET", QVariant(0));
-  sg->set("RESULT_2", QVariant(QString()));
-  sg->set("RESULT_2_OFFSET", QVariant(0));
-  sg->set("OP", QVariant(QString("EQ")));
-  return sg;
 }

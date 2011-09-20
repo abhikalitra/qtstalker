@@ -24,19 +24,24 @@
 #include "CurveBar.h"
 #include "CurveData.h"
 #include "Symbol.h"
+#include "DataSetting.h"
 
 #include <QDebug>
 
 DataFactory::DataFactory ()
 {
-  _types << "CHART_OBJECT" << "CURVE" << "CURVE_BAR" << "DATA" << "SYMBOL";
 }
 
-Data * DataFactory::data (QString type)
+Data * DataFactory::data (QString d)
+{
+  return data(d.toInt());
+}
+
+Data * DataFactory::data (int type)
 {
   Data *data = 0;
 
-  switch ((Type) _types.indexOf(type))
+  switch ((Type) type)
   {
     case _CHART_OBJECT:
       data = new ChartObjectData;
@@ -50,6 +55,9 @@ Data * DataFactory::data (QString type)
     case _DATA:
       data = new Data;
       break;
+    case _DATA_SETTING:
+      data = new DataSetting;
+      break;
     case _SYMBOL:
       data = new Symbol;
       break;
@@ -58,14 +66,4 @@ Data * DataFactory::data (QString type)
   }
 
   return data;
-}
-
-QStringList DataFactory::list ()
-{
-  return _types;
-}
-
-int DataFactory::stringToType (QString d)
-{
-  return _types.indexOf(d);
 }

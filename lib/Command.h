@@ -22,10 +22,13 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-#include <QWidget>
+#include <QObject>
+#include <QStringList>
 
 #include "Message.h"
 #include "Script.h"
+#include "Setting.h"
+#include "Data.h"
 
 class Command : public QObject
 {
@@ -38,23 +41,19 @@ class Command : public QObject
     enum ReturnCode
     {
       _OK,
-      _ERROR,
-      _WAIT
+      _ERROR
     };
 
     Command (QObject *);
     virtual int request (Message *, Message *);
-    virtual int runScript (Data *, Script *);
-    virtual Data * settings ();
+    virtual int runScript (Message *, Script *);
 
     QString type ();
-    int isDialog ();
     QString returnString ();
     QString message ();
 
   protected:
     QString _type;
-    int _isDialog;
     QString _returnString;
     QStringList _message;
 };

@@ -20,9 +20,10 @@
  */
 
 #include "CommandArithmetic.h"
-#include "InputType.h"
+#include "VerifyDataInput.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "SettingDouble.h"
 
 #include <QtDebug>
 
@@ -32,56 +33,38 @@ CommandArithmetic::CommandArithmetic (QObject *p) : Command (p)
   _method << "ADD" << "DIV" << "MULT" << "SUB";
 }
 
-int CommandArithmetic::runScript (Data *sg, Script *script)
+int CommandArithmetic::runScript (Message *sg, Script *script)
 {
   // verify NAME
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  QString name = sg->value("OUTPUT");
+  if (name.isEmpty())
   {
-    _message << "duplicate OUTPUT " + name;
+    _message << "invalid OUTPUT " + name;
     return _ERROR;
   }
 
   // verify INPUT_1
-  QString s = sg->get("INPUT_1").toString();
-  Data *in = script->data(s);
+  VerifyDataInput vdi;
+  QString s = sg->value("INPUT_1");
+  Data *in = vdi.curveAll(script, s);
   if (! in)
   {
     _message << "invalid INPUT_1 " + s;
     return _ERROR;
   }
+  int offset = in->offset();
 
   // verify INPUT_2
-  Data *in2 = 0;
-  int delFlag = 0;
-  s = sg->get("INPUT_2").toString();
-  bool ok;
-  double value = s.toDouble(&ok);
-  if (ok)
+  s = sg->value("INPUT_2");
+  Data *in2 = vdi.curveAll(script, s);
+  if (! in2)
   {
-    in2 = new CurveData;
-    QList<int> keys = in->barKeys();
-    int loop = 0;
-    for (; loop < keys.count(); loop++)
-    {
-      Data *b = new CurveBar;
-      b->set(CurveBar::_VALUE, QVariant(value));
-      in2->set(keys.at(loop), b);
-    }
-    delFlag++;
+    _message << "invalid INPUT_2 " + s;
+    return _ERROR;
   }
-  else
-  {
-    in2 = script->data(s);
-    if (! in2)
-    {
-      _message << "invalid INPUT_2 " + s;
-      return _ERROR;
-    }
-  }
+  int offset2 = in2->offset();
 
-  s = sg->get("METHOD").toString();
+  s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
@@ -89,31 +72,26 @@ int CommandArithmetic::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  line = getArithmetic(in, in2, method);
+  Data *line = getArithmetic(in, offset, in2, offset2, method);
   if (! line)
   {
     _message << "getArithmetic error " + name;
-    if (delFlag)
-      delete in2;
     return _ERROR;
   }
-
-  if (delFlag)
-    delete in2;
 
   script->setData(name, line);
 
   return _OK;
 }
 
-Data * CommandArithmetic::getArithmetic (Data *in, Data *in2, int method)
+Data * CommandArithmetic::getArithmetic (Data *in, int off, Data *in2, int off2, int method)
 {
   QList<Data *> list;
   list << in << in2;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
   {
     _message << "getArithmetic invalid keys";
     return 0;
@@ -123,45 +101,41 @@ Data * CommandArithmetic::getArithmetic (Data *in, Data *in2, int method)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    Data *bar = in->getData(keys.at(loop));
-    if (! bar)
+    double v = 0;
+    if (vdi.curveValue(in, keys, loop, off, v))
       continue;
 
-    Data *bar2 = in2->getData(keys.at(loop));
-    if (! bar2)
+    double v2 = 0;
+    if (vdi.curveValue(in2, keys, loop, off2, v2))
       continue;
 
     switch (method)
     {
       case 0: // add
       {
-        double v = bar->get(CurveBar::_VALUE).toDouble() + bar2->get(CurveBar::_VALUE).toDouble();
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, QVariant(v));
+        b->set(CurveBar::_VALUE, new SettingDouble(v + v2));
         line->set(keys.at(loop), b);
 	break;
       }
       case 1: // div
       {
-        double v = bar->get(CurveBar::_VALUE).toDouble() / bar2->get(CurveBar::_VALUE).toDouble();
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, QVariant(v));
+        b->set(CurveBar::_VALUE, new SettingDouble(v / v2));
         line->set(keys.at(loop), b);
 	break;
       }
       case 2: // mult
       {
-        double v = bar->get(CurveBar::_VALUE).toDouble() * bar2->get(CurveBar::_VALUE).toDouble();
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, QVariant(v));
+        b->set(CurveBar::_VALUE, new SettingDouble(v * v2));
         line->set(keys.at(loop), b);
 	break;
       }
       case 3: // sub
       {
-        double v = bar->get(CurveBar::_VALUE).toDouble() - bar2->get(CurveBar::_VALUE).toDouble();
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, QVariant(v));
+        b->set(CurveBar::_VALUE, new SettingDouble(v - v2));
         line->set(keys.at(loop), b);
 	break;
       }
@@ -171,14 +145,4 @@ Data * CommandArithmetic::getArithmetic (Data *in, Data *in2, int method)
   }
 
   return line;
-}
-
-Data * CommandArithmetic::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("METHOD", QVariant(QString()));
-  sg->set("INPUT_1", QVariant(QString()));
-  sg->set("INPUT_2", QVariant(QString()));
-  return sg;
 }

@@ -24,6 +24,11 @@
 #include "Globals.h"
 #include "DateScaleDraw.h"
 #include "ChartObjectData.h"
+#include "SettingDouble.h"
+#include "SettingDateTime.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+#include "SettingColor.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -32,22 +37,22 @@
 
 ChartObjectBuy::ChartObjectBuy ()
 {
-  _settings->set(ChartObjectData::_TYPE, QVariant(QString("Buy")));
-  _settings->set(ChartObjectData::_DATE, QVariant(QDateTime::currentDateTime()));
-  _settings->set(ChartObjectData::_PRICE, QVariant(0));
-  _settings->set(ChartObjectData::_COLOR, QVariant(QString("green")));
-  _settings->set(ChartObjectData::_Z, QVariant(1));
-  _settings->set(ChartObjectData::_PEN, QVariant(1));
+  _settings->set(ChartObjectData::_TYPE, new SettingString(QString("Buy")));
+  _settings->set(ChartObjectData::_DATE, new SettingDateTime(QDateTime::currentDateTime()));
+  _settings->set(ChartObjectData::_PRICE, new SettingDouble(0));
+  _settings->set(ChartObjectData::_COLOR, new SettingColor(QColor(Qt::green)));
+  _settings->set(ChartObjectData::_Z, new SettingInteger(1));
+  _settings->set(ChartObjectData::_PEN, new SettingInteger(1));
 }
 
 void ChartObjectBuy::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE).toDateTime()));
+  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE)->toDateTime()));
 
-  int y = yMap.transform(_settings->get(ChartObjectData::_PRICE).toDouble());
+  int y = yMap.transform(_settings->get(ChartObjectData::_PRICE)->toDouble());
 
-  p->setBrush(QColor(_settings->get(ChartObjectData::_COLOR).toString()));
+  p->setBrush(_settings->get(ChartObjectData::_COLOR)->toColor());
 
   QPolygon arrow;
   arrow.putPoints(0, 7, x, y,
@@ -78,19 +83,19 @@ void ChartObjectBuy::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleM
                 y - _handleWidth,
                 _handleWidth,
                 _handleWidth,
-                QColor(_settings->get(ChartObjectData::_COLOR).toString()));
+                _settings->get(ChartObjectData::_COLOR)->toColor());
   }
 }
 
 int ChartObjectBuy::info (Message &info)
 {
-  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE).toString());
+  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE)->toString());
 
-  QDateTime dt = _settings->get(ChartObjectData::_DATE).toDateTime();
+  QDateTime dt = _settings->get(ChartObjectData::_DATE)->toDateTime();
   info.insert("D", dt.toString("yyyy-MM-dd"));
   info.insert("T", dt.toString("HH:mm:ss"));
 
-  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE).toString());
+  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE)->toString());
 
   return 0;
 }
@@ -107,14 +112,14 @@ void ChartObjectBuy::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE, QVariant(dt));
+      _settings->set(ChartObjectData::_DATE, new SettingDateTime(dt));
 
       map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_PRICE, QVariant(map.invTransform((double) p.y())));
+      _settings->set(ChartObjectData::_PRICE, new SettingDouble(map.invTransform((double) p.y())));
 
       plot()->replot();
 
-      QString s = _settings->get(ChartObjectData::_DATE).toString() + " " + _settings->get(ChartObjectData::_PRICE).toString();
+      QString s = _settings->get(ChartObjectData::_DATE)->toString() + " " + _settings->get(ChartObjectData::_PRICE)->toString();
       g_parent->statusBar()->showMessage(s);
 
       _modified++;
@@ -135,39 +140,35 @@ int ChartObjectBuy::create ()
 
 DataDialog * ChartObjectBuy::dialog (QWidget *p)
 {
-  DataDialog *dialog = new DataDialog(p, _settings);
+  DataDialog *dialog = new DataDialog(p);
 
   QStringList l;
   l << "QtStalker" + g_session + ":" << QObject::tr("Edit Buy");
   dialog->setWindowTitle(l.join(" "));
 
-  dialog->addTab(QObject::tr("Settings"));
   int tab = 0;
+  dialog->addTab(tab, QObject::tr("Settings"));
 
   dialog->setDateTime(tab,
-                      QString::number(ChartObjectData::_DATE),
                       QObject::tr("Date"),
-                      _settings->get(ChartObjectData::_DATE).toDateTime(),
+                      _settings->get(ChartObjectData::_DATE)->toDateTime(),
                       QString());
 
   dialog->setColor(tab,
-                   QString::number(ChartObjectData::_COLOR),
                    QObject::tr("Color"),
-                   QColor(_settings->get(ChartObjectData::_COLOR).toString()),
+                   _settings->get(ChartObjectData::_COLOR)->toColor(),
                    QString());
 
   dialog->setDouble(tab,
-                    QString::number(ChartObjectData::_PRICE),
                     QObject::tr("Price"),
-                    _settings->get(ChartObjectData::_PRICE).toDouble(),
+                    _settings->get(ChartObjectData::_PRICE)->toDouble(),
                     99999999.0,
                     -99999999.0,
                     QString());
 
   dialog->setInteger(tab,
-                     QString::number(ChartObjectData::_Z),
                      QString("Z"),
-                     _settings->get(ChartObjectData::_Z).toInt(),
+                     _settings->get(ChartObjectData::_Z)->toInteger(),
                      99,
                      -1,
                      QString());

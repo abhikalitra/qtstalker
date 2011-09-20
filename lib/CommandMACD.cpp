@@ -21,10 +21,13 @@
 
 #include "CommandMACD.h"
 #include "ta_libc.h"
-#include "InputType.h"
 #include "MAType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -37,88 +40,118 @@ CommandMACD::CommandMACD (QObject *p) : Command (p)
     qDebug("CommandMACD::CommandMACD: error on TA_Initialize");
 }
 
-int CommandMACD::runScript (Data *sg, Script *script)
+int CommandMACD::runScript (Message *sg, Script *script)
 {
-  QString mname = sg->get("OUTPUT_MACD").toString();
-  Data *line = script->data(mname);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT_MACD");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_MACD" << mname;
+    _message << "invalid OUTPUT_MACD";
+    return _ERROR;
+  }
+  Setting *mname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! mname)
+  {
+    _message << "invalid OUTPUT_MACD " + s;
     return _ERROR;
   }
 
-  QString sname = sg->get("OUTPUT_SIGNAL").toString();
-  line = script->data(sname);
-  if (line)
+  s = sg->value("OUTPUT_SIGNAL");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_SIGNAL" << sname;
+    _message << "invalid OUTPUT_SIGNAL";
+    return _ERROR;
+  }
+  Setting *sname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! sname)
+  {
+    _message << "invalid OUTPUT_SIGNAL " + s;
     return _ERROR;
   }
 
-  QString hname = sg->get("OUTPUT_HIST").toString();
-  line = script->data(hname);
-  if (line)
+  s = sg->value("OUTPUT_HIST");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_HIST" << hname;
+    _message << "invalid OUTPUT_HIST";
+    return _ERROR;
+  }
+  Setting *hname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! hname)
+  {
+    _message << "invalid OUTPUT_HIST " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT").toString();
-  Data *in = script->data(s);
+  s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    _message << "INPUT missing " + s;
     return _ERROR;
   }
 
-  int fperiod = sg->get("PERIOD_FAST").toInt();
+  s = sg->value("PERIOD_FAST");
+  Setting *fperiod = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! fperiod)
+  {
+    _message << "invalid PERIOD_FAST " + s;
+    return _ERROR;
+  }
 
   MAType mat;
-  s = sg->get("MA_TYPE_FAST").toString();
+  s = sg->value("MA_TYPE_FAST");
   int ftype = mat.fromString(s);
   if (ftype == -1)
   {
-    qDebug() << _type << "::runScript: invalid MA_TYPE_FAST" << s;
+    _message << "invalid MA_TYPE_FAST " + s;
     return _ERROR;
   }
 
-  int speriod = sg->get("PERIOD_SLOW").toInt();
+  s = sg->value("PERIOD_SLOW");
+  Setting *speriod = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! speriod)
+  {
+    _message << "invalid PERIOD_SLOW " + s;
+    return _ERROR;
+  }
 
-  s = sg->get("MA_TYPE_SLOW").toString();
+  s = sg->value("MA_TYPE_SLOW");
   int stype = mat.fromString(s);
   if (stype == -1)
   {
-    qDebug() << _type << "::runScript: invalid MA_TYPE_SLOW" << s;
+    _message << "invalid MA_TYPE_SLOW " + s;
     return _ERROR;
   }
 
-  int sigperiod = sg->get("PERIOD_SIGNAL").toInt();
+  s = sg->value("PERIOD_SIGNAL");
+  Setting *sigperiod = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! sigperiod)
+  {
+    _message << "invalid PERIOD_SIGNAL " + s;
+    return _ERROR;
+  }
 
-  s = sg->get("MA_TYPE_SIGNAL").toString();
+  s = sg->value("MA_TYPE_SIGNAL");
   int sigtype = mat.fromString(s);
   if (sigtype == -1)
   {
-    qDebug() << _type << "::runScript: invalid MA_TYPE_SIGNAL" << s;
+    _message << "invalid MA_TYPE_SIGNAL " + s;
     return _ERROR;
   }
 
   QList<Data *> list;
   list << in;
-  QList<Data *> lines = getMACD(list, fperiod, speriod, sigperiod, ftype, stype, sigtype);
+
+  QList<Data *> lines = getMACD(list, fperiod->toInteger(), speriod->toInteger(), sigperiod->toInteger(), ftype, stype, sigtype);
   if (lines.count() != 3)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Data *macd = lines.at(0);
-  script->setData(mname, macd);
-
-  Data *signal = lines.at(1);
-  script->setData(sname, signal);
-
-  Data *hist = lines.at(2);
-  script->setData(hname, hist);
+  script->setData(mname->toString(), lines.at(0));
+  script->setData(sname->toString(), lines.at(1));
+  script->setData(hname->toString(), lines.at(2));
 
   return _OK;
 }
@@ -129,9 +162,9 @@ QList<Data *> CommandMACD::getMACD (QList<Data *> &list, int fp, int sp, int sig
   if (! list.count())
     return lines;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return lines;
 
   int size = keys.count();
@@ -142,7 +175,8 @@ QList<Data *> CommandMACD::getMACD (QList<Data *> &list, int fp, int sp, int sig
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  TALibInput tai;
+  size = tai.fill1(list, keys, &in[0]);
   if (! size)
     return lines;
 
@@ -175,7 +209,9 @@ QList<Data *> CommandMACD::getMACD (QList<Data *> &list, int fp, int sp, int sig
   lines << c;
   c = new CurveData;
   lines << c;
-  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble3(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
   {
     qDeleteAll(lines);
     lines.clear();
@@ -183,20 +219,4 @@ QList<Data *> CommandMACD::getMACD (QList<Data *> &list, int fp, int sp, int sig
   }
 
   return lines;
-}
-
-Data * CommandMACD::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT_MACD", QVariant(QString()));
-  sg->set("OUTPUT_SIGNAL", QVariant(QString()));
-  sg->set("OUTPUT_HIST", QVariant(QString()));
-  sg->set("INPUT", QVariant(QString()));
-  sg->set("PERIOD_FAST", QVariant(12));
-  sg->set("PERIOD_SLOW", QVariant(26));
-  sg->set("PERIOD_SIGNAL", QVariant(9));
-  sg->set("MA_TYPE_FAST", QVariant(QString("EMA")));
-  sg->set("MA_TYPE_SLOW", QVariant(QString("EMA")));
-  sg->set("MA_TYPE_SIGNAL", QVariant(QString("EMA")));
-  return sg;
 }

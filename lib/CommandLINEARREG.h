@@ -39,8 +39,7 @@ class CommandLINEARREG : public Command
     };
 
     CommandLINEARREG (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getLR (QList<Data *> &, int, int);
 
   protected:

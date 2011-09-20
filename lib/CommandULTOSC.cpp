@@ -21,9 +21,12 @@
 
 #include "CommandULTOSC.h"
 #include "ta_libc.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -36,53 +39,78 @@ CommandULTOSC::CommandULTOSC (QObject *p) : Command (p)
     qDebug("CommandULTOSC::CommandULTOSC: error on TA_Initialize");
 }
 
-int CommandULTOSC::runScript (Data *sg, Script *script)
+int CommandULTOSC::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH").toString();
-  Data *ihigh = script->data(s);
+  s = sg->value("HIGH");
+  Data *ihigh = vdi.curve(script, s);
   if (! ihigh)
   {
-    qDebug() << _type << "::command: invalid HIGH" << s;
-    return 1;
+    _message << "invalid HIGH " + s;
+    return _ERROR;
   }
 
-  s = sg->get("LOW").toString();
-  Data *ilow = script->data(s);
+  s = sg->value("LOW");
+  Data *ilow = vdi.curve(script, s);
   if (! ilow)
   {
-    qDebug() << _type << "::command: invalid LOW" << s;
-    return 1;
+    _message << "invalid LOW " + s;
+    return _ERROR;
   }
 
-  s = sg->get("CLOSE").toString();
-  Data *iclose = script->data(s);
+  s = sg->value("CLOSE");
+  Data *iclose = vdi.curve(script, s);
   if (! iclose)
   {
-    qDebug() << _type << "::command: invalid CLOSE" << s;
-    return 1;
+    _message << "invalid CLOSE " + s;
+    return _ERROR;
   }
 
-  int sp = sg->get("PERIOD_SHORT").toInt();
+  s = sg->value("PERIOD_SHORT");
+  Setting *sp = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! sp)
+  {
+    _message << "invalid PERIOD_SHORT " + s;
+    return _ERROR;
+  }
 
-  int mp = sg->get("PERIOD_MED").toInt();
+  s = sg->value("PERIOD_MED");
+  Setting *mp = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! mp)
+  {
+    _message << "invalid PERIOD_MED " + s;
+    return _ERROR;
+  }
 
-  int lp = sg->get("PERIOD_LONG").toInt();
+  s = sg->value("PERIOD_LONG");
+  Setting *lp = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! lp)
+  {
+    _message << "invalid PERIOD_LONG " + s;
+    return _ERROR;
+  }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose;
-  line = getULTOSC(list, sp, mp, lp);
+
+  Data *line = getULTOSC(list, sp->toInteger(), mp->toInteger(), lp->toInteger());
   if (! line)
     return 1;
 
-  script->setData(name, line);
+  script->setData(name->toString(), line);
 
   return _OK;
 }
@@ -92,9 +120,9 @@ Data * CommandULTOSC::getULTOSC (QList<Data *> &list, int sp, int mp, int lp)
   if (list.count() != 3)
     return 0;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   int size = keys.count();
@@ -105,7 +133,8 @@ Data * CommandULTOSC::getULTOSC (QList<Data *> &list, int sp, int mp, int lp)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &high[0], &low[0], &close[0], &close[0]);
+  TALibInput tai;
+  size = tai.fill3(list, keys, &high[0], &low[0], &close[0]);
   if (! size)
     return 0;
 
@@ -130,24 +159,13 @@ Data * CommandULTOSC::getULTOSC (QList<Data *> &list, int sp, int mp, int lp)
   QList<Data *> outs;
   Data *c = new CurveData;
   outs.append(c);
-  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
   {
     delete c;
     return 0;
   }
 
   return c;
-}
-
-Data * CommandULTOSC::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("HIGH", QVariant(QString()));
-  sg->set("LOW", QVariant(QString()));
-  sg->set("CLOSE", QVariant(QString()));
-  sg->set("PERIOD_SHORT", QVariant(7));
-  sg->set("PERIOD_MED", QVariant(14));
-  sg->set("PERIOD_LONG", QVariant(28));
-  return sg;
 }

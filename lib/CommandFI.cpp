@@ -20,9 +20,11 @@
  */
 
 #include "CommandFI.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
+#include "SettingDouble.h"
 
 #include <QtDebug>
 
@@ -31,39 +33,46 @@ CommandFI::CommandFI (QObject *p) : Command (p)
   _type = "FI";
 }
 
-int CommandFI::runScript (Data *sg, Script *script)
+int CommandFI::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("CLOSE").toString();
-  Data *iclose = script->data(s);
+  s = sg->value("CLOSE");
+  Data *iclose = vdi.curve(script, s);
   if (! iclose)
   {
-    qDebug() << _type << "::runScript: invalid CLOSE" << s;
+    _message << "invalid CLOSE " + s;
     return _ERROR;
   }
 
-  s = sg->get("VOLUME").toString();
-  Data *ivol = script->data(s);
+  s = sg->value("VOLUME");
+  Data *ivol = vdi.curve(script, s);
   if (! ivol)
   {
-    qDebug() << _type << "::runScript: invalid VOLUME" << s;
+    _message << "invalid VOLUME " + s;
     return _ERROR;
   }
 
   QList<Data *> list;
   list << iclose << ivol;
-  line = getFI(list);
+
+  Data *line = getFI(list);
   if (! line)
     return _ERROR;
 
-  script->setData(name, line);
+  script->setData(name->toString(), line);
 
   return _OK;
 }
@@ -73,9 +82,9 @@ Data * CommandFI::getFI (QList<Data *> &list)
   if (list.count() != 2)
     return 0;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   Data *line = new CurveData;
@@ -97,22 +106,13 @@ Data * CommandFI::getFI (QList<Data *> &list)
     if (! vbar)
       continue;
 
-    double cdiff = cbar->get(CurveBar::_VALUE).toDouble() - ycbar->get(CurveBar::_VALUE).toDouble();
-    force = vbar->get(CurveBar::_VALUE).toDouble() * cdiff;
+    double cdiff = cbar->get(CurveBar::_VALUE)->toDouble() - ycbar->get(CurveBar::_VALUE)->toDouble();
+    force = vbar->get(CurveBar::_VALUE)->toDouble() * cdiff;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, QVariant(force));
+    b->set(CurveBar::_VALUE, new SettingDouble(force));
     line->set(keys.at(loop), b);
   }
 
   return line;
-}
-
-Data * CommandFI::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("CLOSE", QVariant(QString()));
-  sg->set("VOLUME", QVariant(QString()));
-  return sg;
 }

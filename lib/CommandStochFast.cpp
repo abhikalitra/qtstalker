@@ -22,9 +22,12 @@
 #include "CommandStochFast.h"
 #include "ta_libc.h"
 #include "MAType.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -37,75 +40,96 @@ CommandStochFast::CommandStochFast (QObject *p) : Command (p)
     qDebug("CommandStochFast::CommandStochFast: error on TA_Initialize");
 }
 
-int CommandStochFast::runScript (Data *sg, Script *script)
+int CommandStochFast::runScript (Message *sg, Script *script)
 {
-  QString kname = sg->get("OUTPUT_FASTK").toString();
-  Data *line = script->data(kname);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT_FASTK");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_FASTK" << kname;
+    _message << "invalid OUTPUT_FASTK";
+    return _ERROR;
+  }
+  Setting *kname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! kname)
+  {
+    _message << "invalid OUTPUT_FASTK " + s;
     return _ERROR;
   }
 
-  QString dname = sg->get("OUTPUT_FASTD").toString();
-  line = script->data(dname);
-  if (line)
+  s = sg->value("OUTPUT_FASTD");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_FASTD" << dname;
+    _message << "invalid OUTPUT_FASTD";
+    return _ERROR;
+  }
+  Setting *dname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! dname)
+  {
+    _message << "invalid OUTPUT_FASTD " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH").toString();
-  Data *ihigh = script->data(s);
+  s = sg->value("HIGH");
+  Data *ihigh = vdi.curve(script, s);
   if (! ihigh)
   {
-    qDebug() << _type << "::runScript: invalid HIGH" << s;
+    _message << "invalid HIGH " + s;
     return _ERROR;
   }
 
-  s = sg->get("LOW").toString();
-  Data *ilow = script->data(s);
+  s = sg->value("LOW");
+  Data *ilow = vdi.curve(script, s);
   if (! ilow)
   {
-    qDebug() << _type << "::runScript: invalid LOW" << s;
+    _message << "invalid LOW " + s;
     return _ERROR;
   }
 
-  s = sg->get("CLOSE").toString();
-  Data *iclose = script->data(s);
+  s = sg->value("CLOSE");
+  Data *iclose = vdi.curve(script, s);
   if (! iclose)
   {
-    qDebug() << _type << "::runScript: invalid CLOSE" << s;
+    _message << "invalid CLOSE " + s;
     return _ERROR;
   }
 
-  int kperiod = sg->get("PERIOD_FASTK").toInt();
+  s = sg->value("PERIOD_FASTK");
+  Setting *kperiod = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! kperiod)
+  {
+    _message << "invalid PERIOD_FASTK " + s;
+    return _ERROR;
+  }
 
-  int dperiod = sg->get("PERIOD_FASTD").toInt();
+  s = sg->value("PERIOD_FASTD");
+  Setting *dperiod = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! dperiod)
+  {
+    _message << "invalid PERIOD_FASTD " + s;
+    return _ERROR;
+  }
 
   MAType mat;
-  s = sg->get("MA_TYPE").toString();
+  s = sg->value("MA_TYPE");
   int type = mat.fromString(s);
   if (type == -1)
   {
-    qDebug() << _type << "::runScript: invalid MA_TYPE" << s;
+    _message << "invalid MA_TYPE " + s;
     return _ERROR;
   }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose;
-  QList<Data *> lines = getSTOCHF(list, kperiod, dperiod, type);
+
+  QList<Data *> lines = getSTOCHF(list, kperiod->toInteger(), dperiod->toInteger(), type);
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Data *kline = lines.at(0);
-  script->setData(kname, kline);
-
-  Data *dline = lines.at(1);
-  script->setData(dname, dline);
+  script->setData(kname->toString(), lines.at(0));
+  script->setData(dname->toString(), lines.at(1));
 
   return _OK;
 }
@@ -116,9 +140,9 @@ QList<Data *> CommandStochFast::getSTOCHF (QList<Data *> &list, int kperiod, int
   if (! list.count())
     return lines;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return lines;
 
   int size = keys.count();
@@ -130,7 +154,8 @@ QList<Data *> CommandStochFast::getSTOCHF (QList<Data *> &list, int kperiod, int
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &high[0], &low[0], &close[0], &close[0]);
+  TALibInput tai;
+  size = tai.fill3(list, keys, &high[0], &low[0], &close[0]);
   if (! size)
     return lines;
 
@@ -158,7 +183,9 @@ QList<Data *> CommandStochFast::getSTOCHF (QList<Data *> &list, int kperiod, int
   lines << c;
   c = new CurveData;
   lines << c;
-  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble2(lines, keys, outNb, &out[0], &out2[0]))
   {
     qDeleteAll(lines);
     lines.clear();
@@ -166,18 +193,4 @@ QList<Data *> CommandStochFast::getSTOCHF (QList<Data *> &list, int kperiod, int
   }
 
   return lines;
-}
-
-Data * CommandStochFast::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT_FASTK", QVariant(QString()));
-  sg->set("OUTPUT_FASTD", QVariant(QString()));
-  sg->set("HIGH", QVariant(QString()));
-  sg->set("LOW", QVariant(QString()));
-  sg->set("CLOSE", QVariant(QString()));
-  sg->set("PERIOD_FASTK", QVariant(5));
-  sg->set("PERIOD_FASTD", QVariant(3));
-  sg->set("MA_TYPE", QVariant(QString("EMA")));
-  return sg;
 }

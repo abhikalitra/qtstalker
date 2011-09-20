@@ -30,8 +30,7 @@ class CommandAROON : public Command
 
   public:
     CommandAROON (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     QList<Data *> getAROON (QList<Data *> &, int period);
 };
 

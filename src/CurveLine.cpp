@@ -43,10 +43,10 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
 //  painter->setRenderHint(QPainter::Antialiasing, TRUE);
 
   LineStyle ls;
-  int style = ls.stringToStyle(_settings->get(CurveData::_STYLE).toString());
+  int style = ls.stringToStyle(_settings->get(CurveData::_STYLE)->toString());
 
   QPen tpen = painter->pen();
-  tpen.setWidth(_settings->get(CurveData::_PEN).toInt());
+  tpen.setWidth(_settings->get(CurveData::_PEN)->toInteger());
   switch ((LineStyle::Style) style)
   {
     case LineStyle::_DASH:
@@ -75,10 +75,10 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
       int x = xMap.transform(loop - 1);
       int x2 = xMap.transform(loop);
 
-      int y = yMap.transform(yb->get(CurveBar::_VALUE).toDouble());
-      int y2 = yMap.transform(b->get(CurveBar::_VALUE).toDouble());
+      int y = yMap.transform(yb->get(CurveBar::_VALUE)->toDouble());
+      int y2 = yMap.transform(b->get(CurveBar::_VALUE)->toDouble());
 
-      tpen.setColor(QColor(b->get(CurveBar::_COLOR).toString()));
+      tpen.setColor(b->get(CurveBar::_COLOR)->toColor());
       painter->setPen(tpen);
 
       painter->drawLine (x, y, x2, y2);
@@ -93,9 +93,9 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
         continue;
 
       int x = xMap.transform(loop);
-      int y = yMap.transform(b->get(CurveBar::_VALUE).toDouble());
+      int y = yMap.transform(b->get(CurveBar::_VALUE)->toDouble());
 
-      tpen.setColor(QColor(b->get(CurveBar::_COLOR).toString()));
+      tpen.setColor(b->get(CurveBar::_COLOR)->toColor());
       painter->setPen(tpen);
 
       painter->drawPoint (x, y);

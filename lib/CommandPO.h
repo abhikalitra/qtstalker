@@ -36,8 +36,7 @@ class CommandPO : public Command
     };
 
     CommandPO (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getPO (QList<Data *> &, int, int, int, int);
 
   private:

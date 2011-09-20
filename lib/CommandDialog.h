@@ -22,47 +22,15 @@
 #ifndef COMMAND_DIALOG_HPP
 #define COMMAND_DIALOG_HPP
 
-#include <QStringList>
-#include <QHash>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QCheckBox>
-#include <QDateTimeEdit>
-#include <QTabWidget>
+#include "Command.h"
 
-#include "Dialog.h"
-#include "Data.h"
-#include "LineEdit.h"
-#include "ColorButton.h"
-#include "FileButton.h"
-
-class CommandDialog : public Dialog
+class CommandDialog : public Command
 {
   Q_OBJECT
 
-  signals:
-//    void signalDone (QString);
-
   public:
-    CommandDialog (QWidget *);
-    void createGUI ();
-    void setWidgets (Data *);
-
-  public slots:
-    void done ();
-
-  protected:
-    QHash<QString, LineEdit *> _lineEdit;
-    QHash<QString, ColorButton *> _colorButton;
-    QHash<QString, QSpinBox *> _spinBox;
-    QHash<QString, QDoubleSpinBox *> _doubleSpinBox;
-    QHash<QString, QCheckBox *> _checkBox;
-    QHash<QString, QDateTimeEdit *> _dateTimeEdit;
-    QHash<QString, QComboBox *> _comboBox;
-    QHash<QString, FileButton *> _fileButton;
-    Data *_settings;
-    QTabWidget *_tabs;
+    CommandDialog (QObject *);
+    int runScript (Message *, Script *);
 };
 
 #endif

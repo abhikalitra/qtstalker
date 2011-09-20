@@ -21,9 +21,12 @@
 
 #include "CommandHT.h"
 #include "ta_libc.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -37,39 +40,46 @@ CommandHT::CommandHT (QObject *p) : Command (p)
     qDebug("CommandHT::CommandHT: error on TA_Initialize");
 }
 
-int CommandHT::runScript (Data *sg, Script *script)
+int CommandHT::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT").toString();
-  Data *in = script->data(s);
+  s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    _message << "INPUT missing " + s;
     return _ERROR;
   }
 
-  s = sg->get("METHOD").toString();
+  s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    qDebug() << _type << "::runScript: invalid METHOD" << s;
+    _message << "invalid METHOD " + s;
     return _ERROR;
   }
 
   QList<Data *> list;
   list << in;
-  line = getHT(list, method);
+
+  Data *line = getHT(list, method);
   if (! line)
     return _ERROR;
 
-  script->setData(name, line);
+  script->setData(name->toString(), line);
 
   return _OK;
 }
@@ -79,9 +89,9 @@ Data * CommandHT::getHT (QList<Data *> &list, int method)
   if (! list.count())
     return 0;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   int size = keys.count();
@@ -90,7 +100,8 @@ Data * CommandHT::getHT (QList<Data *> &list, int method)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &input[0], &input[0], &input[0], &input[0]);
+  TALibInput tai;
+  size = tai.fill1(list, keys, &input[0]);
   if (! size)
     return 0;
 
@@ -119,7 +130,9 @@ Data * CommandHT::getHT (QList<Data *> &list, int method)
       QList<Data *> outs;
       Data *c = new CurveData;
       outs.append(c);
-      if (it.outputs(outs, keys, outNb, &iout[0], &iout[0], &iout[0]))
+
+      TALibOutput tao;
+      if (tao.fillInteger1(outs, keys, outNb, &iout[0]))
       {
         delete c;
         return 0;
@@ -140,20 +153,13 @@ Data * CommandHT::getHT (QList<Data *> &list, int method)
   QList<Data *> outs;
   Data *c = new CurveData;
   outs.append(c);
-  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
   {
     delete c;
     return 0;
   }
 
   return c;
-}
-
-Data * CommandHT::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("INPUT", QVariant(QString()));
-  sg->set("METHOD", QVariant(_method.at(2)));
-  return sg;
 }

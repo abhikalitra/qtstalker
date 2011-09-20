@@ -24,6 +24,7 @@
 
 #include <QTreeWidget>
 #include <QComboBox>
+#include <QToolButton>
 
 #include "Dialog.h"
 #include "LineEdit.h"
@@ -55,8 +56,10 @@ class SymbolDialog : public Dialog
     QComboBox *_exchanges;
     LineEdit *_search;
     QPushButton *_searchButton;
-    QPushButton *_addButton;
-    QPushButton *_deleteButton;
+//    QPushButton *_addButton;
+//    QPushButton *_deleteButton;
+    QToolButton *_addButton;
+    QToolButton *_deleteButton;
     QStringList _symbols;
 };
 

@@ -58,8 +58,8 @@ void ConfigureDialog::createGeneralPage ()
   QWidget *w = new QWidget;
 
   QFormLayout *form = new QFormLayout;
-  form->setSpacing(2);
-  form->setMargin(5);
+  form->setSpacing(5);
+  form->setMargin(10);
   w->setLayout(form);
 
   QSettings settings(g_localSettings);
@@ -67,7 +67,7 @@ void ConfigureDialog::createGeneralPage ()
   // background color
   QColor color(settings.value("plot_background_color", "black").toString());
   _background = new ColorButton(w, color);
-  _background->setToolTip(tr("Plot Background"));
+  _background->setToolTip(tr("Plot Background Color"));
   connect(_background, SIGNAL(valueChanged()), this, SLOT(backgroundChanged()));
   form->addRow(tr("Plot Background"), _background);
 
@@ -104,6 +104,7 @@ void ConfigureDialog::createGeneralPage ()
   l << tr("North") << tr("South") << tr("West") << tr("East");
 
   _tabPosition = new QComboBox;
+  _tabPosition->setToolTip(tr("Indicator Tab Position"));
   _tabPosition->addItems(l);
   _tabPosition->setCurrentIndex(settings.value("plot_tab_position", 0).toInt());
   connect(_tabPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(tabPositionChanged()));
@@ -114,7 +115,7 @@ void ConfigureDialog::createGeneralPage ()
   // antialiasing
   _antiAlias = new QCheckBox;
   _antiAlias->setChecked(settings.value("antialias", TRUE).toBool());
-  _antiAlias->setToolTip(tr("App restart required to take effect"));
+  _antiAlias->setToolTip(tr("Set plot antialiasing.\nApp restart required to take effect"));
   connect(_antiAlias, SIGNAL(toggled(bool)), this, SLOT(antiAliasChanged()));
   form->addRow(tr("Antialias Plotting"), _antiAlias);
 

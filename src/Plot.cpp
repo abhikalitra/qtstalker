@@ -29,6 +29,7 @@
 #include "CurveBar.h"
 #include "ChartObjectData.h"
 #include "Symbol.h"
+#include "SettingString.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
@@ -167,7 +168,7 @@ void Plot::setCurve (Curve *curve)
   curve->itemChanged();
   curve->setYAxis(QwtPlot::yRight);
   curve->attach(this);
-  _curves.insert(curve->settings()->get(CurveData::_LABEL).toString(), curve);
+  _curves.insert(curve->settings()->get(CurveData::_LABEL)->toString(), curve);
 }
 
 void Plot::dates (QList<QDateTime> &d)
@@ -324,7 +325,7 @@ void Plot::setYPoints ()
     }
 
     // fix for Y AND X axis misalignment
-    QString type = settings->get(CurveData::_TYPE).toString();
+    QString type = settings->get(CurveData::_TYPE)->toString();
     if (type == "Histogram" || type == "OHLC")
     {
       if (! flag)
@@ -377,7 +378,7 @@ void Plot::mouseClick (int button, QPoint p)
   {
     it.next();
 
-    if (it.value()->settings()->get(ChartObjectData::_RO).toBool())
+    if (it.value()->settings()->get(ChartObjectData::_RO)->toBool())
       continue;
 
     if (! it.value()->isSelected(p))
@@ -562,16 +563,16 @@ void Plot::chartObjectNew (QString type)
   int t = db.lastId();
   t++;
   QString id = QString::number(t);
-  settings->set(ChartObjectData::_ID, QVariant(id));
+  settings->set(ChartObjectData::_ID, new SettingString(id));
 
   _chartObjects.insert(id, _selected);
 
   _selected->setScript(_scriptFile);
 
-  QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE).toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL).toString();
-  settings->set(ChartObjectData::_SYMBOL, QVariant(symbol));
+  QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE)->toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL)->toString();
+  settings->set(ChartObjectData::_SYMBOL, new SettingString(symbol));
 
-  settings->set(ChartObjectData::_CHART, QVariant(_name));
+  settings->set(ChartObjectData::_CHART, new SettingString(_name));
 
   _selected->attach(this);
 
@@ -590,7 +591,7 @@ void Plot::deleteAllChartObjects ()
     it.next();
     ChartObject *co = it.value();
 
-    if (co->settings()->get(ChartObjectData::_RO).toBool())
+    if (co->settings()->get(ChartObjectData::_RO)->toBool())
       continue;
 
     l << it.key();
@@ -616,7 +617,7 @@ void Plot::deleteAllChartObjects ()
 void Plot::addChartObject (ChartObject *co)
 {
   Data *settings = co->settings();
-  QString id = settings->get(ChartObjectData::_ID).toString();
+  QString id = settings->get(ChartObjectData::_ID)->toString();
   _chartObjects.insert(id, co);
   co->attach(this);
 }
@@ -680,7 +681,7 @@ void Plot::deleteChartObject2 ()
     return;
 
   Data *settings = _selected->settings();
-  QString id = settings->get(ChartObjectData::_ID).toString();
+  QString id = settings->get(ChartObjectData::_ID)->toString();
   QStringList l;
   l << id;
 

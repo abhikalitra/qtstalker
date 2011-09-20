@@ -21,9 +21,12 @@
 
 #include "CommandAROON.h"
 #include "ta_libc.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -36,66 +39,80 @@ CommandAROON::CommandAROON (QObject *p) : Command (p)
     qDebug("CommandAROON::CommandAROON: error on TA_Initialize");
 }
 
-int CommandAROON::runScript (Data *sg, Script *script)
+int CommandAROON::runScript (Message *sg, Script *script)
 {
-  QString uname = sg->get("OUTPUT_UPPER").toString();
-  Data *line = script->data(uname);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT_UPPER");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_UPPER" << uname;
+    _message << "invalid OUTPUT_UPPER";
+    return _ERROR;
+  }
+  Setting *uname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! uname)
+  {
+    _message << "invalid OUTPUT_UPPER " + s;
     return _ERROR;
   }
 
-  QString lname = sg->get("OUTPUT_LOWER").toString();
-  line = script->data(lname);
-  if (line)
+  s = sg->value("OUTPUT_LOWER");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_LOWER" << lname;
+    _message << "invalid OUTPUT_LOWER";
+    return _ERROR;
+  }
+  Setting *lname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! lname)
+  {
+    _message << "invalid OUTPUT_LOWER " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH").toString();
-  Data *ihigh = script->data(s);
+  s = sg->value("HIGH");
+  Data *ihigh = vdi.curve(script, s);
   if (! ihigh)
   {
-    qDebug() << _type << "::runScript: invalid HIGH" << s;
+    _message << "invalid HIGH " + s;
     return _ERROR;
   }
 
-  s = sg->get("LOW").toString();
-  Data *ilow = script->data(s);
+  s = sg->value("LOW");
+  Data *ilow = vdi.curve(script, s);
   if (! ilow)
   {
-    qDebug() << _type << "::runScript: invalid LOW" << s;
+    _message << "invalid LOW " + s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD").toInt();
+  s = sg->value("PERIOD");
+  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! period)
+  {
+    _message << "invalid PERIOD " + s;
+    return _ERROR;
+  }
 
   QList<Data *> list;
   list << ihigh << ilow;
-  QList<Data *> lines = getAROON(list, period);
+
+  QList<Data *> lines = getAROON(list, period->toInteger());
   if (! lines.count())
     return _ERROR;
 
-  Data *upper = lines.at(0);
-  script->setData(uname, upper);
+  script->setData(uname->toString(), lines.at(0));
 
   if (lines.count() == 2)
-  {
-    Data *lower = lines.at(1);
-    script->setData(lname, lower);
-  }
+    script->setData(lname->toString(), lines.at(1));
 
   return _OK;
 }
 
 QList<Data *> CommandAROON::getAROON (QList<Data *> &list, int period)
 {
+  VerifyDataInput vdi;
   QList<Data *> lines;
-  InputType it;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return lines;
 
   int size = keys.count();
@@ -106,7 +123,8 @@ QList<Data *> CommandAROON::getAROON (QList<Data *> &list, int period)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &high[0], &low[0], &low[0], &low[0]);
+  TALibInput tai;
+  size = tai.fill2(list, keys, &high[0], &low[0]);
   if (! size)
     return lines;
 
@@ -130,7 +148,9 @@ QList<Data *> CommandAROON::getAROON (QList<Data *> &list, int period)
   lines.append(c);
   c = new CurveData;
   lines.append(c);
-  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble2(lines, keys, outNb, &out[0], &out2[0]))
   {
     qDeleteAll(lines);
     lines.clear();
@@ -138,15 +158,4 @@ QList<Data *> CommandAROON::getAROON (QList<Data *> &list, int period)
   }
 
   return lines;
-}
-
-Data * CommandAROON::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT_UPPER", QVariant(QString()));
-  sg->set("OUTPUT_LOWER", QVariant(QString()));
-  sg->set("HIGH", QVariant(QString()));
-  sg->set("LOW", QVariant(QString()));
-  sg->set("PERIOD", QVariant(14));
-  return sg;
 }

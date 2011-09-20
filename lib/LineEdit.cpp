@@ -30,7 +30,6 @@ void LineEdit::verifyString (const QString &d)
 {
   QString s = d;
   s = s.remove(QString("'"), Qt::CaseSensitive);
-  s = s.remove(QString(","), Qt::CaseSensitive);
   s = s.remove(QString("="), Qt::CaseSensitive);
   s = s.remove(QString("|"), Qt::CaseSensitive);
   setText(s);

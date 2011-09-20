@@ -30,8 +30,7 @@ class CommandFI : public Command
 
   public:
     CommandFI (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getFI (QList<Data *> &);
 };
 

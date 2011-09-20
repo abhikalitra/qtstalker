@@ -30,8 +30,7 @@ class CommandAD : public Command
 
   public:
     CommandAD (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getAD (QList<Data *> &);
 };
 

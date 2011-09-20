@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef COMMAND_DIALOG_HPP
-#define COMMAND_DIALOG_HPP
+#ifndef DATA_DIALOG_HPP
+#define DATA_DIALOG_HPP
 
 #include <QStringList>
 #include <QHash>
@@ -45,29 +45,18 @@ class DataDialog : public Dialog
     void signalDone ();
 
   public:
-    enum Type
-    {
-      _STRING,
-      _INTEGER,
-      _DOUBLE,
-      _COLOR,
-      _BOOL,
-      _LIST,
-      _DATETIME,
-      _FILE
-    };
-
-    DataDialog (QWidget *, Data *);
+    DataDialog (QWidget *);
     void createGUI ();
-    void addTab (QString label);
-    int setText (int tab, QString key, QString label, QString text, QString tt);
-    int setColor (int tab, QString key, QString label, QColor c, QString tt);
-    int setInteger (int tab, QString key, QString label, int v, int h, int l, QString tt);
-    int setDouble (int tab, QString key, QString label, double v, double h, double l, QString tt);
-    int setBool (int tab, QString key, QString label, bool v, QString tt);
-    int setList (int tab, QString key, QString label, QString v, QStringList l, QString tt);
-    int setDateTime (int tab, QString key, QString label, QDateTime v, QString tt);
-    int setFile (int tab, QString key, QString label, QStringList v, QString tt);
+    void set (Data *);
+    void addTab (int pos, QString label);
+    int setText (int tab, QString key, QString text, QString tt);
+    int setColor (int tab, QString key, QColor c, QString tt);
+    int setInteger (int tab, QString key, int v, int h, int l, QString tt);
+    int setDouble (int tab, QString key, double v, double h, double l, QString tt);
+    int setBool (int tab, QString key, bool v, QString tt);
+    int setList (int tab, QString key, QString v, QStringList l, QString tt);
+    int setDateTime (int tab, QString key, QDateTime v, QString tt);
+    int setFile (int tab, QString key, QStringList v, QString tt);
 
   public slots:
     void done ();
@@ -75,8 +64,7 @@ class DataDialog : public Dialog
   protected:
     QHash<int, QFormLayout *> _formList;
     QHash<QString, void *> _widgets;
-    QHash<QString, int> _types;
-    Data *_settings;
+    QHash<QString, Data *> _settings;
     QTabWidget *_tabs;
 };
 

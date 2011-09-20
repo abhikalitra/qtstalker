@@ -35,16 +35,13 @@ class DataFactory
       _CURVE,
       _CURVE_BAR,
       _DATA,
+      _DATA_SETTING,
       _SYMBOL
     };
 
     DataFactory ();
     Data * data (QString);
-    QStringList list ();
-    int stringToType (QString);
-
-  private:
-    QStringList _types;
+    Data * data (int);
 };
 
 #endif

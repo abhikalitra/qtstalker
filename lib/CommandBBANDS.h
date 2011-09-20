@@ -30,8 +30,7 @@ class CommandBBANDS : public Command
 
   public:
     CommandBBANDS (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     QList<Data *> getBBANDS (QList<Data *> &, int period, double udev, double ldev, int type);
 };
 

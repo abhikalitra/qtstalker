@@ -51,7 +51,7 @@ class ChartObjectData : public Data
       _LINE4 = -150,
       _LINE5 = -160,
       _LINE6 = -170,
-      _SYMBOL = -810,
+      _SYMBOL = -180,
       _CHART = -190,
       _TYPE = -200,
       _Z = -210,

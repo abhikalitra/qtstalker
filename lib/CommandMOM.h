@@ -30,8 +30,7 @@ class CommandMOM : public Command
 
   public:
     CommandMOM (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getMOM (QList<Data *> &, int);
 };
 

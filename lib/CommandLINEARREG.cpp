@@ -21,9 +21,12 @@
 
 #include "CommandLINEARREG.h"
 #include "ta_libc.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -37,41 +40,54 @@ CommandLINEARREG::CommandLINEARREG (QObject *p) : Command (p)
     qDebug("CommandLINEARREG::CommandLINEARREG: error on TA_Initialize");
 }
 
-int CommandLINEARREG::runScript (Data *sg, Script *script)
+int CommandLINEARREG::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT").toString();
-  Data *in = script->data(s);
+  s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    _message << "INPUT missing " + s;
     return _ERROR;
   }
 
-  s = sg->get("METHOD").toString();
+  s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    qDebug() << _type << "::runScript: invalid METHOD" << s;
+    _message << "invalid METHOD " + s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD").toInt();
+  s = sg->value("PERIOD");
+  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! period)
+  {
+    _message << "invalid PERIOD " + s;
+    return _ERROR;
+  }
 
   QList<Data *> list;
   list << in;
-  line = getLR(list, period, method);
+
+  Data *line = getLR(list, period->toInteger(), method);
   if (! line)
     return _ERROR;
 
-  script->setData(name, line);
+  script->setData(name->toString(), line);
 
   return _OK;
 }
@@ -81,9 +97,9 @@ Data * CommandLINEARREG::getLR (QList<Data *> &list, int period, int method)
   if (! list.count())
     return 0;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   int size = keys.count();
@@ -92,7 +108,8 @@ Data * CommandLINEARREG::getLR (QList<Data *> &list, int period, int method)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &input[0], &input[0], &input[0], &input[0]);
+  TALibInput tai;
+  size = tai.fill1(list, keys, &input[0]);
   if (! size)
     return 0;
 
@@ -127,21 +144,13 @@ Data * CommandLINEARREG::getLR (QList<Data *> &list, int period, int method)
   QList<Data *> outs;
   Data *c = new CurveData;
   outs.append(c);
-  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
   {
     delete c;
     return 0;
   }
 
   return c;
-}
-
-Data * CommandLINEARREG::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("INPUT", QVariant(QString()));
-  sg->set("PERIOD", QVariant(14));
-  sg->set("METHOD", QVariant(_method.at(0)));
-  return sg;
 }

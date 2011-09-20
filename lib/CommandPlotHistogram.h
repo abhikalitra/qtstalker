@@ -30,8 +30,7 @@ class CommandPlotHistogram : public Command
 
   public:
     CommandPlotHistogram (QObject *);
-    Data * settings ();
-    int runScript (Data *, Script *);
+    int runScript (Message *, Script *);
 };
 
 #endif

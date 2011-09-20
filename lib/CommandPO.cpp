@@ -21,10 +21,13 @@
 
 #include "CommandPO.h"
 #include "ta_libc.h"
-#include "InputType.h"
 #include "MAType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -38,52 +41,71 @@ CommandPO::CommandPO (QObject *p) : Command (p)
     qDebug("CommandPO::CommandPO: error on TA_Initialize");
 }
 
-int CommandPO::runScript (Data *sg, Script *script)
+int CommandPO::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT").toString();
-  Data *in = script->data(s);
+  s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    _message << "INPUT missing " + s;
     return _ERROR;
   }
 
-  s = sg->get("METHOD").toString();
+  s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    qDebug() << _type << "::runScript: invalid METHOD" << s;
+    _message << "invalid METHOD " + s;
     return _ERROR;
   }
 
-  int fast = sg->get("PERIOD_FAST").toInt();
+  s = sg->value("PERIOD_FAST");
+  Setting *fast = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! fast)
+  {
+    _message << "invalid PERIOD_FAST " + s;
+    return _ERROR;
+  }
 
-  int slow = sg->get("PERIOD_SLOW").toInt();
+  s = sg->value("PERIOD_SLOW");
+  Setting *slow = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! slow)
+  {
+    _message << "invalid PERIOD_SLOW " + s;
+    return _ERROR;
+  }
 
   MAType mat;
-  s = sg->get("MA_TYPE").toString();
+  s = sg->value("MA_TYPE");
   int type = mat.fromString(s);
   if (type == -1)
   {
-    qDebug() << _type << "::runScript: invalid MA_TYPE" << s;
+    _message << "invalid MA_TYPE " + s;
     return _ERROR;
   }
 
   QList<Data *> list;
   list << in;
-  line = getPO(list, fast, slow, type, method);
+
+  Data *line = getPO(list, fast->toInteger(), slow->toInteger(), type, method);
   if (! line)
     return _ERROR;
 
-  script->setData(name, line);
+  script->setData(name->toString(), line);
 
   return _OK;
 }
@@ -93,9 +115,9 @@ Data * CommandPO::getPO (QList<Data *> &list, int fast, int slow, int type, int 
   if (! list.count())
     return 0;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   int size = keys.count();
@@ -104,7 +126,8 @@ Data * CommandPO::getPO (QList<Data *> &list, int fast, int slow, int type, int 
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  TALibInput tai;
+  size = tai.fill1(list, keys, &in[0]);
   if (! size)
     return 0;
 
@@ -130,23 +153,13 @@ Data * CommandPO::getPO (QList<Data *> &list, int fast, int slow, int type, int 
   QList<Data *> outs;
   Data *c = new CurveData;
   outs.append(c);
-  if (it.outputs(outs, keys, outNb, &out[0], &out[0], &out[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
   {
     delete c;
     return 0;
   }
 
   return c;
-}
-
-Data * CommandPO::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("INPUT", QVariant(QString()));
-  sg->set("PERIOD_FAST", QVariant(12));
-  sg->set("PERIOD_SLOW", QVariant(26));
-  sg->set("METHOD", QVariant(_method.at(0)));
-  sg->set("MA_TYPE", QVariant(QString("EMA")));
-  return sg;
 }

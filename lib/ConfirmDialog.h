@@ -22,6 +22,8 @@
 #ifndef CONFIRM_DIALOG_HPP
 #define CONFIRM_DIALOG_HPP
 
+#include <QTextEdit>
+
 #include "Dialog.h"
 
 class ConfirmDialog : public Dialog
@@ -35,7 +37,9 @@ class ConfirmDialog : public Dialog
     ConfirmDialog (QWidget *);
     void createGUI ();
     void setMessage (QString);
-//    void setCommand (Command *);
+
+  private:
+    QTextEdit *_text;
 };
 
 #endif

@@ -30,8 +30,7 @@ class CommandVFI : public Command
 
   public:
     CommandVFI (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getVFI (QList<Data *> &, int);
 };
 

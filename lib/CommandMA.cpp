@@ -21,8 +21,11 @@
 
 #include "CommandMA.h"
 #include "MAType.h"
-#include "Script.h"
 #include "CurveData.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -31,50 +34,47 @@ CommandMA::CommandMA (QObject *p) : Command (p)
   _type = "MA";
 }
 
-int CommandMA::runScript (Data *sg, Script *script)
+int CommandMA::runScript (Message *sg, Script *script)
 {
+  VerifyDataInput vdi;
   MAType mat;
-  QString s = sg->get("METHOD").toString();
+  QString s = sg->value("METHOD");
   int method = mat.fromString(s);
   if (method == -1)
   {
-    qDebug() << _type << "::runScript: invalid METHOD" << s;
+    _message << "invalid METHOD " + s;
     return _ERROR;
   }
 
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  QString name = sg->value("OUTPUT");
+  if (name.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT " + name;
     return _ERROR;
   }
 
-  s = sg->get("INPUT").toString();
-  Data *in = script->data(s);
+  s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT missing" << s;
+    _message << "INPUT missing " + s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD").toInt();
+  // PERIOD
+  s = sg->value("PERIOD");
+  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! period)
+  {
+    _message << "invalid PERIOD " + s;
+    return _ERROR;
+  }
 
-  line = mat.getMA(in, period, method);
+  Data *line = mat.getMA(in, period->toInteger(), method);
   if (! line)
     return _ERROR;
 
   script->setData(name, line);
 
   return _OK;
-}
-
-Data * CommandMA::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("INPUT", QVariant(QString("close")));
-  sg->set("PERIOD", QVariant(10));
-  sg->set("METHOD", QVariant(QString("EMA")));
-  return sg;
 }

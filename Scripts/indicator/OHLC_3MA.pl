@@ -88,12 +88,9 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # color up bars
 $command = "COMMAND=COLOR;
             INPUT_1=$closeName;
-            INPUT_1_OFFSET=0;
             OP=GT;
-            INPUT_2=$closeName;
-            INPUT_2_OFFSET=1;
+            INPUT_2=$closeName.1;
             INPUT_3=$ohlcName;
-            INPUT_3_OFFSET=0;
             COLOR=$ohlcUpColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
@@ -101,12 +98,9 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # color down bars
 $command = "COMMAND=COLOR;
             INPUT_1=$closeName;
-            INPUT_1_OFFSET=0;
             OP=LT;
-            INPUT_2=$closeName;
-            INPUT_2_OFFSET=1;
+            INPUT_2=$closeName.1;
             INPUT_3=$ohlcName;
-            INPUT_3_OFFSET=0;
             COLOR=$ohlcDownColor";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

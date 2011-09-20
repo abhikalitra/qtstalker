@@ -21,6 +21,8 @@
 
 #include "Symbol.h"
 #include "CurveBar.h"
+#include "DataFactory.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 #include <QStringList>
@@ -34,7 +36,7 @@ void Symbol::clear ()
 {
   Data::clear();
 
-  _type = "SYMBOL";
+  _type = DataFactory::_SYMBOL;
   _startIndex = 99999999;
   _endIndex = -99999999;
 
@@ -72,18 +74,26 @@ QString Symbol::toString ()
 {
   QStringList l;
 
-  QHashIterator<QString, QVariant> it(_data);
+  QHashIterator<QString, Setting *> it(_data);
   while (it.hasNext())
   {
     it.next();
-    l << it.key() + "=" + it.value().toString();
+    l << it.key() + ";" + QString::number(it.value()->type()) + ";" + it.value()->toString();
   }
 
   QHashIterator<int, Data *> it2(_bars);
   while (it2.hasNext())
   {
     it2.next();
-    l << QString::number(it2.key()) + "=" + it2.value()->toString();
+    Data *d = it2.value();
+
+    QList<QString> keys = d->dataKeys();
+    int loop = 0;
+    for (; loop < keys.count(); loop++)
+    {
+      Setting *set = d->get(keys.at(loop));
+      l << QString::number(it2.key()) + ";" + keys.at(loop) + ";" + QString::number(set->type()) + ";" + set->toString();
+    }
   }
 
   return l.join("\n");
@@ -95,12 +105,11 @@ int Symbol::fromString (QString d)
 
   QStringList l = d.split("\n");
 
+  SettingFactory fac;
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    QStringList tl = l.at(loop).split("=");
-    if (tl.count() != 2)
-      continue;
+    QStringList tl = l.at(loop).split(";");
 
     int k = tl.at(0).toInt();
 
@@ -115,13 +124,36 @@ int Symbol::fromString (QString d)
       case _RANGE:
       case _START_DATE:
       case _END_DATE:
-        _data.insert(tl.at(0), QVariant(tl.at(1)));
+      {
+        if (tl.count() != 3)
+          break;
+
+        Setting *set = fac.setting(tl.at(1));
+        if (! set)
+          break;
+
+        set->set(tl.at(2));
+        _data.insert(tl.at(0), set);
         break;
+      }
       default:
       {
-        CurveBar *b = new CurveBar;
-        b->fromString(tl.at(1));
-        set(k, b);
+        if (tl.count() != 4)
+          break;
+
+        Data *b = _bars.value(k);
+        if (! b)
+        {
+          b = new CurveBar;
+          set(k, b);
+        }
+
+        Setting *set = fac.setting(tl.at(2));
+        if (! set)
+          break;
+
+        set->set(tl.at(3));
+        b->set(tl.at(1).toInt(), set);
         break;
       }
     }

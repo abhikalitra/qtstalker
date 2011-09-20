@@ -23,6 +23,7 @@
 #include "CommandFactory.h"
 #include "Message.h"
 #include "MessageDialog.h"
+#include "SettingString.h"
 
 #include <QtDebug>
 #include <QCoreApplication>
@@ -42,6 +43,8 @@ QtStalkerScript::QtStalkerScript (QString session, QString command, QString file
   _script->setName(fi.baseName());
 
   connect(&_pro, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(scriptFinished(int, QProcess::ExitStatus)));
+  connect(&_pro, SIGNAL(error(QProcess::ProcessError)), this, SLOT(scriptError(QProcess::ProcessError)));
+  connect(&_pro, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
 
   // we need to create the parent gui thread and keep it running
   // or else after the first dialog is deleted, the qt gui thread
@@ -80,7 +83,7 @@ void QtStalkerScript::run ()
 
     _pro.waitForReadyRead(-1);
     QByteArray ba = _pro.readAllStandardOutput();
-//    qDebug() << ba;
+    qDebug() << ba;
     if (! ba.count())
       continue;
 
@@ -105,29 +108,8 @@ void QtStalkerScript::run ()
       return;
     }
 
-    Data *sg = com->settings();
-
-    // merge settings and verify them
-    QList<QString> dkeys = sg->dataKeys();
-    QList<QString> nkeys = tsg.keys();
-    for (loop = 0; loop < nkeys.count(); loop++)
-    {
-      if (dkeys.indexOf(nkeys.at(loop)) == -1)
-      {
-        if (nkeys.at(loop) == "COMMAND")
-          continue;
-
-        message("QtStalkerScript::run", QString("invalid setting " + nkeys.at(loop) + " " + tsg.value(nkeys.at(loop))));
-        _pro.kill();
-        delete sg;
-        return;
-      }
-
-      sg->set(nkeys.at(loop), QVariant(tsg.value(nkeys.at(loop))));
-    }
-
     s = "OK\n";
-    if (com->runScript(sg, _script))
+    if (com->runScript(&tsg, _script))
       s = "ERROR\n";
 
     // check if we have any return data to the script
@@ -138,7 +120,6 @@ void QtStalkerScript::run ()
     message(com->type(), com->message());
 
     delete com;
-    delete sg;
 
     // deal with it
     ba.clear();
@@ -153,7 +134,7 @@ void QtStalkerScript::message (QString command, QString mess)
   if (mess.isEmpty())
     return;
 
-  _messages << command + ":" + mess;
+  _messages << command + " : " + mess;
 }
 
 void QtStalkerScript::scriptFinished (int, QProcess::ExitStatus)
@@ -175,11 +156,10 @@ void QtStalkerScript::scriptFinished (int, QProcess::ExitStatus)
   Command *com = fac.command(this, "SCRIPT_DONE");
   if (com)
   {
-    Data *sg = com->settings();
-    sg->set("SCRIPT", QVariant(_script->file()));
-    com->runScript(sg, _script);
+    Message sg;
+    sg.insert("SCRIPT", _script->file());
+    com->runScript(&sg, _script);
     delete com;
-    delete sg;
   }
 
 /*
@@ -192,4 +172,15 @@ qDebug() << l.join(" ");
 */
 
   QCoreApplication::exit(0);
+}
+
+void QtStalkerScript::scriptError (QProcess::ProcessError d)
+{
+  message("QtStalkerScript::scriptError", QString::number(d));
+  _pro.kill();
+}
+
+void QtStalkerScript::readFromStderr ()
+{
+  qDebug() << "QtStalkerScript::readFromStderr:" << _script->name() + ": " + _pro.readAllStandardError();
 }

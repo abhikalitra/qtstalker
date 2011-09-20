@@ -83,7 +83,7 @@ int ChartObjectDataBase::load (QString chart, QString symbol, QHash<QString, Dat
 
 int ChartObjectDataBase::load (Data *co)
 {
-  QString id = co->get(ChartObjectData::_ID).toString();
+  QString id = co->get(ChartObjectData::_ID)->toString();
   if (id.isEmpty())
     return 1;
 
@@ -113,16 +113,16 @@ int ChartObjectDataBase::load (Data *co)
 int ChartObjectDataBase::save (Data *co)
 {
   QStringList l;
-  l << co->get(ChartObjectData::_ID).toString();
+  l << co->get(ChartObjectData::_ID)->toString();
   if (remove(l))
     return 1;
 
   QSqlQuery q(_db);
 
   QString s = "INSERT OR REPLACE INTO " + _table + " VALUES (";
-  s.append(co->get(ChartObjectData::_ID).toString());
-  s.append(",'" + co->get(ChartObjectData::_SYMBOL).toString() + "'");
-  s.append(",'" + co->get(ChartObjectData::_CHART).toString() + "'");
+  s.append(co->get(ChartObjectData::_ID)->toString());
+  s.append(",'" + co->get(ChartObjectData::_SYMBOL)->toString() + "'");
+  s.append(",'" + co->get(ChartObjectData::_CHART)->toString() + "'");
   s.append(",'" + co->toString() + "'");
   s.append(")");
   q.exec(s);

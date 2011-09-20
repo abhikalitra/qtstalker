@@ -24,10 +24,11 @@
 #include "QuoteDataBase.h"
 #include "DateRange.h"
 #include "BarLength.h"
-#include "Script.h"
 #include "Symbol.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -36,18 +37,18 @@ CommandSymbol::CommandSymbol (QObject *p) : Command (p)
   _type = "SYMBOL";
 }
 
-int CommandSymbol::runScript (Data *sg, Script *script)
+int CommandSymbol::runScript (Message *sg, Script *script)
 {
   // symbol
   QString s = sg->get("SYMBOL").toString();
   QStringList tl = s.split(":");
   if (tl.count() != 2)
   {
-    qDebug() << _type << "::runScript: invalid SYMBOL" << s;
+    _message << "invalid SYMBOL " + s;
     return _ERROR;
   }
-  QString symbol = tl.at(0);
-  QString exchange = tl.at(1);
+  QString exchange = tl.at(0);
+  QString symbol = tl.at(1);
 
   // length
   s = sg->get("LENGTH").toString();
@@ -55,7 +56,7 @@ int CommandSymbol::runScript (Data *sg, Script *script)
   int length = bl.stringToType(s);
   if (length == -1)
   {
-    qDebug() << _type << "::runScript: invalid LENGTH" << s;
+    _message << "invalid LENGTH " + s;
     return _ERROR;
   }
 
@@ -65,7 +66,7 @@ int CommandSymbol::runScript (Data *sg, Script *script)
   int range = dr.toType(s);
   if (range == -1)
   {
-    qDebug() << _type << "::runScript: invalid RANGE" << s;
+    _message << "invalid RANGE " + s;
     return _ERROR;
   }
 
@@ -116,7 +117,8 @@ int CommandSymbol::runScript (Data *sg, Script *script)
   QuoteDataBase db;
   if (db.getBars(bd))
   {
-    qDebug() << _type << "::runScript: QuoteDataBase error";
+    _message << "QuoteDataBase error" << "EXCHANGE=" + exchange << "SYMBOL=" + symbol;
+    _message << "LENGTH=" + QString::number(length) << "RANGE=" + QString::number(range);
     delete bd;
     return _ERROR;
   }
@@ -159,19 +161,4 @@ int CommandSymbol::runScript (Data *sg, Script *script)
   delete bd;
 
   return _OK;
-}
-
-Data * CommandSymbol::settings ()
-{
-  Data *sg = new Data;
-  sg->set("DATE", QVariant(QString("date")));
-  sg->set("OPEN", QVariant(QString("open")));
-  sg->set("HIGH", QVariant(QString("high")));
-  sg->set("LOW", QVariant(QString("low")));
-  sg->set("CLOSE", QVariant(QString("close")));
-  sg->set("VOLUME", QVariant(QString("volume")));
-  sg->set("OI", QVariant(QString("oi")));
-  sg->set("LENGTH", QVariant(QString("D")));
-  sg->set("RANGE", QVariant(QString("1 Year")));
-  return sg;
 }

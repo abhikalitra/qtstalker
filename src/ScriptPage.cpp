@@ -242,8 +242,8 @@ void ScriptPage::cancel (QString d)
   bool ok = QProcess::startDetached("kill", args);
   if (! ok)
   {
-    qDebug() << "ScriptPage::cancel: error starting process";
-    return;
+    qDebug() << "ScriptPage::cancel: error killing process";
+    done(d); // force removal
   }
 }
 
@@ -269,10 +269,13 @@ void ScriptPage::launchButtonRows ()
 {
   QSettings settings(g_localSettings);
 
+  QStringList wt;
+  wt << "Qtstalker" + g_session + ":" << tr("Set Launch Button Rows");
+
   QInputDialog *dialog = new QInputDialog(this);
   dialog->setIntValue(settings.value("script_launch_button_rows", 2).toInt());
   dialog->setLabelText(tr("Rows"));
-  dialog->setWindowTitle(tr("Configure Launch Button Rows"));
+  dialog->setWindowTitle(wt.join(" "));
   connect(dialog, SIGNAL(intValueSelected(int)), this, SLOT(launchButtonRows2(int)));
   dialog->show();
 }
@@ -288,10 +291,13 @@ void ScriptPage::launchButtonCols ()
 {
   QSettings settings(g_localSettings);
 
+  QStringList wt;
+  wt << "Qtstalker" + g_session + ":" << tr("Set Launch Button Columns");
+
   QInputDialog *dialog = new QInputDialog(this);
   dialog->setIntValue(settings.value("script_launch_button_cols", 5).toInt());
   dialog->setLabelText(tr("Columns"));
-  dialog->setWindowTitle(tr("Configure Launch Button Columns"));
+  dialog->setWindowTitle(wt.join(" "));
   connect(dialog, SIGNAL(intValueSelected(int)), this, SLOT(launchButtonCols2(int)));
   dialog->show();
 }

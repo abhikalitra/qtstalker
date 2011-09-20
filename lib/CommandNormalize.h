@@ -30,8 +30,7 @@ class CommandNormalize : public Command
 
   public:
     CommandNormalize (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getNORM (QList<Data *> &);
 };
 

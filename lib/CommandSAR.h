@@ -30,8 +30,7 @@ class CommandSAR : public Command
 
   public:
     CommandSAR (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getSAR (QList<Data *> &, double, double);
 };
 

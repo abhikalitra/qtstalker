@@ -30,8 +30,7 @@ class CommandAveragePrice : public Command
 
   public:
     CommandAveragePrice (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getAP (QList<Data *> &);
 };
 

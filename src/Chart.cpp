@@ -32,10 +32,10 @@ Chart::Chart ()
 
 int Chart::run (IPCMessage mess, Data *dg)
 {
-  QString chart = dg->get("NAME").toString();
+  QString chart = dg->get("NAME")->toString();
   if (chart.isEmpty())
   {
-    qDebug() << "CommandMessage::chart: invalid NAME" << chart;
+    qDebug() << "Chart::run: invalid NAME" << chart;
     return 1;
   }
 
@@ -46,8 +46,8 @@ int Chart::run (IPCMessage mess, Data *dg)
     plot->setBarSpacing(g_controlPanel->barSpaceButton()->getPixelSpace());
     plot->loadSettings();
     plot->setScriptFile(mess.scriptFile());
-    plot->setRow(dg->get("ROW").toInt());
-    plot->setCol(dg->get("COL").toInt());
+    plot->setRow(dg->get("ROW")->toInteger());
+    plot->setCol(dg->get("COL")->toInteger());
 
     QObject::connect(plot, SIGNAL(signalInfoMessage(Message)), g_infoPanel, SLOT(showInfo(Message)));
     QObject::connect(g_controlPanel->barSpaceButton(), SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
@@ -59,9 +59,9 @@ int Chart::run (IPCMessage mess, Data *dg)
 
   plot->clear();
 
-  plot->showDate(dg->get("DATE").toBool());
+  plot->showDate(dg->get("DATE")->toBool());
 
-  plot->setLogScaling(dg->get("LOG").toBool());
+  plot->setLogScaling(dg->get("LOG")->toBool());
 
   plot->update();
 

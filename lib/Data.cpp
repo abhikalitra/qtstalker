@@ -20,6 +20,8 @@
  */
 
 #include "Data.h"
+#include "DataFactory.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 #include <QStringList>
@@ -29,13 +31,20 @@ Data::Data ()
   clear();
 }
 
+Data::~Data ()
+{
+  clear();
+}
+
 void Data::clear ()
 {
-  _type = "DATA";
+  _type = DataFactory::_DATA;
+
+  qDeleteAll(_data);
   _data.clear();
 }
 
-QString Data::type ()
+int Data::type ()
 {
   return _type;
 }
@@ -45,14 +54,22 @@ int Data::dataKeyCount ()
   return _data.count();
 }
 
-int Data::set (QString k, QVariant d)
+int Data::set (QString k, Setting *d)
 {
+  Setting *set = _data.value(k);
+  if (set)
+    delete set;
+
   _data.insert(k, d);
   return 0;
 }
 
-int Data::set (int k, QVariant d)
+int Data::set (int k, Setting *d)
 {
+  Setting *set = _data.value(QString::number(k));
+  if (set)
+    delete set;
+
   _data.insert(QString::number(k), d);
   return 0;
 }
@@ -62,12 +79,12 @@ int Data::set (int, Data *)
   return 0;
 }
 
-QVariant Data::get (QString d)
+Setting * Data::get (QString d)
 {
   return _data.value(d);
 }
 
-QVariant Data::get (int d)
+Setting * Data::get (int d)
 {
   return _data.value(QString::number(d));
 }
@@ -81,26 +98,50 @@ QString Data::toString ()
 {
   QStringList l;
 
-  QHashIterator<QString, QVariant> it(_data);
+  QHashIterator<QString, Setting *> it(_data);
   while (it.hasNext())
   {
     it.next();
-    if (! it.value().toString().isEmpty())
-      l << it.key() << it.value().toString();
+    if (! it.value()->toString().isEmpty())
+      l << it.key() + ";" + QString::number(it.value()->type()) + ";" + it.value()->toString();
   }
 
-  return l.join(";");
+  return l.join("\n");
 }
 
 int Data::fromString (QString d)
 {
   _data.clear();
 
-  QStringList l = d.split(";");
+  QStringList l = d.split("\n");
 
+  SettingFactory fac;
   int loop = 0;
-  for (; loop < l.count(); loop += 2)
-    _data.insert(l.at(loop), QVariant(l.at(loop + 1)));
+  for (; loop < l.count(); loop++)
+  {
+    QStringList tl = l.at(loop).split(";");
+    if (tl.count() != 3)
+    {
+      qDebug() << "Data::fromString: " << l.at(loop);
+      continue;
+    }
+
+    Setting *setting = fac.setting(tl.at(1));
+    if (! setting)
+    {
+      qDebug() << "Data::fromString: invalid Setting::Type" << tl.at(1);
+      continue;
+    }
+
+    if (setting->set(tl.at(2)))
+    {
+      qDebug() << "Data::fromString: Setting::fromString error" << tl.at(2);
+      delete setting;
+      continue;
+    }
+
+    set(tl.at(0), setting);
+  }
 
   return 0;
 }
@@ -136,4 +177,13 @@ void Data::barKeyRange (int &, int &)
 
 void Data::append (Data *)
 {
+}
+
+void Data::setOffset (int)
+{
+}
+
+int Data::offset ()
+{
+  return 0;
 }

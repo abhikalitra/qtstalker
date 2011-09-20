@@ -42,15 +42,19 @@ void AddIndicator::addIndicator ()
 {
   QSettings settings(g_localSettings);
 
+  QStringList wt;
+  wt << "QtStalker" + g_session + ":" << tr("Add Indicator");
+
   ScriptRunDialog *dialog = new ScriptRunDialog(0,
                                                 settings.value("add_indicator_last_script").toString(),
                                                 settings.value("add_indicator_last_command", "perl").toString());
   connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(addIndicator2(QString, QString)));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
+  dialog->setWindowTitle(wt.join(" "));
   dialog->show();
 }
 
-void AddIndicator::addIndicator2 (QString file, QString command)
+void AddIndicator::addIndicator2 (QString command, QString file)
 {
   IndicatorDataBase i;
   if (i.add(command, file))

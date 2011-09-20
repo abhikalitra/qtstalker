@@ -30,8 +30,7 @@ class CommandStochRSI : public Command
 
   public:
     CommandStochRSI (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getSR (QList<Data *> &, int);
 };
 

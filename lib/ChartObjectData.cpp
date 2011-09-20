@@ -20,6 +20,7 @@
  */
 
 #include "ChartObjectData.h"
+#include "DataFactory.h"
 
 #include <QtDebug>
 
@@ -31,8 +32,7 @@ ChartObjectData::ChartObjectData ()
 void ChartObjectData::clear ()
 {
   Data::clear();
-
-  _type = "CHART_OBJECT";
+  _type = DataFactory::_CHART_OBJECT;
 }
 
 int ChartObjectData::highLow (double &h, double &l)
@@ -41,11 +41,10 @@ int ChartObjectData::highLow (double &h, double &l)
   h = -99999999;
   l = 99999999;
 
-  QHashIterator<QString, QVariant> it(_data);
+  QHashIterator<QString, Setting *> it(_data);
   while (it.hasNext())
   {
     it.next();
-
     int k = it.key().toInt();
 
     switch ((Parm) k)
@@ -61,7 +60,7 @@ int ChartObjectData::highLow (double &h, double &l)
       case _LINE5:
       case _LINE6:
       {
-        double t = it.value().toDouble();
+        double t = it.value()->toDouble();
 
         if (t > h)
         {

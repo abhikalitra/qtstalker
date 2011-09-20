@@ -20,12 +20,15 @@
  */
 
 #include "CommandPlotLine.h"
-#include "Script.h"
-#include "InputType.h"
-#include "CurveData.h"
-#include "CurveBar.h"
-#include "CurveType.h"
+#include "VerifyDataInput.h"
 #include "LineStyle.h"
+#include "SettingFactory.h"
+#include "CurveData.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+#include "SettingDouble.h"
+#include "SettingColor.h"
+#include "CurveBar.h"
 
 #include <QtDebug>
 
@@ -34,61 +37,85 @@ CommandPlotLine::CommandPlotLine (QObject *p) : Command (p)
   _type = "PLOT_LINE";
 }
 
-int CommandPlotLine::runScript (Data *sg, Script *script)
+int CommandPlotLine::runScript (Message *sg, Script *script)
 {
+  VerifyDataInput vdi;
+
   // input
-  QString s = sg->get("INPUT").toString();
-  Data *in = script->data(s);
+  QString s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
   if (! in)
   {
-    qDebug() << _type << "::runScript: INPUT not found" << s;
+    _message << "INPUT not found " + s;
+    return _ERROR;
+  }
+
+  // CHART
+  QString chart = sg->value("CHART");
+  if (chart.isEmpty())
+  {
+    _message << "invalid CHART";
     return _ERROR;
   }
 
   // output
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  QString name = sg->value("OUTPUT");
+  if (name.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT " + name;
     return _ERROR;
   }
 
   // style
   LineStyle ls;
-  s = sg->get("STYLE").toString();
-  if (ls.stringToStyle(s) == -1)
+  QString style = sg->value("STYLE");
+  if (ls.stringToStyle(style) == -1)
+    style = "Line";
+
+  // color
+  s = sg->value("COLOR");
+  Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
+  if (! color)
   {
-    qDebug() << _type << "::runScript: invalid STYLE" << s;
+    _message << "invalid COLOR " + s;
+    return _ERROR;
+  }
+
+  // Z
+  s = sg->value("Z");
+  Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! z)
+  {
+    _message << "invalid Z " + s;
+    return _ERROR;
+  }
+
+  // PEN
+  s = sg->value("PEN");
+  Setting *pen = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! pen)
+  {
+    _message << "invalid PEN " + s;
     return _ERROR;
   }
 
   QList<Data *> list;
   list << in;
-  InputType it;
+
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
   {
-    qDebug() << _type << "::runScript: invalid keys";
+    _message << "invalid keys";
     return _ERROR;
   }
 
-  // color
-  s = sg->get("COLOR").toString();
-  QColor c(s);
-  if (! c.isValid())
-  {
-    qDebug() << _type << "::runScript: invalid COLOR" << s;
-    return _ERROR;
-  }
-
-  line = new CurveData;
-  line->set(CurveData::_TYPE, QVariant(QString("Line")));
-  line->set(CurveData::_Z, sg->get("Z"));
-  line->set(CurveData::_PEN, sg->get("PEN"));
-  line->set(CurveData::_LABEL, sg->get("OUTPUT"));
-  line->set(CurveData::_CHART, sg->get("CHART"));
-  line->set(CurveData::_STYLE, sg->get("STYLE"));
+  Data *line = new CurveData;
+  line->set(CurveData::_TYPE, new SettingString(QString("Line")));
+  line->set(CurveData::_Z, new SettingInteger(z->toInteger()));
+  line->set(CurveData::_PEN, new SettingInteger(pen->toInteger()));
+  line->set(CurveData::_LABEL, new SettingString(name));
+  line->set(CurveData::_CHART, new SettingString(chart));
+  line->set(CurveData::_STYLE, new SettingString(style));
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
@@ -98,25 +125,12 @@ int CommandPlotLine::runScript (Data *sg, Script *script)
       continue;
 
     Data *bar = new CurveBar;
-    bar->set(CurveBar::_VALUE, ibar->get(CurveBar::_VALUE));
-    bar->set(CurveBar::_COLOR, sg->get("COLOR"));
+    bar->set(CurveBar::_VALUE, new SettingDouble(ibar->get(CurveBar::_VALUE)->toDouble()));
+    bar->set(CurveBar::_COLOR, new SettingColor(color->toColor()));
     line->set(keys.at(loop), bar);
   }
 
   script->setData(name, line);
 
   return _OK;
-}
-
-Data * CommandPlotLine::settings ()
-{
-  Data *sg = new Data;
-  sg->set("CHART", QVariant(QString()));
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("INPUT", QVariant(QString("close")));
-  sg->set("STYLE", QVariant(QString("Line")));
-  sg->set("COLOR", QVariant(QString("red")));
-  sg->set("Z", QVariant(-1));
-  sg->set("PEN", QVariant(1));
-  return sg;
 }

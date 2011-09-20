@@ -31,14 +31,14 @@ CommandSymbolDialog::CommandSymbolDialog (QObject *p) : Command (p)
   _isDialog = 1;
 }
 
-int CommandSymbolDialog::runScript (Data *sg, Script *)
+int CommandSymbolDialog::runScript (Data *, Script *)
 {
   SymbolDialog dialog(0);
   int rc = dialog.exec();
   if (rc == QDialog::Rejected)
     return _ERROR;
 
-  sg->set("SYMBOLS", QVariant(dialog.symbols()));
+  _returnString = dialog.symbols().join(",");
 
   return _OK;
 }
@@ -46,6 +46,5 @@ int CommandSymbolDialog::runScript (Data *sg, Script *)
 Data * CommandSymbolDialog::settings ()
 {
   Data *sg = new Data;
-  sg->set("SYMBOLS", QVariant(QStringList()));
   return sg;
 }

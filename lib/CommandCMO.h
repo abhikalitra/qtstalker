@@ -30,8 +30,7 @@ class CommandCMO : public Command
 
   public:
     CommandCMO (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getCMO (QList<Data *> &, int);
 };
 

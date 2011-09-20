@@ -30,8 +30,7 @@ class CommandBETA : public Command
 
   public:
     CommandBETA (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getBETA (QList<Data *> &, int period);
     Data * getIndex (QString, Script *);
 };

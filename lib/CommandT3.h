@@ -30,8 +30,7 @@ class CommandT3 : public Command
 
   public:
     CommandT3 (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getT3 (QList<Data *> &, int, double);
 };
 

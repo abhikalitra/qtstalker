@@ -26,6 +26,7 @@
 #include "Symbol.h"
 #include "GroupAdd.h"
 #include "SymbolDelete.h"
+#include "SettingString.h"
 
 #include "../pics/add.xpm"
 #include "../pics/search.xpm"
@@ -160,8 +161,8 @@ void ChartPage::updateList ()
   _nav->setSortingEnabled(FALSE);
 
   Data *bd = new Symbol;
-  bd->set(Symbol::_EXCHANGE, _searchExchange);
-  bd->set(Symbol::_SYMBOL, _searchString);
+  bd->set(Symbol::_EXCHANGE, new SettingString(_searchExchange));
+  bd->set(Symbol::_SYMBOL, new SettingString(_searchString));
 
   QuoteDataBase db;
   QList<Data *> l;
@@ -172,11 +173,11 @@ void ChartPage::updateList ()
   for (; loop < l.count(); loop++)
   {
     Data *dg = l.at(loop);
-    QString s = dg->get(Symbol::_EXCHANGE).toString() + ":" + dg->get(Symbol::_SYMBOL).toString();
+    QString s = dg->get(Symbol::_EXCHANGE)->toString() + ":" + dg->get(Symbol::_SYMBOL)->toString();
 
     QListWidgetItem *item = new QListWidgetItem;
     item->setText(s);
-    item->setToolTip(dg->get(Symbol::_NAME).toString());
+    item->setToolTip(dg->get(Symbol::_NAME)->toString());
     _nav->addItem(item);
   }
 
@@ -266,4 +267,15 @@ void ChartPage::itemClicked (QListWidgetItem *d)
     return;
 
   chartOpened(d->text());
+}
+
+void ChartPage::refresh ()
+{
+  updateList();
+
+  QString s = g_currentSymbol->get(Symbol::_EXCHANGE)->toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL)->toString();
+  if (s.isEmpty())
+    return;
+
+  chartOpened(s);
 }

@@ -30,8 +30,7 @@ class CommandCORREL : public Command
 
   public:
     CommandCORREL (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getCORREL (QList<Data *> &, int period);
     Data * getIndex (QString, Script *);
 };

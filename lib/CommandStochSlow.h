@@ -30,8 +30,7 @@ class CommandStochSlow : public Command
 
   public:
     CommandStochSlow (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     QList<Data *> getSTOCHS (QList<Data *> &, int fkperiod, int skperiod, int sdperiod, int kma, int dma);
 };
 

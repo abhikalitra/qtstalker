@@ -22,9 +22,12 @@
 #include "CommandBBANDS.h"
 #include "ta_libc.h"
 #include "MAType.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -37,44 +40,66 @@ CommandBBANDS::CommandBBANDS (QObject *p) : Command (p)
     qDebug("CommandBBANDS::CommandBBANDS: error on TA_Initialize");
 }
 
-int CommandBBANDS::runScript (Data *sg, Script *script)
+int CommandBBANDS::runScript (Message *sg, Script *script)
 {
-  QString uname = sg->get("OUTPUT_UPPER").toString();
-  Data *line = script->data(uname);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT_UPPER");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_UPPER" << uname;
+    _message << "invalid OUTPUT_UPPER";
+    return _ERROR;
+  }
+  Setting *uname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! uname)
+  {
+    _message << "invalid OUTPUT_UPPER " + s;
     return _ERROR;
   }
 
-  QString mname = sg->get("OUTPUT_MIDDLE").toString();
-  line = script->data(mname);
-  if (line)
+  s = sg->value("OUTPUT_MIDDLE");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_MIDDLE" << mname;
+    _message << "invalid OUTPUT_MIDDLE";
+    return _ERROR;
+  }
+  Setting *mname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! mname)
+  {
+    _message << "invalid OUTPUT_MIDDLE " + s;
     return _ERROR;
   }
 
-  QString lname = sg->get("OUTPUT_LOWER").toString();
-  line = script->data(lname);
-  if (line)
+  s = sg->value("OUTPUT_LOWER");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_LOWER" << lname;
+    _message << "invalid OUTPUT_LOWER";
+    return _ERROR;
+  }
+  Setting *lname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! lname)
+  {
+    _message << "invalid OUTPUT_LOWER " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("INPUT").toString();
-  Data *input = script->data(s);
-  if (! input)
+  s = sg->value("INPUT");
+  Data *in = vdi.curve(script, s);
+  if (! in)
   {
-    qDebug() << _type << "::runScript: invalid INPUT" << s;
+    _message << "INPUT missing " + s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD").toInt();
+  s = sg->value("PERIOD");
+  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! period)
+  {
+    _message << "invalid PERIOD " + s;
+    return _ERROR;
+  }
 
   MAType types;
-  s = sg->get("MA_TYPE").toString();
+  s = sg->value("MA_TYPE");
   int type = types.fromString(s);
   if (type == -1)
   {
@@ -82,27 +107,35 @@ int CommandBBANDS::runScript (Data *sg, Script *script)
     return _ERROR;
   }
 
-  double udev = sg->get("DEV_UP").toDouble();
+  s = sg->value("DEV_UP");
+  Setting *udev = vdi.setting(SettingFactory::_DOUBLE, script, s);
+  if (! udev)
+  {
+    _message << "invalid DEV_UP " + s;
+    return _ERROR;
+  }
 
-  double ldev = sg->get("DEV_DOWN").toDouble();
+  s = sg->value("DEV_DOWN");
+  Setting *ldev = vdi.setting(SettingFactory::_DOUBLE, script, s);
+  if (! ldev)
+  {
+    _message << "invalid DEV_DOWN " + s;
+    return _ERROR;
+  }
 
   QList<Data *> list;
-  list << input;
-  QList<Data *> lines = getBBANDS(list, period, udev, ldev, type);
+  list << in;
+
+  QList<Data *> lines = getBBANDS(list, period->toInteger(), udev->toDouble(), ldev->toDouble(), type);
   if (lines.count() != 3)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Data *upper = lines.at(0);
-  script->setData(uname, upper);
-
-  Data *middle = lines.at(1);
-  script->setData(mname, middle);
-
-  Data *lower = lines.at(2);
-  script->setData(lname, lower);
+  script->setData(uname->toString(), lines.at(0));
+  script->setData(mname->toString(), lines.at(1));
+  script->setData(lname->toString(), lines.at(2));
 
   return _OK;
 }
@@ -113,9 +146,9 @@ QList<Data *> CommandBBANDS::getBBANDS (QList<Data *> &list, int period, double 
   if (! list.count())
     return lines;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return lines;
 
   int size = keys.count();
@@ -126,7 +159,8 @@ QList<Data *> CommandBBANDS::getBBANDS (QList<Data *> &list, int period, double 
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &in[0], &in[0], &in[0], &in[0]);
+  TALibInput tai;
+  size = tai.fill1(list, keys, &in[0]);
   if (! size)
     return lines;
 
@@ -157,7 +191,9 @@ QList<Data *> CommandBBANDS::getBBANDS (QList<Data *> &list, int period, double 
   lines << c;
   c = new CurveData;
   lines << c;
-  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble3(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
   {
     qDeleteAll(lines);
     lines.clear();
@@ -165,18 +201,4 @@ QList<Data *> CommandBBANDS::getBBANDS (QList<Data *> &list, int period, double 
   }
 
   return lines;
-}
-
-Data * CommandBBANDS::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT_UPPER", QVariant(QString()));
-  sg->set("OUTPUT_MIDDLE", QVariant(QString()));
-  sg->set("OUTPUT_LOWER", QVariant(QString()));
-  sg->set("INPUT", QVariant(QString()));
-  sg->set("PERIOD", QVariant(20));
-  sg->set("DEV_UP", QVariant(2.0));
-  sg->set("DEV_DOWN", QVariant(2.0));
-  sg->set("MA_TYPE", QVariant(QString("EMA")));
-  return sg;
 }

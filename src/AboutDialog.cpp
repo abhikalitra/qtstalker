@@ -20,6 +20,7 @@
  */
 
 #include "AboutDialog.h"
+#include "Globals.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -36,6 +37,10 @@ AboutDialog::AboutDialog ()
   createQTSPage();
 
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
+
+  QStringList wt;
+  wt << "QtStalker" + g_session + ":" << tr("About QtStalker");
+  setWindowTitle(wt.join(" "));
 }
 
 void AboutDialog::createGUI ()
@@ -58,7 +63,7 @@ void AboutDialog::createGUI ()
 void AboutDialog::createQTSPage ()
 {
   QWidget *w = new QWidget;
-  
+
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
   w->setLayout(hbox);
@@ -73,7 +78,7 @@ void AboutDialog::createQTSPage ()
 
   vbox->addStretch(1);
 
-  QString s = tr("Qtstalker version 0.37-dev (working title)");
+  QString s = tr("QtStalker version 0.37-dev (working title)");
   s.append(tr("\nBuilt using Qt "));
   s += QT_VERSION_STR;
   s.append(tr("\n(C) 2001-2011 by Stefan Stratigakos\nqtstalker.sourceforge.net"));
@@ -83,5 +88,5 @@ void AboutDialog::createQTSPage ()
   label = new QLabel(s);
   hbox->addWidget(label);
 
-  _tabs->addTab(w, tr("About") + " QtStalker");
+  _tabs->addTab(w, tr("About"));
 }

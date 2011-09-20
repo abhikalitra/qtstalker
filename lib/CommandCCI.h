@@ -30,8 +30,7 @@ class CommandCCI : public Command
 
   public:
     CommandCCI (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getCCI (QList<Data *> &, int period);
 };
 

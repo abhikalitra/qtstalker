@@ -20,9 +20,11 @@
  */
 
 #include "CommandVFI.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
+#include "SettingDouble.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -32,57 +34,70 @@ CommandVFI::CommandVFI (QObject *p) : Command (p)
   _type = "VFI";
 }
 
-int CommandVFI::runScript (Data *sg, Script *script)
+int CommandVFI::runScript (Message *sg, Script *script)
 {
-  QString name = sg->get("OUTPUT").toString();
-  Data *line = script->data(name);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT" << name;
+    _message << "invalid OUTPUT";
+    return _ERROR;
+  }
+  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! name)
+  {
+    _message << "invalid OUTPUT " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH").toString();
-  Data *ihigh = script->data(s);
+  s = sg->value("HIGH");
+  Data *ihigh = vdi.curve(script, s);
   if (! ihigh)
   {
-    qDebug() << _type << "::runScript: invalid HIGH" << s;
+    _message << "invalid HIGH " + s;
     return _ERROR;
   }
 
-  s = sg->get("LOW").toString();
-  Data *ilow = script->data(s);
+  s = sg->value("LOW");
+  Data *ilow = vdi.curve(script, s);
   if (! ilow)
   {
-    qDebug() << _type << "::runScript: invalid LOW" << s;
+    _message << "invalid LOW " + s;
     return _ERROR;
   }
 
-  s = sg->get("CLOSE").toString();
-  Data *iclose = script->data(s);
+  s = sg->value("CLOSE");
+  Data *iclose = vdi.curve(script, s);
   if (! iclose)
   {
-    qDebug() << _type << "::runScript: invalid CLOSE" << s;
+    _message << "invalid CLOSE " + s;
     return _ERROR;
   }
 
-  s = sg->get("VOLUME").toString();
-  Data *ivol = script->data(s);
+  s = sg->value("VOLUME");
+  Data *ivol = vdi.curve(script, s);
   if (! ivol)
   {
-    qDebug() << _type << "::runScript: invalid VOLUME" << s;
+    _message << "invalid VOLUME " + s;
     return _ERROR;
   }
 
-  int period = sg->get("PERIOD").toInt();
+  s = sg->value("PERIOD");
+  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! period)
+  {
+    _message << "invalid PERIOD " + s;
+    return _ERROR;
+  }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose << ivol;
-  line = getVFI(list, period);
+
+  Data *line = getVFI(list, period->toInteger());
   if (! line)
     return _ERROR;
 
-  script->setData(name, line);
+  script->setData(name->toString(), line);
 
   return _OK;
 }
@@ -92,9 +107,9 @@ Data * CommandVFI::getVFI (QList<Data *> &list, int period)
   if (list.count() != 4)
     return 0;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return 0;
 
   Data *vfi = new CurveData;
@@ -120,9 +135,9 @@ Data * CommandVFI::getVFI (QList<Data *> &list, int period)
     double inter = 0.0;
     double sma_vol = 0.0;
     int i;
-    double close = cbar->get(CurveBar::_VALUE).toDouble();
-    double high = hbar->get(CurveBar::_VALUE).toDouble();
-    double low = lbar->get(CurveBar::_VALUE).toDouble();
+    double close = cbar->get(CurveBar::_VALUE)->toDouble();
+    double high = hbar->get(CurveBar::_VALUE)->toDouble();
+    double low = lbar->get(CurveBar::_VALUE)->toDouble();
     double typical = (high + low + close) / 3.0;
     for (i = loop - period + 1; i <= loop; i++)
     {
@@ -143,13 +158,13 @@ Data * CommandVFI::getVFI (QList<Data *> &list, int period)
         continue;
 
       double ytypical = typical;
-      close = cbar->get(CurveBar::_VALUE).toDouble();
-      high = hbar->get(CurveBar::_VALUE).toDouble();
-      low = lbar->get(CurveBar::_VALUE).toDouble();
+      close = cbar->get(CurveBar::_VALUE)->toDouble();
+      high = hbar->get(CurveBar::_VALUE)->toDouble();
+      low = lbar->get(CurveBar::_VALUE)->toDouble();
       typical = (high + low + close) / 3.0;
       double delta = (log(typical) - log(ytypical));
       inter += delta * delta;
-      sma_vol += vbar->get(CurveBar::_VALUE).toDouble();
+      sma_vol += vbar->get(CurveBar::_VALUE)->toDouble();
     }
     inter = 0.2 * sqrt(inter / (double) period) * typical;
     sma_vol /= (double) period;
@@ -166,9 +181,9 @@ Data * CommandVFI::getVFI (QList<Data *> &list, int period)
     if (! cbar)
       continue;
 
-    close = cbar->get(CurveBar::_VALUE).toDouble();
-    high = hbar->get(CurveBar::_VALUE).toDouble();
-    low = lbar->get(CurveBar::_VALUE).toDouble();
+    close = cbar->get(CurveBar::_VALUE)->toDouble();
+    high = hbar->get(CurveBar::_VALUE)->toDouble();
+    low = lbar->get(CurveBar::_VALUE)->toDouble();
     typical = (high + low + close) / 3.0;
     double t = 0;
     for (i = loop - period + 1; i <= loop; i++)
@@ -190,10 +205,10 @@ Data * CommandVFI::getVFI (QList<Data *> &list, int period)
         continue;
 
       double ytypical = typical;
-      double volume = vbar->get(CurveBar::_VALUE).toDouble();
-      close = cbar->get(CurveBar::_VALUE).toDouble();
-      high = hbar->get(CurveBar::_VALUE).toDouble();
-      low = lbar->get(CurveBar::_VALUE).toDouble();
+      double volume = vbar->get(CurveBar::_VALUE)->toDouble();
+      close = cbar->get(CurveBar::_VALUE)->toDouble();
+      high = hbar->get(CurveBar::_VALUE)->toDouble();
+      low = lbar->get(CurveBar::_VALUE)->toDouble();
       typical = (high + low + close) / 3.0;
 
       if (typical > ytypical + inter)
@@ -206,21 +221,9 @@ Data * CommandVFI::getVFI (QList<Data *> &list, int period)
     }
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, QVariant(t));
+    b->set(CurveBar::_VALUE, new SettingDouble(t));
     vfi->set(keys.at(loop), b);
   }
 
   return vfi;
-}
-
-Data * CommandVFI::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT", QVariant(QString()));
-  sg->set("HIGH", QVariant(QString()));
-  sg->set("LOW", QVariant(QString()));
-  sg->set("CLOSE", QVariant(QString()));
-  sg->set("VOLUME", QVariant(QString()));
-  sg->set("PERIOD", QVariant(10));
-  return sg;
 }

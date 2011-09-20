@@ -20,13 +20,20 @@
  */
 
 #include "DataDialog.h"
+#include "DataFactory.h"
+#include "DataSetting.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+#include "SettingDouble.h"
+#include "SettingBool.h"
+#include "SettingColor.h"
+#include "SettingDateTime.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
-DataDialog::DataDialog (QWidget *p, Data *d) : Dialog (p)
+DataDialog::DataDialog (QWidget *p) : Dialog (p)
 {
-  _settings = d;
-
   _keySize = "data_dialog_window_size";
   _keyPos = "data_dialog_window_position";
 
@@ -41,18 +48,78 @@ void DataDialog::createGUI ()
   _message->hide();
 }
 
-void DataDialog::addTab (QString label)
+void DataDialog::addTab (int pos, QString label)
 {
+  QFormLayout *form = _formList.value(pos);
+  if (form)
+    return;
+
   QWidget *w = new QWidget(this);
 
-  QFormLayout *form = new QFormLayout;
+  form = new QFormLayout;
   form->setSpacing(5);
   w->setLayout(form);
-  _formList.insert(_tabs->count(), form);
-  _tabs->addTab(w, label);
+  _formList.insert(pos, form);
+
+  _tabs->insertTab(pos, w, label);
 }
 
-int DataDialog::setText (int tab, QString key, QString label, QString text, QString tt)
+void DataDialog::set (Data *d)
+{
+  if (d->type() != DataFactory::_DATA_SETTING)
+    return;
+
+  int tab = d->get(DataSetting::_TAB)->toInteger();
+
+  Setting *vset = d->get(DataSetting::_VALUE);
+  if (! vset)
+    return;
+
+  Setting *set = d->get(DataSetting::_LABEL);
+  if (! set)
+    return;
+  QString key = set->toString();
+
+  switch ((SettingFactory::Type) vset->type())
+  {
+    case SettingFactory::_STRING:
+      setText(tab, key, vset->toString(), QString());
+      _settings.insert(key, d);
+      break;
+    case SettingFactory::_INTEGER:
+      setInteger(tab, key, vset->toInteger(), 999999, -999999, QString());
+      _settings.insert(key, d);
+      break;
+    case SettingFactory::_DOUBLE:
+      setDouble(tab, key, vset->toDouble(), 99999999.0, -99999999.0, QString());
+      _settings.insert(key, d);
+      break;
+    case SettingFactory::_LIST:
+      setList(tab, key, vset->toString(), vset->toList(), QString());
+      _settings.insert(key, d);
+      break;
+    case SettingFactory::_COLOR:
+      setColor(tab, key, vset->toColor(), QString());
+      _settings.insert(key, d);
+      break;
+    case SettingFactory::_DATETIME:
+      setDateTime(tab, key, vset->toDateTime(), QString());
+      _settings.insert(key, d);
+      break;
+    case SettingFactory::_BOOL:
+      setBool(tab, key, vset->toBool(), QString());
+      _settings.insert(key, d);
+      break;
+    case SettingFactory::_FILE:
+      setFile(tab, key, vset->toList(), QString());
+      _settings.insert(key, d);
+      break;
+    default:
+      break;
+  }
+}
+
+int DataDialog::setText (int tab, QString key, QString text, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -61,13 +128,13 @@ int DataDialog::setText (int tab, QString key, QString label, QString text, QStr
   LineEdit *w = new LineEdit(0);
   w->setText(text);
   w->setToolTip(tt);
-  form->addRow(label, w);
+  form->addRow(key, w);
   _widgets.insert(key, (void *) w);
-  _types.insert(key, _STRING);
+
   return 0;
 }
 
-int DataDialog::setColor (int tab, QString key, QString label, QColor c, QString tt)
+int DataDialog::setColor (int tab, QString key, QColor c, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -75,14 +142,13 @@ int DataDialog::setColor (int tab, QString key, QString label, QColor c, QString
 
   ColorButton *w = new ColorButton(0, c);
   w->setToolTip(tt);
-  form->addRow(label, w);
+  form->addRow(key, w);
   _widgets.insert(key, (void *) w);
-  _types.insert(key, _COLOR);
 
   return 0;
 }
 
-int DataDialog::setInteger (int tab, QString key, QString label, int v, int h, int l, QString tt)
+int DataDialog::setInteger (int tab, QString key, int v, int h, int l, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -92,14 +158,13 @@ int DataDialog::setInteger (int tab, QString key, QString label, int v, int h, i
   w->setToolTip(tt);
   w->setRange(l, h);
   w->setValue(v);
-  form->addRow(label, w);
+  form->addRow(key, w);
   _widgets.insert(key, (void *) w);
-  _types.insert(key, _INTEGER);
 
   return 0;
 }
 
-int DataDialog::setDouble (int tab, QString key, QString label, double v, double h, double l, QString tt)
+int DataDialog::setDouble (int tab, QString key, double v, double h, double l, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -109,14 +174,13 @@ int DataDialog::setDouble (int tab, QString key, QString label, double v, double
   w->setToolTip(tt);
   w->setRange(l, h);
   w->setValue(v);
-  form->addRow(label, w);
+  form->addRow(key, w);
   _widgets.insert(key, (void *) w);
-  _types.insert(key, _DOUBLE);
 
   return 0;
 }
 
-int DataDialog::setBool (int tab, QString key, QString label, bool v, QString tt)
+int DataDialog::setBool (int tab, QString key, bool v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -125,14 +189,13 @@ int DataDialog::setBool (int tab, QString key, QString label, bool v, QString tt
   QCheckBox *w = new QCheckBox;
   w->setChecked(v);
   w->setToolTip(tt);
-  form->addRow(label, w);
+  form->addRow(key, w);
   _widgets.insert(key, (void *) w);
-  _types.insert(key, _BOOL);
 
   return 0;
 }
 
-int DataDialog::setList (int tab, QString key, QString label, QString v, QStringList l, QString tt)
+int DataDialog::setList (int tab, QString key, QString v, QStringList l, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -142,14 +205,13 @@ int DataDialog::setList (int tab, QString key, QString label, QString v, QString
   w->setToolTip(tt);
   w->addItems(l);
   w->setCurrentIndex(w->findText(v));
-  form->addRow(label, w);
+  form->addRow(key, w);
   _widgets.insert(key, (void *) w);
-  _types.insert(key, _LIST);
 
   return 0;
 }
 
-int DataDialog::setDateTime (int tab, QString key, QString label, QDateTime v, QString tt)
+int DataDialog::setDateTime (int tab, QString key, QDateTime v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -160,14 +222,13 @@ int DataDialog::setDateTime (int tab, QString key, QString label, QDateTime v, Q
   w->setCalendarPopup(TRUE);
   w->setDisplayFormat("yyyy.MM.dd HH:mm:ss");
   w->setDateTime(v);
-  form->addRow(label, w);
+  form->addRow(key, w);
   _widgets.insert(key, (void *) w);
-  _types.insert(key, _DATETIME);
 
   return 0;
 }
 
-int DataDialog::setFile (int tab, QString key, QString label, QStringList v, QString tt)
+int DataDialog::setFile (int tab, QString key, QStringList v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -176,16 +237,15 @@ int DataDialog::setFile (int tab, QString key, QString label, QStringList v, QSt
   FileButton *w = new FileButton(0);
   w->setFiles(v);
   w->setToolTip(tt);
-  form->addRow(label, w);
+  form->addRow(key, w);
   _widgets.insert(key, (void *) w);
-  _types.insert(key, _FILE);
 
   return 0;
 }
 
 void DataDialog::done ()
 {
-  if (! _settings)
+  if (! _settings.count())
   {
     saveSettings();
 //  emit signalDone();
@@ -193,68 +253,66 @@ void DataDialog::done ()
     return;
   }
 
-  QHashIterator<QString, int> it(_types);
+  QHashIterator<QString, Data *> it(_settings);
   while (it.hasNext())
   {
     it.next();
+    Data *d = it.value();
+    Setting *set = d->get(DataSetting::_VALUE);
 
-    QVariant v = _settings->get(it.key());
-
-    switch ((Type) it.value())
+    switch ((SettingFactory::Type) set->type())
     {
-      case _STRING:
+      case SettingFactory::_STRING:
       {
         LineEdit *w = (LineEdit *) _widgets.value(it.key());
-        v.setValue(w->text());
+        set->set(w->text());
         break;
       }
-      case _COLOR:
+      case SettingFactory::_COLOR:
       {
         ColorButton *w = (ColorButton *) _widgets.value(it.key());
-        v.setValue(w->color().name());
+        set->set(w->color());
         break;
       }
-      case _INTEGER:
+      case SettingFactory::_INTEGER:
       {
         QSpinBox *w = (QSpinBox *) _widgets.value(it.key());
-        v.setValue(w->value());
+        set->set(w->value());
         break;
       }
-      case _DOUBLE:
+      case SettingFactory::_DOUBLE:
       {
         QDoubleSpinBox *w = (QDoubleSpinBox *) _widgets.value(it.key());
-        v.setValue(w->value());
+        set->set(w->value());
         break;
       }
-      case _BOOL:
+      case SettingFactory::_BOOL:
       {
         QCheckBox *w = (QCheckBox *) _widgets.value(it.key());
-        v.setValue(w->isChecked());
+        set->set(w->isChecked());
         break;
       }
-      case _DATETIME:
+      case SettingFactory::_DATETIME:
       {
         QDateTimeEdit *w = (QDateTimeEdit *) _widgets.value(it.key());
-        v.setValue(w->dateTime());
+        set->set(w->dateTime());
         break;
       }
-      case _LIST:
+      case SettingFactory::_LIST:
       {
         QComboBox *w = (QComboBox *) _widgets.value(it.key());
-        v.setValue(w->currentText());
+        set->set(w->currentText());
         break;
       }
-      case _FILE:
+      case SettingFactory::_FILE:
       {
         FileButton *w = (FileButton *) _widgets.value(it.key());
-        v.setValue(w->files());
+        set->set(w->files());
         break;
       }
       default:
         break;
     }
-
-    _settings->set(it.key(), v);
   }
 
   saveSettings();

@@ -36,8 +36,7 @@ class CommandSZ : public Command
     };
 
     CommandSZ (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getSZ (QList<Data *> &, int type, int period, int ndp, double coeff);
 
   private:

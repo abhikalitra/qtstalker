@@ -22,11 +22,18 @@
 #include "SymbolDialog.h"
 #include "QuoteDataBase.h"
 #include "Symbol.h"
+#include "SettingString.h"
+
 #include "../pics/search.xpm"
+#include "../pics/select_all.xpm"
+#include "../pics/unselect_all.xpm"
+#include "../pics/add.xpm"
+#include "../pics/delete.xpm"
 
 #include <QtDebug>
 #include <QTreeWidgetItem>
 #include <QGroupBox>
+#include <QToolBar>
 
 SymbolDialog::SymbolDialog (QWidget *p) : Dialog (p)
 {
@@ -67,6 +74,7 @@ void SymbolDialog::createGUI ()
   int pos = 1;
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
+  hbox->setMargin(0);
   _vbox->insertLayout(pos++, hbox);
 
   QGroupBox *gbox = new QGroupBox;
@@ -91,32 +99,38 @@ void SymbolDialog::createGUI ()
   tvbox->addWidget(_searchList);
 
   tvbox = new QVBoxLayout;
-  tvbox->setSpacing(2);
+  tvbox->setSpacing(0);
+  tvbox->setMargin(0);
   hbox->addLayout(tvbox);
-
   tvbox->addStretch(1);
 
-  QPushButton *b = new QPushButton;
-  b->setText(tr("Select"));
-  b->setToolTip(tr("Select All Items"));
+  QToolBar *tb = new QToolBar;
+  tb->setOrientation(Qt::Vertical);
+  tvbox->addWidget(tb);
+
+  QToolButton *b = new QToolButton;
+  b->setIcon(QIcon(select_all_xpm));
+  b->setToolTip(tr("Select all symbols"));
   connect(b, SIGNAL(clicked()), _searchList, SLOT(selectAll()));
-  tvbox->addWidget(b);
+  tb->addWidget(b);
 
-  b = new QPushButton;
-  b->setText(tr("Unselect"));
-  b->setToolTip(tr("Unselect All Items"));
+  b = new QToolButton;
+  b->setIcon(QIcon(unselect_all_xpm));
+  b->setToolTip(tr("Unselect all symbols"));
   connect(b, SIGNAL(clicked()), _searchList, SLOT(clearSelection()));
-  tvbox->addWidget(b);
+  tb->addWidget(b);
 
-  _addButton = new QPushButton;
-  _addButton->setText(">>");
+  _addButton = new QToolButton;
+  _addButton->setIcon(QIcon(add_xpm));
+  _addButton->setToolTip(tr("Add selected to symbols"));
   connect(_addButton, SIGNAL(clicked()), this, SLOT(addButtonPressed()));
-  tvbox->addWidget(_addButton);
+  tb->addWidget(_addButton);
 
-  _deleteButton = new QPushButton;
-  _deleteButton->setText("<<");
+  _deleteButton = new QToolButton;
+  _deleteButton->setIcon(QIcon(delete_xpm));
+  _deleteButton->setToolTip(tr("Remove selected from symbols"));
   connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteButtonPressed()));
-  tvbox->addWidget(_deleteButton);
+  tb->addWidget(_deleteButton);
 
   tvbox->addStretch(1);
 
@@ -211,11 +225,11 @@ void SymbolDialog::deleteButtonPressed ()
 void SymbolDialog::searchButtonPressed ()
 {
   Data *symbol = new Symbol;
-  symbol->set(Symbol::_EXCHANGE, _exchanges->currentText());
+  symbol->set(Symbol::_EXCHANGE, new SettingString(_exchanges->currentText()));
   QString s = _search->text();
   if (s.isEmpty())
     s = "*";
-  symbol->set(Symbol::_SYMBOL, s);
+  symbol->set(Symbol::_SYMBOL, new SettingString(s));
 
   QuoteDataBase db;
   QList<Data *> l;
@@ -229,8 +243,8 @@ void SymbolDialog::searchButtonPressed ()
   {
     Data *bd = l.at(loop);
     QTreeWidgetItem *item = new QTreeWidgetItem(_searchList);
-    item->setText(0, bd->get(Symbol::_EXCHANGE).toString() + ":" + bd->get(Symbol::_SYMBOL).toString());
-    item->setText(1, bd->get(Symbol::_NAME).toString());
+    item->setText(0, bd->get(Symbol::_EXCHANGE)->toString() + ":" + bd->get(Symbol::_SYMBOL)->toString());
+    item->setText(1, bd->get(Symbol::_NAME)->toString());
   }
 
   qDeleteAll(l);

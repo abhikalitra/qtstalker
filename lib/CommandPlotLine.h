@@ -30,8 +30,7 @@ class CommandPlotLine : public Command
 
   public:
     CommandPlotLine (QObject *);
-    Data * settings ();
-    int runScript (Data *, Script *);
+    int runScript (Message *, Script *);
 };
 
 #endif

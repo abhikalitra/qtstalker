@@ -20,204 +20,51 @@
  */
 
 #include "CommandDialog.h"
+#include "DataDialog.h"
+#include "SettingString.h"
+#include "DataFactory.h"
 
 #include <QtDebug>
+#include <QDialog>
 
-CommandDialog::CommandDialog (QWidget *p) : Dialog (p)
+CommandDialog::CommandDialog (QObject *p) : Command (p)
 {
-  _settings = 0;
+  _type = "DIALOG";
+}
 
-  _keySize = "command_dialog_window_size";
-  _keyPos = "command_dialog_window_position";
+int CommandDialog::runScript (Message *sg, Script *script)
+{
+  DataDialog dialog(0);
+  dialog.addTab(0, tr("Settings"));
 
+  // verify TITLE
   QStringList l;
-//  l << "QtStalker" + g_session + ":" << tr("Insert Command");
-  l << "QtStalker" << ":" << tr("Insert Command");
-  setWindowTitle(l.join(" "));
-
-  createGUI();
-
-  loadSettings();
-}
-
-void CommandDialog::createGUI ()
-{
-  _tabs = new QTabWidget;
-  _vbox->insertWidget(1, _tabs);
-
-  _message->hide();
-}
-
-void CommandDialog::setWidgets (Data *settings)
-{
-  _settings = settings;
-
-  QWidget *base = new QWidget;
-
-  QFormLayout *form = new QFormLayout;
-  form->setSpacing(2);
-  base->setLayout(form);
-
-  QList<QString> keys = settings->keys(Data::_ALL);
+  l << "QtStalker" + script->session() + ":" << sg->value("TITLE");
+  dialog.setWindowTitle(l.join(" "));
 
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < 10; loop++)
   {
-    Data *set = settings->get(keys.at(loop));
+    // get DATA_SETTING
+    QString s = "SETTING_" + QString::number(loop);
+    QString s2 = sg->value(s);
+    Data *d = script->data(s2);
+    if (! d)
+      continue;
 
-    switch ((Data::Type) set->type())
+    if (d->type() != DataFactory::_DATA_SETTING)
     {
-      case Data::_LIST:
-      {
-        QComboBox *w = new QComboBox;
-//        w->setToolTip(set->tip());
-        w->addItems(set->getList());
-        w->setCurrentIndex(w->findText(set->getString()));
-        form->addRow(set->key(), w);
-        _comboBox.insert(set->key(), w);
-        break;
-      }
-      case Data::_STRING:
-      {
-        LineEdit *w = new LineEdit(0);
-        w->setText(set->getString());
-//        w->setToolTip(set->tip());
-        form->addRow(set->key(), w);
-        _lineEdit.insert(set->key(), w);
-        break;
-      }
-      case Data::_COLOR:
-      {
-        ColorButton *w = new ColorButton(base, set->getColor());
-//        w->setToolTip(set->tip());
-        form->addRow(set->key(), w);
-        _colorButton.insert(set->key(), w);
-        break;
-      }
-      case Data::_INTEGER:
-      {
-        QSpinBox *w = new QSpinBox;
-//        w->setToolTip(set->tip());
-//        w->setRange(set->getIntegerLow(), set->getIntegerHigh());
-        w->setValue(set->getInteger());
-        form->addRow(set->key(), w);
-        _spinBox.insert(set->key(), w);
-        break;
-      }
-      case Data::_DOUBLE:
-      {
-        QDoubleSpinBox *w = new QDoubleSpinBox;
-//        w->setToolTip(set->tip());
-//        w->setRange(set->getDoubleLow(), set->getDoubleHigh());
-        w->setValue(set->getDouble());
-        form->addRow(set->key(), w);
-        _doubleSpinBox.insert(set->key(), w);
-        break;
-      }
-      case Data::_DATETIME:
-      {
-        QDateTimeEdit *w = new QDateTimeEdit;
-//        w->setToolTip(set->tip());
-        w->setCalendarPopup(TRUE);
-        w->setDisplayFormat("yyyy.MM.dd HH:mm:ss");
-        w->setDateTime(set->getDateTime());
-        form->addRow(set->key(), w);
-        _dateTimeEdit.insert(set->key(), w);
-        break;
-      }
-      case Data::_BOOL:
-      {
-        QCheckBox *w = new QCheckBox;
-        w->setChecked(set->getBool());
-//        w->setToolTip(set->tip());
-        form->addRow(set->key(), w);
-        _checkBox.insert(set->key(), w);
-      }
-/*
-      case Data::_FILE:
-      {
-        FileButton *w = new FileButton(base);
-        w->setFiles(set->getList());
-//        w->setToolTip(set->tip());
-        form->addRow(set->key(), w);
-        _fileButton.insert(set->key(), w);
-        break;
-      }
-*/
-      default:
-	break;
+      _message << s + " invalid";
+      continue;
     }
+
+    dialog.set(d);
   }
 
-  _tabs->addTab(base, tr("Settings"));
-}
+  int rc = dialog.exec();
 
-void CommandDialog::done ()
-{
-  QStringList keys = _settings->keys(Data::_ALL);
-  int loop = 0;
-  for (; loop < keys.count(); loop++)
-  {
-    Data *v = _settings->get(keys.at(loop));
+  if (rc == QDialog::Rejected)
+    return _ERROR;
 
-    switch ((Data::Type) v->type())
-    {
-      case Data::_STRING:
-      {
-        LineEdit *w = _lineEdit.value(keys.at(loop));
-	v->setString(w->text());
-	break;
-      }
-      case Data::_COLOR:
-      {
-        ColorButton *w = _colorButton.value(keys.at(loop));
-	v->setColor(w->color());
-	break;
-      }
-      case Data::_INTEGER:
-      {
-        QSpinBox *w = _spinBox.value(keys.at(loop));
-	v->setInteger(w->value());
-	break;
-      }
-      case Data::_DOUBLE:
-      {
-        QDoubleSpinBox *w = _doubleSpinBox.value(keys.at(loop));
-	v->setDouble(w->value());
-	break;
-      }
-      case Data::_BOOL:
-      {
-        QCheckBox *w = _checkBox.value(keys.at(loop));
-	v->setBool(w->isChecked());
-	break;
-      }
-      case Data::_DATETIME:
-      {
-        QDateTimeEdit *w = _dateTimeEdit.value(keys.at(loop));
-	v->setDateTime(w->dateTime());
-	break;
-      }
-      case Data::_LIST:
-      {
-        QComboBox *w = _comboBox.value(keys.at(loop));
-        v->setString(w->currentText());
-        break;
-      }
-/*
-      case Data::_FILE:
-      {
-        FileButton *w = _fileButton.value(keys.at(loop));
-        v->setList(w->files());
-        break;
-      }
-*/
-      default:
-	break;
-    }
-  }
-
-  saveSettings();
-
-  accept();
+  return _OK;
 }

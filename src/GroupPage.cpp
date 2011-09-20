@@ -28,6 +28,7 @@
 #include "GroupAdd.h"
 #include "GroupNew.h"
 #include "GroupDelete.h"
+#include "SettingString.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -242,13 +243,13 @@ void GroupPage::updateList ()
     if (tl.count() != 2)
       continue;
 
-    bd->set(Symbol::_EXCHANGE, QVariant(tl.at(0)));
-    bd->set(Symbol::_SYMBOL, QVariant(tl.at(1)));
+    bd->set(Symbol::_EXCHANGE, new SettingString(tl.at(0)));
+    bd->set(Symbol::_SYMBOL, new SettingString(tl.at(1)));
     qdb.getSymbol(bd);
 
     QListWidgetItem *item = new QListWidgetItem;
     item->setText(l.at(loop));
-    item->setToolTip(bd->get(Symbol::_NAME).toString());
+    item->setToolTip(bd->get(Symbol::_NAME)->toString());
     _nav->addItem(item);
   }
 

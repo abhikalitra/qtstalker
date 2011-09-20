@@ -22,9 +22,12 @@
 #include "CommandStochSlow.h"
 #include "ta_libc.h"
 #include "MAType.h"
-#include "InputType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "VerifyDataInput.h"
+#include "TALibInput.h"
+#include "TALibOutput.h"
+#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -37,85 +40,112 @@ CommandStochSlow::CommandStochSlow (QObject *p) : Command (p)
     qDebug("CommandStochSlow::CommandStochSlow: error on TA_Initialize");
 }
 
-int CommandStochSlow::runScript (Data *sg, Script *script)
+int CommandStochSlow::runScript (Message *sg, Script *script)
 {
-  QString kname = sg->get("OUTPUT_SLOWK").toString();
-  Data *line = script->data(kname);
-  if (line)
+  VerifyDataInput vdi;
+  QString s = sg->value("OUTPUT_SLOWK");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_SLOWK" << kname;
+    _message << "invalid OUTPUT_SLOWK";
+    return _ERROR;
+  }
+  Setting *kname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! kname)
+  {
+    _message << "invalid OUTPUT_SLOWK " + s;
     return _ERROR;
   }
 
-  QString dname = sg->get("OUTPUT_SLOWD").toString();
-  line = script->data(dname);
-  if (line)
+  s = sg->value("OUTPUT_SLOWD");
+  if (s.isEmpty())
   {
-    qDebug() << _type << "::runScript: duplicate OUTPUT_SLOWD" << dname;
+    _message << "invalid OUTPUT_SLOWD";
+    return _ERROR;
+  }
+  Setting *dname = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! dname)
+  {
+    _message << "invalid OUTPUT_SLOWD " + s;
     return _ERROR;
   }
 
-  QString s = sg->get("HIGH").toString();
-  Data *ihigh = script->data(s);
+  s = sg->value("HIGH");
+  Data *ihigh = vdi.curve(script, s);
   if (! ihigh)
   {
-    qDebug() << _type << "::runScript: invalid HIGH" << s;
+    _message << "invalid HIGH " + s;
     return _ERROR;
   }
 
-  s = sg->get("LOW").toString();
-  Data *ilow = script->data(s);
+  s = sg->value("LOW");
+  Data *ilow = vdi.curve(script, s);
   if (! ilow)
   {
-    qDebug() << _type << "::runScript: invalid LOW" << s;
+    _message << "invalid LOW " + s;
     return _ERROR;
   }
 
-  s = sg->get("CLOSE").toString();
-  Data *iclose = script->data(s);
+  s = sg->value("CLOSE");
+  Data *iclose = vdi.curve(script, s);
   if (! iclose)
   {
-    qDebug() << _type << "::runScript: invalid CLOSE" << s;
+    _message << "invalid CLOSE " + s;
     return _ERROR;
   }
 
-  int fkperiod = sg->get("PERIOD_FASTK").toInt();
+  s = sg->value("PERIOD_FASTK");
+  Setting *fkperiod = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! fkperiod)
+  {
+    _message << "invalid PERIOD_FATSK " + s;
+    return _ERROR;
+  }
 
-  int skperiod = sg->get("PERIOD_SLOWK").toInt();
+  s = sg->value("PERIOD_SLOWK");
+  Setting *skperiod = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! skperiod)
+  {
+    _message << "invalid PERIOD_SLOWK " + s;
+    return _ERROR;
+  }
 
   MAType mat;
-  s = sg->get("MA_TYPE_SLOWK").toString();
+  s = sg->value("MA_TYPE_SLOWK");
   int kma = mat.fromString(s);
   if (kma == -1)
   {
-    qDebug() << _type << "::runScript: invalid MA_TYPE_SLOWK" << s;
+    _message << "invalid MA_TYPE_SLOWK " + s;
     return _ERROR;
   }
 
-  int sdperiod = sg->get("PERIOD_SLOWD").toInt();
+  s = sg->value("PERIOD_SLOWD");
+  Setting *sdperiod = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! sdperiod)
+  {
+    _message << "invalid PERIOD_SLOWD " + s;
+    return _ERROR;
+  }
 
-  s = sg->get("MA_TYPE_SLOWD").toString();
+  s = sg->value("MA_TYPE_SLOWD");
   int dma = mat.fromString(s);
   if (dma == -1)
   {
-    qDebug() << _type << "::runScript: invalid MA_TYPE_SLOWD" << s;
+    _message << "invalid MA_TYPE_SLOWD " + s;
     return _ERROR;
   }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose;
-  QList<Data *> lines = getSTOCHS(list, fkperiod, skperiod, sdperiod, kma, dma);
+
+  QList<Data *> lines = getSTOCHS(list, fkperiod->toInteger(), skperiod->toInteger(), sdperiod->toInteger(), kma, dma);
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
     return _ERROR;
   }
 
-  Data *kline = lines.at(0);
-  script->setData(kname, kline);
-
-  Data *dline = lines.at(1);
-  script->setData(dname, dline);
+  script->setData(kname->toString(), lines.at(0));
+  script->setData(dname->toString(), lines.at(1));
 
   return _OK;
 }
@@ -126,9 +156,9 @@ QList<Data *> CommandStochSlow::getSTOCHS (QList<Data *> &list, int fkperiod, in
   if (! list.count())
     return lines;
 
-  InputType it;
+  VerifyDataInput vdi;
   QList<int> keys;
-  if (it.keys(list, keys))
+  if (vdi.curveKeys(list, keys))
     return lines;
 
   int size = keys.count();
@@ -140,7 +170,8 @@ QList<Data *> CommandStochSlow::getSTOCHS (QList<Data *> &list, int fkperiod, in
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  size = it.fill(list, keys, &high[0], &low[0], &close[0], &close[0]);
+  TALibInput tai;
+  size = tai.fill3(list, keys, &high[0], &low[0], &close[0]);
   if (! size)
     return lines;
 
@@ -170,7 +201,9 @@ QList<Data *> CommandStochSlow::getSTOCHS (QList<Data *> &list, int fkperiod, in
   lines << c;
   c = new CurveData;
   lines << c;
-  if (it.outputs(lines, keys, outNb, &out[0], &out2[0], &out2[0]))
+
+  TALibOutput tao;
+  if (tao.fillDouble2(lines, keys, outNb, &out[0], &out2[0]))
   {
     qDeleteAll(lines);
     lines.clear();
@@ -178,20 +211,4 @@ QList<Data *> CommandStochSlow::getSTOCHS (QList<Data *> &list, int fkperiod, in
   }
 
   return lines;
-}
-
-Data * CommandStochSlow::settings ()
-{
-  Data *sg = new Data;
-  sg->set("OUTPUT_SLOWK", QVariant(QString()));
-  sg->set("OUTPUT_SLOWD", QVariant(QString()));
-  sg->set("HIGH", QVariant(QString()));
-  sg->set("LOW", QVariant(QString()));
-  sg->set("CLOSE", QVariant(QString()));
-  sg->set("PERIOD_FASTK", QVariant(5));
-  sg->set("PERIOD_SLOWK", QVariant(3));
-  sg->set("PERIOD_SLOWD", QVariant(3));
-  sg->set("MA_TYPE_SLOWK", QVariant(QString("EMA")));
-  sg->set("MA_TYPE_SLOWD", QVariant(QString("EMA")));
-  return sg;
 }

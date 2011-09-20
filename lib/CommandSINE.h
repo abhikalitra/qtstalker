@@ -30,8 +30,7 @@ class CommandSINE : public Command
 
   public:
     CommandSINE (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     QList<Data *> getSINE (QList<Data *> &);
 };
 

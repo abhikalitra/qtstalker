@@ -30,9 +30,8 @@ class CommandArithmetic : public Command
 
   public:
     CommandArithmetic (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
-    Data * getArithmetic (Data *in, Data *in2, int method);
+    int runScript (Message *, Script *);
+    Data * getArithmetic (Data *in, int off, Data *in2, int off2, int method);
 
   private:
     QStringList _method;

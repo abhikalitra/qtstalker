@@ -30,8 +30,7 @@ class CommandVAR : public Command
 
   public:
     CommandVAR (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getVAR (QList<Data *> &, int, double);
 };
 

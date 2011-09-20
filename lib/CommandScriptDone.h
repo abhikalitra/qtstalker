@@ -30,8 +30,7 @@ class CommandScriptDone : public Command
 
   public:
     CommandScriptDone (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
 };
 
 #endif

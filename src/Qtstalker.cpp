@@ -42,7 +42,6 @@
 #include "Globals.h"
 #include "InfoPanel.h"
 #include "DockWidget.h"
-#include "RefreshButton.h"
 #include "RecentCharts.h"
 #include "BarLengthButton.h"
 #include "BarSpaceButton.h"
@@ -218,7 +217,7 @@ void QtstalkerApp::save()
 
   if (g_currentSymbol->dataKeyCount())
   {
-    QString s = g_currentSymbol->get(Symbol::_EXCHANGE).toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL).toString();
+    QString s = g_currentSymbol->get(Symbol::_EXCHANGE)->toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL)->toString();
     settings.setValue("current_symbol", s);
   }
 
@@ -244,11 +243,11 @@ QString QtstalkerApp::getWindowCaption ()
   if (! g_currentSymbol->dataKeyCount())
     return l.join(" ");
 
-  QString name = g_currentSymbol->get(Symbol::_NAME).toString();
+  QString name = g_currentSymbol->get(Symbol::_NAME)->toString();
   if (! name.isEmpty())
     l << name;
 
-  QString symbol = g_currentSymbol->get(Symbol::_SYMBOL).toString();
+  QString symbol = g_currentSymbol->get(Symbol::_SYMBOL)->toString();
   if (! symbol.isEmpty())
     l << "(" + symbol + ")";
 
@@ -263,11 +262,11 @@ QString QtstalkerApp::getWindowCaption ()
 void QtstalkerApp::chartUpdated ()
 {
   // we are here because something wants us to reload the chart with fresh bars
-  QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE).toString();
+  QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE)->toString();
   if (symbol.isEmpty())
     return;
 
-  symbol.append(":" + g_currentSymbol->get(Symbol::_SYMBOL).toString());
+  symbol.append(":" + g_currentSymbol->get(Symbol::_SYMBOL)->toString());
   loadChart(symbol);
 }
 
@@ -359,6 +358,9 @@ void QtstalkerApp::messageSlot (QString m, QString d)
     qDebug() << "QtstalkerApp::messageSlot: invalid message" << m;
     return;
   }
+
+  if (ipcm.dataType() == "3")
+    qDebug() << "QtstalkerApp::messageSlot:" << d;
 
   // ignore message from another session
   if (ipcm.session() != g_session)

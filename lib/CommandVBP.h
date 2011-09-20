@@ -30,8 +30,7 @@ class CommandVBP : public Command
 
   public:
     CommandVBP (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getVBP (QList<Data *> &, QColor, QColor);
 };
 

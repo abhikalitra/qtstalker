@@ -24,6 +24,10 @@
 #include "Globals.h"
 #include "DateScaleDraw.h"
 #include "ChartObjectData.h"
+#include "SettingDateTime.h"
+#include "SettingString.h"
+#include "SettingInteger.h"
+#include "SettingColor.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -32,19 +36,19 @@
 
 ChartObjectVLine::ChartObjectVLine ()
 {
-  _settings->set(ChartObjectData::_TYPE, QVariant(QString("VLine")));
-  _settings->set(ChartObjectData::_DATE, QVariant(QDateTime::currentDateTime()));
-  _settings->set(ChartObjectData::_COLOR, QVariant(QString("red")));
-  _settings->set(ChartObjectData::_Z, QVariant(1));
-  _settings->set(ChartObjectData::_PEN, QVariant(1));
+  _settings->set(ChartObjectData::_TYPE, new SettingString(QString("VLine")));
+  _settings->set(ChartObjectData::_DATE, new SettingDateTime(QDateTime::currentDateTime()));
+  _settings->set(ChartObjectData::_COLOR, new SettingColor(QColor(Qt::red)));
+  _settings->set(ChartObjectData::_Z, new SettingInteger(1));
+  _settings->set(ChartObjectData::_PEN, new SettingInteger(1));
 }
 
 void ChartObjectVLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE).toDateTime()));
+  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE)->toDateTime()));
 
-  p->setPen(QColor(_settings->get(ChartObjectData::_COLOR).toString()));
+  p->setPen(_settings->get(ChartObjectData::_COLOR)->toColor());
 
   p->drawLine (x, 0, x, p->window().height());
 
@@ -78,16 +82,16 @@ void ChartObjectVLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScal
 		  t * loop,
 		  _handleWidth,
 		  _handleWidth,
-		  QColor(_settings->get(ChartObjectData::_COLOR).toString()));
+		  _settings->get(ChartObjectData::_COLOR)->toColor());
     }
   }
 }
 
 int ChartObjectVLine::info (Message &info)
 {
-  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE).toString());
+  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE)->toString());
 
-  QDateTime dt = _settings->get(ChartObjectData::_DATE).toDateTime();
+  QDateTime dt = _settings->get(ChartObjectData::_DATE)->toDateTime();
   info.insert("D", dt.toString("yyyy-MM-dd"));
   info.insert("T", dt.toString("HH:mm:ss"));
 
@@ -106,11 +110,11 @@ void ChartObjectVLine::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE, QVariant(dt));
+      _settings->set(ChartObjectData::_DATE, new SettingDateTime(dt));
 
       plot()->replot();
 
-      QString s = _settings->get(ChartObjectData::_DATE).toString();
+      QString s = _settings->get(ChartObjectData::_DATE)->toString();
       g_parent->statusBar()->showMessage(s);
 
       _modified++;
@@ -131,31 +135,28 @@ int ChartObjectVLine::create ()
 
 DataDialog * ChartObjectVLine::dialog (QWidget *p)
 {
-  DataDialog *dialog = new DataDialog(p, _settings);
+  DataDialog *dialog = new DataDialog(p);
 
   QStringList l;
   l << "QtStalker" + g_session + ":" << QObject::tr("Edit VLine");
   dialog->setWindowTitle(l.join(" "));
 
-  dialog->addTab(QObject::tr("Settings"));
   int tab = 0;
+  dialog->addTab(tab, QObject::tr("Settings"));
 
   dialog->setDateTime(tab,
-                      QString::number(ChartObjectData::_DATE),
                       QObject::tr("Date"),
-                      _settings->get(ChartObjectData::_DATE).toDateTime(),
+                      _settings->get(ChartObjectData::_DATE)->toDateTime(),
                       QString());
 
   dialog->setColor(tab,
-                   QString::number(ChartObjectData::_COLOR),
                    QObject::tr("Color"),
-                   QColor(_settings->get(ChartObjectData::_COLOR).toString()),
+                   _settings->get(ChartObjectData::_COLOR)->toColor(),
                    QString());
 
   dialog->setInteger(tab,
-                     QString::number(ChartObjectData::_Z),
                      QString("Z"),
-                     _settings->get(ChartObjectData::_Z).toInt(),
+                     _settings->get(ChartObjectData::_Z)->toInteger(),
                      99,
                      -1,
                      QString());

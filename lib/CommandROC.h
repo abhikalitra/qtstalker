@@ -30,8 +30,7 @@ class CommandROC : public Command
 
   public:
     CommandROC (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getROC (QList<Data *> &, int, int);
 
   protected:

@@ -30,8 +30,7 @@ class CommandCompare : public Command
 
   public:
     CommandCompare (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
 };
 
 #endif

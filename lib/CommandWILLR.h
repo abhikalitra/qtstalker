@@ -30,8 +30,7 @@ class CommandWILLR : public Command
 
   public:
     CommandWILLR (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getWILLR (QList<Data *> &, int);
 };
 

@@ -30,8 +30,7 @@ class CommandSTDDEV : public Command
 
   public:
     CommandSTDDEV (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getSTDDEV (QList<Data *> &, int, double);
 };
 

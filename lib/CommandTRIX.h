@@ -30,8 +30,7 @@ class CommandTRIX : public Command
 
   public:
     CommandTRIX (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
     Data * getTRIX (QList<Data *> &, int);
 };
 
