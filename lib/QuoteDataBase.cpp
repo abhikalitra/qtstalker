@@ -153,6 +153,8 @@ int QuoteDataBase::getBars (Data *bd)
     dr.dateInterval(lastDate, (BarLength::Length) length, tsd, ted);
     s = dr.rangeKey(tsd, ted);
 
+//qDebug() << lastDate << tsd << ted;
+
     CurveBar *bar = bars.value(s);
     if (! bar)
     {

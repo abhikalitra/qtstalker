@@ -41,7 +41,7 @@ SettingDateTime::SettingDateTime ()
 
 int SettingDateTime::set (QString d)
 {
-  QDateTime dt = QDateTime::fromString(d);
+  QDateTime dt = QDateTime::fromString(d, Qt::ISODate);
   if (! dt.isValid())
     return 1;
 

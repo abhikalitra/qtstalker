@@ -147,6 +147,7 @@ int CommandSymbolCurrent::runScript (Message *sg, Script *script)
   for (; loop < barKeys.count(); loop++)
   {
     Data *b = bd->getData(barKeys.at(loop));
+//qDebug() << b->get(CurveBar::_DATE)->toDateTime();
 
     Data *db = new CurveBar;
     db->set(CurveBar::_DATE, new SettingDateTime(b->get(CurveBar::_DATE)->toDateTime()));

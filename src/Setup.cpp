@@ -50,15 +50,13 @@ void Setup::setup (QObject *, QString session)
   // setup the system scripts
   setupDefaults();
 
-  // initialize data tables
-  setupExchanges();
-
   QSettings settings(g_localSettings);
   int ti = settings.value("default_indicators", 0).toInt();
   if (! ti)
   {
     setupDefaultIndicators();
     setupDefaultScripts();
+    setupExchanges();
 
     settings.setValue("default_indicators", 1);
     settings.sync();
