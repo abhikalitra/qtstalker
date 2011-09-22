@@ -36,6 +36,7 @@ class VerifyDataInput
     Data * curve (Script *, QString);
     Data * curveAll (Script *, QString);
     Setting * setting (int type, Script *script, QString key);
+    Setting * dataSetting (int type, Script *script, QString key);
     int curveKeys (QList<Data *> &list, QList<int> &keys);
     int curveValue (Data *in, QList<int> &keys, int index, int offset, double &v);
 };

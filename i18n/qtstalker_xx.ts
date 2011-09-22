@@ -80,6 +80,33 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>BuyDialog</name>
+    <message>
+        <source>Editing Buy Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Z Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ChartObjectDeleteAll</name>
     <message>
         <source>Confirm delete all chart objects from selected indicator</source>
@@ -560,6 +587,29 @@ App restart required to take effect</source>
     </message>
 </context>
 <context>
+    <name>HLineDialog</name>
+    <message>
+        <source>Editing HLine Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Z Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>IconButton</name>
     <message>
         <source>Select Icon</source>
@@ -788,70 +838,6 @@ App restart required to take effect</source>
         <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Edit Buy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit HLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Retracement</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Levels</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Sell</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit TLine</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit VLine</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -871,6 +857,73 @@ App restart required to take effect</source>
     <name>RemoveIndicator</name>
     <message>
         <source>Confirm indicator removal</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RetracementDialog</name>
+    <message>
+        <source>Editing Retracement Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Z Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Level 6</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Levels</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1045,6 +1098,33 @@ App restart required to take effect</source>
     </message>
 </context>
 <context>
+    <name>SellDialog</name>
+    <message>
+        <source>Editing Sell Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Z Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SidePanel</name>
     <message>
         <source>Charts</source>
@@ -1133,6 +1213,103 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Remove selected from symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TLineDialog</name>
+    <message>
+        <source>Editing TLine Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>End Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Z Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TextDialog</name>
+    <message>
+        <source>Editing Text Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Z Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>VLineDialog</name>
+    <message>
+        <source>Editing VLine Object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Z Level</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -102,6 +102,29 @@ Data * VerifyDataInput::curveAll (Script *script, QString key)
 
 Setting * VerifyDataInput::setting (int type, Script *script, QString key)
 {
+  Setting *set = dataSetting(type, script, key);
+  if (set)
+    return set;
+
+  SettingFactory fac;
+  Setting *setting = fac.setting(type);
+  if (! setting)
+    return 0;
+
+  if (setting->set(key))
+  {
+    delete setting;
+    return 0;
+  }
+
+  // will delete when scipt ends
+  script->setTSetting(setting);
+
+  return setting;
+}
+
+Setting * VerifyDataInput::dataSetting (int type, Script *script, QString key)
+{
   Data *in = script->data(key);
   if (in)
   {
@@ -120,21 +143,7 @@ Setting * VerifyDataInput::setting (int type, Script *script, QString key)
     return 0;
   }
 
-  SettingFactory fac;
-  Setting *setting = fac.setting(type);
-  if (! setting)
-    return 0;
-
-  if (setting->set(key))
-  {
-    delete setting;
-    return 0;
-  }
-
-  // will delete when scipt ends
-  script->setTSetting(setting);
-
-  return setting;
+  return 0;
 }
 
 int VerifyDataInput::curveKeys (QList<Data *> &list, QList<int> &keys)

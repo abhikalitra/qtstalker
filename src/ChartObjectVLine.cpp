@@ -132,34 +132,3 @@ int ChartObjectVLine::create ()
   g_parent->statusBar()->showMessage(QObject::tr("Place VLine object..."));
   return 0;
 }
-
-DataDialog * ChartObjectVLine::dialog (QWidget *p)
-{
-  DataDialog *dialog = new DataDialog(p);
-
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << QObject::tr("Edit VLine");
-  dialog->setWindowTitle(l.join(" "));
-
-  int tab = 0;
-  dialog->addTab(tab, QObject::tr("Settings"));
-
-  dialog->setDateTime(tab,
-                      QObject::tr("Date"),
-                      _settings->get(ChartObjectData::_DATE)->toDateTime(),
-                      QString());
-
-  dialog->setColor(tab,
-                   QObject::tr("Color"),
-                   _settings->get(ChartObjectData::_COLOR)->toColor(),
-                   QString());
-
-  dialog->setInteger(tab,
-                     QString("Z"),
-                     _settings->get(ChartObjectData::_Z)->toInteger(),
-                     99,
-                     -1,
-                     QString());
-
-  return dialog;
-}

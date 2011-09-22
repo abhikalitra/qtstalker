@@ -19,48 +19,40 @@
  *  USA.
  */
 
-#ifndef DATA_DIALOG_HPP
-#define DATA_DIALOG_HPP
+#ifndef TEXT_DIALOG_HPP
+#define TEXT_DIALOG_HPP
 
-#include <QStringList>
-#include <QHash>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QCheckBox>
-#include <QDateTimeEdit>
 #include <QTabWidget>
-#include <QColor>
+#include <QDoubleSpinBox>
+#include <QSpinBox>
+#include <QDateTimeEdit>
 
+#include "ColorButton.h"
 #include "Dialog.h"
 #include "Data.h"
+#include "LineEdit.h"
+#include "FontButton.h"
 
-class DataDialog : public Dialog
+class TextDialog : public Dialog
 {
   Q_OBJECT
 
   public:
-    DataDialog (QWidget *);
+    TextDialog (QWidget *, Data *);
     void createGUI ();
-    void set (Data *);
-    void addTab (int pos, QString label);
-    int setText (int tab, QString key, QString text, QString tt);
-    int setColor (int tab, QString key, QColor c, QString tt);
-    int setInteger (int tab, QString key, int v, int h, int l, QString tt);
-    int setDouble (int tab, QString key, double v, double h, double l, QString tt);
-    int setBool (int tab, QString key, bool v, QString tt);
-    int setList (int tab, QString key, QString v, QStringList l, QString tt);
-    int setDateTime (int tab, QString key, QDateTime v, QString tt);
-    int setFile (int tab, QString key, QStringList v, QString tt);
 
   public slots:
     void done ();
 
-  protected:
-    QHash<int, QFormLayout *> _formList;
-    QHash<QString, void *> _widgets;
-    QHash<QString, Data *> _settings;
+  private:
+    Data *_settings;
     QTabWidget *_tabs;
+    ColorButton *_color;
+    FontButton *_font;
+    QDoubleSpinBox *_price;
+    QSpinBox *_z;
+    QDateTimeEdit *_date;
+    LineEdit *_text;
 };
 
 #endif

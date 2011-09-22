@@ -25,6 +25,7 @@
 #include "DateScaleDraw.h"
 #include "Plot.h"
 #include "ChartObjectData.h"
+#include "SettingBool.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -38,8 +39,10 @@ ChartObject::ChartObject ()
   _selected = 0;
   _handleWidth = 6;
   setYAxis(QwtPlot::yRight);
-  _settings = new Data;
   _modified = 0;
+
+  _settings = new Data;
+  _settings->set(ChartObjectData::_RO, new SettingBool(FALSE));
 }
 
 ChartObject::~ChartObject ()
@@ -230,12 +233,6 @@ void ChartObject::click (int button, QPoint p)
 
 // virtual
 int ChartObject::create ()
-{
-  return 0;
-}
-
-// virtual
-DataDialog * ChartObject::dialog (QWidget *)
 {
   return 0;
 }

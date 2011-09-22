@@ -99,8 +99,6 @@ int ChartUpdate::run (IPCMessage mess, Data *dg)
     }
 
     co->setSettings(dg);
-//    co->setPlotName(sg.get("CHART")->getString());
-//    co->setReadOnly(TRUE);
 
     Plot *plot = g_plotGroup->plot(dg->get(ChartObjectData::_CHART)->toString());
     if (! plot)

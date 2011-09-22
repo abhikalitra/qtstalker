@@ -33,7 +33,6 @@ class ChartObjectHLine : public ChartObject
     void move (QPoint);
     int create ();
     int highLow (int, int, double &, double &);
-    DataDialog * dialog (QWidget *);
 };
 
 #endif

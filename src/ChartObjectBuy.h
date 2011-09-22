@@ -32,7 +32,6 @@ class ChartObjectBuy : public ChartObject
     int info (Message &);
     void move (QPoint);
     int create ();
-    DataDialog * dialog (QWidget *);
 };
 
 #endif

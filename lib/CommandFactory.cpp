@@ -47,7 +47,7 @@
 //#include "CommandFileDialog.h"
 //#include "CommandGroupPanelRefresh.h"
 //#include "CommandGroupSave.h"
-//#include "CommandHLine.h"
+#include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandLINEARREG.h"
 #include "CommandMA.h"
@@ -181,7 +181,7 @@ Command * CommandFactory::command (QObject *p, QString type)
 //      c = new CommandBuy(p);
       break;
     case _CHART_OBJECT_HLINE:
-//      c = new CommandHLine(p);
+      c = new CommandHLine(p);
       break;
     case _CHART_OBJECT_RETRACEMENT:
 //      c = new CommandRetracement(p);

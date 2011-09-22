@@ -86,12 +86,14 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
       Setting *setting = dg->get(CurveData::_Z);
       if (! setting)
         continue;
+
       if (setting->toInteger() < 0)
         continue;
 
       setting = dg->get(CurveData::_CHART);
       if (! setting)
         continue;
+
       if (setting->toString() != name->toString())
         continue;
 
@@ -103,15 +105,17 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
 
     if (dg->type() == DataFactory::_CHART_OBJECT)
     {
-      Setting *setting = dg->get(CurveData::_Z);
+      Setting *setting = dg->get(ChartObjectData::_Z);
       if (! setting)
         continue;
+
       if (setting->toInteger() < 0)
         continue;
 
-      setting = dg->get(CurveData::_CHART);
+      setting = dg->get(ChartObjectData::_CHART);
       if (! setting)
         continue;
+
       if (setting->toString() != name->toString())
         continue;
 

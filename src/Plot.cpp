@@ -28,8 +28,16 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "ChartObjectData.h"
+#include "ChartObjectType.h"
 #include "Symbol.h"
 #include "SettingString.h"
+#include "BuyDialog.h"
+#include "HLineDialog.h"
+#include "RetracementDialog.h"
+#include "SellDialog.h"
+#include "TextDialog.h"
+#include "TLineDialog.h"
+#include "VLineDialog.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
@@ -641,7 +649,36 @@ void Plot::chartObjectDialog ()
   if (_chartObjectDialog)
     return;
 
-  _chartObjectDialog = _selected->dialog(this);
+  QString type = _selected->settings()->get(ChartObjectData::_TYPE)->toString();
+  ChartObjectType cot;
+  switch ((ChartObjectType::Type) cot.stringToType(type))
+  {
+    case ChartObjectType::_BUY:
+      _chartObjectDialog = new BuyDialog(this, _selected->settings());
+      break;
+    case ChartObjectType::_HLINE:
+      _chartObjectDialog = new HLineDialog(this, _selected->settings());
+      break;
+    case ChartObjectType::_RETRACEMENT:
+      _chartObjectDialog = new RetracementDialog(this, _selected->settings());
+      break;
+    case ChartObjectType::_SELL:
+      _chartObjectDialog = new SellDialog(this, _selected->settings());
+      break;
+    case ChartObjectType::_TEXT:
+      _chartObjectDialog = new TextDialog(this, _selected->settings());
+      break;
+    case ChartObjectType::_TLINE:
+      _chartObjectDialog = new TLineDialog(this, _selected->settings());
+      break;
+    case ChartObjectType::_VLINE:
+      _chartObjectDialog = new VLineDialog(this, _selected->settings());
+      break;
+    default:
+      return;
+      break;
+  }
+
   connect(_chartObjectDialog, SIGNAL(accepted()), this, SLOT(chartObjectDialog2()));
   connect(_chartObjectDialog, SIGNAL(rejected()), this, SLOT(chartObjectDialog3()));
   _chartObjectDialog->show();

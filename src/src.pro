@@ -11,6 +11,7 @@ HEADERS += AddIndicator.h
 
 HEADERS += BarLengthButton.h
 HEADERS += BarSpaceButton.h
+HEADERS += BuyDialog.h
 
 HEADERS += Chart.h
 HEADERS += ChartLoad.h
@@ -50,6 +51,8 @@ HEADERS += GroupDelete.h
 HEADERS += GroupNew.h
 HEADERS += GroupPage.h
 
+HEADERS += HLineDialog.h
+
 HEADERS += IndicatorDataBase.h
 HEADERS += InfoPanel.h
 
@@ -64,6 +67,7 @@ HEADERS += Qtstalker.h
 
 HEADERS += RecentCharts.h
 HEADERS += RemoveIndicator.h
+HEADERS += RetracementDialog.h
 
 HEADERS += ScriptLaunchButton.h
 HEADERS += ScriptLaunchButtonDialog.h
@@ -71,9 +75,15 @@ HEADERS += ScriptPage.h
 HEADERS += ScriptRunDialog.h
 HEADERS += ScriptTimer.h
 HEADERS += ScriptTimerDialog.h
+HEADERS += SellDialog.h
 HEADERS += Setup.h
 HEADERS += SidePanel.h
 HEADERS += SymbolDelete.h
+
+HEADERS += TextDialog.h
+HEADERS += TLineDialog.h
+
+HEADERS += VLineDialog.h
 
 #sources
 
@@ -82,6 +92,7 @@ SOURCES += AddIndicator.cpp
 
 SOURCES += BarLengthButton.cpp
 SOURCES += BarSpaceButton.cpp
+SOURCES += BuyDialog.cpp
 
 SOURCES += Chart.cpp
 SOURCES += ChartLoad.cpp
@@ -121,6 +132,8 @@ SOURCES += GroupDelete.cpp
 SOURCES += GroupNew.cpp
 SOURCES += GroupPage.cpp
 
+SOURCES += HLineDialog.cpp
+
 SOURCES += IndicatorDataBase.cpp
 SOURCES += InfoPanel.cpp
 
@@ -137,6 +150,7 @@ SOURCES += Qtstalker.cpp
 
 SOURCES += RecentCharts.cpp
 SOURCES += RemoveIndicator.cpp
+SOURCES += RetracementDialog.cpp
 
 SOURCES += ScriptLaunchButton.cpp
 SOURCES += ScriptLaunchButtonDialog.cpp
@@ -144,10 +158,15 @@ SOURCES += ScriptPage.cpp
 SOURCES += ScriptRunDialog.cpp
 SOURCES += ScriptTimer.cpp
 SOURCES += ScriptTimerDialog.cpp
+SOURCES += SellDialog.cpp
 SOURCES += Setup.cpp
 SOURCES += SidePanel.cpp
 SOURCES += SymbolDelete.cpp
 
+SOURCES += TextDialog.cpp
+SOURCES += TLineDialog.cpp
+
+SOURCES += VLineDialog.cpp
 
 TARGET = qtstalker
 

@@ -29,6 +29,9 @@
 #include "SettingColor.h"
 #include "SettingDateTime.h"
 #include "SettingFactory.h"
+#include "LineEdit.h"
+#include "ColorButton.h"
+#include "FileButton.h"
 
 #include <QtDebug>
 
@@ -248,7 +251,6 @@ void DataDialog::done ()
   if (! _settings.count())
   {
     saveSettings();
-//  emit signalDone();
     accept();
     return;
   }
@@ -316,8 +318,6 @@ void DataDialog::done ()
   }
 
   saveSettings();
-
-//  emit signalDone();
 
   accept();
 }

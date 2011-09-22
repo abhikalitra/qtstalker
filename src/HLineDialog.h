@@ -19,19 +19,34 @@
  *  USA.
  */
 
-#ifndef CHART_OBJECT_VLINE_HPP
-#define CHART_OBJECT_VLINE_HPP
+#ifndef HLINE_DIALOG_HPP
+#define HLINE_DIALOG_HPP
 
-#include "ChartObject.h"
+#include <QTabWidget>
+#include <QDoubleSpinBox>
+#include <QSpinBox>
 
-class ChartObjectVLine : public ChartObject
+#include "ColorButton.h"
+#include "Dialog.h"
+#include "Data.h"
+
+class HLineDialog : public Dialog
 {
+  Q_OBJECT
+
   public:
-    ChartObjectVLine ();
-    void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
-    int info (Message &);
-    void move (QPoint);
-    int create ();
+    HLineDialog (QWidget *, Data *);
+    void createGUI ();
+
+  public slots:
+    void done ();
+
+  private:
+    Data *_settings;
+    QTabWidget *_tabs;
+    ColorButton *_color;
+    QDoubleSpinBox *_price;
+    QSpinBox *_z;
 };
 
 #endif

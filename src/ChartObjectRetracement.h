@@ -34,7 +34,6 @@ class ChartObjectRetracement : public ChartObject
     int create ();
     int highLow (int, int, double &, double &);
     void click (int, QPoint);
-    DataDialog * dialog (QWidget *);
 
   private:
     int _createFlag;
