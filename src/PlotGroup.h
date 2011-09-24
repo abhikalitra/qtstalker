@@ -43,6 +43,7 @@ class PlotGroup : public QSplitter
     Plot * plot (QString);
     QList<QString> plots ();
     void removePlot (QString);
+    QStringList frontTabs ();
 
   public slots:
     void loadSettings ();

@@ -30,8 +30,7 @@ class CommandBuy : public Command
 
   public:
     CommandBuy (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
 };
 
 #endif

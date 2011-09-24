@@ -103,3 +103,20 @@ void PlotGroup::saveSettings ()
   settings.setValue("plot_group_state", saveState());
   settings.sync();
 }
+
+QStringList PlotGroup::frontTabs ()
+{
+  QStringList l;
+  int loop = 0;
+  for (; loop < _tabs.count(); loop++)
+  {
+    QTabWidget *tw = _tabs.at(loop);
+    Plot *p = _plots.value(tw->tabText(tw->currentIndex()));
+    if (! p)
+      continue;
+
+    l << p->scriptFile();
+  }
+
+  return l;
+}

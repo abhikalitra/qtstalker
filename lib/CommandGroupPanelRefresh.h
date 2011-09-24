@@ -19,17 +19,17 @@
  *  USA.
  */
 
-#ifndef COMMAND_TEXT_HPP
-#define COMMAND_TEXT_HPP
+#ifndef COMMAND_GROUP_PANEL_REFRESH_HPP
+#define COMMAND_GROUP_PANEL_REFRESH_HPP
 
 #include "Command.h"
 
-class CommandText : public Command
+class CommandGroupPanelRefresh : public Command
 {
   Q_OBJECT
 
   public:
-    CommandText (QObject *);
+    CommandGroupPanelRefresh (QObject *);
     int runScript (Message *, Script *);
 };
 

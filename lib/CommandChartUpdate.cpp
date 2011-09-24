@@ -25,9 +25,11 @@
 #include "CurveData.h"
 #include "ChartObjectData.h"
 #include "SettingString.h"
+#include "SettingInteger.h"
 #include "DataFactory.h"
 
 #include <QtDebug>
+#include <QTime>
 #include <QHash>
 
 CommandChartUpdate::CommandChartUpdate (QObject *p) : Command (p)
@@ -71,58 +73,16 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
 
     if (dg->type() == DataFactory::_CURVE)
     {
-      // send dates to chart
       if (keys.at(loop) == date->toString())
-      {
-        // specify which chart to set
-        dg->set(CurveData::_CHART, new SettingString(name->toString()));
+        dateCurve(script, dg, name->toString());
+      else
+        curve(script, dg, name->toString());
 
-        IPCMessage ipcm(script->session(), _type, "CHART_DATE", script->file(), QString::number(dg->type()));
-        MessageSend ms(this);
-        ms.send(ipcm, dg->toString());
-        continue;
-      }
-
-      Setting *setting = dg->get(CurveData::_Z);
-      if (! setting)
-        continue;
-
-      if (setting->toInteger() < 0)
-        continue;
-
-      setting = dg->get(CurveData::_CHART);
-      if (! setting)
-        continue;
-
-      if (setting->toString() != name->toString())
-        continue;
-
-      IPCMessage ipcm(script->session(), _type, "CURVE", script->file(), QString::number(dg->type()));
-      MessageSend ms(this);
-      ms.send(ipcm, dg->toString());
       continue;
     }
 
     if (dg->type() == DataFactory::_CHART_OBJECT)
-    {
-      Setting *setting = dg->get(ChartObjectData::_Z);
-      if (! setting)
-        continue;
-
-      if (setting->toInteger() < 0)
-        continue;
-
-      setting = dg->get(ChartObjectData::_CHART);
-      if (! setting)
-        continue;
-
-      if (setting->toString() != name->toString())
-        continue;
-
-      IPCMessage ipcm(script->session(), _type, "CHART_OBJECT", script->file(), QString::number(dg->type()));
-      MessageSend ms(this);
-      ms.send(ipcm, dg->toString());
-    }
+      chartObject(script, dg, name->toString());
   }
 
   // send the update command
@@ -132,4 +92,57 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
   ms.send(ipcm, d.toString());
 
   return _OK;
+}
+
+void CommandChartUpdate::dateCurve (Script *script, Data *dg, QString name)
+{
+  dg->set(CurveData::_CHART, new SettingString(name));
+
+  IPCMessage ipcm(script->session(), _type, "CHART_DATE", script->file(), QString::number(dg->type()));
+  MessageSend ms(this);
+  ms.send(ipcm, dg->toString());
+  return;
+}
+
+void CommandChartUpdate::curve (Script *script, Data *dg, QString name)
+{
+  Setting *setting = dg->get(CurveData::_Z);
+  if (! setting)
+    return;
+
+  if (setting->toInteger() < 0)
+    return;
+
+  setting = dg->get(CurveData::_CHART);
+  if (! setting)
+    return;
+
+  if (setting->toString() != name)
+    return;
+
+  IPCMessage ipcm(script->session(), _type, "CURVE", script->file(), QString::number(dg->type()));
+  MessageSend ms(this);
+  ms.send(ipcm, dg->toString());
+  return;
+}
+
+void CommandChartUpdate::chartObject (Script *script, Data *dg, QString name)
+{
+  Setting *setting = dg->get(ChartObjectData::_Z);
+  if (! setting)
+    return;
+
+  if (setting->toInteger() < 0)
+    return;
+
+  setting = dg->get(ChartObjectData::_CHART);
+  if (! setting)
+    return;
+
+  if (setting->toString() != name)
+    return;
+
+  IPCMessage ipcm(script->session(), _type, "CHART_OBJECT", script->file(), QString::number(dg->type()));
+  MessageSend ms(this);
+  ms.send(ipcm, dg->toString());
 }

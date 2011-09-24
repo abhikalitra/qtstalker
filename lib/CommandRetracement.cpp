@@ -21,180 +21,194 @@
 
 #include "CommandRetracement.h"
 #include "ChartObjectData.h"
-#include "Script.h"
+#include "SettingColor.h"
+#include "SettingDouble.h"
+#include "SettingString.h"
+#include "SettingBool.h"
+#include "SettingInteger.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
+#include "SettingDateTime.h"
 
 #include <QtDebug>
-#include <QDateTime>
 
 CommandRetracement::CommandRetracement (QObject *p) : Command (p)
 {
   _type = "CHART_OBJECT_RETRACEMENT";
 }
 
-int CommandRetracement::runScript (Data *sg, Script *script)
+int CommandRetracement::runScript (Message *sg, Script *script)
 {
-  // verify DATE
-  QString s = sg->get("DATE").toString();
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
-  if (! dt.isValid())
+  // color
+  VerifyDataInput vdi;
+  QString s = sg->value("COLOR");
+  Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
+  if (! color)
   {
-    qDebug() << _type << "::runScript: invalid DATE" << s;
+    _message << "invalid COLOR " + s;
     return _ERROR;
   }
 
-  // verify DATE2
-  s = sg->get("DATE_2").toString();
-  QDateTime dt2 = QDateTime::fromString(s, Qt::ISODate);
-  if (! dt2.isValid())
+  // START_DATE
+  s = sg->value("START_DATE");
+  Setting *date = vdi.setting(SettingFactory::_DATETIME, script, s);
+  if (! date)
   {
-    qDebug() << _type << "::runScript: invalid DATE_2" << s;
+    _message << "invalid START_DATE " + s;
     return _ERROR;
   }
 
-  // verify COLOR
-  QString color = sg->get("COLOR").toString();
-  QColor c(color);
-  if (! c.isValid())
+  // END_DATE
+  s = sg->value("END_DATE");
+  Setting *date2 = vdi.setting(SettingFactory::_DATETIME, script, s);
+  if (! date2)
   {
-    qDebug() << _type << "::runScript: invalid COLOR" << color;
+    _message << "invalid END_DATE " + s;
     return _ERROR;
   }
 
-  // verify HIGH
-  QVariant v = sg->get("HIGH");
-  if (! v.canConvert(QVariant::Double))
+  // HIGH
+  s = sg->value("HIGH");
+  Setting *high = vdi.setting(SettingFactory::_DOUBLE, script, s);
+  if (! high)
   {
-    qDebug() << _type << "::runScript: invalid HIGH" << v.toString();
+    _message << "invalid HIGH " + s;
     return _ERROR;
   }
-  double high = v.toDouble();
 
-  // verify LOW
-  v = sg->get("LOW");
-  if (! v.canConvert(QVariant::Double))
+  // LOW
+  s = sg->value("LOW");
+  Setting *low = vdi.setting(SettingFactory::_DOUBLE, script, s);
+  if (! low)
   {
-    qDebug() << _type << "::runScript: invalid LOW" << v.toString();
+    _message << "invalid LOW " + s;
     return _ERROR;
   }
-  double low = v.toDouble();
 
-  // verify EXTEND
-  v = sg->get("EXTEND");
-  if (! v.canConvert(QVariant::Bool))
+  // LEVEL_1
+  Setting *level1 = 0;
+  s = sg->value("LEVEL_1");
+  if (! s.isEmpty())
   {
-    qDebug() << _type << "::runScript: invalid EXTEND" << v.toString();
-    return _ERROR;
+    level1 = vdi.setting(SettingFactory::_DOUBLE, script, s);
+    if (! level1)
+    {
+      _message << "invalid LEVEL_1 " + s;
+      return _ERROR;
+    }
   }
-  bool extend = v.toBool();
 
-  // verify Z
-  v = sg->get("Z");
-  if (! v.canConvert(QVariant::Int))
+  // LEVEL_2
+  Setting *level2 = 0;
+  s = sg->value("LEVEL_2");
+  if (! s.isEmpty())
   {
-    qDebug() << _type << "::runScript: invalid Z" << v.toString();
-    return _ERROR;
+    level2 = vdi.setting(SettingFactory::_DOUBLE, script, s);
+    if (! level2)
+    {
+      _message << "invalid LEVEL_2 " + s;
+      return _ERROR;
+    }
   }
-  int z = v.toInt();
 
-  // verify LINE_1
-  v = sg->get("LINE_1");
-  if (! v.canConvert(QVariant::Double))
+  // LEVEL_3
+  Setting *level3 = 0;
+  s = sg->value("LEVEL_3");
+  if (! s.isEmpty())
   {
-    qDebug() << _type << "::runScript: invalid LINE_1" << v.toString();
-    return _ERROR;
+    level3 = vdi.setting(SettingFactory::_DOUBLE, script, s);
+    if (! level3)
+    {
+      _message << "invalid LEVEL_3 " + s;
+      return _ERROR;
+    }
   }
-  double line1 = v.toDouble();
 
-  // verify LINE_2
-  v = sg->get("LINE_2");
-  if (! v.canConvert(QVariant::Double))
+  // LEVEL_4
+  Setting *level4 = 0;
+  s = sg->value("LEVEL_4");
+  if (! s.isEmpty())
   {
-    qDebug() << _type << "::runScript: invalid LINE_2" << v.toString();
-    return _ERROR;
+    level4 = vdi.setting(SettingFactory::_DOUBLE, script, s);
+    if (! level4)
+    {
+      _message << "invalid LEVEL_4 " + s;
+      return _ERROR;
+    }
   }
-  double line2 = v.toDouble();
 
-  // verify LINE_3
-  v = sg->get("LINE_3");
-  if (! v.canConvert(QVariant::Double))
+  // LEVEL_5
+  Setting *level5 = 0;
+  s = sg->value("LEVEL_5");
+  if (! s.isEmpty())
   {
-    qDebug() << _type << "::runScript: invalid LINE_3" << v.toString();
-    return _ERROR;
+    level5 = vdi.setting(SettingFactory::_DOUBLE, script, s);
+    if (! level5)
+    {
+      _message << "invalid LEVEL_5 " + s;
+      return _ERROR;
+    }
   }
-  double line3 = v.toDouble();
 
-  // verify LINE_4
-  v = sg->get("LINE_4");
-  if (! v.canConvert(QVariant::Double))
+  // LEVEL_6
+  Setting *level6 = 0;
+  s = sg->value("LEVEL_6");
+  if (! s.isEmpty())
   {
-    qDebug() << _type << "::runScript: invalid LINE_4" << v.toString();
-    return _ERROR;
+    level6 = vdi.setting(SettingFactory::_DOUBLE, script, s);
+    if (! level6)
+    {
+      _message << "invalid LEVEL_6 " + s;
+      return _ERROR;
+    }
   }
-  double line4 = v.toDouble();
-
-  // verify LINE_5
-  v = sg->get("LINE_5");
-  if (! v.canConvert(QVariant::Double))
-  {
-    qDebug() << _type << "::runScript: invalid LINE_5" << v.toString();
-    return _ERROR;
-  }
-  double line5 = v.toDouble();
-
-  // verify LINE_6
-  v = sg->get("LINE_6");
-  if (! v.canConvert(QVariant::Double))
-  {
-    qDebug() << _type << "::runScript: invalid LINE_6" << v.toString();
-    return _ERROR;
-  }
-  double line6 = v.toDouble();
 
   // CHART
-  QString chart = sg->get("CHART").toString();
+  s = sg->value("CHART");
+  Setting *chart = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! chart)
+  {
+    _message << "invalid CHART " + s;
+    return _ERROR;
+  }
+
+  // Z
+  s = sg->value("Z");
+  Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! z)
+  {
+    _message << "invalid Z " + s;
+    return _ERROR;
+  }
 
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_TYPE, QVariant(QString("Retracement")));
-  co->set(ChartObjectData::_DATE, QVariant(dt));
-  co->set(ChartObjectData::_DATE2, QVariant(dt2));
-  co->set(ChartObjectData::_COLOR, QVariant(color));
-  co->set(ChartObjectData::_HIGH, QVariant(high));
-  co->set(ChartObjectData::_LOW, QVariant(low));
-  co->set(ChartObjectData::_EXTEND, QVariant(extend));
-  co->set(ChartObjectData::_LINE1, QVariant(line1));
-  co->set(ChartObjectData::_LINE2, QVariant(line2));
-  co->set(ChartObjectData::_LINE3, QVariant(line3));
-  co->set(ChartObjectData::_LINE4, QVariant(line4));
-  co->set(ChartObjectData::_LINE5, QVariant(line5));
-  co->set(ChartObjectData::_LINE6, QVariant(line6));
-  co->set(ChartObjectData::_CHART, QVariant(chart));
-  co->set(ChartObjectData::_Z, QVariant(z));
-  co->set(ChartObjectData::_ID, QVariant(id));
-  co->set(ChartObjectData::_RO, QVariant(TRUE));
+  co->set(ChartObjectData::_COLOR, new SettingColor(color->toColor()));
+  co->set(ChartObjectData::_DATE, new SettingDateTime(date->toDateTime()));
+  co->set(ChartObjectData::_DATE_2, new SettingDateTime(date2->toDateTime()));
+  co->set(ChartObjectData::_HIGH, new SettingDouble(high->toDouble()));
+  co->set(ChartObjectData::_LOW, new SettingDouble(low->toDouble()));
+  co->set(ChartObjectData::_CHART, new SettingString(chart->toString()));
+  co->set(ChartObjectData::_Z, new SettingInteger(z->toInteger()));
+  co->set(ChartObjectData::_ID, new SettingInteger(id));
+  co->set(ChartObjectData::_RO, new SettingBool(TRUE));
+  co->set(ChartObjectData::_TYPE, new SettingString(QString("Retracement")));
+
+  if (level1)
+    co->set(ChartObjectData::_LEVEL_1, new SettingDouble(level1->toDouble()));
+  if (level2)
+    co->set(ChartObjectData::_LEVEL_2, new SettingDouble(level2->toDouble()));
+  if (level3)
+    co->set(ChartObjectData::_LEVEL_3, new SettingDouble(level3->toDouble()));
+  if (level4)
+    co->set(ChartObjectData::_LEVEL_4, new SettingDouble(level4->toDouble()));
+  if (level5)
+    co->set(ChartObjectData::_LEVEL_5, new SettingDouble(level5->toDouble()));
+  if (level6)
+    co->set(ChartObjectData::_LEVEL_6, new SettingDouble(level6->toDouble()));
 
   script->setData(QString::number(id), co);
 
   return _OK;
-}
-
-Data * CommandRetracement::settings ()
-{
-  Data *sg = new Data;
-  sg->set("DATE", QVariant(QDateTime::currentDateTime()));
-  sg->set("DATE_2", QVariant(QDateTime::currentDateTime()));
-  sg->set("CHART", QVariant(QString()));
-  sg->set("HIGH", QVariant(0));
-  sg->set("LOW", QVariant(0));
-  sg->set("COLOR", QVariant("red"));
-  sg->set("EXTEND", QVariant(FALSE));
-  sg->set("LINE_1", QVariant(0));
-  sg->set("LINE_2", QVariant(0));
-  sg->set("LINE_3", QVariant(0));
-  sg->set("LINE_4", QVariant(0));
-  sg->set("LINE_5", QVariant(0));
-  sg->set("LINE_6", QVariant(0));
-  sg->set("Z", QVariant(1));
-  return sg;
 }

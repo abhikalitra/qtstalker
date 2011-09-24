@@ -77,7 +77,7 @@ void TLineDialog::createGUI ()
 
   // end date
   dt = QDateTime::currentDateTime();
-  set = _settings->get(ChartObjectData::_DATE2);
+  set = _settings->get(ChartObjectData::_DATE_2);
   if (set)
     dt = set->toDateTime();
 
@@ -102,7 +102,7 @@ void TLineDialog::createGUI ()
 
   // price 2
   d = 0;
-  set = _settings->get(ChartObjectData::_PRICE2);
+  set = _settings->get(ChartObjectData::_PRICE_2);
   if (set)
     d = set->toDouble();
 
@@ -151,7 +151,7 @@ void TLineDialog::done ()
   if (set)
     set->set(_date->dateTime());
 
-  set = _settings->get(ChartObjectData::_DATE2);
+  set = _settings->get(ChartObjectData::_DATE_2);
   if (set)
     set->set(_date2->dateTime());
 
@@ -159,7 +159,7 @@ void TLineDialog::done ()
   if (set)
     set->set(_price->value());
 
-  set = _settings->get(ChartObjectData::_PRICE2);
+  set = _settings->get(ChartObjectData::_PRICE_2);
   if (set)
     set->set(_price2->value());
 

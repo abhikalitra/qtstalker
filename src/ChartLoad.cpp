@@ -82,8 +82,21 @@ int ChartLoad::run ()
   // run indicators
   IndicatorDataBase i;
   QStringList il = i.indicators();
+
+  // move displayed plots to the top of the list
+  // so they update first for user speed
+  QStringList ft = g_plotGroup->frontTabs();
   int loop = 0;
-  for (; loop < il.count(); loop++)
+  for (; loop < ft.count(); loop++)
+  {
+    int i = il.indexOf(ft.at(loop));
+    if (i == -1)
+      continue;
+
+    il.move(i, 0);
+  }
+
+  for (loop = 0; loop < il.count(); loop++)
   {
     QString command;
     if (i.indicator(il.at(loop), command))

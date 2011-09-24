@@ -19,17 +19,17 @@
  *  USA.
  */
 
-#ifndef COMMAND_TEXT_HPP
-#define COMMAND_TEXT_HPP
+#ifndef COMMAND_GROUP_SAVE_HPP
+#define COMMAND_GROUP_SAVE_HPP
 
 #include "Command.h"
 
-class CommandText : public Command
+class CommandGroupSave : public Command
 {
   Q_OBJECT
 
   public:
-    CommandText (QObject *);
+    CommandGroupSave (QObject *);
     int runScript (Message *, Script *);
 };
 

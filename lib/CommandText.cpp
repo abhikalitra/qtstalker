@@ -21,86 +21,93 @@
 
 #include "CommandText.h"
 #include "ChartObjectData.h"
-#include "Script.h"
+#include "SettingColor.h"
+#include "SettingDouble.h"
+#include "SettingString.h"
+#include "SettingBool.h"
+#include "SettingInteger.h"
+#include "VerifyDataInput.h"
+#include "SettingFactory.h"
+#include "SettingDateTime.h"
 
 #include <QtDebug>
-#include <QDateTime>
 
 CommandText::CommandText (QObject *p) : Command (p)
 {
   _type = "CHART_OBJECT_TEXT";
 }
 
-int CommandText::runScript (Data *sg, Script *script)
+int CommandText::runScript (Message *sg, Script *script)
 {
-  // verify DATE
-  QString s = sg->get("DATE").toString();
-  QDateTime dt = QDateTime::fromString(s, Qt::ISODate);
-  if (! dt.isValid())
+  // color
+  VerifyDataInput vdi;
+  QString s = sg->value("COLOR");
+  Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
+  if (! color)
   {
-    qDebug() << _type << "::runScript: invalid DATE" << s;
+    _message << "invalid COLOR " + s;
     return _ERROR;
   }
 
-  // verify COLOR
-  QString color = sg->get("COLOR").toString();
-  QColor c(color);
-  if (! c.isValid())
+  // DATE
+  s = sg->value("DATE");
+  Setting *date = vdi.setting(SettingFactory::_DATETIME, script, s);
+  if (! date)
   {
-    qDebug() << _type << "::runScript: invalid COLOR" << color;
+    _message << "invalid DATETIME " + s;
     return _ERROR;
   }
 
-  // verify PRICE
-  QVariant v = sg->get("PRICE");
-  if (! v.canConvert(QVariant::Double))
+  // PRICE
+  s = sg->value("PRICE");
+  Setting *price = vdi.setting(SettingFactory::_DOUBLE, script, s);
+  if (! price)
   {
-    qDebug() << _type << "::runScript: invalid PRICE" << v.toString();
+    _message << "invalid PRICE " + s;
     return _ERROR;
   }
-  double price = v.toDouble();
 
-  // verify TEXT
-  QString text = sg->get("TEXT").toString();
+  // TEXT
+  s = sg->value("TEXT");
+  Setting *text = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! text)
+  {
+    _message << "invalid TEXT " + s;
+    return _ERROR;
+  }
 
   // CHART
-  QString chart = sg->get("CHART").toString();
-
-  // verify Z
-  v = sg->get("Z");
-  if (! v.canConvert(QVariant::Int))
+  s = sg->value("CHART");
+  Setting *chart = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! chart)
   {
-    qDebug() << _type << "::runScript: invalid Z" << v.toString();
+    _message << "invalid CHART " + s;
     return _ERROR;
   }
-  int z = v.toInt();
+
+  // Z
+  s = sg->value("Z");
+  Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
+  if (! z)
+  {
+    _message << "invalid Z " + s;
+    return _ERROR;
+  }
 
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_TYPE, QVariant(QString("Text")));
-  co->set(ChartObjectData::_DATE, QVariant(dt));
-  co->set(ChartObjectData::_COLOR, QVariant(color));
-  co->set(ChartObjectData::_PRICE, QVariant(price));
-  co->set(ChartObjectData::_CHART, QVariant(chart));
-  co->set(ChartObjectData::_TEXT, QVariant(text));
-  co->set(ChartObjectData::_Z, QVariant(z));
-  co->set(ChartObjectData::_ID, QVariant(id));
-  co->set(ChartObjectData::_RO, QVariant(TRUE));
+  co->set(ChartObjectData::_COLOR, new SettingColor(color->toColor()));
+  co->set(ChartObjectData::_DATE, new SettingDateTime(date->toDateTime()));
+  co->set(ChartObjectData::_PRICE, new SettingDouble(price->toDouble()));
+  co->set(ChartObjectData::_TEXT, new SettingString(text->toString()));
+  co->set(ChartObjectData::_CHART, new SettingString(chart->toString()));
+  co->set(ChartObjectData::_Z, new SettingInteger(z->toInteger()));
+  co->set(ChartObjectData::_ID, new SettingInteger(id));
+  co->set(ChartObjectData::_RO, new SettingBool(TRUE));
+  co->set(ChartObjectData::_TYPE, new SettingString(QString("Text")));
 
   script->setData(QString::number(id), co);
 
   return _OK;
-}
-
-Data * CommandText::settings ()
-{
-  Data *sg = new Data;
-  sg->set("DATE", QVariant(QDateTime::currentDateTime()));
-  sg->set("CHART", QVariant(QString()));
-  sg->set("PRICE", QVariant(0));
-  sg->set("COLOR", QVariant("red"));
-  sg->set("TEXT", QVariant(QString("Text")));
-  sg->set("Z", QVariant(1));
-  return sg;
 }

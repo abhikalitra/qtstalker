@@ -54,6 +54,7 @@
 #include "CommandMessage.h"
 #include "Symbol.h"
 #include "ChartLoad.h"
+#include "DataFactory.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -262,6 +263,9 @@ QString QtstalkerApp::getWindowCaption ()
 void QtstalkerApp::chartUpdated ()
 {
   // we are here because something wants us to reload the chart with fresh bars
+  if (! g_currentSymbol->dataKeyCount())
+    return;
+
   QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE)->toString();
   if (symbol.isEmpty())
     return;
@@ -349,7 +353,7 @@ void QtstalkerApp::afterStartup ()
 
 void QtstalkerApp::messageSlot (QString m, QString d)
 {
-  qDebug() << "QtstalkerApp::messageSlot:" << m;
+//  qDebug() << "QtstalkerApp::messageSlot:" << m;
 //  qDebug() << "QtstalkerApp::messageSlot:" << d;
 
   IPCMessage ipcm;
@@ -359,17 +363,33 @@ void QtstalkerApp::messageSlot (QString m, QString d)
     return;
   }
 
-  if (ipcm.dataType() == "3")
-    qDebug() << "QtstalkerApp::messageSlot:" << d;
-
   // ignore message from another session
   if (ipcm.session() != g_session)
     return;
 
-  CommandMessage cm;
-  if (cm.message(ipcm, d))
+  DataFactory dfac;
+  Data *dg = dfac.data(ipcm.dataType());
+  if (! dg)
   {
-    qDebug() << "QtstalkerApp::messageSlot: CommandMessage error" << d;
+    qDebug() << "QtstalkerApp::messageSlot: invalid data type" << ipcm.dataType();
+    return;
+  }
+
+  if (! d.isEmpty())
+  {
+    if (dg->fromString(d))
+    {
+      qDebug() << "QtstalkerApp::messageSlot: invalid data" << d;
+      delete dg;
+      return;
+    }
+  }
+
+  CommandMessage cm;
+//  if (cm.message(ipcm, d))
+  if (cm.message(ipcm, dg))
+  {
+    qDebug() << "QtstalkerApp::messageSlot: CommandMessage error" << m;
     return;
   }
 }

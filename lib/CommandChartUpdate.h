@@ -31,6 +31,9 @@ class CommandChartUpdate : public Command
   public:
     CommandChartUpdate (QObject *);
     int runScript (Message *, Script *);
+    void dateCurve (Script *script, Data *dg, QString name);
+    void curve (Script *script, Data *dg, QString name);
+    void chartObject (Script *script, Data *dg, QString name);
 };
 
 #endif

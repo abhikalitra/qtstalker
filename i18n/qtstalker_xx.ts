@@ -175,24 +175,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>CommandFileDialog</name>
-    <message>
-        <source>Select File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select file(s)</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CommandSelectDialog</name>
-    <message>
-        <source>Select</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CommandYahooHistory</name>
     <message>
         <source>line</source>

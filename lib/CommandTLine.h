@@ -30,8 +30,7 @@ class CommandTLine : public Command
 
   public:
     CommandTLine (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
 };
 
 #endif

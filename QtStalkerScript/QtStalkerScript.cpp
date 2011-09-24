@@ -83,7 +83,7 @@ void QtStalkerScript::run ()
 
     _pro.waitForReadyRead(-1);
     QByteArray ba = _pro.readAllStandardOutput();
-    qDebug() << ba;
+//    qDebug() << ba;
     if (! ba.count())
       continue;
 

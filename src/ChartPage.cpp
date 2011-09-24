@@ -273,7 +273,15 @@ void ChartPage::refresh ()
 {
   updateList();
 
-  QString s = g_currentSymbol->get(Symbol::_EXCHANGE)->toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL)->toString();
+  Setting *exchange = g_currentSymbol->get(Symbol::_EXCHANGE);
+  if (! exchange)
+    return;
+
+  Setting *symbol = g_currentSymbol->get(Symbol::_SYMBOL);
+  if (! symbol)
+    return;
+
+  QString s = exchange->toString() + ":" + symbol->toString();
   if (s.isEmpty())
     return;
 

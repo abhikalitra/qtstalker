@@ -30,8 +30,7 @@ class CommandSell : public Command
 
   public:
     CommandSell (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
 };
 
 #endif

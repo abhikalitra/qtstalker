@@ -30,8 +30,7 @@ class CommandVLine : public Command
 
   public:
     CommandVLine (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
 };
 
 #endif

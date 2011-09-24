@@ -22,15 +22,17 @@
 #ifndef COMMAND_MESSAGE_HPP
 #define COMMAND_MESSAGE_HPP
 
-#include <QString>
+//#include <QString>
 
 #include "IPCMessage.h"
+#include "Data.h"
 
 class CommandMessage
 {
   public:
     CommandMessage ();
-    int message (IPCMessage, QString);
+//    int message (IPCMessage, QString);
+    int message (IPCMessage, Data *);
 };
 
 #endif

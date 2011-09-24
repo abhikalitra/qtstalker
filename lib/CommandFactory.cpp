@@ -30,7 +30,7 @@
 #include "CommandBETA.h"
 #include "CommandBOP.h"
 #include "CommandBreakout.h"
-//#include "CommandBuy.h"
+#include "CommandBuy.h"
 #include "CommandCandlePattern.h"
 #include "CommandCCI.h"
 #include "CommandChart.h"
@@ -42,11 +42,9 @@
 #include "CommandCORREL.h"
 #include "CommandCSV.h"
 #include "CommandDialog.h"
-//#include "CommandExchangeSearchDialog.h"
 #include "CommandFI.h"
-//#include "CommandFileDialog.h"
-//#include "CommandGroupPanelRefresh.h"
-//#include "CommandGroupSave.h"
+#include "CommandGroupPanelRefresh.h"
+#include "CommandGroupSave.h"
 #include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandLINEARREG.h"
@@ -64,16 +62,14 @@
 #include "CommandPlotOHLC.h"
 #include "CommandPlotLine.h"
 #include "CommandPlotHistogram.h"
-//#include "CommandRetracement.h"
+#include "CommandRetracement.h"
 #include "CommandROC.h"
 #include "CommandRSI.h"
 #include "CommandSAR.h"
 #include "CommandScriptDone.h"
 #include "CommandScriptStart.h"
-//#include "CommandSelectDialog.h"
-//#include "CommandSell.h"
+#include "CommandSell.h"
 #include "CommandSetting.h"
-//#include "CommandSettingGet.h"
 #include "CommandShift.h"
 #include "CommandSINE.h"
 #include "CommandSTDDEV.h"
@@ -81,13 +77,12 @@
 #include "CommandStochRSI.h"
 #include "CommandStochSlow.h"
 #include "CommandSZ.h"
-//#include "CommandSymbol.h"
+#include "CommandSymbol.h"
 #include "CommandSymbolCurrent.h"
-//#include "CommandSymbolDialog.h"
 #include "CommandT3.h"
-//#include "CommandText.h"
+#include "CommandText.h"
 #include "CommandTHERM.h"
-//#include "CommandTLine.h"
+#include "CommandTLine.h"
 #include "CommandTRIX.h"
 #include "CommandTypicalPrice.h"
 #include "CommandULTOSC.h"
@@ -95,7 +90,7 @@
 #include "CommandVBP.h"
 #include "CommandVFI.h"
 #include "CommandVIDYA.h"
-//#include "CommandVLine.h"
+#include "CommandVLine.h"
 #include "CommandWeightedClose.h"
 #include "CommandWILLR.h"
 #include "CommandYahooHistory.h"
@@ -112,8 +107,7 @@ CommandFactory::CommandFactory ()
   _types << "CHART_PANEL_REFRESH" << "CHART_UPDATE";
   _types << "CMO" << "COLOR" << "COMPARE" << "CORREL" << "CSV";
   _types << "DIALOG";
-  _types << "EXCHANGE_SEARCH_DIALOG";
-  _types << "FI" << "FILE_DIALOG";
+  _types << "FI";
   _types << "GROUP_PANEL_REFRESH" << "GROUP_SAVE";
   _types << "HT" << "HT_PHASOR" << "HT_SINE";
   _types << "LINEARREG";
@@ -121,10 +115,10 @@ CommandFactory::CommandFactory ()
   _types << "NEW_HIGH_LOW" << "NORMALIZE";
   _types << "PO" << "PLOT_LINE" << "PLOT_HISTOGRAM" << "PLOT_OHLC";
   _types << "ROC" << "RSI";
-  _types << "SAR" << "SCRIPT_DONE" << "SCRIPT_START" << "SELECT_DIALOG" << "SETTING" << "SETTING_GET";
+  _types << "SAR" << "SCRIPT_DONE" << "SCRIPT_START" << "SETTING";
   _types << "SHIFT" << "STDDEV";
   _types << "STOCH_FAST" << "STOCH_RSI" << "STOCH_SLOW" << "SZ";
-  _types << "SYMBOL" << "SYMBOL_CURRENT" << "SYMBOL_DIALOG";
+  _types << "SYMBOL" << "SYMBOL_CURRENT";
   _types << "T3" << "THERM" << "TRIX" << "TYPICAL_PRICE";
   _types << "ULTOSC";
   _types << "VAR" << "VBP" << "VFI" << "VIDYA";
@@ -178,25 +172,25 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandChart(p);
       break;
     case _CHART_OBJECT_BUY:
-//      c = new CommandBuy(p);
+      c = new CommandBuy(p);
       break;
     case _CHART_OBJECT_HLINE:
       c = new CommandHLine(p);
       break;
     case _CHART_OBJECT_RETRACEMENT:
-//      c = new CommandRetracement(p);
+      c = new CommandRetracement(p);
       break;
     case _CHART_OBJECT_SELL:
-//      c = new CommandSell(p);
+      c = new CommandSell(p);
       break;
     case _CHART_OBJECT_TEXT:
-//      c = new CommandText(p);
+      c = new CommandText(p);
       break;
     case _CHART_OBJECT_TLINE:
-//      c = new CommandTLine(p);
+      c = new CommandTLine(p);
       break;
     case _CHART_OBJECT_VLINE:
-//      c = new CommandVLine(p);
+      c = new CommandVLine(p);
       break;
     case _CHART_PANEL_REFRESH:
       c = new CommandChartPanelRefresh(p);
@@ -222,20 +216,14 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _DIALOG:
       c = new CommandDialog(p);
       break;
-    case _EXCHANGE_SEARCH_DIALOG:
-//      c = new CommandExchangeSearchDialog(p);
-      break;
     case _FI:
       c = new CommandFI(p);
       break;
-    case _FILE_DIALOG:
-//      c = new CommandFileDialog(p);
-      break;
     case _GROUP_PANEL_REFRESH:
-//      c = new CommandGroupPanelRefresh(p);
+      c = new CommandGroupPanelRefresh(p);
       break;
     case _GROUP_SAVE:
-//      c = new CommandGroupSave(p);
+      c = new CommandGroupSave(p);
       break;
     case _HT:
       c = new CommandHT(p);
@@ -303,14 +291,8 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _SCRIPT_START:
       c = new CommandScriptStart(p);
       break;
-    case _SELECT_DIALOG:
-//      c = new CommandSelectDialog(p);
-      break;
     case _SETTING:
       c = new CommandSetting(p);
-      break;
-    case _SETTING_GET:
-//      c = new CommandSettingGet(p);
       break;
     case _SHIFT:
       c = new CommandShift(p);
@@ -331,13 +313,10 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandSZ(p);
       break;
     case _SYMBOL:
-//      c = new CommandSymbol(p);
+      c = new CommandSymbol(p);
       break;
     case _SYMBOL_CURRENT:
       c = new CommandSymbolCurrent(p);
-      break;
-    case _SYMBOL_DIALOG:
-//      c = new CommandSymbolDialog(p);
       break;
     case _T3:
       c = new CommandT3(p);

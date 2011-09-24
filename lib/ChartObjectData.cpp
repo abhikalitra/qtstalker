@@ -50,15 +50,15 @@ int ChartObjectData::highLow (double &h, double &l)
     switch ((Parm) k)
     {
       case _PRICE:
-      case _PRICE2:
+      case _PRICE_2:
       case _HIGH:
       case _LOW:
-      case _LINE1:
-      case _LINE2:
-      case _LINE3:
-      case _LINE4:
-      case _LINE5:
-      case _LINE6:
+      case _LEVEL_1:
+      case _LEVEL_2:
+      case _LEVEL_3:
+      case _LEVEL_4:
+      case _LEVEL_5:
+      case _LEVEL_6:
       {
         double t = it.value()->toDouble();
 

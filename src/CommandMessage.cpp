@@ -22,7 +22,7 @@
 #include "CommandMessage.h"
 #include "Globals.h"
 #include "CommandFactory.h"
-#include "DataFactory.h"
+//#include "DataFactory.h"
 #include "Chart.h"
 #include "ChartUpdate.h"
 
@@ -32,8 +32,10 @@ CommandMessage::CommandMessage ()
 {
 }
 
-int CommandMessage::message (IPCMessage m, QString d)
+//int CommandMessage::message (IPCMessage m, QString d)
+int CommandMessage::message (IPCMessage m, Data *dg)
 {
+/*
   DataFactory dfac;
   Data *dg = dfac.data(m.dataType());
   if (! dg)
@@ -51,6 +53,7 @@ int CommandMessage::message (IPCMessage m, QString d)
       return 1;
     }
   }
+*/
 
   CommandFactory fac;
 

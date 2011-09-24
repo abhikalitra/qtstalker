@@ -30,6 +30,10 @@ class ChartUpdate
   public:
     ChartUpdate ();
     int run (IPCMessage, Data *);
+    int dateCurve (Data *);
+    int curve (Data *);
+    int chartObject (Data *);
+    int update (Data *);
 };
 
 #endif

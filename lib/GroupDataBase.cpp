@@ -64,7 +64,7 @@ int GroupDataBase::load (QString name, QStringList &group)
   return 0;
 }
 
-int GroupDataBase::save (QString name, QStringList &group)
+int GroupDataBase::save (QString name, QStringList group)
 {
   if (name.isEmpty())
     return 1;

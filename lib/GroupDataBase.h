@@ -34,7 +34,7 @@ class GroupDataBase : public DataBase
     GroupDataBase ();
     void init ();
     int load (QString name, QStringList &items);
-    int save (QString name, QStringList &items);
+    int save (QString name, QStringList items);
     int names (QStringList &);
     int remove (QStringList &);
 };

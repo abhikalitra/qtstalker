@@ -19,18 +19,25 @@
  *  USA.
  */
 
-#ifndef COMMAND_TEXT_HPP
-#define COMMAND_TEXT_HPP
+#include "CommandGroupPanelRefresh.h"
+#include "IPCMessage.h"
+#include "MessageSend.h"
 
-#include "Command.h"
+#include <QtDebug>
 
-class CommandText : public Command
+CommandGroupPanelRefresh::CommandGroupPanelRefresh (QObject *p) : Command (p)
 {
-  Q_OBJECT
+  _type = "GROUP_PANEL_REFRESH";
+}
 
-  public:
-    CommandText (QObject *);
-    int runScript (Message *, Script *);
-};
+int CommandGroupPanelRefresh::runScript (Message *, Script *script)
+{
+  Data d;
 
-#endif
+  IPCMessage ipcm(script->session(), _type, "*", script->file(), QString::number(d.type()));
+
+  MessageSend ms(this);
+  ms.send(ipcm, d.toString());
+
+  return _OK;
+}
