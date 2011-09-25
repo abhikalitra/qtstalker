@@ -43,7 +43,7 @@ class DataDialog : public Dialog
     DataDialog (QWidget *);
     void createGUI ();
     void set (Data *);
-    void addTab (int pos, QString label);
+    void addTab (int pos);
     int setText (int tab, QString key, QString text, QString tt);
     int setColor (int tab, QString key, QColor c, QString tt);
     int setInteger (int tab, QString key, int v, int h, int l, QString tt);
@@ -52,6 +52,7 @@ class DataDialog : public Dialog
     int setList (int tab, QString key, QString v, QStringList l, QString tt);
     int setDateTime (int tab, QString key, QDateTime v, QString tt);
     int setFile (int tab, QString key, QStringList v, QString tt);
+    void setTabTitle (int pos, QString);
 
   public slots:
     void done ();

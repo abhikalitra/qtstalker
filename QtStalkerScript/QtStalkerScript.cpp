@@ -51,9 +51,9 @@ QtStalkerScript::QtStalkerScript (QString session, QString command, QString file
   // will terminate.
   // we create a hidden window and keep it for the remainder of the
   // script.
-  QWidget *w = new QWidget(0, Qt::WindowStaysOnBottomHint | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
-  w->setFixedSize(0, 0);
-  w->show();
+  _parent = new QWidget(0, Qt::WindowStaysOnBottomHint | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
+  _parent->setFixedSize(0, 0);
+  _parent->show();
 
   QTimer::singleShot(1, this, SLOT(run()));
 }
@@ -76,10 +76,10 @@ void QtStalkerScript::run ()
 
   CommandFactory fac;
 
-  while (1)
+  while (_pro.state() == QProcess::Running)
   {
-    if (_pro.state() == QProcess::NotRunning)
-      break;
+//    if (_pro.state() == QProcess::NotRunning)
+//      break;
 
     _pro.waitForReadyRead(-1);
     QByteArray ba = _pro.readAllStandardOutput();
@@ -107,6 +107,8 @@ void QtStalkerScript::run ()
       _pro.kill();
       return;
     }
+
+    com->setWidgetParent(_parent);
 
     s = "OK\n";
     if (com->runScript(&tsg, _script))

@@ -20,7 +20,6 @@
  */
 
 #include "CommandYahooHistory.h"
-#include "DataDialog.h"
 #include "VerifyDataInput.h"
 #include "SettingFactory.h"
 

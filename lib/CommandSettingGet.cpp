@@ -19,46 +19,41 @@
  *  USA.
  */
 
-#ifndef COMMAND_HPP
-#define COMMAND_HPP
+#include "CommandSettingGet.h"
+#include "DataSetting.h"
 
-#include <QObject>
-#include <QStringList>
-#include <QWidget>
+#include <QtDebug>
 
-#include "Message.h"
-#include "Script.h"
-#include "Setting.h"
-#include "Data.h"
-
-class Command : public QObject
+CommandSettingGet::CommandSettingGet (QObject *p) : Command (p)
 {
-  Q_OBJECT
+  _type = "SETTING_GET";
+}
 
-  signals:
-    void signalMessage(QString);
+int CommandSettingGet::runScript (Message *sg, Script *script)
+{
+  // verify KEY
+  QString key = sg->value("KEY");
+  if (key.isEmpty())
+  {
+    _message << "invalid KEY";
+    return _ERROR;
+  }
 
-  public:
-    enum ReturnCode
-    {
-      _OK,
-      _ERROR
-    };
+  Data *d = script->data(key);
+  if (! d)
+  {
+    _message << "invalid KEY " + key;
+    return _ERROR;
+  }
 
-    Command (QObject *);
-    virtual int request (Message *, Message *);
-    virtual int runScript (Message *, Script *);
+  Setting *set = d->get(DataSetting::_VALUE);
+  if (! set)
+  {
+    _message << "invalid KEY " + key;
+    return _ERROR;
+  }
 
-    QString type ();
-    QString returnString ();
-    QString message ();
-    void setWidgetParent (QWidget *);
+  _returnString = set->toString();
 
-  protected:
-    QString _type;
-    QString _returnString;
-    QStringList _message;
-    QWidget *_widgetParent;
-};
-
-#endif
+  return _OK;
+}

@@ -34,8 +34,8 @@ CommandDialog::CommandDialog (QObject *p) : Command (p)
 
 int CommandDialog::runScript (Message *sg, Script *script)
 {
-  DataDialog dialog(0);
-  dialog.addTab(0, tr("Settings"));
+  DataDialog dialog(_widgetParent);
+//  dialog.addTab(0, tr("Settings"));
 
   // verify TITLE
   QStringList l;
@@ -43,7 +43,7 @@ int CommandDialog::runScript (Message *sg, Script *script)
   dialog.setWindowTitle(l.join(" "));
 
   int loop = 0;
-  for (; loop < 10; loop++)
+  for (; loop < 20; loop++)
   {
     // get DATA_SETTING
     QString s = "SETTING_" + QString::number(loop);
@@ -59,6 +59,16 @@ int CommandDialog::runScript (Message *sg, Script *script)
     }
 
     dialog.set(d);
+  }
+
+  for (loop = 0; loop < 5; loop++)
+  {
+    QString s = "TAB_TITLE_" + QString::number(loop);
+    QString s2 = sg->value(s);
+    if (s2.isEmpty())
+      continue;
+
+    dialog.setTabTitle(loop, s2);
   }
 
   int rc = dialog.exec();

@@ -70,6 +70,7 @@
 #include "CommandScriptStart.h"
 #include "CommandSell.h"
 #include "CommandSetting.h"
+#include "CommandSettingGet.h"
 #include "CommandShift.h"
 #include "CommandSINE.h"
 #include "CommandSTDDEV.h"
@@ -115,7 +116,7 @@ CommandFactory::CommandFactory ()
   _types << "NEW_HIGH_LOW" << "NORMALIZE";
   _types << "PO" << "PLOT_LINE" << "PLOT_HISTOGRAM" << "PLOT_OHLC";
   _types << "ROC" << "RSI";
-  _types << "SAR" << "SCRIPT_DONE" << "SCRIPT_START" << "SETTING";
+  _types << "SAR" << "SCRIPT_DONE" << "SCRIPT_START" << "SETTING" << "SETTING_GET";
   _types << "SHIFT" << "STDDEV";
   _types << "STOCH_FAST" << "STOCH_RSI" << "STOCH_SLOW" << "SZ";
   _types << "SYMBOL" << "SYMBOL_CURRENT";
@@ -293,6 +294,9 @@ Command * CommandFactory::command (QObject *p, QString type)
       break;
     case _SETTING:
       c = new CommandSetting(p);
+      break;
+    case _SETTING_GET:
+      c = new CommandSettingGet(p);
       break;
     case _SHIFT:
       c = new CommandShift(p);

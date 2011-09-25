@@ -168,9 +168,13 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>CommandDialog</name>
+    <name>CommandFileDialog</name>
     <message>
-        <source>Settings</source>
+        <source>Select File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select file(s)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

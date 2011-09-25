@@ -85,6 +85,7 @@ class CommandFactory
       _SCRIPT_DONE,
       _SCRIPT_START,
       _SETTING,
+      _SETTING_GET,
       _SHIFT,
       _STDDEV,
       _STOCH_FAST,

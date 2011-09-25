@@ -19,46 +19,18 @@
  *  USA.
  */
 
-#ifndef COMMAND_HPP
-#define COMMAND_HPP
+#ifndef COMMAND_SETTING_GET_HPP
+#define COMMAND_SETTING_GET_HPP
 
-#include <QObject>
-#include <QStringList>
-#include <QWidget>
+#include "Command.h"
 
-#include "Message.h"
-#include "Script.h"
-#include "Setting.h"
-#include "Data.h"
-
-class Command : public QObject
+class CommandSettingGet : public Command
 {
   Q_OBJECT
 
-  signals:
-    void signalMessage(QString);
-
   public:
-    enum ReturnCode
-    {
-      _OK,
-      _ERROR
-    };
-
-    Command (QObject *);
-    virtual int request (Message *, Message *);
-    virtual int runScript (Message *, Script *);
-
-    QString type ();
-    QString returnString ();
-    QString message ();
-    void setWidgetParent (QWidget *);
-
-  protected:
-    QString _type;
-    QString _returnString;
-    QStringList _message;
-    QWidget *_widgetParent;
+    CommandSettingGet (QObject *);
+    int runScript (Message *, Script *);
 };
 
 #endif

@@ -30,8 +30,7 @@ class CommandFileDialog : public Command
 
   public:
     CommandFileDialog (QObject *);
-    int runScript (Data *, Script *);
-    Data * settings ();
+    int runScript (Message *, Script *);
 };
 
 #endif

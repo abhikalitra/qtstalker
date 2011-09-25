@@ -20,6 +20,7 @@
  */
 
 #include "PlotInfo.h"
+#include "Strip.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -72,12 +73,16 @@ void PlotInfo::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap &, cons
   int x = 5;
   int y = fm.height();
 
+  Strip strip;
   int loop = 0;
   for (; loop < _textList.count(); loop++)
   {
     p->setPen(_colorList.at(loop));
 
-    QString s = _textList.at(loop) + "=" + QString::number(_valList.at(loop));
+    QString ts;
+    strip.strip(_valList.at(loop), 4, ts);
+
+    QString s = _textList.at(loop) + "=" + ts;
     p->drawText(x, y, s);
 
     x += fm.width(s, -1) + 5;

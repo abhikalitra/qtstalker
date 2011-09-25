@@ -28,10 +28,9 @@
 CommandFileDialog::CommandFileDialog (QObject *p) : Command (p)
 {
   _type = "FILE_DIALOG";
-  _isDialog = 1;
 }
 
-int CommandFileDialog::runScript (Data *sg, Script *script)
+int CommandFileDialog::runScript (Message *sg, Script *script)
 {
   QStringList l;
   l << "QtStalker" + script->session() + ":" << tr("Select File");
@@ -44,14 +43,7 @@ int CommandFileDialog::runScript (Data *sg, Script *script)
   if (! files.count())
     return _ERROR;
 
-  sg->set("FILES", QVariant(files));
+  sg->set("FILE_DIALOG", new SettingList(files));
 
   return _OK;
-}
-
-Data * CommandFileDialog::settings ()
-{
-  Data *sg = new Data;
-  sg->set("FILES", QVariant(QStringList()));
-  return sg;
 }

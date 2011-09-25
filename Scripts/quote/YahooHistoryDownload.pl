@@ -60,6 +60,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # we add the above settings to the dialog to create the yahoo dialog
 $command = "COMMAND=DIALOG;
             TITLE=Yahoo Quotes Download;
+            TAB_TITLE_0=Settings;
             SETTING_0=$dateStartKey;
             SETTING_1=$dateEndKey;
             SETTING_2=$symbolFileKey;
@@ -110,6 +111,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # show the CSV dialog
 $command = "COMMAND=DIALOG;
             TITLE=CSV Settings;
+            TAB_TITLE_0=Settings;
             SETTING_0=$csvFileKey;
             SETTING_1=$formatKey;
             SETTING_2=$dateFormatKey;

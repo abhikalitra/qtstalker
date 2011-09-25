@@ -20,7 +20,6 @@
  */
 
 #include "Plot.h"
-#include "Strip.h"
 #include "Globals.h"
 #include "ChartObjectDataBase.h"
 #include "ConfirmDialog.h"

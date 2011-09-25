@@ -51,7 +51,7 @@ void DataDialog::createGUI ()
   _message->hide();
 }
 
-void DataDialog::addTab (int pos, QString label)
+void DataDialog::addTab (int pos)
 {
   QFormLayout *form = _formList.value(pos);
   if (form)
@@ -64,7 +64,7 @@ void DataDialog::addTab (int pos, QString label)
   w->setLayout(form);
   _formList.insert(pos, form);
 
-  _tabs->insertTab(pos, w, label);
+  _tabs->insertTab(pos, w, QString());
 }
 
 void DataDialog::set (Data *d)
@@ -126,7 +126,10 @@ int DataDialog::setText (int tab, QString key, QString text, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
-    return 1;
+  {
+    addTab(tab);
+    form = _formList.value(tab);
+  }
 
   LineEdit *w = new LineEdit(0);
   w->setText(text);
@@ -141,7 +144,10 @@ int DataDialog::setColor (int tab, QString key, QColor c, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
-    return 1;
+  {
+    addTab(tab);
+    form = _formList.value(tab);
+  }
 
   ColorButton *w = new ColorButton(0, c);
   w->setToolTip(tt);
@@ -155,7 +161,10 @@ int DataDialog::setInteger (int tab, QString key, int v, int h, int l, QString t
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
-    return 1;
+  {
+    addTab(tab);
+    form = _formList.value(tab);
+  }
 
   QSpinBox *w = new QSpinBox;
   w->setToolTip(tt);
@@ -171,7 +180,10 @@ int DataDialog::setDouble (int tab, QString key, double v, double h, double l, Q
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
-    return 1;
+  {
+    addTab(tab);
+    form = _formList.value(tab);
+  }
 
   QDoubleSpinBox *w = new QDoubleSpinBox;
   w->setToolTip(tt);
@@ -187,7 +199,10 @@ int DataDialog::setBool (int tab, QString key, bool v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
-    return 1;
+  {
+    addTab(tab);
+    form = _formList.value(tab);
+  }
 
   QCheckBox *w = new QCheckBox;
   w->setChecked(v);
@@ -202,7 +217,10 @@ int DataDialog::setList (int tab, QString key, QString v, QStringList l, QString
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
-    return 1;
+  {
+    addTab(tab);
+    form = _formList.value(tab);
+  }
 
   QComboBox *w = new QComboBox;
   w->setToolTip(tt);
@@ -218,7 +236,10 @@ int DataDialog::setDateTime (int tab, QString key, QDateTime v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
-    return 1;
+  {
+    addTab(tab);
+    form = _formList.value(tab);
+  }
 
   QDateTimeEdit *w = new QDateTimeEdit;
   w->setToolTip(tt);
@@ -235,7 +256,10 @@ int DataDialog::setFile (int tab, QString key, QStringList v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
-    return 1;
+  {
+    addTab(tab);
+    form = _formList.value(tab);
+  }
 
   FileButton *w = new FileButton(0);
   w->setFiles(v);
@@ -320,4 +344,9 @@ void DataDialog::done ()
   saveSettings();
 
   accept();
+}
+
+void DataDialog::setTabTitle (int pos, QString label)
+{
+  _tabs->setTabText(pos, label);
 }

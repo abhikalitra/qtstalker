@@ -23,6 +23,7 @@
 
 Command::Command (QObject *p) : QObject (p)
 {
+  _widgetParent = 0;
 }
 
 int Command::runScript (Message *, Script *)
@@ -48,4 +49,9 @@ QString Command::returnString ()
 QString Command::message ()
 {
   return _message.join("\n");
+}
+
+void Command::setWidgetParent (QWidget *d)
+{
+  _widgetParent = d;
 }
