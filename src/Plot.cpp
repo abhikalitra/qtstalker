@@ -117,6 +117,9 @@ Plot::Plot (QString name, QWidget *mw) : QwtPlot (mw)
 
 //  grabGesture(Qt::TapAndHoldGesture);
 //  grabGesture(Qt::SwipeGesture);
+
+  _plotInfo = new PlotInfo;
+  _plotInfo->attach(this);
 }
 
 Plot::~Plot ()
@@ -314,6 +317,9 @@ void Plot::setYPoints ()
 {
   _plotScaleDraw->clearPoints();
 
+  _plotInfo->clearData();
+  _plotInfo->setName(_name);
+
   QHashIterator<QString, Curve *> it(_curves);
   while (it.hasNext())
   {
@@ -346,6 +352,7 @@ void Plot::setYPoints ()
       continue;
 
     _plotScaleDraw->addPoint(color, val);
+    _plotInfo->setData(it.key(), color, val);
   }
 }
 

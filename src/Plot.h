@@ -42,6 +42,7 @@
 #include "PlotMenu.h"
 #include "ChartObject.h"
 #include "Dialog.h"
+#include "PlotInfo.h"
 
 class Plot : public QwtPlot
 {
@@ -125,6 +126,7 @@ class Plot : public QwtPlot
     QString _scriptFile;
     int _row;
     int _col;
+    PlotInfo *_plotInfo;
 };
 
 #endif
