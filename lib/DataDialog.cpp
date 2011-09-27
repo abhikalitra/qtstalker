@@ -131,7 +131,7 @@ int DataDialog::setText (int tab, QString key, QString text, QString tt)
     form = _formList.value(tab);
   }
 
-  LineEdit *w = new LineEdit(0);
+  LineEdit *w = new LineEdit(this);
   w->setText(text);
   w->setToolTip(tt);
   form->addRow(key, w);
@@ -149,7 +149,7 @@ int DataDialog::setColor (int tab, QString key, QColor c, QString tt)
     form = _formList.value(tab);
   }
 
-  ColorButton *w = new ColorButton(0, c);
+  ColorButton *w = new ColorButton(this, c);
   w->setToolTip(tt);
   form->addRow(key, w);
   _widgets.insert(key, (void *) w);
@@ -261,7 +261,7 @@ int DataDialog::setFile (int tab, QString key, QStringList v, QString tt)
     form = _formList.value(tab);
   }
 
-  FileButton *w = new FileButton(0);
+  FileButton *w = new FileButton(this);
   w->setFiles(v);
   w->setToolTip(tt);
   form->addRow(key, w);

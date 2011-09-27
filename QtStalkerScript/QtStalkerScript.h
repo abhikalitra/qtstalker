@@ -49,7 +49,7 @@ class QtStalkerScript : public QObject
   private:
     Script *_script;
     QStringList _messages;
-    QProcess _pro;
+    QProcess *_pro;
     QWidget *_parent;
 };
 

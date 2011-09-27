@@ -42,9 +42,10 @@ QtStalkerScript::QtStalkerScript (QString session, QString command, QString file
   _script->setCommand(command);
   _script->setName(fi.baseName());
 
-  connect(&_pro, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(scriptFinished(int, QProcess::ExitStatus)));
-  connect(&_pro, SIGNAL(error(QProcess::ProcessError)), this, SLOT(scriptError(QProcess::ProcessError)));
-  connect(&_pro, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+  _pro = new QProcess(this);
+  connect(_pro, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(scriptFinished(int, QProcess::ExitStatus)));
+  connect(_pro, SIGNAL(error(QProcess::ProcessError)), this, SLOT(scriptError(QProcess::ProcessError)));
+  connect(_pro, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
 
   // we need to create the parent gui thread and keep it running
   // or else after the first dialog is deleted, the qt gui thread
@@ -60,14 +61,15 @@ QtStalkerScript::QtStalkerScript (QString session, QString command, QString file
 
 QtStalkerScript::~QtStalkerScript ()
 {
-  _pro.kill();
+  _pro->terminate();
+  _pro->waitForFinished(3000);
 }
 
 void QtStalkerScript::run ()
 {
   QString s = _script->command() + " " + _script->file();
-  _pro.start(s);
-  if (! _pro.waitForStarted())
+  _pro->start(s);
+  if (! _pro->waitForStarted())
   {
     message("QtStalkerScript::run", "process not started");
     scriptFinished(0, QProcess::NormalExit);
@@ -76,13 +78,10 @@ void QtStalkerScript::run ()
 
   CommandFactory fac;
 
-  while (_pro.state() == QProcess::Running)
+  while (_pro->state() == QProcess::Running)
   {
-//    if (_pro.state() == QProcess::NotRunning)
-//      break;
-
-    _pro.waitForReadyRead(-1);
-    QByteArray ba = _pro.readAllStandardOutput();
+    _pro->waitForReadyRead(-1);
+    QByteArray ba = _pro->readAllStandardOutput();
 //    qDebug() << ba;
     if (! ba.count())
       continue;
@@ -100,11 +99,11 @@ void QtStalkerScript::run ()
       tsg.insert(tl.at(0).trimmed(), tl.at(1).trimmed());
     }
 
-    Command *com = fac.command(this, tsg.value("COMMAND"));
+    Command *com = fac.command(_parent, tsg.value("COMMAND"));
     if (! com)
     {
       message("QtStalkerScript::run", QString("command not found " + tsg.value("COMMAND")));
-      _pro.kill();
+      _pro->kill();
       return;
     }
 
@@ -126,8 +125,8 @@ void QtStalkerScript::run ()
     // deal with it
     ba.clear();
     ba.append(s);
-    _pro.write(ba);
-    _pro.waitForBytesWritten(-1);
+    _pro->write(ba);
+    _pro->waitForBytesWritten(-1);
   }
 }
 
@@ -148,14 +147,14 @@ void QtStalkerScript::scriptFinished (int, QProcess::ExitStatus)
     QStringList wt;
     wt << "QtStalkerScript(" + _script->session() + ")" << _script->name();
 
-    MessageDialog dialog(0);
+    MessageDialog dialog(_parent);
     dialog.setWindowTitle(wt.join(" "));
     dialog.setMessage(_messages.join("\n"));
     dialog.exec();
   }
 
   CommandFactory fac;
-  Command *com = fac.command(this, "SCRIPT_DONE");
+  Command *com = fac.command(_parent, "SCRIPT_DONE");
   if (com)
   {
     Message sg;
@@ -179,10 +178,10 @@ qDebug() << l.join(" ");
 void QtStalkerScript::scriptError (QProcess::ProcessError d)
 {
   message("QtStalkerScript::scriptError", QString::number(d));
-  _pro.kill();
+  _pro->kill();
 }
 
 void QtStalkerScript::readFromStderr ()
 {
-  qDebug() << "QtStalkerScript::readFromStderr:" << _script->name() + ": " + _pro.readAllStandardError();
+  qDebug() << "QtStalkerScript::readFromStderr:" << _script->name() + ": " + _pro->readAllStandardError();
 }

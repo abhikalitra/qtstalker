@@ -45,7 +45,7 @@ QFont & FontButton::font ()
 
 void FontButton::fontDialog ()
 {
-  QFontDialog *dialog = new QFontDialog(_font, 0);
+  QFontDialog *dialog = new QFontDialog(_font, this);
   connect(dialog, SIGNAL(fontSelected(const QFont &)), this, SLOT(fontDialog2(QFont)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();
@@ -60,6 +60,6 @@ void FontButton::fontDialog2 (QFont font)
 }
 
 int FontButton::isChanged()
-{  
+{
   return _changed;
 }
