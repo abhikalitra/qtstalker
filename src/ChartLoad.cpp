@@ -24,7 +24,6 @@
 #include "Globals.h"
 #include "Symbol.h"
 #include "QuoteDataBase.h"
-#include "SharedMemory.h"
 #include "IndicatorDataBase.h"
 #include "Script.h"
 #include "SettingString.h"
@@ -34,6 +33,7 @@
 #include <QStringList>
 #include <QVariant>
 #include <QSettings>
+#include <QObject>
 
 ChartLoad::ChartLoad (QString symbol)
 {
@@ -65,13 +65,6 @@ int ChartLoad::run ()
 
 //qDebug() << g_currentSymbol->toString();
 
-  SharedMemory sm;
-  if (sm.setData(g_sharedCurrentSymbol, g_currentSymbol->toString()))
-  {
-    qDebug() << "ChartLoad::run: error creating shared memory";
-    return 1;
-  }
-
   // update settings file
   QSettings settings(g_localSettings);
   settings.setValue("current_symbol", _symbol);
@@ -102,11 +95,12 @@ int ChartLoad::run ()
     if (i.indicator(il.at(loop), command))
       continue;
 
-    Script script(0);
-    script.setFile(il.at(loop));
-    script.setCommand(command);
-    script.setSession(g_session);
-    script.run();
+    Script *script = new Script(g_parent);
+    QObject::connect(script, SIGNAL(signalMessage(Data *)), g_scriptPanel, SLOT(scriptMessage(Data *)));
+    script->setFile(il.at(loop));
+    script->setCommand(command);
+    script->setSymbol(g_currentSymbol);
+    script->run();
   }
 
   g_sidePanel->setBusyFlag(0);

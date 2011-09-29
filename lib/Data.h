@@ -37,6 +37,14 @@ class Data
     int type ();
     bool dataContains (QString);
     int dataKeyCount ();
+    void setCommand (QString);
+    QString command ();
+    void setCommandType (QString);
+    QString commandType ();
+    void setScriptFile (QString);
+    QString scriptFile ();
+    void setDeleteFlag (int);
+    int deleteFlag ();
 
     virtual void clear ();
     virtual int set (QString, Setting *);
@@ -45,8 +53,6 @@ class Data
     virtual Setting * get (QString);
     virtual Setting * get (int);
     virtual Data * getData (int);
-    virtual QString toString ();
-    virtual int fromString (QString);
     virtual int highLow (double &, double &);
     virtual QList<int> barKeys ();
     virtual QList<QString> dataKeys ();
@@ -55,10 +61,16 @@ class Data
     virtual void append (Data *);
     virtual void setOffset (int);
     virtual int offset ();
+    virtual QString toString ();
+    virtual int fromString (QString);
 
   protected:
     QHash<QString, Setting *> _data;
     int _type;
+    QString _command;
+    QString _commandType;
+    QString _scriptFile;
+    int _delFlag;
 };
 
 #endif

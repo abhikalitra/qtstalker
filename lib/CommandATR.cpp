@@ -32,7 +32,7 @@
 
 CommandATR::CommandATR (QObject *p) : Command (p)
 {
-  _type = "ATR";
+  _name = "ATR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -46,12 +46,14 @@ int CommandATR::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
     _message << "invalid OUTPUT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -60,6 +62,7 @@ int CommandATR::runScript (Message *sg, Script *script)
   if (! ihigh)
   {
     _message << "invalid HIGH " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -68,6 +71,7 @@ int CommandATR::runScript (Message *sg, Script *script)
   if (! ilow)
   {
     _message << "invalid LOW " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -76,6 +80,7 @@ int CommandATR::runScript (Message *sg, Script *script)
   if (! iclose)
   {
     _message << "invalid CLOSE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -84,6 +89,7 @@ int CommandATR::runScript (Message *sg, Script *script)
   if (! period)
   {
     _message << "invalid PERIOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -92,9 +98,16 @@ int CommandATR::runScript (Message *sg, Script *script)
 
   Data *line = getATR(list, period->toInteger());
   if (! line)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(name->toString(), line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

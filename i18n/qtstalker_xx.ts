@@ -914,6 +914,25 @@ App restart required to take effect</source>
     </message>
 </context>
 <context>
+    <name>Script</name>
+    <message>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>started</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>cancelled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ScriptLaunchButton</name>
     <message>
         <source>&amp;Configure</source>
@@ -967,10 +986,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>started</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>ended</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

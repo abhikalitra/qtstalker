@@ -33,7 +33,7 @@
 
 CommandStochFast::CommandStochFast (QObject *p) : Command (p)
 {
-  _type = "STOCH_FAST";
+  _name = "STOCH_FAST";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -47,12 +47,14 @@ int CommandStochFast::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_FASTK";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *kname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! kname)
   {
     _message << "invalid OUTPUT_FASTK " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -60,12 +62,14 @@ int CommandStochFast::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_FASTD";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *dname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! dname)
   {
     _message << "invalid OUTPUT_FASTD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -74,6 +78,7 @@ int CommandStochFast::runScript (Message *sg, Script *script)
   if (! ihigh)
   {
     _message << "invalid HIGH " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -82,6 +87,7 @@ int CommandStochFast::runScript (Message *sg, Script *script)
   if (! ilow)
   {
     _message << "invalid LOW " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -90,6 +96,7 @@ int CommandStochFast::runScript (Message *sg, Script *script)
   if (! iclose)
   {
     _message << "invalid CLOSE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -98,6 +105,7 @@ int CommandStochFast::runScript (Message *sg, Script *script)
   if (! kperiod)
   {
     _message << "invalid PERIOD_FASTK " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -106,6 +114,7 @@ int CommandStochFast::runScript (Message *sg, Script *script)
   if (! dperiod)
   {
     _message << "invalid PERIOD_FASTD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -115,6 +124,7 @@ int CommandStochFast::runScript (Message *sg, Script *script)
   if (type == -1)
   {
     _message << "invalid MA_TYPE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -125,11 +135,16 @@ int CommandStochFast::runScript (Message *sg, Script *script)
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   script->setData(kname->toString(), lines.at(0));
   script->setData(dname->toString(), lines.at(1));
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

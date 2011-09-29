@@ -82,8 +82,6 @@ class CommandFactory
       _ROC,
       _RSI,
       _SAR,
-      _SCRIPT_DONE,
-      _SCRIPT_START,
       _SETTING,
       _SETTING_GET,
       _SHIFT,

@@ -26,7 +26,7 @@
 
 CommandSettingGet::CommandSettingGet (QObject *p) : Command (p)
 {
-  _type = "SETTING_GET";
+  _name = "SETTING_GET";
 }
 
 int CommandSettingGet::runScript (Message *sg, Script *script)
@@ -36,6 +36,7 @@ int CommandSettingGet::runScript (Message *sg, Script *script)
   if (key.isEmpty())
   {
     _message << "invalid KEY";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -43,6 +44,7 @@ int CommandSettingGet::runScript (Message *sg, Script *script)
   if (! d)
   {
     _message << "invalid KEY " + key;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -50,10 +52,13 @@ int CommandSettingGet::runScript (Message *sg, Script *script)
   if (! set)
   {
     _message << "invalid KEY " + key;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   _returnString = set->toString();
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

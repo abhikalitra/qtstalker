@@ -28,6 +28,7 @@
 #include "Script.h"
 #include "ScriptTimerDialog.h"
 #include "ScriptRunDialog.h"
+#include "CommandMessage.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -195,26 +196,30 @@ void ScriptPage::runScript (QString command, QString file)
 {
   QFileInfo fi(file);
 
-  Script script(this);
-  script.setName(fi.baseName());
-  script.setFile(file);
-  script.setCommand(command);
-  script.setSession(g_session);
+  Script *script = new Script(this);
+  script->setName(fi.baseName());
+  script->setFile(file);
+  script->setCommand(command);
+  script->setSymbol(g_currentSymbol);
 
-  if (script.run())
+  if (script->run())
   {
     qDebug() << "ScriptPage::runScript: script error";
+    delete script;
     return;
   }
 
-  _pids.insert(script.name(), script.pid());
+  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
+  connect(script, SIGNAL(signalMessage(Data *)), this, SLOT(scriptMessage(Data *)));
+
+  _scripts.insert(file, script);
 
   QListWidgetItem *item = new QListWidgetItem(_queList);
-  item->setText(fi.baseName());
-  _itemList.insert(fi.baseName(), item);
+  item->setText(file);
+  _itemList.insert(file, item);
 
   QStringList l;
-  l << tr("Script") << fi.baseName() << tr("started");
+  l << tr("Script") << file << tr("started");
   g_parent->statusBar()->showMessage(l.join(" "));
 
   QSettings settings(g_localSettings);
@@ -228,41 +233,24 @@ void ScriptPage::cancel ()
   if (! sl.count())
     return;
 
-  cancel(sl.at(0)->text());
-}
-
-void ScriptPage::cancel (QString d)
-{
-  if (! _pids.contains(d))
-    return;
-
-  QStringList args;
-  args << QString::number(_pids.value(d));
-
-  bool ok = QProcess::startDetached("kill", args);
-  if (! ok)
-  {
-    qDebug() << "ScriptPage::cancel: error killing process";
-    done(d); // force removal
-  }
+  done(sl.at(0)->text());
 }
 
 void ScriptPage::done (QString file)
 {
-  QFileInfo fi(file);
-
-  QListWidgetItem *item = _itemList.value(fi.baseName());
+  QListWidgetItem *item = _itemList.value(file);
   if (! item)
     return;
 
-  _itemList.remove(fi.baseName());
+  _itemList.remove(file);
   delete item;
 
-  QStringList l;
-  l << tr("Script") << fi.baseName() << tr("ended");
-  g_parent->statusBar()->showMessage(l.join(" "));
+  Script *script = _scripts.value(file);
+  if (! script)
+    return;
 
-  _pids.remove(fi.baseName());
+  delete script;
+  _scripts.remove(file);
 }
 
 void ScriptPage::launchButtonRows ()
@@ -329,15 +317,13 @@ void ScriptPage::setupScriptTimers ()
 void ScriptPage::shutDown ()
 {
   // try to kill any hanging script processes
-  QHashIterator<QString, qint64> it(_pids);
+  QHashIterator<QString, Script *> it(_scripts);
   while (it.hasNext())
   {
     it.next();
-
-    QStringList args;
-    args << QString::number(it.value());
-
-    QProcess::startDetached("kill -9 ", args);
+    Script *script = it.value();
+    script->stopScript();
+    delete script;
   }
 }
 
@@ -497,4 +483,11 @@ void ScriptPage::addScriptTimer (QString name, QString file, QString interval, Q
   st->setIntervalString(interval);
   _timers.insert(name, st);
   st->start();
+}
+
+void ScriptPage::scriptMessage (Data *d)
+{
+  CommandMessage cm;
+  if (cm.message(d))
+    qDebug() << "ScriptPage::scriptMessage: error" << d->command();
 }

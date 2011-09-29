@@ -35,11 +35,10 @@
 #include "SettingDateTime.h"
 
 #include <QtDebug>
-#include <QSettings>
 
 CommandCORREL::CommandCORREL (QObject *p) : Command (p)
 {
-  _type = "CORREL";
+  _name = "CORREL";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -53,12 +52,14 @@ int CommandCORREL::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
     _message << "invalid OUTPUT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -67,6 +68,7 @@ int CommandCORREL::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -75,6 +77,7 @@ int CommandCORREL::runScript (Message *sg, Script *script)
   if (! in2)
   {
     _message << "invalid INDEX " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   script->setTData(in2);
@@ -84,6 +87,7 @@ int CommandCORREL::runScript (Message *sg, Script *script)
   if (! period)
   {
     _message << "invalid PERIOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -92,9 +96,16 @@ int CommandCORREL::runScript (Message *sg, Script *script)
 
   Data *line = getCORREL(list, period->toInteger());
   if (! line)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(name->toString(), line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }
@@ -159,15 +170,20 @@ Data * CommandCORREL::getIndex (QString d, Script *script)
   if (tl.count() != 2)
     return 0;
 
-  QSettings settings("QtStalker/qtstalkerrc" + script->session());
+  Data *symbol = script->symbol();
+  if (! symbol)
+  {
+    qDebug() << "CommandCORREL::getIndex: invalid symbol";
+    return 0;
+  }
 
   Data *bd = new Symbol;
   bd->set(Symbol::_EXCHANGE, new SettingString(tl.at(0)));
   bd->set(Symbol::_SYMBOL, new SettingString(tl.at(1)));
-  bd->set(Symbol::_LENGTH, new SettingInteger(settings.value("bar_length").toInt()));
+  bd->set(Symbol::_LENGTH, new SettingInteger(symbol->get(Symbol::_LENGTH)->toInteger()));
   bd->set(Symbol::_START_DATE, new SettingDateTime(QDateTime()));
   bd->set(Symbol::_END_DATE, new SettingDateTime(QDateTime()));
-  bd->set(Symbol::_RANGE, new SettingInteger(settings.value("date_range").toInt()));
+  bd->set(Symbol::_RANGE, new SettingInteger(symbol->get(Symbol::_RANGE)->toInteger()));
 
   // load quotes
   QuoteDataBase db;

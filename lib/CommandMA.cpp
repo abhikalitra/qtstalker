@@ -31,7 +31,7 @@
 
 CommandMA::CommandMA (QObject *p) : Command (p)
 {
-  _type = "MA";
+  _name = "MA";
 }
 
 int CommandMA::runScript (Message *sg, Script *script)
@@ -42,14 +42,16 @@ int CommandMA::runScript (Message *sg, Script *script)
   int method = mat.fromString(s);
   if (method == -1)
   {
-    _message << "invalid METHOD " + s;
+    qDebug() << "CommandMA::runScript: invalid METHOD " << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   QString name = sg->value("OUTPUT");
   if (name.isEmpty())
   {
-    _message << "invalid OUTPUT " + name;
+    qDebug() << "CommandMA::runScript: invalid OUTPUT " << name;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -57,7 +59,8 @@ int CommandMA::runScript (Message *sg, Script *script)
   Data *in = vdi.curve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandMA::runScript: INPUT missing " << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -66,15 +69,23 @@ int CommandMA::runScript (Message *sg, Script *script)
   Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
   if (! period)
   {
-    _message << "invalid PERIOD " + s;
+    qDebug() << "CommandMA::runScript: invalid PERIOD " << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   Data *line = mat.getMA(in, period->toInteger(), method);
   if (! line)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(name, line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

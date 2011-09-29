@@ -20,8 +20,6 @@
  */
 
 #include "CommandChartUpdate.h"
-#include "IPCMessage.h"
-#include "MessageSend.h"
 #include "CurveData.h"
 #include "ChartObjectData.h"
 #include "SettingString.h"
@@ -34,23 +32,24 @@
 
 CommandChartUpdate::CommandChartUpdate (QObject *p) : Command (p)
 {
-  _type = "CHART_UPDATE";
+  _name = "CHART_UPDATE";
 }
 
 int CommandChartUpdate::runScript (Message *sg, Script *script)
 {
-  Data d;
+  Data *d = new Data;
   SettingString *name = new SettingString(QString("Chart"));
   QString s = sg->value("CHART");
   if (name->set(s, (void *) script))
   {
     if (name->set(s))
     {
-      _message << "invalid CHART " + s;
+      qDebug() << "CommandChartUpdate::runScript: invalid CHART" << s;
+      emit signalResume((void *) this);
       return _ERROR;
     }
   }
-  d.set("CHART", name);
+  d->set("CHART", name);
 
   SettingString *date = new SettingString(QString("date"));
   s = sg->value("DATE");
@@ -58,11 +57,12 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
   {
     if (date->set(s))
     {
-      _message << "invalid DATE " + s;
+      qDebug() << "CommandChartUpdate::runScript: invalid DATE" << s;
+      emit signalResume((void *) this);
       return _ERROR;
     }
   }
-  d.set("DATE", date);
+  d->set("DATE", date);
 
   QList<QString> keys = script->dataKeys();
 
@@ -86,10 +86,14 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
   }
 
   // send the update command
-  IPCMessage ipcm(script->session(), _type, "UPDATE", script->file(), QString::number(d.type()));
+  d->setCommand(_name);
+  d->setCommandType("UPDATE");
+  d->setScriptFile(script->file());
+  emit signalMessage(d);
 
-  MessageSend ms(this);
-  ms.send(ipcm, d.toString());
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }
@@ -97,11 +101,10 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
 void CommandChartUpdate::dateCurve (Script *script, Data *dg, QString name)
 {
   dg->set(CurveData::_CHART, new SettingString(name));
-
-  IPCMessage ipcm(script->session(), _type, "CHART_DATE", script->file(), QString::number(dg->type()));
-  MessageSend ms(this);
-  ms.send(ipcm, dg->toString());
-  return;
+  dg->setCommand(_name);
+  dg->setCommandType("CHART_DATE");
+  dg->setScriptFile(script->file());
+  emit signalMessage(dg);
 }
 
 void CommandChartUpdate::curve (Script *script, Data *dg, QString name)
@@ -120,10 +123,11 @@ void CommandChartUpdate::curve (Script *script, Data *dg, QString name)
   if (setting->toString() != name)
     return;
 
-  IPCMessage ipcm(script->session(), _type, "CURVE", script->file(), QString::number(dg->type()));
-  MessageSend ms(this);
-  ms.send(ipcm, dg->toString());
-  return;
+  dg->setDeleteFlag(0);
+  dg->setCommand(_name);
+  dg->setCommandType("CURVE");
+  dg->setScriptFile(script->file());
+  emit signalMessage(dg);
 }
 
 void CommandChartUpdate::chartObject (Script *script, Data *dg, QString name)
@@ -142,7 +146,9 @@ void CommandChartUpdate::chartObject (Script *script, Data *dg, QString name)
   if (setting->toString() != name)
     return;
 
-  IPCMessage ipcm(script->session(), _type, "CHART_OBJECT", script->file(), QString::number(dg->type()));
-  MessageSend ms(this);
-  ms.send(ipcm, dg->toString());
+  dg->setDeleteFlag(0);
+  dg->setCommand(_name);
+  dg->setCommandType("CHART_OBJECT");
+  dg->setScriptFile(script->file());
+  emit signalMessage(dg);
 }

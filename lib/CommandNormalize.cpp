@@ -31,7 +31,7 @@
 
 CommandNormalize::CommandNormalize (QObject *p) : Command (p)
 {
-  _type = "NORMALIZE";
+  _name = "NORMALIZE";
 }
 
 int CommandNormalize::runScript (Message *sg, Script *script)
@@ -41,12 +41,14 @@ int CommandNormalize::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
     _message << "invalid OUTPUT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -55,6 +57,7 @@ int CommandNormalize::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -63,9 +66,16 @@ int CommandNormalize::runScript (Message *sg, Script *script)
 
   Data *line = getNORM(list);
   if (! line)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(name->toString(), line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

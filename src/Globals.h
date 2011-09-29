@@ -3,7 +3,6 @@
 
 #include <QString>
 #include <QMainWindow>
-#include <QSharedMemory>
 
 #include "ControlPanel.h"
 #include "InfoPanel.h"
@@ -25,7 +24,6 @@ extern GroupPage * g_groupPanel;
 extern ScriptPage * g_scriptPanel;
 extern SidePanel * g_sidePanel;
 extern Data *g_currentSymbol;
-extern QSharedMemory g_sharedCurrentSymbol;
 extern PlotGroup * g_plotGroup;
 
 #endif

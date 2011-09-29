@@ -46,12 +46,8 @@
 #include "BarLengthButton.h"
 #include "BarSpaceButton.h"
 #include "DateRangeControl.h"
-#include "CommandAdaptor.h"
-#include "CommandInterface.h"
 #include "CommandFactory.h"
-#include "IPCMessage.h"
 #include "BarLength.h"
-#include "CommandMessage.h"
 #include "Symbol.h"
 #include "ChartLoad.h"
 #include "DataFactory.h"
@@ -79,15 +75,6 @@ QtstalkerApp::QtstalkerApp (QString session, QString asset)
   loadSettings();
 
   setWindowTitle(getWindowCaption());
-
-  // add our D-Bus interface and connect to D-Bus
-  new CommandAdaptor(this);
-  QDBusConnection::sessionBus().registerObject("/", this);
-
-  com::qtstalker::message *iface;
-  iface = new com::qtstalker::message(QString(), QString(), QDBusConnection::sessionBus(), this);
-  QDBusConnection::sessionBus().connect(QString(), QString(), "com.qtstalker.message", "message", this, SLOT(messageSlot(QString,QString)));
-  connect(iface, SIGNAL(action(QString,QString)), this, SLOT(actionSlot(QString,QString)));
 
   QTimer::singleShot(100, this, SLOT(afterStartup()));
 }
@@ -349,52 +336,4 @@ void QtstalkerApp::afterStartup ()
 
     loadChart(symbol);
   }
-}
-
-void QtstalkerApp::messageSlot (QString m, QString d)
-{
-//  qDebug() << "QtstalkerApp::messageSlot:" << m;
-//  qDebug() << "QtstalkerApp::messageSlot:" << d;
-
-  IPCMessage ipcm;
-  if (ipcm.fromString(m))
-  {
-    qDebug() << "QtstalkerApp::messageSlot: invalid message" << m;
-    return;
-  }
-
-  // ignore message from another session
-  if (ipcm.session() != g_session)
-    return;
-
-  DataFactory dfac;
-  Data *dg = dfac.data(ipcm.dataType());
-  if (! dg)
-  {
-    qDebug() << "QtstalkerApp::messageSlot: invalid data type" << ipcm.dataType();
-    return;
-  }
-
-  if (! d.isEmpty())
-  {
-    if (dg->fromString(d))
-    {
-      qDebug() << "QtstalkerApp::messageSlot: invalid data" << d;
-      delete dg;
-      return;
-    }
-  }
-
-  CommandMessage cm;
-//  if (cm.message(ipcm, d))
-  if (cm.message(ipcm, dg))
-  {
-    qDebug() << "QtstalkerApp::messageSlot: CommandMessage error" << m;
-    return;
-  }
-}
-
-void QtstalkerApp::actionSlot (QString command, QString d)
-{
-  qDebug() << "QtstalkerApp::actionSlot:" << command << d;
 }

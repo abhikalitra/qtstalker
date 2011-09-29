@@ -30,7 +30,7 @@
 
 CommandTypicalPrice::CommandTypicalPrice (QObject *p) : Command (p)
 {
-  _type = "TYPICAL_PRICE";
+  _name = "TYPICAL_PRICE";
 }
 
 int CommandTypicalPrice::runScript (Message *sg, Script *script)
@@ -40,12 +40,14 @@ int CommandTypicalPrice::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
     _message << "invalid OUTPUT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -54,6 +56,7 @@ int CommandTypicalPrice::runScript (Message *sg, Script *script)
   if (! ihigh)
   {
     _message << "invalid HIGH " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -62,6 +65,7 @@ int CommandTypicalPrice::runScript (Message *sg, Script *script)
   if (! ilow)
   {
     _message << "invalid LOW " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -70,6 +74,7 @@ int CommandTypicalPrice::runScript (Message *sg, Script *script)
   if (! iclose)
   {
     _message << "invalid CLOSE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -78,9 +83,16 @@ int CommandTypicalPrice::runScript (Message *sg, Script *script)
 
   Data *line = getTP(list);
   if (! line)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(name->toString(), line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

@@ -22,6 +22,9 @@
 #include "Script.h"
 #include "ChartObjectData.h"
 #include "DataFactory.h"
+#include "CommandFactory.h"
+#include "CommandThread.h"
+#include "CurveData.h"
 
 #include <QDebug>
 #include <QProcess>
@@ -29,23 +32,35 @@
 Script::Script (QObject *p) : QObject (p)
 {
   clear();
+
+  _proc = new QProcess(this);
+  connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+  connect(_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
+  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
+  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
 }
 
 Script::~Script ()
 {
   clear();
+  _proc->terminate();
+  _proc->waitForFinished();
+
+qDebug() << "Script::~Script:" << _file << "deleted";
 }
 
 void Script::clear ()
 {
-  qDeleteAll(_data);
+  _killFlag = 0;
+  _symbol = 0;
+
+  deleteData();
   _data.clear();
 
-  _session.clear();
   _name.clear();
   _file.clear();
   _command.clear();
-  _pid = -1;
 
   qDeleteAll(_tsettings);
   _tsettings.clear();
@@ -54,105 +69,135 @@ void Script::clear ()
   _tdata.clear();
 }
 
-void Script::setData (QString key, Data *d)
-{
-  Data *sg = _data.value(key);
-  if (sg)
-    delete sg;
-
-  _data.insert(key, d);
-}
-
-Data * Script::data (QString d)
-{
-  return _data.value(d);
-}
-
-void Script::setSession (QString d)
-{
-  _session = d;
-}
-
-QString Script::session ()
-{
-  return _session;
-}
-
-void Script::setName (QString d)
-{
-  _name = d;
-}
-
-QString Script::name ()
-{
-  return _name;
-}
-
-void Script::setFile (QString d)
-{
-  _file = d;
-}
-
-QString & Script::file ()
-{
-  return _file;
-}
-
 int Script::run ()
 {
-qDebug() << "Script::run" << _session << _command << _file;
+  _killFlag = 0;
+  QString command = _command + " " + _file;
 
-  QStringList args;
-  args << _session << _command << _file;
+  // start the process
+  _proc->start(command, QIODevice::ReadWrite);
 
-  bool ok = QProcess::startDetached("QtStalkerScript", args, QString(), &_pid);
-  if (! ok)
+  // make sure process starts error free
+  if (! _proc->waitForStarted())
   {
-    qDebug() << "Script::run: error starting process";
+    qDebug() << "Script::run: error timed out" << _file;
+    clear();
+    emit signalDone(_file);
     return 1;
   }
+
+  QStringList l;
+  l << QDateTime::currentDateTime().toString();
+  l << _file;
+  l << tr("started");
+  qDebug() << l.join(" ");
 
   return 0;
 }
 
-int Script::runWait ()
+void Script::done (int, QProcess::ExitStatus)
 {
-qDebug() << "Script::runWait" << _session << _command << _file;
+  QStringList l;
+  l << QDateTime::currentDateTime().toString();
+  l << tr("Script");
+  l << _file;
 
-  QStringList args;
-  args << _session << _command << _file;
-
-  int rc = QProcess::execute("QtStalkerScript", args);
-  if (rc)
+  if (_killFlag)
   {
-    qDebug() << "Script::runWait: error";
-    return rc;
+    l << tr("cancelled");
+    qDebug() << l.join(" ");
+    emit signalStopped(_file);
   }
-
-  return 0;
+  else
+  {
+    l << tr("completed");
+    qDebug() << l.join(" ");
+    emit signalDone(_file);
+  }
 }
 
-int Script::kill ()
+void Script::readFromStdout ()
 {
-  if (_pid < 0)
-    return 1;
-
-  QStringList args;
-  args << QString::number(_pid);
-
-  bool ok = QProcess::startDetached("kill", args);
-  if (! ok)
+  if (_killFlag)
   {
-    qDebug() << "Script::kill: error starting process";
-    return 1;
+    qDebug() << "Script::readFromStdout: script terminated";
+    clear();
+    return;
   }
 
-  return 0;
+  QByteArray ba = _proc->readAllStandardOutput();
+qDebug() << ba;
+
+  Message tsg;
+  QString s(ba);
+  QStringList l = s.split(";");
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QStringList tl = l.at(loop).split("=");
+    if (tl.count() != 2)
+      continue;
+
+    tsg.insert(tl.at(0).trimmed(), tl.at(1).trimmed());
+  }
+
+  CommandFactory fac;
+  Command *command = fac.command(this, tsg.value("COMMAND"));
+  if (! command)
+  {
+    qDebug() << "QtStalkerScript::run: command not found" << tsg.value("COMMAND");
+    clear();
+    return;
+  }
+
+//  command->setWidgetParent(g_parent);
+
+  connect(command, SIGNAL(signalResume(void *)), this, SLOT(resume(void *)));
+  connect(command, SIGNAL(signalMessage(Data *)), this, SIGNAL(signalMessage(Data *)));
+
+  switch ((Command::Type)command->type())
+  {
+    case Command::_DIALOG:
+      command->runScript(&tsg, this);
+      break;
+    case Command::_THREAD:
+    {
+      CommandThread *ct = new CommandThread(this, tsg, command, this);
+//      connect(ct, SIGNAL(finished()), this, SLOT(resume()), Qt::QueuedConnection);
+      ct->start();
+      break;
+    }
+    default: // _NORMAL
+      command->runScript(&tsg, this);
+      break;
+  }
 }
 
-qint64 Script::pid ()
+void Script::readFromStderr ()
 {
-  return _pid;
+  qDebug() << "Script::readFromStderr:" << _proc->readAllStandardError();
+}
+
+void Script::stopScript ()
+{
+  if (_proc->state() == QProcess::NotRunning)
+    return;
+
+  _killFlag = TRUE;
+  emit signalKill();
+//qDebug() << "Script::stopScript";
+}
+
+void Script::resume (void *d)
+{
+  Command *command = (Command *) d;
+  QString s = command->returnString() + "\n";
+
+  QByteArray ba;
+  ba.append(s);
+  _proc->write(ba);
+
+  command->deleteLater();
 }
 
 int Script::count ()
@@ -204,4 +249,60 @@ void Script::setTSetting (Setting *d)
 void Script::setTData (Data *d)
 {
   _tdata << d;
+}
+
+void Script::setData (QString key, Data *d)
+{
+  Data *sg = _data.value(key);
+  if (sg)
+    delete sg;
+
+  _data.insert(key, d);
+}
+
+Data * Script::data (QString d)
+{
+  return _data.value(d);
+}
+
+void Script::setName (QString d)
+{
+  _name = d;
+}
+
+QString Script::name ()
+{
+  return _name;
+}
+
+void Script::setFile (QString d)
+{
+  _file = d;
+}
+
+QString & Script::file ()
+{
+  return _file;
+}
+
+void Script::setSymbol (Data *d)
+{
+  _symbol = d;
+}
+
+Data * Script::symbol ()
+{
+  return _symbol;
+}
+
+void Script::deleteData ()
+{
+  QHashIterator<QString, Data *> it(_data);
+  while (it.hasNext())
+  {
+    it.next();
+    Data *d = it.value();
+    if (it.value()->deleteFlag())
+      delete d;
+  }
 }

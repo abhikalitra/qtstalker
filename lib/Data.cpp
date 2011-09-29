@@ -39,6 +39,7 @@ Data::~Data ()
 void Data::clear ()
 {
   _type = DataFactory::_DATA;
+  _delFlag = 1;
 
   qDeleteAll(_data);
   _data.clear();
@@ -186,4 +187,44 @@ void Data::setOffset (int)
 int Data::offset ()
 {
   return 0;
+}
+
+void Data::setCommand (QString d)
+{
+  _command = d;
+}
+
+QString Data::command ()
+{
+  return _command;
+}
+
+void Data::setCommandType (QString d)
+{
+  _commandType = d;
+}
+
+QString Data::commandType ()
+{
+  return _commandType;
+}
+
+void Data::setScriptFile (QString d)
+{
+  _scriptFile = d;
+}
+
+QString Data::scriptFile ()
+{
+  return _scriptFile;
+}
+
+void Data::setDeleteFlag (int d)
+{
+  _delFlag = d;
+}
+
+int Data::deleteFlag ()
+{
+  return _delFlag;
 }

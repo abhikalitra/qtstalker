@@ -32,7 +32,7 @@
 
 CommandAROON::CommandAROON (QObject *p) : Command (p)
 {
-  _type = "AROON";
+  _name = "AROON";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -46,12 +46,14 @@ int CommandAROON::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_UPPER";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *uname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! uname)
   {
     _message << "invalid OUTPUT_UPPER " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -59,12 +61,14 @@ int CommandAROON::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_LOWER";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *lname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! lname)
   {
     _message << "invalid OUTPUT_LOWER " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -73,6 +77,7 @@ int CommandAROON::runScript (Message *sg, Script *script)
   if (! ihigh)
   {
     _message << "invalid HIGH " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -81,6 +86,7 @@ int CommandAROON::runScript (Message *sg, Script *script)
   if (! ilow)
   {
     _message << "invalid LOW " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -89,6 +95,7 @@ int CommandAROON::runScript (Message *sg, Script *script)
   if (! period)
   {
     _message << "invalid PERIOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -97,12 +104,19 @@ int CommandAROON::runScript (Message *sg, Script *script)
 
   QList<Data *> lines = getAROON(list, period->toInteger());
   if (! lines.count())
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(uname->toString(), lines.at(0));
 
   if (lines.count() == 2)
     script->setData(lname->toString(), lines.at(1));
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

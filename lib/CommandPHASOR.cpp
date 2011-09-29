@@ -32,7 +32,7 @@
 
 CommandPHASOR::CommandPHASOR (QObject *p) : Command (p)
 {
-  _type = "HT_PHASOR";
+  _name = "HT_PHASOR";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -46,12 +46,14 @@ int CommandPHASOR::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_PHASE";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *pname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! pname)
   {
     _message << "invalid OUTPUT_PHASE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -59,12 +61,14 @@ int CommandPHASOR::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_QUAD";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *qname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! qname)
   {
     _message << "invalid OUTPUT_QUAD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -73,6 +77,7 @@ int CommandPHASOR::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -83,11 +88,16 @@ int CommandPHASOR::runScript (Message *sg, Script *script)
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   script->setData(pname->toString(), lines.at(0));
   script->setData(qname->toString(), lines.at(1));
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

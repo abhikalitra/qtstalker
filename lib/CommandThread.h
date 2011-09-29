@@ -19,44 +19,30 @@
  *  USA.
  */
 
-#ifndef QTSTALKER_H
-#define QTSTALKER_H
+#ifndef COMMAND_THREAD_HPP
+#define COMMAND_THREAD_HPP
 
-#include <QMainWindow>
-#include <QToolBar>
-#include <QStringList>
-#include <QHash>
+#include <QString>
+#include <QThread>
 
-#include "SidePanel.h"
+#include "Command.h"
+#include "Script.h"
+#include "Message.h"
 
-class QtstalkerApp : public QMainWindow
+class CommandThread : public QThread
 {
   Q_OBJECT
 
-  signals:
-    void signalLoadSettings ();
-    void signalShutDown ();
-
   public:
-    QtstalkerApp (QString session, QString asset);
-    void createGUI ();
-    void loadSettings ();
-    QString getWindowCaption ();
-
-  public slots:
-    void loadChart (QString);
-    void save ();
-    void chartUpdated ();
-    void statusMessage (QString);
-    void wakeup ();
-    void commandLineAsset ();
-//    void fixDockTabs ();
-    void shutDown ();
-    void afterStartup ();
+    CommandThread (QObject *, Message, Command *, Script *);
 
   protected:
-    QString _clAsset;
-    SidePanel *_sidePanel;
+    void run ();
+
+  private:
+    Command *_command;
+    Script *_script;
+    Message _message;
 };
 
 #endif

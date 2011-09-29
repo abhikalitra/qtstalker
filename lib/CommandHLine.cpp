@@ -33,7 +33,7 @@
 
 CommandHLine::CommandHLine (QObject *p) : Command (p)
 {
-  _type = "CHART_OBJECT_HLINE";
+  _name = "CHART_OBJECT_HLINE";
 }
 
 int CommandHLine::runScript (Message *sg, Script *script)
@@ -45,6 +45,7 @@ int CommandHLine::runScript (Message *sg, Script *script)
   if (! color)
   {
     _message << "invalid COLOR " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -54,6 +55,7 @@ int CommandHLine::runScript (Message *sg, Script *script)
   if (! price)
   {
     _message << "invalid PRICE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -63,6 +65,7 @@ int CommandHLine::runScript (Message *sg, Script *script)
   if (! chart)
   {
     _message << "invalid CHART " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -72,6 +75,7 @@ int CommandHLine::runScript (Message *sg, Script *script)
   if (! z)
   {
     _message << "invalid Z " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -87,6 +91,10 @@ int CommandHLine::runScript (Message *sg, Script *script)
   co->set(ChartObjectData::_TYPE, new SettingString(QString("HLine")));
 
   script->setData(QString::number(id), co);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

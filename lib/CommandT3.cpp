@@ -32,7 +32,7 @@
 
 CommandT3::CommandT3 (QObject *p) : Command (p)
 {
-  _type = "T3";
+  _name = "T3";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -46,12 +46,14 @@ int CommandT3::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
     _message << "invalid OUTPUT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -60,6 +62,7 @@ int CommandT3::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -68,6 +71,7 @@ int CommandT3::runScript (Message *sg, Script *script)
   if (! period)
   {
     _message << "invalid PERIOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -76,6 +80,7 @@ int CommandT3::runScript (Message *sg, Script *script)
   if (! vfactor)
   {
     _message << "invalid VFACTOR " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -84,9 +89,16 @@ int CommandT3::runScript (Message *sg, Script *script)
 
   Data *line = getT3(list, period->toInteger(), vfactor->toDouble());
   if (! line)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(name->toString(), line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

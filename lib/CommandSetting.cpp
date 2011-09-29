@@ -30,7 +30,7 @@
 
 CommandSetting::CommandSetting (QObject *p) : Command (p)
 {
-  _type = "SETTING";
+  _name = "SETTING";
 }
 
 int CommandSetting::runScript (Message *sg, Script *script)
@@ -39,7 +39,8 @@ int CommandSetting::runScript (Message *sg, Script *script)
   QString key = sg->value("KEY");
   if (key.isEmpty())
   {
-    _message << "invalid KEY";
+    qDebug() << "CommandSetting::runScript: invalid KEY";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -50,7 +51,8 @@ int CommandSetting::runScript (Message *sg, Script *script)
   {
     if (tab.set(s))
     {
-      _message << "invalid TAB " + s;
+      qDebug() << "CommandSetting::runScript: invalid TAB" << s;
+      emit signalResume((void *) this);
       return _ERROR;
     }
   }
@@ -61,7 +63,8 @@ int CommandSetting::runScript (Message *sg, Script *script)
   int type = sfac.stringToType(s);
   if (type == -1)
   {
-    _message << "invalid TYPE " + s;
+    qDebug() << "CommandSetting::runScript: invalid TYPE" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -78,8 +81,9 @@ int CommandSetting::runScript (Message *sg, Script *script)
       {
         if (set->set(tset->toString()))
         {
-          _message << "invalid VALUE " + s;
+          qDebug() << "CommandSetting::runScript: invalid VALUE" << s;
           delete set;
+          emit signalResume((void *) this);
           return _ERROR;
         }
       }
@@ -88,8 +92,9 @@ int CommandSetting::runScript (Message *sg, Script *script)
     {
       if (set->set(s))
       {
-        _message << "invalid VALUE " + s;
+        qDebug() << "CommandSetting::runScript: invalid VALUE" << s;
         delete set;
+        emit signalResume((void *) this);
         return _ERROR;
       }
     }
@@ -106,6 +111,10 @@ int CommandSetting::runScript (Message *sg, Script *script)
   d->set(DataSetting::_LABEL, new SettingString(key));
 
   script->setData(key, d);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

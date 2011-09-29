@@ -33,7 +33,7 @@
 
 CommandStochSlow::CommandStochSlow (QObject *p) : Command (p)
 {
-  _type = "STOCH_SLOW";
+  _name = "STOCH_SLOW";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -47,12 +47,14 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_SLOWK";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *kname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! kname)
   {
     _message << "invalid OUTPUT_SLOWK " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -60,12 +62,14 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_SLOWD";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *dname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! dname)
   {
     _message << "invalid OUTPUT_SLOWD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -74,6 +78,7 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (! ihigh)
   {
     _message << "invalid HIGH " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -82,6 +87,7 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (! ilow)
   {
     _message << "invalid LOW " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -90,6 +96,7 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (! iclose)
   {
     _message << "invalid CLOSE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -98,6 +105,7 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (! fkperiod)
   {
     _message << "invalid PERIOD_FATSK " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -106,6 +114,7 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (! skperiod)
   {
     _message << "invalid PERIOD_SLOWK " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -115,6 +124,7 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (kma == -1)
   {
     _message << "invalid MA_TYPE_SLOWK " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -123,6 +133,7 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (! sdperiod)
   {
     _message << "invalid PERIOD_SLOWD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -131,6 +142,7 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (dma == -1)
   {
     _message << "invalid MA_TYPE_SLOWD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -141,11 +153,16 @@ int CommandStochSlow::runScript (Message *sg, Script *script)
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   script->setData(kname->toString(), lines.at(0));
   script->setData(dname->toString(), lines.at(1));
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

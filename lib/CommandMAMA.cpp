@@ -32,7 +32,7 @@
 
 CommandMAMA::CommandMAMA (QObject *p) : Command (p)
 {
-  _type = "MAMA";
+  _name = "MAMA";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -46,12 +46,14 @@ int CommandMAMA::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_MAMA";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *mname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! mname)
   {
     _message << "invalid OUTPUT_MAMA " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -59,12 +61,14 @@ int CommandMAMA::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_FAMA";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *fname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! fname)
   {
     _message << "invalid OUTPUT_FAMA " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -73,6 +77,7 @@ int CommandMAMA::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -81,6 +86,7 @@ int CommandMAMA::runScript (Message *sg, Script *script)
   if (! flimit)
   {
     _message << "invalid LIMIT_FAST " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -89,6 +95,7 @@ int CommandMAMA::runScript (Message *sg, Script *script)
   if (! slimit)
   {
     _message << "invalid LIMIT_SLOW " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -99,11 +106,16 @@ int CommandMAMA::runScript (Message *sg, Script *script)
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   script->setData(mname->toString(), lines.at(0));
   script->setData(fname->toString(), lines.at(1));
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

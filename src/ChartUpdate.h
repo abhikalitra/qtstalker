@@ -22,14 +22,13 @@
 #ifndef CHART_UPDATE_HPP
 #define CHART_UPDATE_HPP
 
-#include "IPCMessage.h"
 #include "Data.h"
 
 class ChartUpdate
 {
   public:
     ChartUpdate ();
-    int run (IPCMessage, Data *);
+    int run (Data *);
     int dateCurve (Data *);
     int curve (Data *);
     int chartObject (Data *);

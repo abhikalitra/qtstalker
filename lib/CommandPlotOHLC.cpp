@@ -34,7 +34,7 @@
 
 CommandPlotOHLC::CommandPlotOHLC (QObject *p) : Command (p)
 {
-  _type = "PLOT_OHLC";
+  _name = "PLOT_OHLC";
 }
 
 int CommandPlotOHLC::runScript (Message *sg, Script *script)
@@ -42,7 +42,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   QString name = sg->value("OUTPUT");
   if (name.isEmpty())
   {
-    _message << "invalid OUTPUT";
+    qDebug() << "CommandPlotOHLC::runScript invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -50,7 +51,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   QString chart = sg->value("CHART");
   if (chart.isEmpty())
   {
-    _message << "invalid CHART";
+    qDebug() << "CommandPlotOHLC::runScript invalid CHART";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -59,7 +61,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   QString style = sg->value("STYLE");
   if (ls.stringToStyle(style) == -1)
   {
-    _message << "invalid STYLE " + style;
+    qDebug() << "CommandPlotOHLC::runScript invalid STYLE" << style;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -70,7 +73,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
   if (! color)
   {
-    _message << "invalid COLOR " + s;
+    qDebug() << "CommandPlotOHLC::runScript invalid COLOR" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -79,7 +83,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
   if (! z)
   {
-    _message << "invalid Z " + s;
+    qDebug() << "CommandPlotOHLC::runScript invalid Z" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -88,7 +93,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   Setting *pen = vdi.setting(SettingFactory::_INTEGER, script, s);
   if (! pen)
   {
-    _message << "invalid PEN " + s;
+    qDebug() << "CommandPlotOHLC::runScript invalid PEN" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -96,7 +102,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   Data *iopen = vdi.curve(script, s);
   if (! iopen)
   {
-    _message << "invalid OPEN " + s;
+    qDebug() << "CommandPlotOHLC::runScript invalid OPEN" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -104,7 +111,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   Data *ihigh = vdi.curve(script, s);
   if (! ihigh)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandPlotOHLC::runScript invalid HIGH" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -112,7 +120,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   Data *ilow = vdi.curve(script, s);
   if (! ilow)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandPlotOHLC::runScript invalid LOW" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -120,7 +129,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   Data *iclose = vdi.curve(script, s);
   if (! iclose)
   {
-    _message << "invalid CLOSE " + s;
+    qDebug() << "CommandPlotOHLC::runScript invalid CLOSE" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -130,7 +140,8 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   QList<int> keys;
   if (vdi.curveKeys(list, keys))
   {
-    _message << "invalid keys";
+    qDebug() << "CommandPlotOHLC::runScript invalid keys";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -173,6 +184,10 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   }
 
   script->setData(name, line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

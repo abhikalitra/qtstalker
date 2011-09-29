@@ -31,6 +31,10 @@ class CommandDialog : public Command
   public:
     CommandDialog (QObject *);
     int runScript (Message *, Script *);
+
+  public slots:
+    void dialogAccepted ();
+    void dialogRejected ();
 };
 
 #endif

@@ -29,7 +29,7 @@
 
 CommandArithmetic::CommandArithmetic (QObject *p) : Command (p)
 {
-  _type = "ARITHMETIC";
+  _name = "ARITHMETIC";
   _method << "ADD" << "DIV" << "MULT" << "SUB";
 }
 
@@ -39,7 +39,8 @@ int CommandArithmetic::runScript (Message *sg, Script *script)
   QString name = sg->value("OUTPUT");
   if (name.isEmpty())
   {
-    _message << "invalid OUTPUT " + name;
+    qDebug() << "CommandArithmetic::runScript: invalid OUTPUT " << name;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -49,7 +50,8 @@ int CommandArithmetic::runScript (Message *sg, Script *script)
   Data *in = vdi.curveAll(script, s);
   if (! in)
   {
-    _message << "invalid INPUT_1 " + s;
+    qDebug() << "CommandArithmetic::runScript: invalid INPUT_1 " << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   int offset = in->offset();
@@ -59,7 +61,8 @@ int CommandArithmetic::runScript (Message *sg, Script *script)
   Data *in2 = vdi.curveAll(script, s);
   if (! in2)
   {
-    _message << "invalid INPUT_2 " + s;
+    qDebug() << "CommandArithmetic::runScript: invalid INPUT_2 " << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   int offset2 = in2->offset();
@@ -68,18 +71,24 @@ int CommandArithmetic::runScript (Message *sg, Script *script)
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    _message << "invalid METHOD " + s;
+    qDebug() << "CommandArithmetic::runScript: invalid METHOD " << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   Data *line = getArithmetic(in, offset, in2, offset2, method);
   if (! line)
   {
-    _message << "getArithmetic error " + name;
+    qDebug() << "CommandArithmetic::runScript: getArithmetic error " << name;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   script->setData(name, line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }
@@ -93,7 +102,7 @@ Data * CommandArithmetic::getArithmetic (Data *in, int off, Data *in2, int off2,
   QList<int> keys;
   if (vdi.curveKeys(list, keys))
   {
-    _message << "getArithmetic invalid keys";
+    qDebug() << "CommandArithmetic::runScript: getArithmetic invalid keys";
     return 0;
   }
 

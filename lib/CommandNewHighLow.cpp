@@ -29,7 +29,7 @@
 
 CommandNewHighLow::CommandNewHighLow (QObject *p) : Command (p)
 {
-  _type = "NEW_HIGH_LOW";
+  _name = "NEW_HIGH_LOW";
   _method << "HIGH" << "LOW";
 }
 
@@ -41,6 +41,7 @@ int CommandNewHighLow::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -49,15 +50,23 @@ int CommandNewHighLow::runScript (Message *sg, Script *script)
   if (method == -1)
   {
     _message << "invalid METHOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   int flag = 0;
   int rc = getNewHighLow(in, method, flag);
   if (rc)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   _returnString = QString::number(flag);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

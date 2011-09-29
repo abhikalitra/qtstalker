@@ -33,7 +33,7 @@
 
 CommandSZ::CommandSZ (QObject *p) : Command (p)
 {
-  _type = "SZ";
+  _name = "SZ";
   _method << "LONG" << "SHORT";
 }
 
@@ -44,12 +44,14 @@ int CommandSZ::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
     _message << "invalid OUTPUT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -58,6 +60,7 @@ int CommandSZ::runScript (Message *sg, Script *script)
   if (! ihigh)
   {
     _message << "invalid HIGH " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -66,6 +69,7 @@ int CommandSZ::runScript (Message *sg, Script *script)
   if (! ilow)
   {
     _message << "invalid LOW " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -74,6 +78,7 @@ int CommandSZ::runScript (Message *sg, Script *script)
   if (method == -1)
   {
     _message << "invalid METHOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -82,6 +87,7 @@ int CommandSZ::runScript (Message *sg, Script *script)
   if (! period)
   {
     _message << "invalid PERIOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -90,6 +96,7 @@ int CommandSZ::runScript (Message *sg, Script *script)
   if (! no_decline_period)
   {
     _message << "invalid PERIOD_NO_DECLINE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -98,6 +105,7 @@ int CommandSZ::runScript (Message *sg, Script *script)
   if (! coefficient)
   {
     _message << "invalid COEFFICIENT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -106,9 +114,16 @@ int CommandSZ::runScript (Message *sg, Script *script)
 
   Data *pl = getSZ(list, method, period->toInteger(), no_decline_period->toInteger(), coefficient->toDouble());
   if (! pl)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(name->toString(), pl);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

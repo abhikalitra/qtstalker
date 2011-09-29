@@ -22,7 +22,6 @@
 #include "CommandMessage.h"
 #include "Globals.h"
 #include "CommandFactory.h"
-//#include "DataFactory.h"
 #include "Chart.h"
 #include "ChartUpdate.h"
 
@@ -32,64 +31,35 @@ CommandMessage::CommandMessage ()
 {
 }
 
-//int CommandMessage::message (IPCMessage m, QString d)
-int CommandMessage::message (IPCMessage m, Data *dg)
+int CommandMessage::message (Data *d)
 {
-/*
-  DataFactory dfac;
-  Data *dg = dfac.data(m.dataType());
-  if (! dg)
-  {
-    qDebug() << "CommandMessage::message: invalid data type" << m.dataType();
-    return 1;
-  }
-
-  if (! d.isEmpty())
-  {
-    if (dg->fromString(d))
-    {
-      qDebug() << "CommandMessage::message: invalid data" << d;
-      delete dg;
-      return 1;
-    }
-  }
-*/
-
   CommandFactory fac;
 
-  switch ((CommandFactory::Type) fac.stringToType(m.command()))
+  switch ((CommandFactory::Type) fac.stringToType(d->command()))
   {
     case CommandFactory::_CHART:
     {
       Chart chart;
-      chart.run(m, dg);
-      delete dg;
+      chart.run(d);
+      delete d;
       break;
     }
     case CommandFactory::_CHART_PANEL_REFRESH:
       g_chartPanel->refresh();
-      delete dg;
+      delete d;
       break;
     case CommandFactory::_CHART_UPDATE:
     {
       ChartUpdate cu;
-      cu.run(m, dg);
+      cu.run(d);
       break;
     }
     case CommandFactory::_GROUP_PANEL_REFRESH:
       g_groupPanel->updateGroups();
-      delete dg;
-      break;
-    case CommandFactory::_SCRIPT_DONE:
-      g_scriptPanel->done(dg->get("SCRIPT")->toString());
-      delete dg;
-      break;
-    case CommandFactory::_SCRIPT_START:
-      g_scriptPanel->runScript(dg->get("SCRIPT")->toString(), dg->get("COMMAND")->toString());
-      delete dg;
+      delete d;
       break;
     default:
-      delete dg;
+      delete d;
       return 1;
       break;
   }

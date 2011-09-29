@@ -32,7 +32,7 @@
 
 CommandCompare::CommandCompare (QObject *p) : Command (p)
 {
-  _type = "COMPARE";
+  _name = "COMPARE";
 }
 
 int CommandCompare::runScript (Message *sg, Script *script)
@@ -44,6 +44,7 @@ int CommandCompare::runScript (Message *sg, Script *script)
   if (name.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -53,6 +54,7 @@ int CommandCompare::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "invalid INPUT_1 " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   int offset = in->offset();
@@ -64,6 +66,7 @@ int CommandCompare::runScript (Message *sg, Script *script)
   if (op == -1)
   {
     _message << "invalid OP " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -73,6 +76,7 @@ int CommandCompare::runScript (Message *sg, Script *script)
   if (! in2)
   {
     _message << "invalid INPUT_2 " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   int offset2 = in2->offset();
@@ -83,6 +87,7 @@ int CommandCompare::runScript (Message *sg, Script *script)
   if (! in3)
   {
     _message << "invalid RESULT_1 " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   int offset3 = in3->offset();
@@ -94,6 +99,7 @@ int CommandCompare::runScript (Message *sg, Script *script)
   if (! in4)
   {
     _message << "invalid RESULT_4 " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   int offset4 = in4->offset();
@@ -105,6 +111,7 @@ int CommandCompare::runScript (Message *sg, Script *script)
   if (vdi.curveKeys(list, keys))
   {
     _message << "invalid keys";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -143,6 +150,10 @@ int CommandCompare::runScript (Message *sg, Script *script)
   }
 
   script->setData(name, line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

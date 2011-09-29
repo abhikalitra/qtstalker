@@ -29,7 +29,7 @@
 
 CommandShift::CommandShift (QObject *p) : Command (p)
 {
-  _type = "SHIFT";
+  _name = "SHIFT";
 }
 
 int CommandShift::runScript (Message *sg, Script *script)
@@ -39,12 +39,14 @@ int CommandShift::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
     _message << "invalid OUTPUT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -53,6 +55,7 @@ int CommandShift::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -61,14 +64,22 @@ int CommandShift::runScript (Message *sg, Script *script)
   if (! period)
   {
     _message << "invalid PERIOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   Data *line = getShift(in, period->toInteger());
   if (! line)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(name->toString(), line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

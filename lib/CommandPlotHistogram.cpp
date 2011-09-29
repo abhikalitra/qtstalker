@@ -36,7 +36,7 @@
 
 CommandPlotHistogram::CommandPlotHistogram (QObject *p) : Command (p)
 {
-  _type = "PLOT_HISTOGRAM";
+  _name = "PLOT_HISTOGRAM";
 }
 
 int CommandPlotHistogram::runScript (Message *sg, Script *script)
@@ -45,7 +45,8 @@ int CommandPlotHistogram::runScript (Message *sg, Script *script)
   QString name = sg->value("OUTPUT");
   if (name.isEmpty())
   {
-    _message << "invalid OUTPUT";
+    qDebug() << "CommandPlotHistogram::runScript: invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -53,7 +54,8 @@ int CommandPlotHistogram::runScript (Message *sg, Script *script)
   QString chart = sg->value("CHART");
   if (chart.isEmpty())
   {
-    _message << "invalid CHART";
+    qDebug() << "CommandPlotHistogram::runScript: invalid CHART";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -62,7 +64,8 @@ int CommandPlotHistogram::runScript (Message *sg, Script *script)
   QString style = sg->value("STYLE");
   if (ls.stringToStyle(style) == -1)
   {
-    _message << "invalid STYLE " + style;
+    qDebug() << "CommandPlotHistogram::runScript: invalid STYLE" << style;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -72,7 +75,8 @@ int CommandPlotHistogram::runScript (Message *sg, Script *script)
   Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
   if (! color)
   {
-    _message << "invalid COLOR " + s;
+    qDebug() << "CommandPlotHistogram::runScript: invalid COLOR" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -81,7 +85,8 @@ int CommandPlotHistogram::runScript (Message *sg, Script *script)
   Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
   if (! z)
   {
-    _message << "invalid Z " + s;
+    qDebug() << "CommandPlotHistogram::runScript: invalid Z" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -90,7 +95,8 @@ int CommandPlotHistogram::runScript (Message *sg, Script *script)
   Setting *pen = vdi.setting(SettingFactory::_INTEGER, script, s);
   if (! pen)
   {
-    _message << "invalid PEN " + s;
+    qDebug() << "CommandPlotHistogram::runScript: invalid PEN" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -99,7 +105,8 @@ int CommandPlotHistogram::runScript (Message *sg, Script *script)
   Data *ihigh = vdi.curveAll(script, s);
   if (! ihigh)
   {
-    _message << "invalid HIGH";
+    qDebug() << "CommandPlotHistogram::runScript: invalid HIGH";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -108,7 +115,8 @@ int CommandPlotHistogram::runScript (Message *sg, Script *script)
   Data *ilow = vdi.curveAll(script, s);
   if (! ilow)
   {
-    _message << "invalid LOW";
+    qDebug() << "CommandPlotHistogram::runScript: invalid LOW";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -119,7 +127,8 @@ int CommandPlotHistogram::runScript (Message *sg, Script *script)
   QList<int> keys;
   if (vdi.curveKeys(list, keys))
   {
-    _message << "invalid keys";
+    qDebug() << "CommandPlotHistogram::runScript: invalid keys";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -150,6 +159,10 @@ int CommandPlotHistogram::runScript (Message *sg, Script *script)
   }
 
   script->setData(name, line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

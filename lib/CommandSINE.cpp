@@ -32,7 +32,7 @@
 
 CommandSINE::CommandSINE (QObject *p) : Command (p)
 {
-  _type = "HT_SINE";
+  _name = "HT_SINE";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -46,12 +46,14 @@ int CommandSINE::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_SINE";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *sname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! sname)
   {
     _message << "invalid OUTPUT_SINE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -59,12 +61,14 @@ int CommandSINE::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_LEAD";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *lname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! lname)
   {
     _message << "invalid OUTPUT_LEAD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -73,6 +77,7 @@ int CommandSINE::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -83,11 +88,16 @@ int CommandSINE::runScript (Message *sg, Script *script)
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   script->setData(sname->toString(), lines.at(0));
   script->setData(lname->toString(), lines.at(1));
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

@@ -32,7 +32,7 @@
 
 CommandColor::CommandColor (QObject *p) : Command (p)
 {
-  _type = "COLOR";
+  _name = "COLOR";
 }
 
 int CommandColor::runScript (Message *sg, Script *script)
@@ -45,6 +45,7 @@ int CommandColor::runScript (Message *sg, Script *script)
   if (! color)
   {
     _message << "invalid COLOR " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -54,6 +55,7 @@ int CommandColor::runScript (Message *sg, Script *script)
   if (! line)
   {
     _message << "INPUT_1 not found " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   int offset = line->offset();
@@ -65,6 +67,7 @@ int CommandColor::runScript (Message *sg, Script *script)
   if (op == -1)
   {
     _message << "invalid OP " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -74,6 +77,7 @@ int CommandColor::runScript (Message *sg, Script *script)
   if (! line2)
   {
     _message << "invalid INPUT_2 " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   int offset2 = line2->offset();
@@ -84,6 +88,7 @@ int CommandColor::runScript (Message *sg, Script *script)
   if (! line3)
   {
     _message << "INPUT_3 not found " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   int offset3 = line3->offset();
@@ -95,6 +100,7 @@ int CommandColor::runScript (Message *sg, Script *script)
   if (vdi.curveKeys(list, keys))
   {
     _message << "invalid keys";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -120,6 +126,10 @@ int CommandColor::runScript (Message *sg, Script *script)
     if (top.test(v, op, v2))
       bar3->set(CurveBar::_COLOR, new SettingColor(color->toColor()));
   }
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

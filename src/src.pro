@@ -186,4 +186,3 @@ QT += core
 QT += gui
 QT += sql
 QT += network
-QT += dbus

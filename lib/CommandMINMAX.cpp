@@ -32,7 +32,7 @@
 
 CommandMINMAX::CommandMINMAX (QObject *p) : Command (p)
 {
-  _type = "MINMAX";
+  _name = "MINMAX";
   _method << "MIN" << "MAX";
 
   TA_RetCode rc = TA_Initialize();
@@ -47,12 +47,14 @@ int CommandMINMAX::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
     _message << "invalid OUTPUT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -61,6 +63,7 @@ int CommandMINMAX::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -69,6 +72,7 @@ int CommandMINMAX::runScript (Message *sg, Script *script)
   if (! period)
   {
     _message << "invalid PERIOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -77,14 +81,22 @@ int CommandMINMAX::runScript (Message *sg, Script *script)
   if (method == -1)
   {
     _message << "invalid METHOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   Data *line = getMINMAX(in, period->toInteger(), method);
   if (! line)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(name->toString(), line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

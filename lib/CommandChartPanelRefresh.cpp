@@ -20,24 +20,24 @@
  */
 
 #include "CommandChartPanelRefresh.h"
-#include "IPCMessage.h"
-#include "MessageSend.h"
 
 #include <QtDebug>
 
 CommandChartPanelRefresh::CommandChartPanelRefresh (QObject *p) : Command (p)
 {
-  _type = "CHART_PANEL_REFRESH";
+  _name = "CHART_PANEL_REFRESH";
 }
 
 int CommandChartPanelRefresh::runScript (Message *, Script *script)
 {
-  Data d;
+  Data *d = new Data;
+  d->setCommand(_name);
+  d->setScriptFile(script->file());
+  emit signalMessage(d);
 
-  IPCMessage ipcm(script->session(), _type, "*", script->file(), QString::number(d.type()));
+  _returnString = "OK";
 
-  MessageSend ms(this);
-  ms.send(ipcm, d.toString());
+  emit signalResume((void *) this);
 
   return _OK;
 }

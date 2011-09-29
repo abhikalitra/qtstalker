@@ -28,7 +28,7 @@
 
 CommandBreakout::CommandBreakout (QObject *p) : Command (p)
 {
-  _type = "BREAKOUT";
+  _name = "BREAKOUT";
 
   _method << "ABOVE" << "BELOW";
 }
@@ -41,6 +41,7 @@ int CommandBreakout::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT_1 missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -49,6 +50,7 @@ int CommandBreakout::runScript (Message *sg, Script *script)
   if (! in2)
   {
     _message << "INPUT_2 missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -57,15 +59,23 @@ int CommandBreakout::runScript (Message *sg, Script *script)
   if (method == -1)
   {
     _message << "invalid METHOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   int flag = 0;
   int rc = breakout(in, in2, method, flag);
   if (rc)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   _returnString = QString::number(flag);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

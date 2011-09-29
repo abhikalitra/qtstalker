@@ -32,7 +32,7 @@
 
 CommandVBP::CommandVBP (QObject *p) : Command (p)
 {
-  _type = "VBP";
+  _name = "VBP";
 }
 
 int CommandVBP::runScript (Message *sg, Script *script)
@@ -42,12 +42,14 @@ int CommandVBP::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
     _message << "invalid OUTPUT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -56,6 +58,7 @@ int CommandVBP::runScript (Message *sg, Script *script)
   if (! iclose)
   {
     _message << "invalid CLOSE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -64,6 +67,7 @@ int CommandVBP::runScript (Message *sg, Script *script)
   if (! ivol)
   {
     _message << "invalid VOLUME " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -72,6 +76,7 @@ int CommandVBP::runScript (Message *sg, Script *script)
   if (! upColor)
   {
     _message << "invalid COLOR_UP " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -80,6 +85,7 @@ int CommandVBP::runScript (Message *sg, Script *script)
   if (! downColor)
   {
     _message << "invalid COLOR_DOWN " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -88,9 +94,16 @@ int CommandVBP::runScript (Message *sg, Script *script)
 
   Data *line = getVBP(list, upColor->toColor(), downColor->toColor());
   if (! line)
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
 
   script->setData(name->toString(), line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

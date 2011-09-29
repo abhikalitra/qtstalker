@@ -20,8 +20,6 @@
  */
 
 #include "CommandChart.h"
-#include "IPCMessage.h"
-#include "MessageSend.h"
 #include "SettingString.h"
 #include "SettingBool.h"
 #include "SettingInteger.h"
@@ -30,23 +28,24 @@
 
 CommandChart::CommandChart (QObject *p) : Command (p)
 {
-  _type = "CHART";
+  _name = "CHART";
 }
 
 int CommandChart::runScript (Message *sg, Script *script)
 {
-  Data d;
+  Data *d = new Data;
   SettingString *name = new SettingString(QString("Chart"));
   QString s = sg->value("NAME");
   if (name->set(s, (void *) script))
   {
     if (name->set(s))
     {
-      _message << "invalid NAME " + s;
+      qDebug() <<  "CommandChart::runScript: invalid NAME" << s;
+      emit signalResume((void *) this);
       return _ERROR;
     }
   }
-  d.set("NAME", name);
+  d->set("NAME", name);
 
   SettingBool *date = new SettingBool(TRUE);
   s = sg->value("DATE");
@@ -54,11 +53,12 @@ int CommandChart::runScript (Message *sg, Script *script)
   {
     if (date->set(s))
     {
-      _message << "invalid DATE " + s;
+      qDebug() << "CommandChart::runScript: invalid DATE" << s;
+      emit signalResume((void *) this);
       return _ERROR;
     }
   }
-  d.set("DATE", date);
+  d->set("DATE", date);
 
   SettingBool *log = new SettingBool(FALSE);
   s = sg->value("LOG");
@@ -66,11 +66,12 @@ int CommandChart::runScript (Message *sg, Script *script)
   {
     if (log->set(s))
     {
-      _message << "invalid LOG " + s;
+      qDebug() << "CommandChart::runScript: invalid LOG" << s;
+      emit signalResume((void *) this);
       return _ERROR;
     }
   }
-  d.set("LOG", log);
+  d->set("LOG", log);
 
   SettingInteger *row = new SettingInteger(0);
   s = sg->value("ROW");
@@ -78,11 +79,12 @@ int CommandChart::runScript (Message *sg, Script *script)
   {
     if (row->set(s))
     {
-      _message << "invalid ROW " + s;
+      qDebug() << "CommandChart::runScript: invalid ROW" << s;
+      emit signalResume((void *) this);
       return _ERROR;
     }
   }
-  d.set("ROW", row);
+  d->set("ROW", row);
 
   SettingInteger *col = new SettingInteger(0);
   s = sg->value("COL");
@@ -90,16 +92,20 @@ int CommandChart::runScript (Message *sg, Script *script)
   {
     if (col->set(s))
     {
-      _message << "invalid COL " + s;
+      qDebug() << "CommandChart::runScript: invalid COL" << s;
+      emit signalResume((void *) this);
       return _ERROR;
     }
   }
-  d.set("COL", col);
+  d->set("COL", col);
 
-  IPCMessage ipcm(script->session(), _type, "*", script->file(), QString::number(d.type()));
+  d->setCommand(_name);
+  d->setScriptFile(script->file());
+  emit signalMessage(d);
 
-  MessageSend ms(this);
-  ms.send(ipcm, d.toString());
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

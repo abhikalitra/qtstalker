@@ -33,7 +33,7 @@
 
 CommandMACD::CommandMACD (QObject *p) : Command (p)
 {
-  _type = "MACD";
+  _name = "MACD";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -47,12 +47,14 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_MACD";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *mname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! mname)
   {
     _message << "invalid OUTPUT_MACD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -60,12 +62,14 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_SIGNAL";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *sname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! sname)
   {
     _message << "invalid OUTPUT_SIGNAL " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -73,12 +77,14 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_HIST";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *hname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! hname)
   {
     _message << "invalid OUTPUT_HIST " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -87,6 +93,7 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -95,6 +102,7 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (! fperiod)
   {
     _message << "invalid PERIOD_FAST " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -104,6 +112,7 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (ftype == -1)
   {
     _message << "invalid MA_TYPE_FAST " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -112,6 +121,7 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (! speriod)
   {
     _message << "invalid PERIOD_SLOW " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -120,6 +130,7 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (stype == -1)
   {
     _message << "invalid MA_TYPE_SLOW " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -128,6 +139,7 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (! sigperiod)
   {
     _message << "invalid PERIOD_SIGNAL " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -136,6 +148,7 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (sigtype == -1)
   {
     _message << "invalid MA_TYPE_SIGNAL " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -146,12 +159,17 @@ int CommandMACD::runScript (Message *sg, Script *script)
   if (lines.count() != 3)
   {
     qDeleteAll(lines);
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   script->setData(mname->toString(), lines.at(0));
   script->setData(sname->toString(), lines.at(1));
   script->setData(hname->toString(), lines.at(2));
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

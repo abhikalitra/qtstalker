@@ -21,7 +21,6 @@
 
 #include "CommandSymbolCurrent.h"
 #include "Strip.h"
-#include "SharedMemory.h"
 #include "Symbol.h"
 #include "CurveData.h"
 #include "CurveBar.h"
@@ -32,45 +31,31 @@
 #include "SettingFactory.h"
 
 #include <QtDebug>
-#include <QSharedMemory>
-#include <QSettings>
 
 CommandSymbolCurrent::CommandSymbolCurrent (QObject *p) : Command (p)
 {
-  _type = "SYMBOL_CURRENT";
+  _name = "SYMBOL_CURRENT";
+  _type = _THREAD;
 }
 
 int CommandSymbolCurrent::runScript (Message *sg, Script *script)
 {
-  QSettings settings("QtStalker/qtstalkerrc");
-  QSharedMemory sm(settings.value("shared_memory_key").toString());
-
-  SharedMemory smd;
-  QString s;
-  if (smd.data(sm, s))
+  Data *bd = script->symbol();
+  if (! bd)
   {
-    _message << "shared memory error";
+    qDebug() << "CommandSymbolCurrent::runScript: invalid symbol";
+    emit signalResume((void *) this);
     return _ERROR;
   }
-
-  Data *bd = new Symbol;
-  if (bd->fromString(s))
-  {
-    _message << "Data::fromString error " + s;
-    delete bd;
-    return _ERROR;
-  }
-
-  // dump to dialog
-//  message(script->session(), s);
 
   // date
   VerifyDataInput vdi;
-  s = sg->value("DATE");
+  QString s = sg->value("DATE");
   Setting *set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid DATE " + s;
+    qDebug() << "CommandSymbolCurrent::runScript: invalid DATE" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Data *dline = new CurveData;
@@ -81,7 +66,8 @@ int CommandSymbolCurrent::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid OPEN " + s;
+    qDebug() << "CommandSymbolCurrent::runScript: invalid OPEN" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Data *oline = new CurveData;
@@ -92,7 +78,8 @@ int CommandSymbolCurrent::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandSymbolCurrent::runScript: invalid HIGH" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Data *hline = new CurveData;
@@ -103,7 +90,8 @@ int CommandSymbolCurrent::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandSymbolCurrent::runScript: invalid LOW" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Data *lline = new CurveData;
@@ -114,7 +102,8 @@ int CommandSymbolCurrent::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid CLOSE " + s;
+    qDebug() << "CommandSymbolCurrent::runScript: invalid CLOSE" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Data *cline = new CurveData;
@@ -125,7 +114,8 @@ int CommandSymbolCurrent::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid VOLUME " + s;
+    qDebug() << "CommandSymbolCurrent::runScript: invalid VOLUME" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Data *vline = new CurveData;
@@ -136,7 +126,8 @@ int CommandSymbolCurrent::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid OI " + s;
+    qDebug() << "CommandSymbolCurrent::runScript: invalid OI" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Data *iline = new CurveData;
@@ -178,7 +169,9 @@ int CommandSymbolCurrent::runScript (Message *sg, Script *script)
     iline->set(loop, db);
   }
 
-  delete bd;
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

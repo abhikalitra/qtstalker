@@ -34,7 +34,7 @@
 
 CommandPlotLine::CommandPlotLine (QObject *p) : Command (p)
 {
-  _type = "PLOT_LINE";
+  _name = "PLOT_LINE";
 }
 
 int CommandPlotLine::runScript (Message *sg, Script *script)
@@ -46,7 +46,8 @@ int CommandPlotLine::runScript (Message *sg, Script *script)
   Data *in = vdi.curve(script, s);
   if (! in)
   {
-    _message << "INPUT not found " + s;
+    qDebug() << "CommandPlotLine::runScript: INPUT not found" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -54,7 +55,8 @@ int CommandPlotLine::runScript (Message *sg, Script *script)
   QString chart = sg->value("CHART");
   if (chart.isEmpty())
   {
-    _message << "invalid CHART";
+    qDebug() << "CommandPlotLine::runScript: invalid CHART";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -62,7 +64,8 @@ int CommandPlotLine::runScript (Message *sg, Script *script)
   QString name = sg->value("OUTPUT");
   if (name.isEmpty())
   {
-    _message << "invalid OUTPUT " + name;
+    qDebug() << "CommandPlotLine::runScript: invalid OUTPUT" << name;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -77,7 +80,8 @@ int CommandPlotLine::runScript (Message *sg, Script *script)
   Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
   if (! color)
   {
-    _message << "invalid COLOR " + s;
+    qDebug() << "CommandPlotLine::runScript: invalid COLOR" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -86,7 +90,8 @@ int CommandPlotLine::runScript (Message *sg, Script *script)
   Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
   if (! z)
   {
-    _message << "invalid Z " + s;
+    qDebug() << "CommandPlotLine::runScript: invalid Z" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -95,7 +100,8 @@ int CommandPlotLine::runScript (Message *sg, Script *script)
   Setting *pen = vdi.setting(SettingFactory::_INTEGER, script, s);
   if (! pen)
   {
-    _message << "invalid PEN " + s;
+    qDebug() << "CommandPlotLine::runScript: invalid PEN" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -105,7 +111,8 @@ int CommandPlotLine::runScript (Message *sg, Script *script)
   QList<int> keys;
   if (vdi.curveKeys(list, keys))
   {
-    _message << "invalid keys";
+    qDebug() << "CommandPlotLine::runScript: invalid keys";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -131,6 +138,10 @@ int CommandPlotLine::runScript (Message *sg, Script *script)
   }
 
   script->setData(name, line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

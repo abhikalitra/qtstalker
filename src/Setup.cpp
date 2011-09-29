@@ -30,7 +30,6 @@
 #include <QDir>
 #include <QStringList>
 #include <QSettings>
-#include <QUuid>
 
 Setup::Setup ()
 {
@@ -61,15 +60,6 @@ void Setup::setup (QObject *, QString session)
     settings.setValue("default_indicators", 1);
     settings.sync();
   }
-
-  // setup shared memory
-  QUuid uid = QUuid::createUuid();
-  g_sharedCurrentSymbol.setKey(uid.toString());
-
-  // save shared memory key
-  QSettings settings2(g_globalSettings);
-  settings2.setValue("shared_memory_key", g_sharedCurrentSymbol.key());
-  settings2.sync();
 }
 
 void Setup::setupDirectories ()

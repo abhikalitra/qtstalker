@@ -32,7 +32,7 @@
 
 CommandULTOSC::CommandULTOSC (QObject *p) : Command (p)
 {
-  _type = "ULTOSC";
+  _name = "ULTOSC";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -46,12 +46,14 @@ int CommandULTOSC::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
     _message << "invalid OUTPUT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -60,6 +62,7 @@ int CommandULTOSC::runScript (Message *sg, Script *script)
   if (! ihigh)
   {
     _message << "invalid HIGH " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -68,6 +71,7 @@ int CommandULTOSC::runScript (Message *sg, Script *script)
   if (! ilow)
   {
     _message << "invalid LOW " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -76,6 +80,7 @@ int CommandULTOSC::runScript (Message *sg, Script *script)
   if (! iclose)
   {
     _message << "invalid CLOSE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -84,6 +89,7 @@ int CommandULTOSC::runScript (Message *sg, Script *script)
   if (! sp)
   {
     _message << "invalid PERIOD_SHORT " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -92,6 +98,7 @@ int CommandULTOSC::runScript (Message *sg, Script *script)
   if (! mp)
   {
     _message << "invalid PERIOD_MED " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -100,6 +107,7 @@ int CommandULTOSC::runScript (Message *sg, Script *script)
   if (! lp)
   {
     _message << "invalid PERIOD_LONG " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -108,9 +116,16 @@ int CommandULTOSC::runScript (Message *sg, Script *script)
 
   Data *line = getULTOSC(list, sp->toInteger(), mp->toInteger(), lp->toInteger());
   if (! line)
-    return 1;
+  {
+    emit signalResume((void *) this);
+    return _ERROR;
+  }
 
   script->setData(name->toString(), line);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

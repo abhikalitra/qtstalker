@@ -36,7 +36,8 @@ class Command : public QObject
   Q_OBJECT
 
   signals:
-    void signalMessage(QString);
+    void signalMessage (Data *);
+    void signalResume (void *);
 
   public:
     enum ReturnCode
@@ -45,17 +46,25 @@ class Command : public QObject
       _ERROR
     };
 
+    enum Type
+    {
+      _NORMAL,
+      _DIALOG,
+      _THREAD
+    };
+
     Command (QObject *);
-    virtual int request (Message *, Message *);
+    ~Command ();
     virtual int runScript (Message *, Script *);
 
-    QString type ();
+    QString name ();
+    int type ();
     QString returnString ();
-    QString message ();
     void setWidgetParent (QWidget *);
 
   protected:
-    QString _type;
+    int _type;
+    QString _name;
     QString _returnString;
     QStringList _message;
     QWidget *_widgetParent;

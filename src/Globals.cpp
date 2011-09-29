@@ -11,5 +11,4 @@ GroupPage * g_groupPanel = 0;
 ScriptPage * g_scriptPanel = 0;
 SidePanel * g_sidePanel = 0;
 Data * g_currentSymbol;
-QSharedMemory g_sharedCurrentSymbol;
 PlotGroup * g_plotGroup = 0;

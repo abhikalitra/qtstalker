@@ -108,9 +108,6 @@ TEMPLATE = subdirs
 # compile qtstalker lib
 SUBDIRS += lib
 
-# compile QtStalkerScript
-SUBDIRS += QtStalkerScript
-
 # compile app
 SUBDIRS += src
 

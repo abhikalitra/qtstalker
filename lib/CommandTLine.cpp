@@ -34,7 +34,7 @@
 
 CommandTLine::CommandTLine (QObject *p) : Command (p)
 {
-  _type = "CHART_OBJECT_TLINE";
+  _name = "CHART_OBJECT_TLINE";
 }
 
 int CommandTLine::runScript (Message *sg, Script *script)
@@ -46,6 +46,7 @@ int CommandTLine::runScript (Message *sg, Script *script)
   if (! color)
   {
     _message << "invalid COLOR " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -55,6 +56,7 @@ int CommandTLine::runScript (Message *sg, Script *script)
   if (! date)
   {
     _message << "invalid START_DATE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -64,6 +66,7 @@ int CommandTLine::runScript (Message *sg, Script *script)
   if (! date2)
   {
     _message << "invalid END_DATE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -73,6 +76,7 @@ int CommandTLine::runScript (Message *sg, Script *script)
   if (! price)
   {
     _message << "invalid START_PRICE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -82,6 +86,7 @@ int CommandTLine::runScript (Message *sg, Script *script)
   if (! price2)
   {
     _message << "invalid END_PRICE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -91,6 +96,7 @@ int CommandTLine::runScript (Message *sg, Script *script)
   if (! chart)
   {
     _message << "invalid CHART " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -100,6 +106,7 @@ int CommandTLine::runScript (Message *sg, Script *script)
   if (! z)
   {
     _message << "invalid Z " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -118,6 +125,10 @@ int CommandTLine::runScript (Message *sg, Script *script)
   co->set(ChartObjectData::_TYPE, new SettingString(QString("TLine")));
 
   script->setData(QString::number(id), co);
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

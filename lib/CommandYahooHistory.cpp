@@ -29,7 +29,8 @@
 
 CommandYahooHistory::CommandYahooHistory (QObject *p) : Command (p)
 {
-  _type = "YAHOO_HISTORY";
+  _name = "YAHOO_HISTORY";
+  _type = _THREAD;
 }
 
 int CommandYahooHistory::runScript (Message *sg, Script *script)
@@ -40,7 +41,8 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
   Setting *sd = vdi.setting(SettingFactory::_DATETIME, script, s);
   if (! sd)
   {
-    _message << "invalid DATE_START " + s;
+    qDebug() << "CommandYahooHistory::runScript: invalid DATE_START" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -49,7 +51,8 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
   Setting *ed = vdi.setting(SettingFactory::_DATETIME, script, s);
   if (! ed)
   {
-    _message << "invalid DATE_END " + s;
+    qDebug() << "CommandYahooHistory::runScript: invalid DATE_END " << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -58,7 +61,8 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
   Setting *adjusted = vdi.setting(SettingFactory::_BOOL, script, s);
   if (! adjusted)
   {
-    _message << "invalid ADJUSTED " + s;
+    qDebug() << "CommandYahooHistory::runScript: invalid ADJUSTED " << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -67,7 +71,8 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
   Setting *outFile = vdi.setting(SettingFactory::_FILE, script, s);
   if (! outFile)
   {
-    _message << "invalid CSV_FILE " + s;
+    qDebug() << "CommandYahooHistory::runScript: invalid CSV_FILE " << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -76,20 +81,23 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
   Setting *symbolFile = vdi.setting(SettingFactory::_FILE, script, s);
   if (! symbolFile)
   {
-    _message << "invalid SYMBOL_FILE " + s;
+    qDebug() << "CommandYahooHistory::runScript: invalid SYMBOL_FILE " << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
   QStringList symbolFiles = symbolFile->toList();
   if (! symbolFiles.count())
   {
-    _message << "SYMBOL_FILE missing";
+    qDebug() << "CommandYahooHistory::runScript: SYMBOL_FILE missing";
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   QFile f2(outFile->toString());
   if (! f2.open(QIODevice::WriteOnly | QIODevice::Text))
   {
-    _message << "file error " + outFile->toString();
+    qDebug() << "CommandYahooHistory::runScript: file error " << outFile->toString();
+    emit signalResume((void *) this);
     return _ERROR;
   }
   QTextStream out(&f2);
@@ -102,7 +110,7 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
     QFile f(symbolFiles.at(loop));
     if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      _message << "file error " + symbolFiles.at(loop);
+      qDebug() << "CommandYahooHistory::runScript: file error " << symbolFiles.at(loop);
       continue;
     }
 
@@ -134,6 +142,10 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
 
     f.close();
   }
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }
@@ -174,9 +186,7 @@ void CommandYahooHistory::parse (QByteArray &ba, QString &symbol, QString &name,
     QStringList l = ts.split(",");
     if (l.count() != 7)
     {
-      QStringList tl;
-      tl << symbol << tr("line") << QString::number(line) << tr("# of bar fields, record skipped");
-      _message << tl.join(" ");
+      qDebug() << "CommandYahooHistory::parse: symbol" << tr("line") << QString::number(line) << tr("# of bar fields, record skipped");
       error++;
       continue;
     }
@@ -187,9 +197,7 @@ void CommandYahooHistory::parse (QByteArray &ba, QString &symbol, QString &name,
       double adjclose = l[6].toDouble(&ok);
       if (! ok)
       {
-        QStringList tl;
-        tl << symbol << tr("line") << QString::number(line) << tr("invalid adjusted close, record skipped");
-        _message << tl.join(" ");
+        qDebug() << "CommandYahooHistory::parse: symbol"  << symbol << tr("line") << QString::number(line) << tr("invalid adjusted close, record skipped");
         error++;
         continue;
       }

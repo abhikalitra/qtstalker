@@ -69,11 +69,12 @@ void AddIndicator::addIndicator2 (QString command, QString file)
   settings.sync();
 
   // launch indicator
-  Script script(0);
-  script.setFile(file);
-  script.setCommand(command);
-  script.setSession(g_session);
-  script.run();
+  Script *script = new Script(g_parent);
+  connect(script, SIGNAL(signalMessage(Data *)), g_scriptPanel, SLOT(scriptMessage(Data *)));
+  script->setFile(file);
+  script->setCommand(command);
+  script->setSymbol(g_currentSymbol);
+  script->run();
 
   done();
 }

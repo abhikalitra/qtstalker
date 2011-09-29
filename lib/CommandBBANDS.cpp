@@ -33,7 +33,7 @@
 
 CommandBBANDS::CommandBBANDS (QObject *p) : Command (p)
 {
-  _type = "BBANDS";
+  _name = "BBANDS";
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
@@ -47,12 +47,14 @@ int CommandBBANDS::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_UPPER";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *uname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! uname)
   {
     _message << "invalid OUTPUT_UPPER " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -60,12 +62,14 @@ int CommandBBANDS::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_MIDDLE";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *mname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! mname)
   {
     _message << "invalid OUTPUT_MIDDLE " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -73,12 +77,14 @@ int CommandBBANDS::runScript (Message *sg, Script *script)
   if (s.isEmpty())
   {
     _message << "invalid OUTPUT_LOWER";
+    emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *lname = vdi.setting(SettingFactory::_STRING, script, s);
   if (! lname)
   {
     _message << "invalid OUTPUT_LOWER " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -87,6 +93,7 @@ int CommandBBANDS::runScript (Message *sg, Script *script)
   if (! in)
   {
     _message << "INPUT missing " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -95,6 +102,7 @@ int CommandBBANDS::runScript (Message *sg, Script *script)
   if (! period)
   {
     _message << "invalid PERIOD " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -104,6 +112,7 @@ int CommandBBANDS::runScript (Message *sg, Script *script)
   if (type == -1)
   {
     qDebug() << _type << "::runScript: invalid MA_TYPE" << s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -112,6 +121,7 @@ int CommandBBANDS::runScript (Message *sg, Script *script)
   if (! udev)
   {
     _message << "invalid DEV_UP " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -120,6 +130,7 @@ int CommandBBANDS::runScript (Message *sg, Script *script)
   if (! ldev)
   {
     _message << "invalid DEV_DOWN " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -130,12 +141,17 @@ int CommandBBANDS::runScript (Message *sg, Script *script)
   if (lines.count() != 3)
   {
     qDeleteAll(lines);
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   script->setData(uname->toString(), lines.at(0));
   script->setData(mname->toString(), lines.at(1));
   script->setData(lname->toString(), lines.at(2));
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

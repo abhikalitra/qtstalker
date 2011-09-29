@@ -25,6 +25,7 @@
 #include <QStringList>
 #include <QHash>
 #include <QObject>
+#include <QProcess>
 
 #include "Data.h"
 #include "Setting.h"
@@ -33,19 +34,22 @@ class Script : public QObject
 {
   Q_OBJECT
 
+  signals:
+    void signalDone (QString);
+    void signalMessage (Data *);
+    void signalStopped (QString);
+    void signalKill ();
+
   public:
     Script (QObject *);
     ~Script ();
     void clear ();
     void setData (QString, Data *);
     Data * data (QString);
-    void setSession (QString);
-    QString session ();
     void setName (QString);
     QString name ();
     void setFile (QString);
     QString & file ();
-    qint64 pid ();
     int count ();
     QList<QString> dataKeys ();
     int nextROID ();
@@ -53,21 +57,28 @@ class Script : public QObject
     QString command ();
     void setTSetting (Setting *);
     void setTData (Data *);
+    void setSymbol (Data *);
+    Data * symbol ();
+    void deleteData ();
 
   public slots:
     int run ();
-    int runWait ();
-    int kill ();
+    void readFromStdout ();
+    void readFromStderr ();
+    void done (int, QProcess::ExitStatus);
+    void stopScript ();
+    void resume (void *);
 
   protected:
-    qint64 _pid;
-    QString _session;
     QString _name;
     QString _file;
     QString _command;
     QHash<QString, Data *> _data;
     QList<Setting *> _tsettings;
     QList<Data *> _tdata;
+    QProcess *_proc;
+    int _killFlag;
+    Data *_symbol;
 };
 
 #endif

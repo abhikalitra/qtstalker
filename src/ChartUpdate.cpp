@@ -32,49 +32,38 @@
 #include <QtDebug>
 #include <QObject>
 #include <QString>
-#include <QTcpSocket>
 
 ChartUpdate::ChartUpdate ()
 {
 }
 
-int ChartUpdate::run (IPCMessage mess, Data *dg)
+int ChartUpdate::run (Data *dg)
 {
-  if (mess.type() == "CHART_DATE")
+  if (dg->commandType() == "CHART_DATE")
   {
     if (dateCurve(dg))
-    {
-      delete dg;
       return 1;
-    }
 
-    delete dg;
     return 0;
   }
 
-  if (mess.type() == "CURVE")
+  if (dg->commandType() == "CURVE")
   {
     if (curve(dg))
-    {
-      delete dg;
       return 1;
-    }
 
     return 0;
   }
 
-  if (mess.type() == "CHART_OBJECT")
+  if (dg->commandType() == "CHART_OBJECT")
   {
     if (chartObject(dg))
-    {
-      delete dg;
       return 1;
-    }
 
     return 0;
   }
 
-  if (mess.type() == "UPDATE")
+  if (dg->commandType() == "UPDATE")
   {
     if (update(dg))
     {

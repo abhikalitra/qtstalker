@@ -29,7 +29,7 @@
 
 CommandGroupSave::CommandGroupSave (QObject *p) : Command (p)
 {
-  _type = "GROUP_SAVE";
+  _name = "GROUP_SAVE";
 }
 
 int CommandGroupSave::runScript (Message *sg, Script *script)
@@ -42,6 +42,7 @@ int CommandGroupSave::runScript (Message *sg, Script *script)
   if (! name)
   {
     _message << "invalid NAME " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
@@ -51,14 +52,22 @@ int CommandGroupSave::runScript (Message *sg, Script *script)
   if (! symbols)
   {
     _message << "invalid SYMBOLS " + s;
+    emit signalResume((void *) this);
     return _ERROR;
   }
 
   GroupDataBase db;
   db.transaction();
   if (db.save(name->toString(), symbols->toList()))
+  {
+    emit signalResume((void *) this);
     return _ERROR;
+  }
   db.commit();
+
+  _returnString = "OK";
+
+  emit signalResume((void *) this);
 
   return _OK;
 }

@@ -29,18 +29,20 @@
 
 CommandDialog::CommandDialog (QObject *p) : Command (p)
 {
-  _type = "DIALOG";
+  _name = "DIALOG";
+  _type = _DIALOG;
 }
 
 int CommandDialog::runScript (Message *sg, Script *script)
 {
-  DataDialog dialog(_widgetParent);
-//  dialog.addTab(0, tr("Settings"));
+  DataDialog *dialog = new DataDialog(_widgetParent);
+  connect(dialog, SIGNAL(accepted()), this, SLOT(dialogAccepted()));
+  connect(dialog, SIGNAL(rejected()), this, SLOT(dialogRejected()));
 
   // verify TITLE
   QStringList l;
-  l << "QtStalker" + script->session() + ":" << sg->value("TITLE");
-  dialog.setWindowTitle(l.join(" "));
+  l << "QtStalker:" << sg->value("TITLE");
+  dialog->setWindowTitle(l.join(" "));
 
   int loop = 0;
   for (; loop < 20; loop++)
@@ -54,11 +56,11 @@ int CommandDialog::runScript (Message *sg, Script *script)
 
     if (d->type() != DataFactory::_DATA_SETTING)
     {
-      _message << s + " invalid";
+      qDebug() << "CommandDialog::runScript: invalid" << s;
       continue;
     }
 
-    dialog.set(d);
+    dialog->set(d);
   }
 
   for (loop = 0; loop < 5; loop++)
@@ -68,13 +70,21 @@ int CommandDialog::runScript (Message *sg, Script *script)
     if (s2.isEmpty())
       continue;
 
-    dialog.setTabTitle(loop, s2);
+    dialog->setTabTitle(loop, s2);
   }
 
-  int rc = dialog.exec();
-
-  if (rc == QDialog::Rejected)
-    return _ERROR;
+  dialog->show();
 
   return _OK;
+}
+
+void CommandDialog::dialogAccepted ()
+{
+  _returnString = "OK";
+  emit signalResume((void *) this);
+}
+
+void CommandDialog::dialogRejected ()
+{
+  emit signalResume((void *) this);
 }

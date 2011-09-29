@@ -31,9 +31,9 @@
 #include <QToolButton>
 #include <QHash>
 #include <QToolBar>
-#include <QProcess>
 
 #include "ScriptTimer.h"
+#include "Script.h"
 
 class ScriptPage : public QWidget
 {
@@ -69,7 +69,6 @@ class ScriptPage : public QWidget
     void runScript (QString file, QString command);
     void done (QString);
     void cancel ();
-    void cancel (QString);
     void launchButtonRows ();
     void launchButtonRows2 (int);
     void launchButtonCols ();
@@ -85,13 +84,14 @@ class ScriptPage : public QWidget
     void deleteScriptTimer2 (QStringList);
     void runStartupScripts ();
     void addScriptTimer (QString name, QString file, QString interval, QString command);
+    void scriptMessage (Data *);
 
   protected:
     QListWidget *_queList;
     QMenu *_queMenu;
     QHash<int, QAction *> _actions;
     QHash<QString, QListWidgetItem *> _itemList;
-    QHash<QString, qint64> _pids;
+    QHash<QString, Script *> _scripts;
     QHash<QString, ScriptTimer *> _timers;
 };
 

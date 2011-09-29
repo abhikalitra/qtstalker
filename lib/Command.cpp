@@ -21,9 +21,18 @@
 
 #include "Command.h"
 
+#include <QtDebug>
+
 Command::Command (QObject *p) : QObject (p)
 {
   _widgetParent = 0;
+  _type = _NORMAL;
+  _returnString = "ERROR";
+}
+
+Command::~Command ()
+{
+  qDebug() << "Command::~Command" << _name << "deleted";
 }
 
 int Command::runScript (Message *, Script *)
@@ -31,24 +40,19 @@ int Command::runScript (Message *, Script *)
   return 0;
 }
 
-int Command::request (Message *, Message *)
-{
-  return 0;
-}
-
-QString Command::type ()
+int Command::type ()
 {
   return _type;
+}
+
+QString Command::name ()
+{
+  return _name;
 }
 
 QString Command::returnString ()
 {
   return _returnString;
-}
-
-QString Command::message ()
-{
-  return _message.join("\n");
 }
 
 void Command::setWidgetParent (QWidget *d)
