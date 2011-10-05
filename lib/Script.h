@@ -26,9 +26,11 @@
 #include <QHash>
 #include <QObject>
 #include <QProcess>
+#include <QList>
 
 #include "Data.h"
 #include "Setting.h"
+#include "Symbol.h"
 
 class Script : public QObject
 {
@@ -36,7 +38,6 @@ class Script : public QObject
 
   signals:
     void signalDone (QString);
-    void signalMessage (Data *);
     void signalStopped (QString);
     void signalKill ();
 
@@ -57,8 +58,8 @@ class Script : public QObject
     QString command ();
     void setTSetting (Setting *);
     void setTData (Data *);
-    void setSymbol (Data *);
-    Data * symbol ();
+    void setSymbol (Symbol *);
+    Symbol * symbol ();
     void deleteData ();
 
   public slots:
@@ -78,7 +79,7 @@ class Script : public QObject
     QList<Data *> _tdata;
     QProcess *_proc;
     int _killFlag;
-    Data *_symbol;
+    Symbol *_symbol;
 };
 
 #endif

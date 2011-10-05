@@ -31,6 +31,7 @@ class CommandChart : public Command
   public:
     CommandChart (QObject *);
     int runScript (Message *, Script *);
+    void chart (QString chart, QString script, int row, int col, bool date, bool log);
 };
 
 #endif

@@ -35,8 +35,7 @@ class DataFactory
       _CURVE,
       _CURVE_BAR,
       _DATA,
-      _DATA_SETTING,
-      _SYMBOL
+      _DATA_SETTING
     };
 
     DataFactory ();

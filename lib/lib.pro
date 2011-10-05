@@ -6,12 +6,31 @@ CONFIG += thread warn_on debug qdbus
 QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 
 # headers
+
+HEADERS += AboutDialog.h
+HEADERS += AddIndicator.h
+
 HEADERS += BarLength.h
+HEADERS += BarLengthButton.h
+HEADERS += BarSpaceButton.h
+HEADERS += BuyDialog.h
 
 HEADERS += CandleType.h
+HEADERS += ChartLoad.h
+HEADERS += ChartObject.h
+HEADERS += ChartObjectBuy.h
 HEADERS += ChartObjectData.h
 HEADERS += ChartObjectDataBase.h
+HEADERS += ChartObjectDeleteAll.h
+HEADERS += ChartObjectFactory.h
+HEADERS += ChartObjectHLine.h
+HEADERS += ChartObjectRetracement.h
+HEADERS += ChartObjectSell.h
+HEADERS += ChartObjectText.h
+HEADERS += ChartObjectTLine.h
+HEADERS += ChartObjectVLine.h
 HEADERS += ChartObjectType.h
+HEADERS += ChartPage.h
 HEADERS += ColorButton.h
 HEADERS += Command.h
 HEADERS += CommandAD.h
@@ -89,16 +108,29 @@ HEADERS += CommandVLine.h
 HEADERS += CommandWILLR.h
 HEADERS += CommandWeightedClose.h
 HEADERS += CommandYahooHistory.h
+HEADERS += ConfigureButton.h
+HEADERS += ConfigureDialog.h
 HEADERS += ConfirmDialog.h
+HEADERS += ControlPanel.h
+HEADERS += CrossHairsButton.h
+HEADERS += Curve.h
 HEADERS += CurveBar.h
 HEADERS += CurveData.h
+HEADERS += CurveFactory.h
+HEADERS += CurveHistogram.h
+HEADERS += CurveLine.h
+HEADERS += CurveOHLC.h
 HEADERS += CurveType.h
 
 HEADERS += Data.h
 HEADERS += DataBase.h
 HEADERS += DataDialog.h
 HEADERS += DataFactory.h
+HEADERS += DataWindow.h
+HEADERS += DataWindowButton.h
 HEADERS += DateRange.h
+HEADERS += DateRangeControl.h
+HEADERS += DateScaleDraw.h
 HEADERS += DataSetting.h
 HEADERS += Dialog.h
 HEADERS += Doc.h
@@ -109,12 +141,28 @@ HEADERS += ExchangeSearchDialog.h
 HEADERS += FileButton.h
 HEADERS += FontButton.h
 
+HEADERS += Global.h
+HEADERS += GlobalControlPanel.h
+HEADERS += GlobalInfoPanel.h
+HEADERS += GlobalParent.h
+HEADERS += GlobalPlotGroup.h
+HEADERS += GlobalSidePanel.h
+HEADERS += GlobalSymbol.h
+HEADERS += GridButton.h
+HEADERS += GroupAdd.h
 HEADERS += GroupDataBase.h
+HEADERS += GroupDelete.h
 HEADERS += GroupEditDialog.h
+HEADERS += GroupNew.h
+HEADERS += GroupPage.h
+HEADERS += GUIGlobals.h
 
 HEADERS += HistogramStyle.h
+HEADERS += HLineDialog.h
 
 HEADERS += IconButton.h
+HEADERS += IndicatorDataBase.h
+HEADERS += InfoPanel.h
 
 HEADERS += LineEdit.h
 HEADERS += LineStyle.h
@@ -128,11 +176,30 @@ HEADERS += NewDialog.h
 HEADERS += OHLCStyle.h
 HEADERS += Operator.h
 
+HEADERS += PickerMachine.h
+HEADERS += Plot.h
+HEADERS += PlotGroup.h
+HEADERS += PlotInfo.h
+HEADERS += PlotMenu.h
+HEADERS += PlotPicker.h
+HEADERS += PlotScaleDraw.h
+
 HEADERS += QuoteDataBase.h
+
+HEADERS += RecentCharts.h
+HEADERS += RemoveIndicator.h
+HEADERS += RetracementDialog.h
 
 HEADERS += Script.h
 HEADERS += ScriptDataBase.h
+HEADERS += ScriptLaunchButton.h
+HEADERS += ScriptLaunchButtonDialog.h
+HEADERS += ScriptPage.h
+HEADERS += ScriptRunDialog.h
+HEADERS += ScriptTimer.h
+HEADERS += ScriptTimerDialog.h
 HEADERS += SelectDialog.h
+HEADERS += SellDialog.h
 HEADERS += Setting.h
 HEADERS += SettingBool.h
 HEADERS += SettingColor.h
@@ -144,24 +211,47 @@ HEADERS += SettingFont.h
 HEADERS += SettingInteger.h
 HEADERS += SettingList.h
 HEADERS += SettingString.h
+HEADERS += SidePanel.h
 HEADERS += Strip.h
 HEADERS += Symbol.h
 HEADERS += SymbolButton.h
+HEADERS += SymbolDelete.h
 HEADERS += SymbolDialog.h
 
 HEADERS += TALibInput.h
 HEADERS += TALibOutput.h
+HEADERS += TextDialog.h
+HEADERS += TLineDialog.h
 
 HEADERS += VerifyDataInput.h
+HEADERS += VLineDialog.h
 
 #sources
 
+SOURCES += AboutDialog.cpp
+SOURCES += AddIndicator.cpp
+
 SOURCES += BarLength.cpp
+SOURCES += BarLengthButton.cpp
+SOURCES += BarSpaceButton.cpp
+SOURCES += BuyDialog.cpp
 
 SOURCES += CandleType.cpp
+SOURCES += ChartLoad.cpp
+SOURCES += ChartObject.cpp
+SOURCES += ChartObjectBuy.cpp
 SOURCES += ChartObjectData.cpp
 SOURCES += ChartObjectDataBase.cpp
+SOURCES += ChartObjectDeleteAll.cpp
+SOURCES += ChartObjectFactory.cpp
+SOURCES += ChartObjectHLine.cpp
+SOURCES += ChartObjectRetracement.cpp
+SOURCES += ChartObjectSell.cpp
+SOURCES += ChartObjectText.cpp
+SOURCES += ChartObjectTLine.cpp
+SOURCES += ChartObjectVLine.cpp
 SOURCES += ChartObjectType.cpp
+SOURCES += ChartPage.cpp
 SOURCES += ColorButton.cpp
 SOURCES += Command.cpp
 SOURCES += CommandAD.cpp
@@ -239,16 +329,29 @@ SOURCES += CommandVLine.cpp
 SOURCES += CommandWILLR.cpp
 SOURCES += CommandWeightedClose.cpp
 SOURCES += CommandYahooHistory.cpp
+SOURCES += ConfigureButton.cpp
+SOURCES += ConfigureDialog.cpp
 SOURCES += ConfirmDialog.cpp
+SOURCES += ControlPanel.cpp
+SOURCES += CrossHairsButton.cpp
+SOURCES += Curve.cpp
 SOURCES += CurveBar.cpp
 SOURCES += CurveData.cpp
+SOURCES += CurveFactory.cpp
+SOURCES += CurveHistogram.cpp
+SOURCES += CurveLine.cpp
+SOURCES += CurveOHLC.cpp
 SOURCES += CurveType.cpp
 
 SOURCES += Data.cpp
 SOURCES += DataBase.cpp
 SOURCES += DataDialog.cpp
 SOURCES += DataFactory.cpp
+SOURCES += DataWindow.cpp
+SOURCES += DataWindowButton.cpp
 SOURCES += DateRange.cpp
+SOURCES += DateRangeControl.cpp
+SOURCES += DateScaleDraw.cpp
 SOURCES += DataSetting.cpp
 SOURCES += Dialog.cpp
 SOURCES += Doc.cpp
@@ -259,12 +362,27 @@ SOURCES += ExchangeSearchDialog.cpp
 SOURCES += FileButton.cpp
 SOURCES += FontButton.cpp
 
+SOURCES += Global.cpp
+SOURCES += GlobalControlPanel.cpp
+SOURCES += GlobalInfoPanel.cpp
+SOURCES += GlobalParent.cpp
+SOURCES += GlobalPlotGroup.cpp
+SOURCES += GlobalSidePanel.cpp
+SOURCES += GlobalSymbol.cpp
+SOURCES += GridButton.cpp
+SOURCES += GroupAdd.cpp
 SOURCES += GroupDataBase.cpp
+SOURCES += GroupDelete.cpp
 SOURCES += GroupEditDialog.cpp
+SOURCES += GroupNew.cpp
+SOURCES += GroupPage.cpp
 
 SOURCES += HistogramStyle.cpp
+SOURCES += HLineDialog.cpp
 
 SOURCES += IconButton.cpp
+SOURCES += IndicatorDataBase.cpp
+SOURCES += InfoPanel.cpp
 
 SOURCES += LineEdit.cpp
 SOURCES += LineStyle.cpp
@@ -277,11 +395,30 @@ SOURCES += NewDialog.cpp
 SOURCES += OHLCStyle.cpp
 SOURCES += Operator.cpp
 
+SOURCES += PickerMachine.cpp
+SOURCES += Plot.cpp
+SOURCES += PlotGroup.cpp
+SOURCES += PlotInfo.cpp
+SOURCES += PlotMenu.cpp
+SOURCES += PlotPicker.cpp
+SOURCES += PlotScaleDraw.cpp
+
 SOURCES += QuoteDataBase.cpp
+
+SOURCES += RecentCharts.cpp
+SOURCES += RemoveIndicator.cpp
+SOURCES += RetracementDialog.cpp
 
 SOURCES += Script.cpp
 SOURCES += ScriptDataBase.cpp
+SOURCES += ScriptLaunchButton.cpp
+SOURCES += ScriptLaunchButtonDialog.cpp
+SOURCES += ScriptPage.cpp
+SOURCES += ScriptRunDialog.cpp
+SOURCES += ScriptTimer.cpp
+SOURCES += ScriptTimerDialog.cpp
 SOURCES += SelectDialog.cpp
+SOURCES += SellDialog.cpp
 SOURCES += Setting.cpp
 SOURCES += SettingBool.cpp
 SOURCES += SettingColor.cpp
@@ -293,15 +430,20 @@ SOURCES += SettingFont.cpp
 SOURCES += SettingInteger.cpp
 SOURCES += SettingList.cpp
 SOURCES += SettingString.cpp
+SOURCES += SidePanel.cpp
 SOURCES += Strip.cpp
 SOURCES += Symbol.cpp
 SOURCES += SymbolButton.cpp
+SOURCES += SymbolDelete.cpp
 SOURCES += SymbolDialog.cpp
 
 SOURCES += TALibInput.cpp
 SOURCES += TALibOutput.cpp
+SOURCES += TextDialog.cpp
+SOURCES += TLineDialog.cpp
 
 SOURCES += VerifyDataInput.cpp
+SOURCES += VLineDialog.cpp
 
 TARGET = qtstalker
 

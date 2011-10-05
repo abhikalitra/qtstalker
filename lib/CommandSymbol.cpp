@@ -104,13 +104,13 @@ int CommandSymbol::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  Data *bd = new Symbol;
-  bd->set(Symbol::_EXCHANGE, new SettingString(exchange));
-  bd->set(Symbol::_SYMBOL, new SettingString(symbol));
-  bd->set(Symbol::_LENGTH, new SettingInteger(length));
-  bd->set(Symbol::_START_DATE, new SettingDateTime(QDateTime()));
-  bd->set(Symbol::_END_DATE, new SettingDateTime(QDateTime()));
-  bd->set(Symbol::_RANGE, new SettingInteger(range));
+  Symbol *bd = new Symbol;
+  bd->setExchange(exchange);
+  bd->setSymbol(symbol);
+  bd->setLength(length);
+  bd->setStartDate(QDateTime());
+  bd->setEndDate(QDateTime());
+  bd->setRange(range);
 
   // load quotes
   QuoteDataBase db;
@@ -118,8 +118,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   {
     _message << "QuoteDataBase error" << "EXCHANGE=" + exchange << "SYMBOL=" + symbol;
     _message << "LENGTH=" + QString::number(length) << "RANGE=" + QString::number(range);
-    delete bd;
     emit signalResume((void *) this);
+    delete bd;
     return _ERROR;
   }
 
@@ -129,8 +129,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   if (! set)
   {
     _message << "invalid DATE " + s;
-    delete bd;
     emit signalResume((void *) this);
+    delete bd;
     return _ERROR;
   }
   Data *dline = new CurveData;
@@ -142,8 +142,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   if (! set)
   {
     _message << "invalid OPEN " + s;
-    delete bd;
     emit signalResume((void *) this);
+    delete bd;
     return _ERROR;
   }
   Data *oline = new CurveData;
@@ -155,8 +155,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   if (! set)
   {
     _message << "invalid HIGH " + s;
-    delete bd;
     emit signalResume((void *) this);
+    delete bd;
     return _ERROR;
   }
   Data *hline = new CurveData;
@@ -168,8 +168,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   if (! set)
   {
     _message << "invalid LOW " + s;
-    delete bd;
     emit signalResume((void *) this);
+    delete bd;
     return _ERROR;
   }
   Data *lline = new CurveData;
@@ -181,8 +181,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   if (! set)
   {
     _message << "invalid CLOSE " + s;
-    delete bd;
     emit signalResume((void *) this);
+    delete bd;
     return _ERROR;
   }
   Data *cline = new CurveData;
@@ -194,8 +194,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   if (! set)
   {
     _message << "invalid VOLUME " + s;
-    delete bd;
     emit signalResume((void *) this);
+    delete bd;
     return _ERROR;
   }
   Data *vline = new CurveData;
@@ -207,8 +207,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   if (! set)
   {
     _message << "invalid OI " + s;
-    delete bd;
     emit signalResume((void *) this);
+    delete bd;
     return _ERROR;
   }
   Data *iline = new CurveData;

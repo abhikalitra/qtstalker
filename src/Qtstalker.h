@@ -23,11 +23,7 @@
 #define QTSTALKER_H
 
 #include <QMainWindow>
-#include <QToolBar>
 #include <QStringList>
-#include <QHash>
-
-#include "SidePanel.h"
 
 class QtstalkerApp : public QMainWindow
 {
@@ -41,12 +37,9 @@ class QtstalkerApp : public QMainWindow
     QtstalkerApp (QString session, QString asset);
     void createGUI ();
     void loadSettings ();
-    QString getWindowCaption ();
 
   public slots:
-    void loadChart (QString);
     void save ();
-    void chartUpdated ();
     void statusMessage (QString);
     void wakeup ();
     void commandLineAsset ();
@@ -56,7 +49,6 @@ class QtstalkerApp : public QMainWindow
 
   protected:
     QString _clAsset;
-    SidePanel *_sidePanel;
 };
 
 #endif

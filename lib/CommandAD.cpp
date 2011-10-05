@@ -22,7 +22,6 @@
 #include "CommandAD.h"
 #include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"

@@ -23,17 +23,20 @@
 #include "SettingString.h"
 #include "SettingBool.h"
 #include "SettingInteger.h"
+#include "GlobalPlotGroup.h"
+#include "GlobalControlPanel.h"
+#include "GlobalInfoPanel.h"
 
 #include <QtDebug>
 
 CommandChart::CommandChart (QObject *p) : Command (p)
 {
   _name = "CHART";
+  _type = _NORMAL;
 }
 
 int CommandChart::runScript (Message *sg, Script *script)
 {
-  Data *d = new Data;
   SettingString *name = new SettingString(QString("Chart"));
   QString s = sg->value("NAME");
   if (name->set(s, (void *) script))
@@ -45,7 +48,6 @@ int CommandChart::runScript (Message *sg, Script *script)
       return _ERROR;
     }
   }
-  d->set("NAME", name);
 
   SettingBool *date = new SettingBool(TRUE);
   s = sg->value("DATE");
@@ -58,7 +60,6 @@ int CommandChart::runScript (Message *sg, Script *script)
       return _ERROR;
     }
   }
-  d->set("DATE", date);
 
   SettingBool *log = new SettingBool(FALSE);
   s = sg->value("LOG");
@@ -71,7 +72,6 @@ int CommandChart::runScript (Message *sg, Script *script)
       return _ERROR;
     }
   }
-  d->set("LOG", log);
 
   SettingInteger *row = new SettingInteger(0);
   s = sg->value("ROW");
@@ -84,7 +84,6 @@ int CommandChart::runScript (Message *sg, Script *script)
       return _ERROR;
     }
   }
-  d->set("ROW", row);
 
   SettingInteger *col = new SettingInteger(0);
   s = sg->value("COL");
@@ -97,15 +96,41 @@ int CommandChart::runScript (Message *sg, Script *script)
       return _ERROR;
     }
   }
-  d->set("COL", col);
 
-  d->setCommand(_name);
-  d->setScriptFile(script->file());
-  emit signalMessage(d);
+  chart(name->toString(), script->file(), row->toInteger(), col->toInteger(), date->toBool(), log->toBool());
 
   _returnString = "OK";
 
   emit signalResume((void *) this);
 
   return _OK;
+}
+
+void CommandChart::chart (QString chart, QString script, int row, int col, bool date, bool log)
+{
+  Plot *plot = g_plotGroup->plot(chart);
+  if (! plot)
+  {
+    plot = new Plot(chart, g_plotGroup);
+    plot->setBarSpacing(g_controlPanel->barSpaceButton()->getPixelSpace());
+    plot->loadSettings();
+    plot->setScriptFile(script);
+    plot->setRow(row);
+    plot->setCol(col);
+
+    connect(plot, SIGNAL(signalInfoMessage(Message)), g_infoPanel, SLOT(showInfo(Message)));
+    connect(g_controlPanel->barSpaceButton(), SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
+    connect(g_controlPanel, SIGNAL(signalValueChanged(int)), plot, SLOT(setStartIndex(int)));
+    connect(plot, SIGNAL(signalIndex(int)), g_controlPanel, SLOT(setStartValue(int)));
+
+    g_plotGroup->setPlot(plot);
+  }
+
+//  plot->clear();
+
+  plot->showDate(date);
+
+  plot->setLogScaling(log);
+
+//  plot->update();
 }

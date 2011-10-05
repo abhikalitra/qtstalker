@@ -25,39 +25,60 @@
 #ifndef SYMBOL_HPP
 #define SYMBOL_HPP
 
+#include <QString>
+#include <QDateTime>
+#include <QMetaType>
+
 #include "Data.h"
 
-class Symbol : public Data
+class Symbol
 {
   public:
-    enum Parm
-    {
-      _SYMBOL = -10,
-      _EXCHANGE = -20,
-      _NAME = -30,
-      _LENGTH = -40,
-      _RANGE = -50,
-      _START_DATE = -60,
-      _END_DATE = -70,
-      _TABLE = -80,
-      _TYPE = -90
-    };
-
     Symbol ();
     ~Symbol ();
     void clear ();
     int set (int, Data *);
     Data * getData (int);
     QList<int> barKeys ();
-    QString toString ();
-    int fromString (QString);
     int barKeyCount ();
     void append (Data *);
+    void setSymbol (QString);
+    QString symbol ();
+    void setExchange (QString);
+    QString exchange ();
+    void setName (QString);
+    QString name ();
+    void setLength (int);
+    int length ();
+    void setRange (int);
+    int range ();
+    void setStartDate (QDateTime);
+    QDateTime startDate ();
+    void setEndDate (QDateTime);
+    QDateTime endDate ();
+    void setTable (QString);
+    QString table ();
+    void setType (QString);
+    QString type ();
+    void copy (Symbol *);
+    QString symbolFull ();
+    int setSymbolFull (QString);
 
   private:
     QHash<int, Data *> _bars;
     int _startIndex;
     int _endIndex;
+    QString _symbol;
+    QString _exchange;
+    QString _name;
+    int _length;
+    int _range;
+    QDateTime _startDate;
+    QDateTime _endDate;
+    QString _table;
+    QString _type;
 };
+
+Q_DECLARE_METATYPE(Symbol)
 
 #endif

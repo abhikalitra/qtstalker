@@ -23,6 +23,7 @@
 #define COMMAND_CHART_UPDATE_HPP
 
 #include "Command.h"
+#include "Plot.h"
 
 class CommandChartUpdate : public Command
 {
@@ -31,9 +32,9 @@ class CommandChartUpdate : public Command
   public:
     CommandChartUpdate (QObject *);
     int runScript (Message *, Script *);
-    void dateCurve (Script *script, Data *dg, QString name);
-    void curve (Script *script, Data *dg, QString name);
-    void chartObject (Script *script, Data *dg, QString name);
+    void curve (Data *dg, QString name, Plot *);
+    void chartObject (Data *dg, QString name, Plot *);
+    void update (QString chart, Plot *);
 };
 
 #endif

@@ -20,24 +20,20 @@
  */
 
 #include "CommandGroupPanelRefresh.h"
+#include "GlobalSidePanel.h"
 
 #include <QtDebug>
 
 CommandGroupPanelRefresh::CommandGroupPanelRefresh (QObject *p) : Command (p)
 {
   _name = "GROUP_PANEL_REFRESH";
+  _type = _NORMAL;
 }
 
-int CommandGroupPanelRefresh::runScript (Message *, Script *script)
+int CommandGroupPanelRefresh::runScript (Message *, Script *)
 {
-  Data *d = new Data;
-  d->setCommand(_name);
-  d->setScriptFile(script->file());
-  emit signalMessage(d);
-
+  g_sidePanel->groupPanel()->updateList();
   _returnString = "OK";
-
   emit signalResume((void *) this);
-
   return _OK;
 }

@@ -40,7 +40,7 @@ CommandSymbolCurrent::CommandSymbolCurrent (QObject *p) : Command (p)
 
 int CommandSymbolCurrent::runScript (Message *sg, Script *script)
 {
-  Data *bd = script->symbol();
+  Symbol *bd = script->symbol();
   if (! bd)
   {
     qDebug() << "CommandSymbolCurrent::runScript: invalid symbol";

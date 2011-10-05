@@ -31,6 +31,8 @@
 
 Script::Script (QObject *p) : QObject (p)
 {
+//  _symbol = 0;
+
   clear();
 
   _proc = new QProcess(this);
@@ -43,16 +45,19 @@ Script::Script (QObject *p) : QObject (p)
 
 Script::~Script ()
 {
+qDebug() << "Script::~Script:" << _file << "deleted";
+
   clear();
   _proc->terminate();
   _proc->waitForFinished();
-
-qDebug() << "Script::~Script:" << _file << "deleted";
 }
 
 void Script::clear ()
 {
   _killFlag = 0;
+
+//  if (_symbol)
+//    delete _symbol;
   _symbol = 0;
 
   deleteData();
@@ -126,7 +131,7 @@ void Script::readFromStdout ()
   }
 
   QByteArray ba = _proc->readAllStandardOutput();
-qDebug() << ba;
+//qDebug() << ba;
 
   Message tsg;
   QString s(ba);
@@ -153,7 +158,6 @@ qDebug() << ba;
 //  command->setWidgetParent(g_parent);
 
   connect(command, SIGNAL(signalResume(void *)), this, SLOT(resume(void *)));
-  connect(command, SIGNAL(signalMessage(Data *)), this, SIGNAL(signalMessage(Data *)));
 
   switch ((Command::Type)command->type())
   {
@@ -285,12 +289,17 @@ QString & Script::file ()
   return _file;
 }
 
-void Script::setSymbol (Data *d)
+void Script::setSymbol (Symbol *d)
 {
   _symbol = d;
+/*
+  Symbol *symbol = new Symbol;
+  d->copy(symbol);
+  _symbol = symbol;
+*/
 }
 
-Data * Script::symbol ()
+Symbol * Script::symbol ()
 {
   return _symbol;
 }

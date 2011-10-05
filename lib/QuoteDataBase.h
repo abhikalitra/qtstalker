@@ -26,24 +26,24 @@
 #include <QStringList>
 #include <QList>
 
-#include "Data.h"
+#include "Symbol.h"
 
 class QuoteDataBase
 {
   public:
     QuoteDataBase ();
     void init ();
-    int getBars (Data *);
-    int setBars (Data *);
-    int newSymbol (Data *);
-    int getSymbol (Data *);
+    int getBars (Symbol *);
+    int setBars (Symbol *);
+    int newSymbol (Symbol *);
+    int getSymbol (Symbol *);
     int transaction ();
     int commit ();
-    int deleteSymbol (Data *);
+    int deleteSymbol (Symbol *);
     int getExchange (QStringList &);
-    int rename (Data *osymbol, Data *nsymbol);
-    int search (Data *bd, QList<Data *> &l);
-    int setName (Data *);
+    int rename (Symbol *osymbol, Symbol *nsymbol);
+    int search (Symbol bd, QList<Symbol> &l);
+    int setName (Symbol *);
 //    int dump (DataGroup *, QString);
 
   private:

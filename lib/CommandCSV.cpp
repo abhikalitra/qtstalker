@@ -140,7 +140,7 @@ int CommandCSV::runScript (Message *sg, Script *script)
   if (exchangeSetting)
     exchange = exchangeSetting->toString();
 
-  QHash<QString, Data *> symbols;
+  QHash<QString, Symbol *> symbols;
   int loop = 0;
   for (; loop < files.count(); loop++)
   {
@@ -291,14 +291,14 @@ int CommandCSV::runScript (Message *sg, Script *script)
       }
 
       QString key = texchange + ":" + symbol;
-      Data *bd = symbols.value(key);
+      Symbol *bd = symbols.value(key);
       if (! bd)
       {
         bd = new Symbol;
-        bd->set(Symbol::_EXCHANGE, new SettingString(texchange));
-        bd->set(Symbol::_SYMBOL, new SettingString(symbol));
-        bd->set(Symbol::_TYPE, new SettingString(typeSetting->toString()));
-        bd->set(Symbol::_NAME, new SettingString(name));
+        bd->setExchange(texchange);
+        bd->setSymbol(symbol);
+        bd->setType(typeSetting->toString());
+        bd->setName(name);
 
         symbols.insert(key, bd);
       }
@@ -310,11 +310,11 @@ int CommandCSV::runScript (Message *sg, Script *script)
   }
 
   QuoteDataBase db;
-  QHashIterator<QString, Data *> it(symbols);
+  QHashIterator<QString, Symbol *> it(symbols);
   while (it.hasNext())
   {
     it.next();
-    Data *bd = it.value();
+    Symbol *bd = it.value();
 
     db.transaction();
     db.setBars(bd);

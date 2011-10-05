@@ -224,30 +224,27 @@ void SymbolDialog::deleteButtonPressed ()
 
 void SymbolDialog::searchButtonPressed ()
 {
-  Data *symbol = new Symbol;
-  symbol->set(Symbol::_EXCHANGE, new SettingString(_exchanges->currentText()));
+  Symbol symbol;
+  symbol.setExchange(_exchanges->currentText());
   QString s = _search->text();
   if (s.isEmpty())
     s = "*";
-  symbol->set(Symbol::_SYMBOL, new SettingString(s));
+  symbol.setSymbol(s);
 
   QuoteDataBase db;
-  QList<Data *> l;
+  QList<Symbol> l;
   db.search(symbol, l);
-  delete symbol;
 
   _searchList->clear();
 
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    Data *bd = l.at(loop);
+    Symbol bd = l.at(loop);
     QTreeWidgetItem *item = new QTreeWidgetItem(_searchList);
-    item->setText(0, bd->get(Symbol::_EXCHANGE)->toString() + ":" + bd->get(Symbol::_SYMBOL)->toString());
-    item->setText(1, bd->get(Symbol::_NAME)->toString());
+    item->setText(0, bd.exchange() + ":" + bd.symbol());
+    item->setText(1, bd.name());
   }
-
-  qDeleteAll(l);
 
   for (loop = 0; loop < _searchList->columnCount(); loop++)
     _searchList->resizeColumnToContents(loop);

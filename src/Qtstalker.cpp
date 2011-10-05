@@ -19,38 +19,23 @@
  *  USA.
  */
 
-#include <QLayout>
-#include <QDir>
-#include <QFileDialog>
-#include <QFont>
-#include <QCursor>
-#include <QColor>
-#include <QStringList>
-#include <QDateTime>
 #include <QtDebug>
-#include <QToolButton>
 #include <QApplication>
 #include <QSettings>
-#include <QCoreApplication>
 #include <QStatusBar>
 #include <QShortcut>
-#include <QBuffer>
-#include <QDataStream>
 
 #include "Qtstalker.h"
 #include "Setup.h"
-#include "Globals.h"
-#include "InfoPanel.h"
+#include "GlobalParent.h"
+#include "GlobalPlotGroup.h"
+#include "GlobalSidePanel.h"
+#include "GlobalControlPanel.h"
+#include "GlobalInfoPanel.h"
+#include "Global.h"
+#include "GlobalSymbol.h"
 #include "DockWidget.h"
-#include "RecentCharts.h"
-#include "BarLengthButton.h"
-#include "BarSpaceButton.h"
-#include "DateRangeControl.h"
-#include "CommandFactory.h"
-#include "BarLength.h"
-#include "Symbol.h"
 #include "ChartLoad.h"
-#include "DataFactory.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -74,7 +59,8 @@ QtstalkerApp::QtstalkerApp (QString session, QString asset)
 
   loadSettings();
 
-  setWindowTitle(getWindowCaption());
+  QString s = "QtStalker" + g_session;
+  setWindowTitle(s);
 
   QTimer::singleShot(100, this, SLOT(afterStartup()));
 }
@@ -86,7 +72,6 @@ void QtstalkerApp::shutDown ()
   // shutting down before the destructor is called
   save();
   emit signalShutDown();
-  delete g_currentSymbol;
 }
 
 void QtstalkerApp::createGUI ()
@@ -101,9 +86,6 @@ void QtstalkerApp::createGUI ()
 
   // side panel dock
   g_sidePanel = new SidePanel(this);
-  connect(g_sidePanel, SIGNAL(signalLoadChart(QString)), this, SLOT(loadChart(QString)));
-  connect(g_sidePanel, SIGNAL(signalReloadChart()), this, SLOT(chartUpdated()));
-  connect(g_sidePanel, SIGNAL(signalStatusMessage(QString)), this, SLOT(statusMessage(QString)));
   connect(this, SIGNAL(signalLoadSettings()), g_sidePanel, SLOT(loadSettings()));
   connect(this, SIGNAL(signalShutDown()), g_sidePanel, SLOT(saveSettings()));
 
@@ -120,12 +102,6 @@ void QtstalkerApp::createGUI ()
   g_controlPanel = new ControlPanel;
   connect(this, SIGNAL(signalLoadSettings()), g_controlPanel, SLOT(loadSettings()));
   connect(this, SIGNAL(signalShutDown()), g_controlPanel, SLOT(saveSettings()));
-  connect(g_controlPanel->barLengthButton(), SIGNAL(signalBarLengthChanged(int)), this, SLOT(chartUpdated()));
-  connect(g_controlPanel->dateRangeControl(), SIGNAL(signalDateRangeChanged()), this, SLOT(chartUpdated()));
-  connect(g_controlPanel->recentCharts(), SIGNAL(signalChartSelected(QString)), this, SLOT(loadChart(QString)));
-  connect(g_sidePanel, SIGNAL(signalRecentChart(QString)), g_controlPanel->recentCharts(), SLOT(addRecentChart(QString)));
-//  connect(g_controlPanel->refreshButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
-  connect(g_controlPanel->configureButton(), SIGNAL(signalRefresh()), this, SLOT(chartUpdated()));
 
   dock = new DockWidget(QString(), this);
   dock->setObjectName("controlPanelDock");
@@ -203,62 +179,13 @@ void QtstalkerApp::save()
   settings.setValue("main_window_size", size());
   settings.setValue("main_window_position", pos());
 
-  if (g_currentSymbol->dataKeyCount())
+  if (g_currentSymbol)
   {
-    QString s = g_currentSymbol->get(Symbol::_EXCHANGE)->toString() + ":" + g_currentSymbol->get(Symbol::_SYMBOL)->toString();
+    QString s = g_currentSymbol->exchange() + ":" + g_currentSymbol->symbol();
     settings.setValue("current_symbol", s);
   }
 
   settings.sync();
-}
-
-void QtstalkerApp::loadChart (QString symbol)
-{
-  ChartLoad cl(symbol);
-  if (cl.run())
-    return;
-
-  setWindowTitle(getWindowCaption());
-  statusMessage(QString());
-}
-
-QString QtstalkerApp::getWindowCaption ()
-{
-  // update the main window text
-  QStringList l;
-  l << "QtStalker" + g_session + ":";
-
-  if (! g_currentSymbol->dataKeyCount())
-    return l.join(" ");
-
-  QString name = g_currentSymbol->get(Symbol::_NAME)->toString();
-  if (! name.isEmpty())
-    l << name;
-
-  QString symbol = g_currentSymbol->get(Symbol::_SYMBOL)->toString();
-  if (! symbol.isEmpty())
-    l << "(" + symbol + ")";
-
-  QStringList bl;
-  BarLength b;
-  bl = b.list();
-  l << bl.at(g_controlPanel->barLengthButton()->length());
-
-  return l.join(" ");
-}
-
-void QtstalkerApp::chartUpdated ()
-{
-  // we are here because something wants us to reload the chart with fresh bars
-  if (! g_currentSymbol->dataKeyCount())
-    return;
-
-  QString symbol = g_currentSymbol->get(Symbol::_EXCHANGE)->toString();
-  if (symbol.isEmpty())
-    return;
-
-  symbol.append(":" + g_currentSymbol->get(Symbol::_SYMBOL)->toString());
-  loadChart(symbol);
 }
 
 void QtstalkerApp::statusMessage (QString d)
@@ -289,7 +216,8 @@ void QtstalkerApp::commandLineAsset ()
     return;
   }
 
-  loadChart(_clAsset);
+  ChartLoad cl(_clAsset);
+  cl.run();
 }
 
 /*
@@ -334,6 +262,7 @@ void QtstalkerApp::afterStartup ()
     if (symbol.isEmpty())
       return;
 
-    loadChart(symbol);
+    ChartLoad cl(symbol);
+    cl.run();
   }
 }

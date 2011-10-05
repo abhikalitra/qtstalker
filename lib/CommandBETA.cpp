@@ -30,9 +30,6 @@
 #include "TALibOutput.h"
 #include "SettingFactory.h"
 #include "SettingDouble.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingDateTime.h"
 
 #include <QtDebug>
 
@@ -170,20 +167,20 @@ Data * CommandBETA::getIndex (QString d, Script *script)
   if (tl.count() != 2)
     return 0;
 
-  Data *symbol = script->symbol();
+  Symbol *symbol = script->symbol();
   if (! symbol)
   {
     qDebug() << "CommandBETA::getIndex: invalid symbol";
     return 0;
   }
 
-  Data *bd = new Symbol;
-  bd->set(Symbol::_EXCHANGE, new SettingString(tl.at(0)));
-  bd->set(Symbol::_SYMBOL, new SettingString(tl.at(1)));
-  bd->set(Symbol::_LENGTH, new SettingInteger(symbol->get(Symbol::_LENGTH)->toInteger()));
-  bd->set(Symbol::_START_DATE, new SettingDateTime(QDateTime()));
-  bd->set(Symbol::_END_DATE, new SettingDateTime(QDateTime()));
-  bd->set(Symbol::_RANGE, new SettingInteger(symbol->get(Symbol::_RANGE)->toInteger()));
+  Symbol *bd = new Symbol;
+  bd->setExchange(tl.at(0));
+  bd->setSymbol(tl.at(1));
+  bd->setLength(symbol->length());
+  bd->setStartDate(QDateTime());
+  bd->setEndDate(QDateTime());
+  bd->setRange(symbol->range());
 
   // load quotes
   QuoteDataBase db;

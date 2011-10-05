@@ -23,6 +23,7 @@
 #include "DataDialog.h"
 #include "SettingString.h"
 #include "DataFactory.h"
+#include "GlobalParent.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -35,7 +36,7 @@ CommandDialog::CommandDialog (QObject *p) : Command (p)
 
 int CommandDialog::runScript (Message *sg, Script *script)
 {
-  DataDialog *dialog = new DataDialog(_widgetParent);
+  DataDialog *dialog = new DataDialog(g_parent);
   connect(dialog, SIGNAL(accepted()), this, SLOT(dialogAccepted()));
   connect(dialog, SIGNAL(rejected()), this, SLOT(dialogRejected()));
 

@@ -20,24 +20,20 @@
  */
 
 #include "CommandChartPanelRefresh.h"
+#include "GlobalSidePanel.h"
 
 #include <QtDebug>
 
 CommandChartPanelRefresh::CommandChartPanelRefresh (QObject *p) : Command (p)
 {
   _name = "CHART_PANEL_REFRESH";
+  _type = _NORMAL;
 }
 
-int CommandChartPanelRefresh::runScript (Message *, Script *script)
+int CommandChartPanelRefresh::runScript (Message *, Script *)
 {
-  Data *d = new Data;
-  d->setCommand(_name);
-  d->setScriptFile(script->file());
-  emit signalMessage(d);
-
+  g_sidePanel->chartPanel()->updateList();
   _returnString = "OK";
-
   emit signalResume((void *) this);
-
   return _OK;
 }

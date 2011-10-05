@@ -21,24 +21,32 @@
 
 #include "Symbol.h"
 #include "CurveBar.h"
-#include "DataFactory.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
-#include <QStringList>
 
 Symbol::Symbol ()
 {
   clear();
 }
 
+Symbol::~Symbol ()
+{
+  clear();
+}
+
 void Symbol::clear ()
 {
-  Data::clear();
-
-  _type = DataFactory::_SYMBOL;
   _startIndex = 99999999;
   _endIndex = -99999999;
+  _symbol.clear();
+  _exchange.clear();
+  _name.clear();
+  _length = -1;
+  _range = -1;
+  _startDate = QDateTime();
+  _endDate = QDateTime();
+  _table.clear();
+  _type = "Stock";
 
   qDeleteAll(_bars);
   _bars.clear();
@@ -70,98 +78,6 @@ QList<int> Symbol::barKeys ()
   return _bars.keys();
 }
 
-QString Symbol::toString ()
-{
-  QStringList l;
-
-  QHashIterator<QString, Setting *> it(_data);
-  while (it.hasNext())
-  {
-    it.next();
-    l << it.key() + ";" + QString::number(it.value()->type()) + ";" + it.value()->toString();
-  }
-
-  QHashIterator<int, Data *> it2(_bars);
-  while (it2.hasNext())
-  {
-    it2.next();
-    Data *d = it2.value();
-
-    QList<QString> keys = d->dataKeys();
-    int loop = 0;
-    for (; loop < keys.count(); loop++)
-    {
-      Setting *set = d->get(keys.at(loop));
-      l << QString::number(it2.key()) + ";" + keys.at(loop) + ";" + QString::number(set->type()) + ";" + set->toString();
-    }
-  }
-
-  return l.join("\n");
-}
-
-int Symbol::fromString (QString d)
-{
-  clear();
-
-  QStringList l = d.split("\n");
-
-  SettingFactory fac;
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    QStringList tl = l.at(loop).split(";");
-
-    int k = tl.at(0).toInt();
-
-    switch ((Parm) k)
-    {
-      case _SYMBOL:
-      case _EXCHANGE:
-      case _NAME:
-      case _TABLE:
-      case _TYPE:
-      case _LENGTH:
-      case _RANGE:
-      case _START_DATE:
-      case _END_DATE:
-      {
-        if (tl.count() != 3)
-          break;
-
-        Setting *set = fac.setting(tl.at(1));
-        if (! set)
-          break;
-
-        set->set(tl.at(2));
-        _data.insert(tl.at(0), set);
-        break;
-      }
-      default:
-      {
-        if (tl.count() != 4)
-          break;
-
-        Data *b = _bars.value(k);
-        if (! b)
-        {
-          b = new CurveBar;
-          set(k, b);
-        }
-
-        Setting *set = fac.setting(tl.at(2));
-        if (! set)
-          break;
-
-        set->set(tl.at(3));
-        b->set(tl.at(1).toInt(), set);
-        break;
-      }
-    }
-  }
-
-  return 0;
-}
-
 int Symbol::barKeyCount ()
 {
   return _bars.count();
@@ -171,4 +87,137 @@ void Symbol::append (Data *d)
 {
   int i = _endIndex + 1;
   set(i, d);
+}
+
+void Symbol::setSymbol (QString d)
+{
+  _symbol = d;
+}
+
+QString Symbol::symbol ()
+{
+  return _symbol;
+}
+
+void Symbol::setExchange (QString d)
+{
+  _exchange = d;
+}
+
+QString Symbol::exchange ()
+{
+  return _exchange;
+}
+
+void Symbol::setName (QString d)
+{
+  _name = d;
+}
+
+QString Symbol::name ()
+{
+  return _name;
+}
+
+void Symbol::setLength (int d)
+{
+  _length = d;
+}
+
+int Symbol::length ()
+{
+  return _length;
+}
+
+void Symbol::setRange (int d)
+{
+  _range = d;
+}
+
+int Symbol::range ()
+{
+  return _range;
+}
+
+void Symbol::setStartDate (QDateTime d)
+{
+  _startDate = d;
+}
+
+QDateTime Symbol::startDate ()
+{
+  return _startDate;
+}
+
+void Symbol::setEndDate (QDateTime d)
+{
+  _endDate = d;
+}
+
+QDateTime Symbol::endDate ()
+{
+  return _endDate;
+}
+
+void Symbol::setTable (QString d)
+{
+  _table = d;
+}
+
+QString Symbol::table ()
+{
+  return _table;
+}
+
+void Symbol::setType (QString d)
+{
+  _type = d;
+}
+
+QString Symbol::type ()
+{
+  return _type;
+}
+
+void Symbol::copy (Symbol *d)
+{
+  d->clear();
+
+  d->setSymbol(symbol());
+  d->setExchange(exchange());
+  d->setName(name());
+  d->setLength(length());
+  d->setRange(range());
+  d->setStartDate(startDate());
+  d->setEndDate(endDate());
+  d->setTable(table());
+  d->setType(type());
+
+  QList<int> keys = barKeys();
+  int loop = 0;
+  for (; loop < keys.count(); loop++)
+  {
+     Data *obar = getData(keys.at(loop));
+     Data *nbar = new CurveBar;
+     nbar->fromString(obar->toString());
+     d->set(keys.at(loop), nbar);
+  }
+}
+
+QString Symbol::symbolFull ()
+{
+  QString s = _exchange + ":" + _symbol;
+  return s;
+}
+
+int Symbol::setSymbolFull (QString d)
+{
+  QStringList l = d.split(":");
+  if (l.count() != 2)
+    return 1;
+
+  _exchange = l.at(0);
+  _symbol = l.at(1);
+
+  return 0;
 }

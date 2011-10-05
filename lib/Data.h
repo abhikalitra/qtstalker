@@ -26,6 +26,7 @@
 #define DATA_HPP
 
 #include <QHash>
+#include <QMetaType>
 
 #include "Setting.h"
 
@@ -37,12 +38,12 @@ class Data
     int type ();
     bool dataContains (QString);
     int dataKeyCount ();
-    void setCommand (QString);
-    QString command ();
-    void setCommandType (QString);
-    QString commandType ();
-    void setScriptFile (QString);
-    QString scriptFile ();
+//    void setCommand (QString);
+//    QString command ();
+//    void setCommandType (QString);
+//    QString commandType ();
+//    void setScriptFile (QString);
+//    QString scriptFile ();
     void setDeleteFlag (int);
     int deleteFlag ();
 
@@ -67,10 +68,12 @@ class Data
   protected:
     QHash<QString, Setting *> _data;
     int _type;
-    QString _command;
-    QString _commandType;
-    QString _scriptFile;
+//    QString _command;
+//    QString _commandType;
+//    QString _scriptFile;
     int _delFlag;
 };
+
+Q_DECLARE_METATYPE(Data)
 
 #endif

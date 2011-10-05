@@ -23,7 +23,6 @@
 #include "ChartObjectData.h"
 #include "CurveBar.h"
 #include "CurveData.h"
-#include "Symbol.h"
 #include "DataSetting.h"
 
 #include <QDebug>
@@ -57,9 +56,6 @@ Data * DataFactory::data (int type)
       break;
     case _DATA_SETTING:
       data = new DataSetting;
-      break;
-    case _SYMBOL:
-      data = new Symbol;
       break;
     default:
       break;

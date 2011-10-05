@@ -24,19 +24,15 @@
 
 #include <QObject>
 #include <QStringList>
-#include <QWidget>
 
 #include "Message.h"
 #include "Script.h"
-#include "Setting.h"
-#include "Data.h"
 
 class Command : public QObject
 {
   Q_OBJECT
 
   signals:
-    void signalMessage (Data *);
     void signalResume (void *);
 
   public:
@@ -60,14 +56,12 @@ class Command : public QObject
     QString name ();
     int type ();
     QString returnString ();
-    void setWidgetParent (QWidget *);
 
   protected:
     int _type;
     QString _name;
     QString _returnString;
     QStringList _message;
-    QWidget *_widgetParent;
 };
 
 #endif

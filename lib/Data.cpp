@@ -189,6 +189,7 @@ int Data::offset ()
   return 0;
 }
 
+/*
 void Data::setCommand (QString d)
 {
   _command = d;
@@ -198,7 +199,8 @@ QString Data::command ()
 {
   return _command;
 }
-
+*/
+/*
 void Data::setCommandType (QString d)
 {
   _commandType = d;
@@ -208,7 +210,8 @@ QString Data::commandType ()
 {
   return _commandType;
 }
-
+*/
+/*
 void Data::setScriptFile (QString d)
 {
   _scriptFile = d;
@@ -218,6 +221,7 @@ QString Data::scriptFile ()
 {
   return _scriptFile;
 }
+*/
 
 void Data::setDeleteFlag (int d)
 {

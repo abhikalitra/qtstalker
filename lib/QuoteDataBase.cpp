@@ -26,7 +26,6 @@
 #include "CurveData.h"
 #include "DateRange.h"
 #include "BarLength.h"
-#include "Symbol.h"
 #include "SettingString.h"
 #include "SettingDouble.h"
 #include "SettingDateTime.h"
@@ -71,33 +70,33 @@ void QuoteDataBase::init ()
     qDebug() << "QuoteDataBase::init:" << _db.lastError().text();
 }
 
-int QuoteDataBase::getBars (Data *bd)
+int QuoteDataBase::getBars (Symbol *bd)
 {
-  QString exchange = bd->get(Symbol::_EXCHANGE)->toString();
+  QString exchange = bd->exchange();
   if (exchange.isEmpty())
   {
     qDebug() << "QuoteDataBase::getBars: invalid EXCHANGE" << exchange;
     return 1;
   }
 
-  QString tsymbol = bd->get(Symbol::_SYMBOL)->toString();
+  QString tsymbol = bd->symbol();
   if (tsymbol.isEmpty())
   {
     qDebug() << "QuoteDataBase::getBars: invalid SYMBOL" << tsymbol;
     return 1;
   }
 
-  int length = bd->get(Symbol::_LENGTH)->toInteger();
+  int length = bd->length();
   if (length == -1)
   {
     qDebug() << "QuoteDataBase::getBars: invalid length";
     return 1;
   }
 
-  QDateTime startDate = bd->get(Symbol::_START_DATE)->toDateTime();
-  QDateTime endDate = bd->get(Symbol::_END_DATE)->toDateTime();
+  QDateTime startDate = bd->startDate();
+  QDateTime endDate = bd->endDate();
 
-  int dateRange = bd->get(Symbol::_RANGE)->toInteger();
+  int dateRange = bd->range();
 
   if (getSymbol(bd))
     return 1;
@@ -107,7 +106,7 @@ int QuoteDataBase::getBars (Data *bd)
   // check if we want to return most recent bars
   if (! startDate.isValid() && ! endDate.isValid())
   {
-    QString s = "SELECT max(date) FROM " + bd->get(Symbol::_TABLE)->toString();
+    QString s = "SELECT max(date) FROM " + bd->table();
     q.exec(s);
     if (q.lastError().isValid())
     {
@@ -130,7 +129,7 @@ int QuoteDataBase::getBars (Data *bd)
   }
 
   QString s = "SELECT date,open,high,low,close,volume,oi";
-  s.append(" FROM " + bd->get(Symbol::_TABLE)->toString());
+  s.append(" FROM " + bd->table());
   s.append(" WHERE date >=" + startDate.toString("yyyyMMddHHmmss"));
   s.append(" AND date <=" + endDate.toString("yyyyMMddHHmmss"));
   s.append(" ORDER BY date DESC");
@@ -159,7 +158,6 @@ int QuoteDataBase::getBars (Data *bd)
     if (! bar)
     {
       bar = new CurveBar;
-//      bar->setDateRange(lastDate, (BarLength::Length) length);
       bar->set(CurveBar::_OPEN, new SettingDouble(q.value(1).toDouble()));
       bar->set(CurveBar::_HIGH, new SettingDouble(q.value(2).toDouble()));
       bar->set(CurveBar::_LOW, new SettingDouble(q.value(3).toDouble()));
@@ -200,7 +198,7 @@ int QuoteDataBase::getBars (Data *bd)
   return 0;
 }
 
-int QuoteDataBase::setBars (Data *symbol)
+int QuoteDataBase::setBars (Symbol *symbol)
 {
   // save bars
   QSqlQuery q(_db);
@@ -213,13 +211,9 @@ int QuoteDataBase::setBars (Data *symbol)
   else
   {
     // check if we need to save the name
-    Setting *set = symbol->get(Symbol::_NAME);
-    if (set)
-    {
-      QString s = set->toString();
-      if (! s.isEmpty())
-        setName(symbol);
-    }
+    QString s = symbol->name();
+    if (! s.isEmpty())
+      setName(symbol);
   }
 
   QList<int> keys = symbol->barKeys();
@@ -234,7 +228,7 @@ int QuoteDataBase::setBars (Data *symbol)
     QString date = dt.toString("yyyyMMddHHmmss");
 
     // first check if record exists so we know to do an update or insert
-    QString s = "SELECT date FROM " + symbol->get(Symbol::_TABLE)->toString() + " WHERE date =" + date;
+    QString s = "SELECT date FROM " + symbol->table() + " WHERE date =" + date;
     q.exec(s);
     if (q.lastError().isValid())
     {
@@ -245,7 +239,7 @@ int QuoteDataBase::setBars (Data *symbol)
 
     if (q.next()) // record exists, use update
     {
-      s = "UPDATE " + symbol->get(Symbol::_TABLE)->toString() + " SET ";
+      s = "UPDATE " + symbol->table() + " SET ";
 
       QStringList tl;
 
@@ -303,7 +297,7 @@ int QuoteDataBase::setBars (Data *symbol)
     }
     else // new record, use insert
     {
-      s = "INSERT INTO " + symbol->get(Symbol::_TABLE)->toString() + " (date,open,high,low,close,volume,oi) VALUES(";
+      s = "INSERT INTO " + symbol->table() + " (date,open,high,low,close,volume,oi) VALUES(";
 
       QStringList tl;
       tl << date;
@@ -372,42 +366,23 @@ int QuoteDataBase::setBars (Data *symbol)
   return 0;
 }
 
-//***************
-//***************
-//***************
-
-int QuoteDataBase::newSymbol (Data *symbol)
+int QuoteDataBase::newSymbol (Symbol *symbol)
 {
-  Setting *set = symbol->get(Symbol::_EXCHANGE);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::newSymbol: invalid EXCHANGE";
-    return 1;
-  }
-  QString exchange = set->toString();
+  QString exchange = symbol->exchange();
   if (exchange.isEmpty())
   {
     qDebug() << "QuoteDataBase::newSymbol: invalid EXCHANGE";
     return 1;
   }
 
-  set = symbol->get(Symbol::_SYMBOL);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::newSymbol: invalid SYMBOL";
-    return 1;
-  }
-  QString tsymbol = set->toString();
+  QString tsymbol = symbol->symbol();
   if (tsymbol.isEmpty())
   {
     qDebug() << "QuoteDataBase::newSymbol: invalid SYMBOL";
     return 1;
   }
 
-  QString type = "Stock";
-  set = symbol->get(Symbol::_TYPE);
-  if (set)
-    type = set->toString();
+  QString type = symbol->type();
 
   if (! getSymbol(symbol))
   {
@@ -430,15 +405,15 @@ int QuoteDataBase::newSymbol (Data *symbol)
   QString table = "Q1";
   if (q.next())
     table = "Q" + QString::number(q.value(0).toInt() + 1);
-  symbol->set(Symbol::_TABLE, new SettingString(table));
+  symbol->setTable(table);
 
   // set default name to symbol
-  QString name = tsymbol;
-  set = symbol->get(Symbol::_NAME);
-  if (! set)
-    symbol->set(Symbol::_NAME, new SettingString(name));
-  else
-    name = set->toString();
+  QString name = symbol->name();
+  if (name.isEmpty())
+  {
+    name = tsymbol;
+    symbol->setName(name);
+  }
 
   // add new symbol entry into the symbolIndex table
   s = "INSERT OR REPLACE INTO symbolIndex (symbol,tableName,exchange,name,type) VALUES(";
@@ -474,28 +449,16 @@ int QuoteDataBase::newSymbol (Data *symbol)
   return 0;
 }
 
-int QuoteDataBase::getSymbol (Data *symbol)
+int QuoteDataBase::getSymbol (Symbol *symbol)
 {
-  Setting *set = symbol->get(Symbol::_EXCHANGE);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::getSymbol: invalid EXCHANGE";
-    return 1;
-  }
-  QString exchange = set->toString();
+  QString exchange = symbol->exchange();
   if (exchange.isEmpty())
   {
     qDebug() << "QuoteDataBase::getSymbol: invalid EXCHANGE";
     return 1;
   }
 
-  set = symbol->get(Symbol::_SYMBOL);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::getSymbol: invalid SYMBOL";
-    return 1;
-  }
-  QString tsymbol = set->toString();
+  QString tsymbol = symbol->symbol();
   if (tsymbol.isEmpty())
   {
     qDebug() << "QuoteDataBase::getSymbol: invalid SYMBOL";
@@ -516,37 +479,25 @@ int QuoteDataBase::getSymbol (Data *symbol)
   if (q.next())
   {
     int pos = 0;
-    symbol->set(Symbol::_NAME, new SettingString(q.value(pos++).toString()));
-    symbol->set(Symbol::_TYPE, new SettingString(q.value(pos++).toString()));
-    symbol->set(Symbol::_TABLE, new SettingString(q.value(pos++).toString()));
+    symbol->setName(q.value(pos++).toString());
+    symbol->setType(q.value(pos++).toString());
+    symbol->setTable(q.value(pos++).toString());
     return 0;
   }
 
   return 1;
 }
 
-int QuoteDataBase::deleteSymbol (Data *bd)
+int QuoteDataBase::deleteSymbol (Symbol *bd)
 {
-  Setting *set = bd->get(Symbol::_EXCHANGE);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::deleteSymbol: invalid EXCHANGE";
-    return 1;
-  }
-  QString exchange = set->toString();
+  QString exchange = bd->exchange();
   if (exchange.isEmpty())
   {
     qDebug() << "QuoteDataBase::deleteSymbol: invalid EXCHANGE";
     return 1;
   }
 
-  set = bd->get(Symbol::_SYMBOL);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::deleteSymbol: invalid SYMBOL";
-    return 1;
-  }
-  QString symbol = set->toString();
+  QString symbol = bd->symbol();
   if (symbol.isEmpty())
   {
     qDebug() << "QuoteDataBase::deleteSymbol: invalid SYMBOL";
@@ -617,30 +568,30 @@ int QuoteDataBase::getExchange (QStringList &l)
   return 0;
 }
 
-int QuoteDataBase::rename (Data *osymbol, Data *nsymbol)
+int QuoteDataBase::rename (Symbol *osymbol, Symbol *nsymbol)
 {
-  QString oe = osymbol->get(Symbol::_EXCHANGE)->toString();
+  QString oe = osymbol->exchange();
   if (oe.isEmpty())
   {
     qDebug() << "QuoteDataBase::rename: invalid old exchange" << oe;
     return 1;
   }
 
-  QString os = osymbol->get(Symbol::_SYMBOL)->toString();
+  QString os = osymbol->symbol();
   if (os.isEmpty())
   {
     qDebug() << "QuoteDataBase::rename: invalid old symbol" << os;
     return 1;
   }
 
-  QString ne = nsymbol->get(Symbol::_EXCHANGE)->toString();
+  QString ne = nsymbol->exchange();
   if (ne.isEmpty())
   {
     qDebug() << "QuoteDataBase::rename: invalid new exchange" << ne;
     return 1;
   }
 
-  QString ns = nsymbol->get(Symbol::_SYMBOL)->toString();
+  QString ns = nsymbol->symbol();
   if (ns.isEmpty())
   {
     qDebug() << "QuoteDataBase::rename: invalid new symbol" << ns;
@@ -698,30 +649,18 @@ int QuoteDataBase::rename (Data *osymbol, Data *nsymbol)
   return 0;
 }
 
-int QuoteDataBase::search (Data *bd, QList<Data *> &l)
+int QuoteDataBase::search (Symbol bd, QList<Symbol> &l)
 {
   l.clear();
 
-  Setting *set = bd->get(Symbol::_EXCHANGE);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::search: invalid EXCHANGE";
-    return 1;
-  }
-  QString exchange = set->toString();
+  QString exchange = bd.exchange();
   if (exchange.isEmpty())
   {
     qDebug() << "QuoteDataBase::search: invalid EXCHANGE";
     return 1;
   }
 
-  set = bd->get(Symbol::_SYMBOL);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::search: invalid SYMBOL";
-    return 1;
-  }
-  QString symbol = set->toString();
+  QString symbol = bd.symbol();
   if (symbol.isEmpty())
   {
     qDebug() << "QuoteDataBase::search: invalid SYMBOL";
@@ -773,51 +712,33 @@ int QuoteDataBase::search (Data *bd, QList<Data *> &l)
   while (q.next())
   {
     int pos = 0;
-    Data *bd = new Data;
-    bd->set(Symbol::_EXCHANGE, new SettingString(q.value(pos++).toString()));
-    bd->set(Symbol::_SYMBOL, new SettingString(q.value(pos++).toString()));
-    bd->set(Symbol::_NAME, new SettingString(q.value(pos++).toString()));
-    l.append(bd);
+    Symbol sym;
+    sym.setExchange(q.value(pos++).toString());
+    sym.setSymbol(q.value(pos++).toString());
+    sym.setName(q.value(pos++).toString());
+    l << sym;
   }
 
   return 0;
 }
 
-int QuoteDataBase::setName (Data *symbol)
+int QuoteDataBase::setName (Symbol *symbol)
 {
-  Setting *set = symbol->get(Symbol::_EXCHANGE);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::getSymbol: invalid EXCHANGE";
-    return 1;
-  }
-  QString exchange = set->toString();
+  QString exchange = symbol->exchange();
   if (exchange.isEmpty())
   {
     qDebug() << "QuoteDataBase::getSymbol: invalid EXCHANGE";
     return 1;
   }
 
-  set = symbol->get(Symbol::_SYMBOL);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::getSymbol: invalid SYMBOL";
-    return 1;
-  }
-  QString tsymbol = set->toString();
+  QString tsymbol = symbol->symbol();
   if (tsymbol.isEmpty())
   {
     qDebug() << "QuoteDataBase::getSymbol: invalid SYMBOL";
     return 1;
   }
 
-  set = symbol->get(Symbol::_NAME);
-  if (! set)
-  {
-    qDebug() << "QuoteDataBase::getSymbol: invalid NAME";
-    return 1;
-  }
-  QString name = set->toString();
+  QString name = symbol->name();
   if (name.isEmpty())
   {
     qDebug() << "QuoteDataBase::getSymbol: invalid NAME";

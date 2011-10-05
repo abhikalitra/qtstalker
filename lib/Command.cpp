@@ -25,14 +25,13 @@
 
 Command::Command (QObject *p) : QObject (p)
 {
-  _widgetParent = 0;
-  _type = _NORMAL;
+  _type = _THREAD;
   _returnString = "ERROR";
 }
 
 Command::~Command ()
 {
-  qDebug() << "Command::~Command" << _name << "deleted";
+//  qDebug() << "Command::~Command" << _name << "deleted";
 }
 
 int Command::runScript (Message *, Script *)
@@ -53,9 +52,4 @@ QString Command::name ()
 QString Command::returnString ()
 {
   return _returnString;
-}
-
-void Command::setWidgetParent (QWidget *d)
-{
-  _widgetParent = d;
 }
