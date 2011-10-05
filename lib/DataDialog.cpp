@@ -22,18 +22,17 @@
 #include "DataDialog.h"
 #include "DataFactory.h"
 #include "DataSetting.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingDouble.h"
-#include "SettingBool.h"
-#include "SettingColor.h"
-#include "SettingDateTime.h"
 #include "SettingFactory.h"
 #include "LineEdit.h"
 #include "ColorButton.h"
 #include "FileButton.h"
 
 #include <QtDebug>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QDoubleSpinBox>
+#include <QCheckBox>
+#include <QDateTimeEdit>
 
 DataDialog::DataDialog (QWidget *p) : Dialog (p)
 {

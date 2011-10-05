@@ -24,7 +24,6 @@
 #include "GlobalSymbol.h"
 #include "DateRange.h"
 #include "CurveBar.h"
-#include "Symbol.h"
 
 #include <QString>
 #include <QDebug>

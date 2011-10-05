@@ -25,13 +25,9 @@
 #include "GlobalSymbol.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "Symbol.h"
 #include "CurveType.h"
 
-#include <QVBoxLayout>
-#include <QTableWidgetItem>
 #include <QtDebug>
-#include <QStringList>
 
 DataWindow::DataWindow (QWidget *p) : QDialog (p, 0)
 {

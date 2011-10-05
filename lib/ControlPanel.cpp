@@ -56,10 +56,6 @@ void ControlPanel::createGUI ()
   _gridButton = new GridButton;
   tb->addWidget(_gridButton);
 
-  // refresh button
-//  _refreshButton = new RefreshButton;
-//  tb->addWidget(_refreshButton);
-
   // toggle crosshairs button
   _crossHairsButton = new CrossHairsButton;
   tb->addWidget(_crossHairsButton);
@@ -128,13 +124,6 @@ RecentCharts * ControlPanel::recentCharts ()
 {
   return _recentCharts;
 }
-
-/*
-RefreshButton * ControlPanel::refreshButton ()
-{
-  return _refreshButton;
-}
-*/
 
 ConfigureButton * ControlPanel::configureButton ()
 {

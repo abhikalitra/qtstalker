@@ -27,7 +27,6 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 #include <QFormLayout>
-#include <QLayout>
 
 class Dialog : public QDialog
 {

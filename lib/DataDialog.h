@@ -23,14 +23,10 @@
 #define DATA_DIALOG_HPP
 
 #include <QStringList>
-#include <QHash>
-#include <QComboBox>
-#include <QSpinBox>
-#include <QDoubleSpinBox>
-#include <QCheckBox>
-#include <QDateTimeEdit>
-#include <QTabWidget>
 #include <QColor>
+#include <QFormLayout>
+#include <QHash>
+#include <QTabWidget>
 
 #include "Dialog.h"
 #include "Data.h"

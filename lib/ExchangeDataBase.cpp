@@ -20,7 +20,6 @@
  */
 
 #include "ExchangeDataBase.h"
-//#include "qtstalker_defines.h"
 
 #include <QFile>
 #include <QTextStream>

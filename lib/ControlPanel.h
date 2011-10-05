@@ -34,7 +34,6 @@
 #include "DataWindowButton.h"
 #include "GridButton.h"
 #include "CrossHairsButton.h"
-//#include "RefreshButton.h"
 #include "ConfigureButton.h"
 
 class ControlPanel : public QWidget
@@ -54,7 +53,6 @@ class ControlPanel : public QWidget
     BarLengthButton * barLengthButton ();
     DateRangeControl * dateRangeControl ();
     RecentCharts * recentCharts ();
-//    RefreshButton * refreshButton ();
     ConfigureButton * configureButton ();
     QSlider * slider ();
 
@@ -76,7 +74,6 @@ class ControlPanel : public QWidget
     BarSpaceButton *_barSpaceButton;
     DateRangeControl *_dateRangeControl;
     GridButton *_gridButton;
-//    RefreshButton *_refreshButton;
     CrossHairsButton *_crossHairsButton;
     DataWindowButton *_dataWindowButton;
     ConfigureButton *_configureButton;

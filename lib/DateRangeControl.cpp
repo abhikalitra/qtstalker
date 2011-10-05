@@ -28,8 +28,6 @@
 
 #include <QDebug>
 #include <QSettings>
-#include <QPixmap>
-#include <QPainter>
 
 DateRangeControl::DateRangeControl ()
 {

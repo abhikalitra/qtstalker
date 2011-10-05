@@ -23,13 +23,11 @@
 #define DATA_WINDOW_HPP
 
 #include <QDialog>
-#include <QString>
 #include <QTableWidget>
-#include <QList>
 #include <QHash>
-#include <QDateTime>
 
 #include "Plot.h"
+#include "Message.h"
 
 class DataWindow : public QDialog
 {

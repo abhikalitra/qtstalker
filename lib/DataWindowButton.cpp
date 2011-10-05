@@ -27,8 +27,6 @@
 #include "../pics/datawindow.xpm"
 
 #include <QDebug>
-#include <QString>
-#include <QSettings>
 
 DataWindowButton::DataWindowButton ()
 {
