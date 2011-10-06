@@ -168,17 +168,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>CommandFileDialog</name>
-    <message>
-        <source>Select File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select file(s)</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CommandYahooHistory</name>
     <message>
         <source>line</source>
@@ -929,6 +918,10 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>error</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -155,7 +155,6 @@ HEADERS += GroupDelete.h
 HEADERS += GroupEditDialog.h
 HEADERS += GroupNew.h
 HEADERS += GroupPage.h
-HEADERS += GUIGlobals.h
 
 HEADERS += HistogramStyle.h
 HEADERS += HLineDialog.h

@@ -26,6 +26,7 @@
 #include <QHash>
 #include <QMenu>
 #include <QList>
+#include <QString>
 
 class RecentCharts : public QToolButton
 {

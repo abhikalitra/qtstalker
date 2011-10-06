@@ -40,6 +40,7 @@ class Script : public QObject
     void signalDone (QString);
     void signalStopped (QString);
     void signalKill ();
+    void signalDeleted (QString);
 
   public:
     Script (QObject *);
@@ -61,6 +62,7 @@ class Script : public QObject
     void setSymbol (Symbol *);
     Symbol * symbol ();
     void deleteData ();
+    QString id ();
 
   public slots:
     int run ();
@@ -69,6 +71,7 @@ class Script : public QObject
     void done (int, QProcess::ExitStatus);
     void stopScript ();
     void resume (void *);
+    void error (QProcess::ProcessError);
 
   protected:
     QString _name;
@@ -80,6 +83,7 @@ class Script : public QObject
     QProcess *_proc;
     int _killFlag;
     Symbol *_symbol;
+    QString _id;
 };
 
 #endif

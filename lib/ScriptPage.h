@@ -59,6 +59,7 @@ class ScriptPage : public QWidget
     void createButtonMenu ();
     void createMainPage ();
     QListWidget * list ();
+    void addIndicator (Script *);
 
   public slots:
     void queRightClick (const QPoint &);
@@ -82,6 +83,7 @@ class ScriptPage : public QWidget
     void deleteScriptTimer2 (QStringList);
     void runStartupScripts ();
     void addScriptTimer (QString name, QString file, QString interval, QString command);
+    void runIndicator ();
 
   protected:
     QListWidget *_queList;
@@ -90,6 +92,8 @@ class ScriptPage : public QWidget
     QHash<QString, QListWidgetItem *> _itemList;
     QHash<QString, Script *> _scripts;
     QHash<QString, ScriptTimer *> _timers;
+
+    QList<Script *> _indicators;
 };
 
 #endif

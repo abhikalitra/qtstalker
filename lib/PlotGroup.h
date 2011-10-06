@@ -34,7 +34,7 @@ class PlotGroup : public QSplitter
 {
   Q_OBJECT
 
-  signals:
+//  signals:
 //    void signalSelectionChanged ();
 
   public:

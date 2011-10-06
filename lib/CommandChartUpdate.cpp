@@ -34,7 +34,6 @@
 #include <QtDebug>
 #include <QTime>
 #include <QHash>
-#include <QMutexLocker>
 
 CommandChartUpdate::CommandChartUpdate (QObject *p) : Command (p)
 {
@@ -88,15 +87,21 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
     if (dg->type() == DataFactory::_CURVE)
     {
       if (keys.at(loop) == date->toString())
+      {
         plot->setDates(dg);
+      }
       else
+      {
         curve(dg, name->toString(), plot);
+      }
 
       continue;
     }
 
     if (dg->type() == DataFactory::_CHART_OBJECT)
+    {
       chartObject(dg, name->toString(), plot);
+    }
   }
 
   update(name->toString(), plot);

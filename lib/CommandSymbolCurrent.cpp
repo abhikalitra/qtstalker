@@ -21,7 +21,6 @@
 
 #include "CommandSymbolCurrent.h"
 #include "Strip.h"
-#include "Symbol.h"
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "SettingString.h"
@@ -29,13 +28,15 @@
 #include "SettingDateTime.h"
 #include "VerifyDataInput.h"
 #include "SettingFactory.h"
+#include "GlobalSymbol.h"
 
 #include <QtDebug>
+#include <QMutexLocker>
 
 CommandSymbolCurrent::CommandSymbolCurrent (QObject *p) : Command (p)
 {
   _name = "SYMBOL_CURRENT";
-  _type = _THREAD;
+//  _type = _NORMAL;
 }
 
 int CommandSymbolCurrent::runScript (Message *sg, Script *script)

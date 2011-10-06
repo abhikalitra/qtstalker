@@ -20,7 +20,6 @@
  */
 
 #include "PlotMenu.h"
-#include "ConfirmDialog.h"
 #include "GlobalParent.h"
 #include "RemoveIndicator.h"
 #include "AddIndicator.h"

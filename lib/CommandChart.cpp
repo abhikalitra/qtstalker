@@ -126,11 +126,6 @@ void CommandChart::chart (QString chart, QString script, int row, int col, bool 
     g_plotGroup->setPlot(plot);
   }
 
-//  plot->clear();
-
   plot->showDate(date);
-
   plot->setLogScaling(log);
-
-//  plot->update();
 }

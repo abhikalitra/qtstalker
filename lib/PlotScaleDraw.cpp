@@ -24,10 +24,6 @@
 
 #include <QString>
 #include <QDebug>
-#include <QPolygon>
-#include <QFontMetrics>
-#include <QRect>
-#include <QBrush>
 #include <qwt_scale_map.h>
 
 PlotScaleDraw::PlotScaleDraw ()
@@ -39,7 +35,7 @@ QwtText PlotScaleDraw::label (double v) const
   Strip strip;
 
   double tv = v;
-  
+
   int flag = 0;
   if (tv < 0)
   {
@@ -83,7 +79,7 @@ QwtText PlotScaleDraw::label (double v) const
 
   if (flag)
     s.prepend("-");
-  
+
   return s;
 }
 
@@ -102,11 +98,11 @@ void PlotScaleDraw::draw (QPainter *p, const QPalette &pal) const
   for (; loop < _colors.count(); loop++)
   {
     QColor color = _colors.at(loop);
-    
+
     double v = _values.at(loop);
     QString s;
     strip.strip(v, 4, s);
-    
+
     int y = map().transform(v);
 
     QRect rc = p->boundingRect(x + offset,
@@ -122,7 +118,7 @@ void PlotScaleDraw::draw (QPainter *p, const QPalette &pal) const
     arrow.setPoint(1, x + offset, rc.top() - 1);
     arrow.setPoint(2, x + offset, rc.bottom() + 1);
     arrow.setPoint(3, x, y);
-    
+
     p->setBrush(color);
     p->drawPolygon(arrow, Qt::OddEvenFill);
 
@@ -197,7 +193,7 @@ void PlotScaleDraw::clearPoints ()
   // force a replot
   QwtScaleDiv sd = scaleDiv();
   sd.invalidate();
-  setScaleDiv(sd);  
+  setScaleDiv(sd);
 }
 
 void PlotScaleDraw::addPoint (QColor c, double v)

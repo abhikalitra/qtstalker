@@ -24,14 +24,13 @@
 #include "DataFactory.h"
 #include "CommandFactory.h"
 #include "CommandThread.h"
-#include "CurveData.h"
 
 #include <QDebug>
-#include <QProcess>
+#include <QUuid>
 
 Script::Script (QObject *p) : QObject (p)
 {
-//  _symbol = 0;
+  _symbol = 0;
 
   clear();
 
@@ -39,32 +38,35 @@ Script::Script (QObject *p) : QObject (p)
   connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
   connect(_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
   connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
-  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
-  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
+//  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
+//  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
+  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(error(QProcess::ProcessError)));
+
+  _id = QUuid::createUuid().toString();
 }
 
 Script::~Script ()
 {
-qDebug() << "Script::~Script:" << _file << "deleted";
-
   clear();
   _proc->terminate();
   _proc->waitForFinished();
+  emit signalDeleted(_id);
+//qDebug() << "Script::~Script:" << _file << "deleted";
 }
 
 void Script::clear ()
 {
   _killFlag = 0;
 
-//  if (_symbol)
-//    delete _symbol;
+  if (_symbol)
+    delete _symbol;
   _symbol = 0;
 
   deleteData();
   _data.clear();
 
   _name.clear();
-  _file.clear();
+//  _file.clear();
   _command.clear();
 
   qDeleteAll(_tsettings);
@@ -119,6 +121,8 @@ void Script::done (int, QProcess::ExitStatus)
     qDebug() << l.join(" ");
     emit signalDone(_file);
   }
+
+  deleteLater();
 }
 
 void Script::readFromStdout ()
@@ -291,12 +295,11 @@ QString & Script::file ()
 
 void Script::setSymbol (Symbol *d)
 {
-  _symbol = d;
-/*
+//  _symbol = d;
+
   Symbol *symbol = new Symbol;
   d->copy(symbol);
   _symbol = symbol;
-*/
 }
 
 Symbol * Script::symbol ()
@@ -314,4 +317,21 @@ void Script::deleteData ()
     if (it.value()->deleteFlag())
       delete d;
   }
+}
+
+void Script::error (QProcess::ProcessError)
+{
+  QStringList l;
+  l << QDateTime::currentDateTime().toString();
+  l << tr("Script");
+  l << _file;
+  l << tr("error");
+  qDebug() << l.join(" ");
+  emit signalDone(_file);
+  deleteLater();
+}
+
+QString Script::id ()
+{
+  return _id;
 }

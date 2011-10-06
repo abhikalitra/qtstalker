@@ -22,6 +22,7 @@
 #ifndef SYMBOL_DIALOG_HPP
 #define SYMBOL_DIALOG_HPP
 
+#include <QStringList>
 #include <QTreeWidget>
 #include <QComboBox>
 #include <QToolButton>
@@ -56,8 +57,6 @@ class SymbolDialog : public Dialog
     QComboBox *_exchanges;
     LineEdit *_search;
     QPushButton *_searchButton;
-//    QPushButton *_addButton;
-//    QPushButton *_deleteButton;
     QToolButton *_addButton;
     QToolButton *_deleteButton;
     QStringList _symbols;

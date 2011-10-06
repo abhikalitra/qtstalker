@@ -26,22 +26,33 @@
 #include "GlobalControlPanel.h"
 #include "GlobalPlotGroup.h"
 #include "GlobalParent.h"
+#include "GlobalSidePanel.h"
 #include "QuoteDataBase.h"
 #include "IndicatorDataBase.h"
-#include "Script.h"
 #include "BarLength.h"
 
 #include <QStringList>
 #include <QSettings>
 
-ChartLoad::ChartLoad (QString symbol)
+ChartLoad::ChartLoad (QObject *p, QString symbol) : QObject (p)
 {
   _symbol = symbol;
+}
+
+ChartLoad::~ChartLoad ()
+{
+//  g_symbolMutex.unlock();
 }
 
 int ChartLoad::run ()
 {
   // do all the stuff we need to do to load a chart
+
+  if (! g_symbolMutex.tryLock())
+  {
+    deleteLater();
+    return 1;
+  }
 
   if (! g_currentSymbol)
     g_currentSymbol = new Symbol;
@@ -50,6 +61,8 @@ int ChartLoad::run ()
   if (g_currentSymbol->setSymbolFull(_symbol))
   {
     qDebug() << "ChartLoad::run: invalid symbol" << _symbol;
+    g_symbolMutex.unlock();
+    deleteLater();
     return 1;
   }
 
@@ -60,6 +73,8 @@ int ChartLoad::run ()
   if (db.getBars(g_currentSymbol))
   {
     qDebug() << "ChartLoad::run: QuoteDataBase error";
+    g_symbolMutex.unlock();
+    deleteLater();
     return 1;
   }
 
@@ -96,10 +111,12 @@ int ChartLoad::run ()
       continue;
 
     Script *script = new Script(g_parent);
+    connect(script, SIGNAL(signalDeleted(QString)), this, SLOT(scriptDone(QString)));
     script->setFile(il.at(loop));
     script->setCommand(command);
     script->setSymbol(g_currentSymbol);
     script->run();
+    _scripts.insert(script->id(), script);
   }
 
   g_controlPanel->recentCharts()->addRecentChart(_symbol);
@@ -107,6 +124,18 @@ int ChartLoad::run ()
   g_parent->setWindowTitle(getWindowCaption());
 
   return 0;
+}
+
+void ChartLoad::scriptDone (QString d)
+{
+  _scripts.remove(d);
+
+  if (_scripts.count())
+    return;
+
+  g_symbolMutex.unlock();
+
+  deleteLater();
 }
 
 QString ChartLoad::getWindowCaption ()

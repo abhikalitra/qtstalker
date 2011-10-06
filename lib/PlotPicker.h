@@ -31,6 +31,7 @@
 #include <qwt_picker_machine.h>
 #include <QMouseEvent>
 #include <QColor>
+#include <QPoint>
 
 class PlotPicker : public QwtPlotPicker
 {

@@ -21,8 +21,6 @@
 
 #include "SymbolDialog.h"
 #include "QuoteDataBase.h"
-#include "Symbol.h"
-#include "SettingString.h"
 
 #include "../pics/search.xpm"
 #include "../pics/select_all.xpm"
@@ -31,7 +29,6 @@
 #include "../pics/delete.xpm"
 
 #include <QtDebug>
-#include <QTreeWidgetItem>
 #include <QGroupBox>
 #include <QToolBar>
 
@@ -108,18 +105,6 @@ void SymbolDialog::createGUI ()
   tb->setOrientation(Qt::Vertical);
   tvbox->addWidget(tb);
 
-  QToolButton *b = new QToolButton;
-  b->setIcon(QIcon(select_all_xpm));
-  b->setToolTip(tr("Select all symbols"));
-  connect(b, SIGNAL(clicked()), _searchList, SLOT(selectAll()));
-  tb->addWidget(b);
-
-  b = new QToolButton;
-  b->setIcon(QIcon(unselect_all_xpm));
-  b->setToolTip(tr("Unselect all symbols"));
-  connect(b, SIGNAL(clicked()), _searchList, SLOT(clearSelection()));
-  tb->addWidget(b);
-
   _addButton = new QToolButton;
   _addButton->setIcon(QIcon(add_xpm));
   _addButton->setToolTip(tr("Add selected to symbols"));
@@ -131,6 +116,18 @@ void SymbolDialog::createGUI ()
   _deleteButton->setToolTip(tr("Remove selected from symbols"));
   connect(_deleteButton, SIGNAL(clicked()), this, SLOT(deleteButtonPressed()));
   tb->addWidget(_deleteButton);
+
+  QToolButton *b = new QToolButton;
+  b->setIcon(QIcon(select_all_xpm));
+  b->setToolTip(tr("Select all symbols"));
+  connect(b, SIGNAL(clicked()), _searchList, SLOT(selectAll()));
+  tb->addWidget(b);
+
+  b = new QToolButton;
+  b->setIcon(QIcon(unselect_all_xpm));
+  b->setToolTip(tr("Unselect all symbols"));
+  connect(b, SIGNAL(clicked()), _searchList, SLOT(clearSelection()));
+  tb->addWidget(b);
 
   tvbox->addStretch(1);
 
@@ -149,7 +146,6 @@ void SymbolDialog::createGUI ()
   _symbolList->setHeaderLabels(l);
   _symbolList->setSelectionMode(QAbstractItemView::ExtendedSelection);
   connect(_symbolList, SIGNAL(itemSelectionChanged()), this, SLOT(symbolSelectionChanged()));
-//  connect(_symbolList, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(done()));
   tvbox->addWidget(_symbolList);
 }
 

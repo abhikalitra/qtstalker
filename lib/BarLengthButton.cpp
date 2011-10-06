@@ -88,8 +88,8 @@ void BarLengthButton::lengthChanged (QAction *d)
   if (! g_currentSymbol)
     return;
 
-  ChartLoad cl(g_currentSymbol->symbolFull());
-  cl.run();
+  ChartLoad *cl = new ChartLoad(this, g_currentSymbol->symbolFull());
+  cl->run();
 
 //  emit signalBarLengthChanged(_barLength);
 }

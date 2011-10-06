@@ -27,10 +27,8 @@
 #include "ConfirmDialog.h"
 #include "ChartObjectFactory.h"
 #include "CurveData.h"
-#include "CurveBar.h"
 #include "ChartObjectData.h"
 #include "ChartObjectType.h"
-#include "Symbol.h"
 #include "SettingString.h"
 #include "BuyDialog.h"
 #include "HLineDialog.h"
@@ -45,14 +43,8 @@
 
 #include <QSettings>
 #include <QtDebug>
-#include <QCursor>
-#include <QUuid>
-#include <qwt_scale_div.h>
-#include <qwt_scale_widget.h>
-#include <qwt_plot_marker.h>
-#include <qwt_symbol.h>
 #include <qwt_scale_engine.h>
-#include <QMainWindow>
+#include <qwt_scale_widget.h>
 
 Plot::Plot (QString name, QWidget *mw) : QwtPlot (mw)
 {
@@ -227,7 +219,7 @@ void Plot::setLogScaling (bool d)
   else
     setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
 
-  replot();
+//  replot();
 }
 
 void Plot::showDate (bool d)

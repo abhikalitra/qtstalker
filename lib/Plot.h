@@ -23,24 +23,24 @@
 #define PLOT_HPP
 
 #include <QString>
-#include <QHash>
+#include <qwt_plot.h>
+#include <QList>
 #include <QDateTime>
 #include <QColor>
 #include <QFont>
-#include <QMenu>
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
+#include <QPoint>
+#include <QHash>
 #include <qwt_plot_grid.h>
-//#include <QGestureEvent>
-//#include <QTapAndHoldGesture>
-//#include <QSwipeGesture>
+#include <QMenu>
 
-#include "DateScaleDraw.h"
-#include "PlotScaleDraw.h"
+#include "Message.h"
+#include "Data.h"
 #include "Curve.h"
-#include "PlotPicker.h"
 #include "PlotMenu.h"
 #include "ChartObject.h"
+#include "DateScaleDraw.h"
+#include "PlotScaleDraw.h"
+#include "PlotPicker.h"
 #include "Dialog.h"
 #include "PlotInfo.h"
 

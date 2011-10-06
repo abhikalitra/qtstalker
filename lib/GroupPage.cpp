@@ -157,8 +157,8 @@ void GroupPage::groupSelected (int i)
 
 void GroupPage::chartOpened (QString d)
 {
-  ChartLoad cl(d);
-  cl.run();
+  ChartLoad *cl = new ChartLoad(this, d);
+  cl->run();
 }
 
 void GroupPage::rightClick (const QPoint &)

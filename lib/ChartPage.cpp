@@ -127,8 +127,8 @@ void ChartPage::createMenu ()
 
 void ChartPage::chartOpened (QString d)
 {
-  ChartLoad cl(d);
-  cl.run();
+  ChartLoad *cl = new ChartLoad(this, d);
+  cl->run();
 }
 
 void ChartPage::rightClick (const QPoint &)

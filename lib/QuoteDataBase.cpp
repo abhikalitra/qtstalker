@@ -21,20 +21,13 @@
 
 
 #include "QuoteDataBase.h"
-#include "Strip.h"
 #include "CurveBar.h"
-#include "CurveData.h"
 #include "DateRange.h"
-#include "BarLength.h"
-#include "SettingString.h"
 #include "SettingDouble.h"
 #include "SettingDateTime.h"
 
 #include <QDateTime>
 #include <QtDebug>
-#include <QFile>
-#include <QFileInfo>
-#include <QTextStream>
 
 QuoteDataBase::QuoteDataBase ()
 {

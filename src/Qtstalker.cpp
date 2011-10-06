@@ -216,8 +216,8 @@ void QtstalkerApp::commandLineAsset ()
     return;
   }
 
-  ChartLoad cl(_clAsset);
-  cl.run();
+  ChartLoad *cl = new ChartLoad(this, _clAsset);
+  cl->run();
 }
 
 /*
@@ -262,7 +262,7 @@ void QtstalkerApp::afterStartup ()
     if (symbol.isEmpty())
       return;
 
-    ChartLoad cl(symbol);
-    cl.run();
+    ChartLoad *cl = new ChartLoad(this, symbol);
+    cl->run();
   }
 }
