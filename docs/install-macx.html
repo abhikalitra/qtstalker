@@ -25,7 +25,7 @@
 <ul>
   <li>Mac OS X Leopard (10.5) or Snow Leopard (10.6) or newer</li>
   <li>Apple Xcode Tools. To build Qtstalker from sources.</li>
-  <li>Dependencies: D-Bus and Qt and Qwt and TA-Lib</li>
+  <li>Dependencies: Qt and Qwt and TA-Lib</li>
 </ul>
 <h2 id="install">Installation</h2>
 <p> See the general <a href="install.html">Installation</a>
@@ -51,8 +51,6 @@ sudo make install
 <p> This will install TA-Lib at <code>/usr/local</code> ... See
 important <a href="install.html#source">notes</a> about ensuring
 proper installation and configuration if at a non-standard location. </p>
-<h3 id="dbus">Install D-Bus</h3>
-<p> Install D-Bus and follow its instructions to start it. </p>
 <h3 id="qt">Install Qt</h3>
 <p> Install Qt 4.6 or newer from source. </p>
 <p> For Leopard use this configuration: </p>
@@ -61,10 +59,6 @@ proper installation and configuration if at a non-standard location. </p>
 <p> For Snow Leopard use this configuration: </p>
 <pre>./configure -cocoa -arch x86_64
 </pre>
-<p>
-NOTE: If the Qt <code>examples/dbus/remotecontrolledcar</code> applications do not operate,
-then use the "<code>-dbus-linked</code>" option for Qt configure.
-</p>
 <p> See important <a href="install.html#source">notes</a> about
 ensuring proper installation and adding to your <code>$PATH</code>
 <a href="http://en.wikipedia.org/wiki/Environment_variable">environment

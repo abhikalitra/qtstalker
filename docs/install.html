@@ -31,7 +31,6 @@
 <h2 id="requirements">Requirements and dependencies</h2>
 <ul>
   <li>A Linux or FreeBSD compatible or Mac OS X operating system.</li>
-  <li><a href="http://dbus.freedesktop.org/">D-Bus</a> message bus system.</li>
   <li><a href="http://qt.nokia.com/">Qt</a> development library. At least Qt
     4.6 version.</li>
   <li><a href="http://qwt.sourceforge.net/">Qwt</a> graphics extension library.
@@ -74,7 +73,6 @@ variable</a>).
 Do '<code>which qmake</code>' and '<code>which lupdate</code>' etc. to ensure
 that these are properly installed.
 Ensure that the Qt '<code>qtdemo</code>' application can be started.
-Ensure that the Qt '<code>examples/dbus/remotecontrolledcar</code>' applications can be operated.
 </p>
 
 <p><strong>Important (Qwt):</strong> Ensure that Qwt is installed properly.
@@ -120,11 +118,11 @@ if Qt or Qwt or TA-Lib is installed at a non-standard location, then edit the
 
 <h3 id="qwt-lib">Supporting demos</h3>
 <p>
-Ensure that the Qt examples (especially D-Bus) and Qwt examples and demonstrations can be utilised.
+Ensure that the Qt examples and Qwt examples and demonstrations can be utilised.
 Unfortunately some package managers do not install these demos.
 </p>
 <p>
-The most likely errors are that the Qt is not compiled for D-Bus, or that Qwt libraries cannot be found.
+The most likely error is that the Qwt libraries cannot be found.
 See <a href="#source">notes</a> above.
 </p>
 
@@ -144,19 +142,6 @@ Then edit the Qtstalker "<code>configure</code>" file to tweak the
     <p>Fix this by adding <code>/usr/local/lib</code>
     to your <code>/etc/ld.so.conf</code> file and run <code>ldconfig -v</code>
     (as root).</p>
-
-<h3 id="dbus-monitor">Monitor D-Bus</h3>
-<p>
-If you suspect problems with D-Bus, then in another shell window run: <code>dbus-monitor</code>
-</p>
-<p>
-Then start <code>qtstalker</code> and you should see startup messages through D-Bus and
-messages when each Qtstalker script is run.
-</p>
-<p>
-For further information, start Qtstalker with the debug environment variable:
-<code>QDBUS_DEBUG=1 qtstalker</code>
-</p>
 
 <h3 id="clean">Clean build</h3>
 <p>
