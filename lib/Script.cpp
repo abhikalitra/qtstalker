@@ -38,9 +38,9 @@ Script::Script (QObject *p) : QObject (p)
   connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
   connect(_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
   connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
-//  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
-//  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
-  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(error(QProcess::ProcessError)));
+  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
+  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
+//  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(error(QProcess::ProcessError)));
 
   _id = QUuid::createUuid().toString();
 }
@@ -159,8 +159,6 @@ void Script::readFromStdout ()
     return;
   }
 
-//  command->setWidgetParent(g_parent);
-
   connect(command, SIGNAL(signalResume(void *)), this, SLOT(resume(void *)));
 
   switch ((Command::Type)command->type())
@@ -171,7 +169,6 @@ void Script::readFromStdout ()
     case Command::_THREAD:
     {
       CommandThread *ct = new CommandThread(this, tsg, command, this);
-//      connect(ct, SIGNAL(finished()), this, SLOT(resume()), Qt::QueuedConnection);
       ct->start();
       break;
     }

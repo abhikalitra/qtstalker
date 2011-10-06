@@ -234,11 +234,6 @@ void ScriptPage::done (QString file)
   _itemList.remove(file);
   delete item;
 
-  Script *script = _scripts.value(file);
-  if (! script)
-    return;
-
-  delete script;
   _scripts.remove(file);
 }
 
@@ -472,27 +467,4 @@ void ScriptPage::addScriptTimer (QString name, QString file, QString interval, Q
   st->setIntervalString(interval);
   _timers.insert(name, st);
   st->start();
-}
-
-void ScriptPage::addIndicator (Script *script)
-{
-  connect(script, SIGNAL(signalDeleted(QString)), this, SLOT(runIndicator()));
-  _indicators << script;
-
-  if (_indicators.count() == 1)
-    script->run();
-}
-
-void ScriptPage::runIndicator ()
-{
-  _indicators.removeAt(0);
-
-  if (_indicators.count() == 0)
-    return;
-
-  Script *script = _indicators.at(0);
-  if (! script)
-    return;
-
-  script->run();
 }
