@@ -30,7 +30,7 @@
 
 Script::Script (QObject *p) : QObject (p)
 {
-  _symbol = 0;
+//  _symbol = 0;
 
   clear();
 
@@ -58,8 +58,8 @@ void Script::clear ()
 {
   _killFlag = 0;
 
-  if (_symbol)
-    delete _symbol;
+//  if (_symbol)
+//    delete _symbol;
   _symbol = 0;
 
   deleteData();
@@ -295,11 +295,11 @@ QString & Script::file ()
 
 void Script::setSymbol (Symbol *d)
 {
-//  _symbol = d;
+  _symbol = d;
 
-  Symbol *symbol = new Symbol;
-  d->copy(symbol);
-  _symbol = symbol;
+//  Symbol *symbol = new Symbol;
+//  d->copy(symbol);
+//  _symbol = symbol;
 }
 
 Symbol * Script::symbol ()

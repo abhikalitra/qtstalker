@@ -22,6 +22,8 @@
 #include "ChartPage.h"
 #include "Global.h"
 #include "GlobalSymbol.h"
+#include "GlobalControlPanel.h"
+#include "GlobalParent.h"
 #include "QuoteDataBase.h"
 #include "SymbolDialog.h"
 #include "GroupAdd.h"

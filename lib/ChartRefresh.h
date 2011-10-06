@@ -19,8 +19,8 @@
  *  USA.
  */
 
-#ifndef CHART_LOAD_HPP
-#define CHART_LOAD_HPP
+#ifndef CHART_REFRESH_HPP
+#define CHART_REFRESH_HPP
 
 #include <QObject>
 #include <QString>
@@ -28,19 +28,22 @@
 
 #include "Script.h"
 
-class ChartLoad : public QObject
+class ChartRefresh : public QObject
 {
   Q_OBJECT
 
+  signals:
+    void signalDone ();
+
   public:
-    ChartLoad (QObject *, QString);
-    void run ();
+    ChartRefresh (QObject *);
+    ~ChartRefresh ();
+    int run ();
 
   public slots:
-    void symbolLoadDone (QString, int);
+    void scriptDone (QString);
 
   private:
-    QString _symbol;
     QHash<QString, Script *> _scripts;
 };
 

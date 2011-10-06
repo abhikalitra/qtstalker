@@ -19,29 +19,27 @@
  *  USA.
  */
 
-#ifndef CHART_LOAD_HPP
-#define CHART_LOAD_HPP
+#ifndef SYMBOL_LOAD_HPP
+#define SYMBOL_LOAD_HPP
 
-#include <QObject>
+#include <QThread>
 #include <QString>
-#include <QHash>
 
-#include "Script.h"
-
-class ChartLoad : public QObject
+class SymbolLoad : public QThread
 {
   Q_OBJECT
 
-  public:
-    ChartLoad (QObject *, QString);
-    void run ();
+  signals:
+    void signalDone (QString, int);
+    void signalError ();
 
-  public slots:
-    void symbolLoadDone (QString, int);
+  public:
+    SymbolLoad (QObject *, QString);
+    void run ();
+    QString getWindowCaption (int length);
 
   private:
     QString _symbol;
-    QHash<QString, Script *> _scripts;
 };
 
 #endif

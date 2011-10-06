@@ -7,6 +7,6 @@
 extern QString g_session;
 extern QString g_localSettings;
 extern QString g_globalSettings;
-extern QMutex g_chartPanelUpdate;
+extern QMutex g_chartRefreshMutex;
 
 #endif

@@ -41,6 +41,8 @@ CommandSymbolCurrent::CommandSymbolCurrent (QObject *p) : Command (p)
 
 int CommandSymbolCurrent::runScript (Message *sg, Script *script)
 {
+  QMutexLocker locker(&g_symbolMutex);
+
   Symbol *bd = script->symbol();
   if (! bd)
   {
