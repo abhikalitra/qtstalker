@@ -30,8 +30,6 @@
 #include "VerifyDataInput.h"
 #include "SettingFactory.h"
 #include "QuoteDataBase.h"
-#include "DateRange.h"
-#include "BarLength.h"
 
 #include <QtDebug>
 #include <QSharedMemory>
@@ -50,7 +48,7 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   Setting *set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid SYMBOL " + s;
+    qDebug() << "CommandSymbol::runScript: invalid SYMBOL" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -58,7 +56,7 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   QStringList tl = set->toString().split(":");
   if (tl.count() != 2)
   {
-    _message << "invalid SYMBOL " + set->toString();
+    qDebug() << "CommandSymbol::runScript: invalid SYMBOL" << set->toString();
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -68,58 +66,39 @@ int CommandSymbol::runScript (Message *sg, Script *script)
 
   // LENGTH
   s = sg->value("LENGTH");
-  set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  Setting *length = vdi.setting(SettingFactory::_BAR_LENGTH, script, s);
+  if (! length)
   {
-    _message << "invalid LENGTH " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  BarLength bl;
-  int length = bl.stringToType(set->toString());
-  if (length == -1)
-  {
-    _message << "invalid LENGTH " + set->toString();
+    qDebug() << "CommandSymbol::runScript: invalid LENGTH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // RANGE
   s = sg->value("RANGE");
-  set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  Setting *range = vdi.setting(SettingFactory::_DATE_RANGE, script, s);
+  if (! range)
   {
-    _message << "invalid RANGE " + s;
+    qDebug() << "CommandSymbol::runScript: invalid RANGE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  DateRange dr;
-  int range = dr.toType(set->toString());
-  if (range == -1)
-  {
-    _message << "invalid RANGE " + set->toString();
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  Symbol *bd = new Symbol;
-  bd->setExchange(exchange);
-  bd->setSymbol(symbol);
-  bd->setLength(length);
-  bd->setStartDate(QDateTime());
-  bd->setEndDate(QDateTime());
-  bd->setRange(range);
+  Symbol bd;
+  bd.setExchange(exchange);
+  bd.setSymbol(symbol);
+  bd.setLength(length->toInteger());
+  bd.setStartDate(QDateTime());
+  bd.setEndDate(QDateTime());
+  bd.setRange(range->toInteger());
 
   // load quotes
   QuoteDataBase db;
-  if (db.getBars(bd))
+  if (db.getBars(&bd))
   {
-    _message << "QuoteDataBase error" << "EXCHANGE=" + exchange << "SYMBOL=" + symbol;
-    _message << "LENGTH=" + QString::number(length) << "RANGE=" + QString::number(range);
+    qDebug() << "CommandSymbol::runScript: QuoteDataBase error" << "EXCHANGE=" << exchange << "SYMBOL=" << symbol;
+    qDebug() << "CommandSymbol::runScript: LENGTH=" << length->toString() << "RANGE=" << range->toString();
     emit signalResume((void *) this);
-    delete bd;
     return _ERROR;
   }
 
@@ -128,9 +107,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid DATE " + s;
+    qDebug() << "CommandSymbol::runScript: invalid DATE" << s;
     emit signalResume((void *) this);
-    delete bd;
     return _ERROR;
   }
   Data *dline = new CurveData;
@@ -141,9 +119,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid OPEN " + s;
+    qDebug() << "CommandSymbol::runScript: invalid OPEN" << s;
     emit signalResume((void *) this);
-    delete bd;
     return _ERROR;
   }
   Data *oline = new CurveData;
@@ -154,9 +131,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandSymbol::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
-    delete bd;
     return _ERROR;
   }
   Data *hline = new CurveData;
@@ -167,9 +143,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandSymbol::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
-    delete bd;
     return _ERROR;
   }
   Data *lline = new CurveData;
@@ -180,9 +155,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid CLOSE " + s;
+    qDebug() << "CommandSymbol::runScript: invalid CLOSE" << s;
     emit signalResume((void *) this);
-    delete bd;
     return _ERROR;
   }
   Data *cline = new CurveData;
@@ -193,9 +167,8 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid VOLUME " + s;
+    qDebug() << "CommandSymbol::runScript: invalid VOLUME" << s;
     emit signalResume((void *) this);
-    delete bd;
     return _ERROR;
   }
   Data *vline = new CurveData;
@@ -206,19 +179,18 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   set = vdi.setting(SettingFactory::_STRING, script, s);
   if (! set)
   {
-    _message << "invalid OI " + s;
+    qDebug() << "CommandSymbol::runScript: invalid OI" << s;
     emit signalResume((void *) this);
-    delete bd;
     return _ERROR;
   }
   Data *iline = new CurveData;
   script->setData(set->toString(), iline);
 
   int loop = 0;
-  QList<int> barKeys = bd->barKeys();
+  QList<int> barKeys = bd.barKeys();
   for (; loop < barKeys.count(); loop++)
   {
-    Data *b = bd->getData(barKeys.at(loop));
+    Data *b = bd.getData(barKeys.at(loop));
 
     Data *db = new CurveBar;
     db->set(CurveBar::_DATE, new SettingDateTime(b->get(CurveBar::_DATE)->toDateTime()));
@@ -248,8 +220,6 @@ int CommandSymbol::runScript (Message *sg, Script *script)
     db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_OI)->toDouble()));
     iline->set(loop, db);
   }
-
-  delete bd;
 
   _returnString = "OK";
 

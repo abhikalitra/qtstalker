@@ -102,6 +102,9 @@ Data * VerifyDataInput::curveAll (Script *script, QString key)
 
 Setting * VerifyDataInput::setting (int type, Script *script, QString key)
 {
+  if (key.isEmpty())
+    return 0;
+
   Setting *set = dataSetting(type, script, key);
   if (set)
     return set;

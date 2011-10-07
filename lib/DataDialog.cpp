@@ -26,6 +26,7 @@
 #include "LineEdit.h"
 #include "ColorButton.h"
 #include "FileButton.h"
+#include "SymbolButton.h"
 
 #include <QtDebug>
 #include <QComboBox>
@@ -97,6 +98,8 @@ void DataDialog::set (Data *d)
       _settings.insert(key, d);
       break;
     case SettingFactory::_LIST:
+    case SettingFactory::_BAR_LENGTH:
+    case SettingFactory::_DATE_RANGE:
       setList(tab, key, vset->toString(), vset->toList(), QString());
       _settings.insert(key, d);
       break;
@@ -114,6 +117,10 @@ void DataDialog::set (Data *d)
       break;
     case SettingFactory::_FILE:
       setFile(tab, key, vset->toList(), QString());
+      _settings.insert(key, d);
+      break;
+    case SettingFactory::_SYMBOL:
+      setSymbol(tab, key, vset->toList(), QString());
       _settings.insert(key, d);
       break;
     default:
@@ -269,6 +276,24 @@ int DataDialog::setFile (int tab, QString key, QStringList v, QString tt)
   return 0;
 }
 
+int DataDialog::setSymbol (int tab, QString key, QStringList v, QString tt)
+{
+  QFormLayout *form = _formList.value(tab);
+  if (! form)
+  {
+    addTab(tab);
+    form = _formList.value(tab);
+  }
+
+  SymbolButton *w = new SymbolButton(this);
+  w->setSymbols(v);
+  w->setToolTip(tt);
+  form->addRow(key, w);
+  _widgets.insert(key, (void *) w);
+
+  return 0;
+}
+
 void DataDialog::done ()
 {
   if (! _settings.count())
@@ -324,6 +349,8 @@ void DataDialog::done ()
         break;
       }
       case SettingFactory::_LIST:
+      case SettingFactory::_BAR_LENGTH:
+      case SettingFactory::_DATE_RANGE:
       {
         QComboBox *w = (QComboBox *) _widgets.value(it.key());
         set->set(w->currentText());
@@ -333,6 +360,12 @@ void DataDialog::done ()
       {
         FileButton *w = (FileButton *) _widgets.value(it.key());
         set->set(w->files());
+        break;
+      }
+      case SettingFactory::_SYMBOL:
+      {
+        SymbolButton *w = (SymbolButton *) _widgets.value(it.key());
+        set->set(w->symbols());
         break;
       }
       default:

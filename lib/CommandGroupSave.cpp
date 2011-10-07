@@ -41,17 +41,17 @@ int CommandGroupSave::runScript (Message *sg, Script *script)
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
-    _message << "invalid NAME " + s;
+    qDebug() << "CommandGroupSave::runScript: invalid NAME" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // SYMBOLS
   s = sg->value("SYMBOLS");
-  Setting *symbols = vdi.setting(SettingFactory::_LIST, script, s);
+  Setting *symbols = vdi.setting(SettingFactory::_SYMBOL, script, s);
   if (! symbols)
   {
-    _message << "invalid SYMBOLS " + s;
+    qDebug() << "CommandGroupSave::runScript: invalid SYMBOLS" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }

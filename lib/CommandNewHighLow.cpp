@@ -40,7 +40,7 @@ int CommandNewHighLow::runScript (Message *sg, Script *script)
   Data *in = vdi.curve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandNewHighLow::runScript: INPUT missing" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -49,7 +49,7 @@ int CommandNewHighLow::runScript (Message *sg, Script *script)
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    _message << "invalid METHOD " + s;
+    qDebug() << "CommandNewHighLow::runScript: invalid METHOD" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -64,8 +64,6 @@ int CommandNewHighLow::runScript (Message *sg, Script *script)
 
   _returnString = QString::number(flag);
 
-  _returnString = "OK";
-
   emit signalResume((void *) this);
 
   return _OK;
@@ -78,13 +76,13 @@ int CommandNewHighLow::getNewHighLow (Data *in, int method, int &flag)
   if (! keys.count())
     return 1;
 
-  Data *bar = in->getData(keys.at(0));
+  int loop = 0;
+  Data *bar = in->getData(keys.at(loop++));
   double v = bar->get(CurveBar::_VALUE)->toDouble();
 
-  int loop = 0;
   if (method == 0) // highest
   {
-    for (; loop < keys.count() - 1; loop++)
+    for (; loop < keys.count() - 2; loop++)
     {
       bar = in->getData(keys.at(loop));
       double tv = bar->get(CurveBar::_VALUE)->toDouble();
@@ -94,7 +92,7 @@ int CommandNewHighLow::getNewHighLow (Data *in, int method, int &flag)
   }
   else // lowest
   {
-    for (; loop < keys.count() - 1; loop++)
+    for (; loop < keys.count() - 2; loop++)
     {
       bar = in->getData(keys.at(loop));
       double tv = bar->get(CurveBar::_VALUE)->toDouble();

@@ -135,7 +135,7 @@ void Script::readFromStdout ()
   }
 
   QByteArray ba = _proc->readAllStandardOutput();
-//qDebug() << ba;
+qDebug() << ba;
 
   Message tsg;
   QString s(ba);

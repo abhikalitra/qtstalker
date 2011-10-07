@@ -49,6 +49,7 @@ class DataDialog : public Dialog
     int setDateTime (int tab, QString key, QDateTime v, QString tt);
     int setFile (int tab, QString key, QStringList v, QString tt);
     void setTabTitle (int pos, QString);
+    int setSymbol (int tab, QString key, QStringList v, QString tt);
 
   public slots:
     void done ();

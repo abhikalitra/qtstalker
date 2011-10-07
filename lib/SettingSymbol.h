@@ -19,39 +19,27 @@
  *  USA.
  */
 
-#ifndef SETTING_FACTORY_HPP
-#define SETTING_FACTORY_HPP
+// ******************************************************
+// ******************************************************
 
-#include <QStringList>
+#ifndef SETTING_SYMBOL_HPP
+#define SETTING_SYMBOL_HPP
 
 #include "Setting.h"
 
-class SettingFactory
+class SettingSymbol : public Setting
 {
   public:
-    enum Type
-    {
-      _BAR_LENGTH,
-      _BOOL,
-      _COLOR,
-      _DATE_RANGE,
-      _DATETIME,
-      _DOUBLE,
-      _FILE,
-      _FONT,
-      _INTEGER,
-      _LIST,
-      _STRING,
-      _SYMBOL
-    };
+    SettingSymbol (QStringList);
+    SettingSymbol ();
+    int set (QString, void *);
+    QString toString ();
+    QStringList toList ();
+    void set (QStringList);
+    int set (QString);
 
-    SettingFactory ();
-    Setting * setting (QString);
-    Setting * setting (int);
-    int stringToType (QString);
-
-  private:
-    QStringList _types;
+  protected:
+    QStringList _value;
 };
 
 #endif
