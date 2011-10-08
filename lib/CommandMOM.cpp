@@ -45,14 +45,14 @@ int CommandMOM::runScript (Message *sg, Script *script)
   QString s = sg->value("OUTPUT");
   if (s.isEmpty())
   {
-    _message << "invalid OUTPUT";
+    qDebug() << "CommandMOM::runScript: invalid OUTPUT";
     emit signalResume((void *) this);
     return _ERROR;
   }
   Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
   if (! name)
   {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandMOM::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -61,7 +61,7 @@ int CommandMOM::runScript (Message *sg, Script *script)
   Data *in = vdi.curve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandMOM::runScript: INPUT missing" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -70,7 +70,7 @@ int CommandMOM::runScript (Message *sg, Script *script)
   Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
   if (! period)
   {
-    _message << "invalid PERIOD " + s;
+    qDebug() << "CommandMOM::runScript: invalid PERIOD" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }

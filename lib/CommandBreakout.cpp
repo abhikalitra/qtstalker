@@ -29,7 +29,6 @@
 CommandBreakout::CommandBreakout (QObject *p) : Command (p)
 {
   _name = "BREAKOUT";
-
   _method << "ABOVE" << "BELOW";
 }
 
@@ -40,7 +39,7 @@ int CommandBreakout::runScript (Message *sg, Script *script)
   Data *in = vdi.curve(script, s);
   if (! in)
   {
-    _message << "INPUT_1 missing " + s;
+    qDebug() << "CommandBreakout::runScript: INPUT_1 missing" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -49,7 +48,7 @@ int CommandBreakout::runScript (Message *sg, Script *script)
   Data *in2 = vdi.curve(script, s);
   if (! in2)
   {
-    _message << "INPUT_2 missing " + s;
+    qDebug() << "CommandBreakout::runScript: INPUT_2 missing" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -58,7 +57,7 @@ int CommandBreakout::runScript (Message *sg, Script *script)
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    _message << "invalid METHOD " + s;
+    qDebug() << "CommandBreakout::runScript: invalid METHOD" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -72,8 +71,6 @@ int CommandBreakout::runScript (Message *sg, Script *script)
   }
 
   _returnString = QString::number(flag);
-
-  _returnString = "OK";
 
   emit signalResume((void *) this);
 
@@ -100,7 +97,7 @@ int CommandBreakout::breakout (Data *in, Data *in2, int method, int &flag)
 
   if (method == 0)
   {
-    for (; loop < end; loop++)
+    for (; loop < end - 1; loop++)
     {
       Data *bar = in->getData(keys.at(loop));
       if (! bar)
@@ -118,7 +115,7 @@ int CommandBreakout::breakout (Data *in, Data *in2, int method, int &flag)
   }
   else
   {
-    for (; loop < end; loop++)
+    for (; loop < end - 1; loop++)
     {
       Data *bar = in->getData(keys.at(loop));
       if (! bar)

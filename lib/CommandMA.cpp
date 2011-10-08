@@ -38,19 +38,21 @@ int CommandMA::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
   MAType mat;
+
   QString s = sg->value("METHOD");
-  int method = mat.fromString(s);
-  if (method == -1)
+  Setting *method = vdi.setting(SettingFactory::_MA, script, s);
+  if (! method)
   {
-    qDebug() << "CommandMA::runScript: invalid METHOD " << s;
+    qDebug() << "CommandMA::runScript: invalid METHOD" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  QString name = sg->value("OUTPUT");
-  if (name.isEmpty())
+  s = sg->value("OUTPUT");
+  Setting *output = vdi.setting(SettingFactory::_STRING, script, s);
+  if (! output)
   {
-    qDebug() << "CommandMA::runScript: invalid OUTPUT " << name;
+    qDebug() << "CommandMA::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -74,14 +76,14 @@ int CommandMA::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  Data *line = mat.getMA(in, period->toInteger(), method);
+  Data *line = mat.getMA(in, period->toInteger(), method->toInteger());
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name, line);
+  script->setData(output->toString(), line);
 
   _returnString = "OK";
 

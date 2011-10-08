@@ -32,13 +32,14 @@
 #include "SettingSymbol.h"
 #include "SettingBarLength.h"
 #include "SettingDateRange.h"
+#include "SettingMA.h"
 
 #include <QDebug>
 
 SettingFactory::SettingFactory ()
 {
   _types << "BAR_LENGTH" << "BOOL" << "COLOR" << "DATE_RANGE" << "DATETIME" << "DOUBLE";
-  _types << "FILE" << "FONT" << "INTEGER" << "LIST" << "STRING" << "SYMBOL";
+  _types << "FILE" << "FONT" << "INTEGER" << "LIST" << "MA" << "STRING" << "SYMBOL";
 }
 
 Setting * SettingFactory::setting (QString d)
@@ -81,6 +82,9 @@ Setting * SettingFactory::setting (int type)
       break;
     case _LIST:
       set = new SettingList;
+      break;
+    case _MA:
+      set = new SettingMA;
       break;
     case _STRING:
       set = new SettingString;
