@@ -101,6 +101,7 @@ void DataDialog::set (Data *d)
     case SettingFactory::_BAR_LENGTH:
     case SettingFactory::_DATE_RANGE:
     case SettingFactory::_MA:
+    case SettingFactory::_OP:
       setList(tab, key, vset->toString(), vset->toList(), QString());
       _settings.insert(key, d);
       break;
@@ -353,6 +354,7 @@ void DataDialog::done ()
       case SettingFactory::_BAR_LENGTH:
       case SettingFactory::_DATE_RANGE:
       case SettingFactory::_MA:
+      case SettingFactory::_OP:
       {
         QComboBox *w = (QComboBox *) _widgets.value(it.key());
         set->set(w->currentText());

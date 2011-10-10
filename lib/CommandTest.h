@@ -19,41 +19,18 @@
  *  USA.
  */
 
-#ifndef SETTING_FACTORY_HPP
-#define SETTING_FACTORY_HPP
+#ifndef COMMAND_TEST_HPP
+#define COMMAND_TEST_HPP
 
-#include <QStringList>
+#include "Command.h"
 
-#include "Setting.h"
-
-class SettingFactory
+class CommandTest : public Command
 {
+  Q_OBJECT
+
   public:
-    enum Type
-    {
-      _BAR_LENGTH,
-      _BOOL,
-      _COLOR,
-      _DATE_RANGE,
-      _DATETIME,
-      _DOUBLE,
-      _FILE,
-      _FONT,
-      _INTEGER,
-      _LIST,
-      _MA,
-      _OP,
-      _STRING,
-      _SYMBOL
-    };
-
-    SettingFactory ();
-    Setting * setting (QString);
-    Setting * setting (int);
-    int stringToType (QString);
-
-  private:
-    QStringList _types;
+    CommandTest (QObject *);
+    int runScript (Message *, Script *);
 };
 
 #endif

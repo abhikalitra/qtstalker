@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,41 +19,28 @@
  *  USA.
  */
 
-#ifndef SETTING_FACTORY_HPP
-#define SETTING_FACTORY_HPP
+#ifndef TEST_SIGNAL_HPP
+#define TEST_SIGNAL_HPP
 
-#include <QStringList>
+#include <QString>
 
-#include "Setting.h"
-
-class SettingFactory
+class TestSignal
 {
   public:
-    enum Type
+    enum Signal
     {
-      _BAR_LENGTH,
-      _BOOL,
-      _COLOR,
-      _DATE_RANGE,
-      _DATETIME,
-      _DOUBLE,
-      _FILE,
-      _FONT,
-      _INTEGER,
-      _LIST,
-      _MA,
-      _OP,
-      _STRING,
-      _SYMBOL
+      _NONE,
+      _EXIT_LONG,
+      _EXIT_SHORT,
+      _TEST_END,
+      _MAXIMUM_LOSS_STOP,
+      _PROFIT_TARGET_STOP,
+      _TRAILING_STOP,
+      _BARS_STOP
     };
 
-    SettingFactory ();
-    Setting * setting (QString);
-    Setting * setting (int);
-    int stringToType (QString);
-
-  private:
-    QStringList _types;
+    TestSignal ();
+    void signalText (TestSignal::Signal, QString &);
 };
 
 #endif

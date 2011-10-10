@@ -79,6 +79,7 @@
 #include "CommandSymbol.h"
 #include "CommandSymbolCurrent.h"
 #include "CommandT3.h"
+#include "CommandTest.h"
 #include "CommandText.h"
 #include "CommandTHERM.h"
 #include "CommandTLine.h"
@@ -118,7 +119,7 @@ CommandFactory::CommandFactory ()
   _types << "SHIFT" << "STDDEV";
   _types << "STOCH_FAST" << "STOCH_RSI" << "STOCH_SLOW" << "SZ";
   _types << "SYMBOL" << "SYMBOL_CURRENT";
-  _types << "T3" << "THERM" << "TRIX" << "TYPICAL_PRICE";
+  _types << "T3" << "TEST" << "THERM" << "TRIX" << "TYPICAL_PRICE";
   _types << "ULTOSC";
   _types << "VAR" << "VBP" << "VFI" << "VIDYA";
   _types << "WEIGHTED_CLOSE" << "WILLR";
@@ -316,6 +317,9 @@ Command * CommandFactory::command (QObject *p, QString type)
       break;
     case _T3:
       c = new CommandT3(p);
+      break;
+    case _TEST:
+      c = new CommandTest(p);
       break;
     case _THERM:
       c = new CommandTHERM(p);

@@ -93,6 +93,7 @@ class CommandFactory
       _SYMBOL,
       _SYMBOL_CURRENT,
       _T3,
+      _TEST,
       _THERM,
       _TRIX,
       _TYPICAL_PRICE,

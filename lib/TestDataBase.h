@@ -19,41 +19,37 @@
  *  USA.
  */
 
-#ifndef SETTING_FACTORY_HPP
-#define SETTING_FACTORY_HPP
+// *************************************************************************************************
+// Chart object database. Used for storing/returning chart object settings for any chart objects
+// created on charts.
+// *************************************************************************************************
+
+
+#ifndef TEST_DATA_BASE_HPP
+#define TEST_DATA_BASE_HPP
 
 #include <QStringList>
+#include <QList>
 
-#include "Setting.h"
+#include "DataBase.h"
+#include "TestTrade.h"
+#include "TestSummary.h"
 
-class SettingFactory
+class TestDataBase : public DataBase
 {
   public:
-    enum Type
-    {
-      _BAR_LENGTH,
-      _BOOL,
-      _COLOR,
-      _DATE_RANGE,
-      _DATETIME,
-      _DOUBLE,
-      _FILE,
-      _FONT,
-      _INTEGER,
-      _LIST,
-      _MA,
-      _OP,
-      _STRING,
-      _SYMBOL
-    };
-
-    SettingFactory ();
-    Setting * setting (QString);
-    Setting * setting (int);
-    int stringToType (QString);
+    TestDataBase ();
+    void init ();
+    int trades (QString name, QList<TestTrade *> &);
+    int deleteTrades (QString name);
+    int saveTrades (QString name, QList<TestTrade *> &);
+    int names (QStringList &);
+    int deleteSummary (QString name);
+    int summaries (QList<TestSummary *> &);
+    int saveSummary (TestSummary *, QList<TestTrade *> &);
 
   private:
-    QStringList _types;
+    QString _table2;
 };
 
 #endif

@@ -213,6 +213,7 @@ HEADERS += SettingFont.h
 HEADERS += SettingInteger.h
 HEADERS += SettingList.h
 HEADERS += SettingMA.h
+HEADERS += SettingOp.h
 HEADERS += SettingString.h
 HEADERS += SettingSymbol.h
 HEADERS += SidePanel.h
@@ -225,6 +226,11 @@ HEADERS += SymbolLoad.h
 
 HEADERS += TALibInput.h
 HEADERS += TALibOutput.h
+HEADERS += Test.h
+HEADERS += TestDataBase.h
+HEADERS += TestSignal.h
+HEADERS += TestSummary.h
+HEADERS += TestTrade.h
 HEADERS += TextDialog.h
 HEADERS += TLineDialog.h
 
@@ -438,6 +444,7 @@ SOURCES += SettingFont.cpp
 SOURCES += SettingInteger.cpp
 SOURCES += SettingList.cpp
 SOURCES += SettingMA.cpp
+SOURCES += SettingOp.cpp
 SOURCES += SettingString.cpp
 SOURCES += SettingSymbol.cpp
 SOURCES += SidePanel.cpp
@@ -450,6 +457,11 @@ SOURCES += SymbolLoad.cpp
 
 SOURCES += TALibInput.cpp
 SOURCES += TALibOutput.cpp
+SOURCES += Test.cpp
+SOURCES += TestDataBase.cpp
+SOURCES += TestSignal.cpp
+SOURCES += TestSummary.cpp
+SOURCES += TestTrade.cpp
 SOURCES += TextDialog.cpp
 SOURCES += TLineDialog.cpp
 
