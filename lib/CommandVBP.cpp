@@ -23,9 +23,8 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
-#include "SettingColor.h"
+#include "DataDouble.h"
+#include "DataColor.h"
 
 #include <QtDebug>
 #include <QHash>
@@ -38,53 +37,53 @@ CommandVBP::CommandVBP (QObject *p) : Command (p)
 int CommandVBP::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandVBP::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // CLOSE
   s = sg->value("CLOSE");
-  Data *iclose = vdi.curve(script, s);
+  Data *iclose = vdi.toCurve(script, s);
   if (! iclose)
   {
-    _message << "invalid CLOSE " + s;
+    qDebug() << "CommandVBP::runScript: invalid CLOSE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // VOLUME
   s = sg->value("VOLUME");
-  Data *ivol = vdi.curve(script, s);
+  Data *ivol = vdi.toCurve(script, s);
   if (! ivol)
   {
-    _message << "invalid VOLUME " + s;
+    qDebug() << "CommandVBP::runScript: invalid CLOSE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // COLOR_UP
+  QColor upColor;
   s = sg->value("COLOR_UP");
-  Setting *upColor = vdi.setting(SettingFactory::_COLOR, script, s);
-  if (! upColor)
+  if (vdi.toColor(script, s, upColor))
   {
-    _message << "invalid COLOR_UP " + s;
+    qDebug() << "CommandVBP::runScript: invalid COLOR_UP" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // COLOR_DOWN
+  QColor downColor;
   s = sg->value("COLOR_DOWN");
-  Setting *downColor = vdi.setting(SettingFactory::_COLOR, script, s);
-  if (! downColor)
+  if (vdi.toColor(script, s, downColor))
   {
-    _message << "invalid COLOR_DOWN " + s;
+    qDebug() << "CommandVBP::runScript: invalid COLOR_DOWN" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -92,14 +91,14 @@ int CommandVBP::runScript (Message *sg, Script *script)
   QList<Data *> list;
   list << iclose << ivol;
 
-  Data *line = getVBP(list, upColor->toColor(), downColor->toColor());
+  Data *line = getVBP(list, upColor, downColor);
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 
@@ -135,11 +134,11 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
   loop = 0;
   for (; loop < 12; loop++)
   {
-    Data *set = new Data;
-    set->set("HIGH", new SettingDouble(top));
-    set->set("LOW", new SettingDouble(bottom));
-    set->set("UP", new SettingDouble(0));
-    set->set("DOWN", new SettingDouble(0));
+    Data *set = new CurveBar;
+    set->set(CurveBar::_HIGH, new DataDouble(top));
+    set->set(CurveBar::_LOW, new DataDouble(bottom));
+    set->set(CurveBar::_UP, new DataDouble(0));
+    set->set(CurveBar::_DOWN, new DataDouble(0));
     hash.insert(loop, set);
 
     bottom = top + 0.01;
@@ -149,20 +148,20 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
   loop = 1;
   for (; loop < keys.count(); loop++)
   {
-    Data *cb = close->getData(keys.at(loop));
+    Data *cb = close->toData(keys.at(loop));
     if (! cb)
       continue;
 
-    Data *ycb = close->getData(keys.at(loop - 1));
+    Data *ycb = close->toData(keys.at(loop - 1));
     if (! ycb)
       continue;
 
-    Data *vb = vol->getData(keys.at(loop));
+    Data *vb = vol->toData(keys.at(loop));
     if (! vb)
       continue;
 
     int flag = 1;
-    if (cb->get(CurveBar::_VALUE)->toDouble() < ycb->get(CurveBar::_VALUE)->toDouble())
+    if (cb->toData(CurveBar::_VALUE)->toDouble() < ycb->toData(CurveBar::_VALUE)->toDouble())
       flag = 0;
 
     QHashIterator<int, Data *> it(hash);
@@ -171,12 +170,12 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
       it.next();
       Data *set = it.value();
 
-      if (cb->get(CurveBar::_VALUE)->toDouble() >= set->get("LOW")->toDouble() && cb->get(CurveBar::_VALUE)->toDouble() <= set->get("HIGH")->toDouble())
+      if (cb->toData(CurveBar::_VALUE)->toDouble() >= set->toData(CurveBar::_LOW)->toDouble() && cb->toData(CurveBar::_VALUE)->toDouble() <= set->toData(CurveBar::_HIGH)->toDouble())
       {
         if (flag)
-	  set->set("UP", new SettingDouble(set->get("UP")->toDouble() + vb->get(CurveBar::_VALUE)->toDouble()));
+	  set->set(CurveBar::_UP, new DataDouble(set->toData(CurveBar::_UP)->toDouble() + vb->toData(CurveBar::_VALUE)->toDouble()));
 	else
-	  set->set("DOWN", new SettingDouble(set->get("DOWN")->toDouble() + vb->get(CurveBar::_VALUE)->toDouble()));
+	  set->set(CurveBar::_DOWN, new DataDouble(set->toData(CurveBar::_DOWN)->toDouble() + vb->toData(CurveBar::_VALUE)->toDouble()));
 	break;
       }
     }
@@ -194,19 +193,19 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
       continue;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_HIGH, new SettingDouble(set->get("HIGH")->toDouble()));
-    b->set(CurveBar::_LOW, new SettingDouble(set->get("LOW")->toDouble()));
-    b->set(CurveBar::_OPEN, new SettingDouble(set->get("UP")->toDouble()));
-    b->set(CurveBar::_CLOSE, new SettingDouble(set->get("DOWN")->toDouble()));
-    b->set(CurveBar::_COLOR, new SettingColor(upColor));
+    b->set(CurveBar::_HIGH, new DataDouble(set->toData(CurveBar::_HIGH)->toDouble()));
+    b->set(CurveBar::_LOW, new DataDouble(set->toData(CurveBar::_LOW)->toDouble()));
+    b->set(CurveBar::_OPEN, new DataDouble(set->toData(CurveBar::_UP)->toDouble()));
+    b->set(CurveBar::_CLOSE, new DataDouble(set->toData(CurveBar::_DOWN)->toDouble()));
+    b->set(CurveBar::_COLOR, new DataColor(upColor));
     line->set(pos++, b);
 
     b = new CurveBar;
-    b->set(CurveBar::_HIGH, new SettingDouble(set->get("HIGH")->toDouble()));
-    b->set(CurveBar::_LOW, new SettingDouble(set->get("LOW")->toDouble()));
-    b->set(CurveBar::_OPEN, new SettingDouble(set->get("UP")->toDouble()));
-    b->set(CurveBar::_CLOSE, new SettingDouble(set->get("DOWN")->toDouble()));
-    b->set(CurveBar::_COLOR, new SettingColor(downColor));
+    b->set(CurveBar::_HIGH, new DataDouble(set->toData(CurveBar::_HIGH)->toDouble()));
+    b->set(CurveBar::_LOW, new DataDouble(set->toData(CurveBar::_LOW)->toDouble()));
+    b->set(CurveBar::_OPEN, new DataDouble(set->toData(CurveBar::_UP)->toDouble()));
+    b->set(CurveBar::_CLOSE, new DataDouble(set->toData(CurveBar::_DOWN)->toDouble()));
+    b->set(CurveBar::_COLOR, new DataColor(downColor));
     line->set(pos++, b);
   }
 

@@ -26,7 +26,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -43,59 +42,56 @@ CommandROC::CommandROC (QObject *p) : Command (p)
 int CommandROC::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandROC::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandROC::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // PERIOD
+  int period = 14;
   s = sg->value("PERIOD");
-  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! period)
+  if (vdi.toInteger(script, s, period))
   {
-    _message << "invalid PERIOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandROC::runScript: invalid PERIOD, using default" << s;
+    period = 14;
   }
 
+  // METHOD
   s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    _message << "invalid METHOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandROC::runScript: invalid PERIOD, using default" << s;
+    method = 0;
   }
 
   QList<Data *> list;
   list << in;
 
-  Data *line = getROC(list, period->toInteger(), method);
+  Data *line = getROC(list, period, method);
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 

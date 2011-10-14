@@ -29,7 +29,6 @@
 #include <QList>
 
 #include "Data.h"
-#include "Setting.h"
 #include "Symbol.h"
 
 class Script : public QObject
@@ -57,7 +56,6 @@ class Script : public QObject
     int nextROID ();
     void setCommand (QString);
     QString command ();
-    void setTSetting (Setting *);
     void setTData (Data *);
     void setSymbol (Symbol *);
     Symbol * symbol ();
@@ -78,7 +76,6 @@ class Script : public QObject
     QString _file;
     QString _command;
     QHash<QString, Data *> _data;
-    QList<Setting *> _tsettings;
     QList<Data *> _tdata;
     QProcess *_proc;
     int _killFlag;

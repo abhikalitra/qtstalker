@@ -21,14 +21,13 @@
 
 #include "CommandRetracement.h"
 #include "ChartObjectData.h"
-#include "SettingColor.h"
-#include "SettingDouble.h"
-#include "SettingString.h"
-#include "SettingBool.h"
-#include "SettingInteger.h"
+#include "DataColor.h"
+#include "DataDouble.h"
+#include "DataString.h"
+#include "DataBool.h"
+#include "DataInteger.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
-#include "SettingDateTime.h"
+#include "DataDateTime.h"
 
 #include <QtDebug>
 
@@ -39,187 +38,154 @@ CommandRetracement::CommandRetracement (QObject *p) : Command (p)
 
 int CommandRetracement::runScript (Message *sg, Script *script)
 {
-  // color
   VerifyDataInput vdi;
+
+  // color
+  QColor color;
   QString s = sg->value("COLOR");
-  Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
-  if (! color)
+  if (vdi.toColor(script, s, color))
   {
-    _message << "invalid COLOR " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandRetracement::runScript: invalid COLOR, using default" << s;
+    color = QColor(Qt::red);
   }
 
   // START_DATE
+  QDateTime date;
   s = sg->value("START_DATE");
-  Setting *date = vdi.setting(SettingFactory::_DATETIME, script, s);
-  if (! date)
+  if (vdi.toDateTime(script, s, date))
   {
-    _message << "invalid START_DATE " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandRetracement::runScript: invalid START_DATE, using default" << s;
+    date = QDateTime::currentDateTime();
   }
 
   // END_DATE
+  QDateTime date2;
   s = sg->value("END_DATE");
-  Setting *date2 = vdi.setting(SettingFactory::_DATETIME, script, s);
-  if (! date2)
+  if (vdi.toDateTime(script, s, date2))
   {
-    _message << "invalid END_DATE " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandRetracement::runScript: invalid END_DATE, using default" << s;
+    date2 = QDateTime::currentDateTime();
   }
 
   // HIGH
+  double high = 0;
   s = sg->value("HIGH");
-  Setting *high = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! high)
+  if (vdi.toDouble(script, s, high))
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandRetracement::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // LOW
+  double low = 0;
   s = sg->value("LOW");
-  Setting *low = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! low)
+  if (vdi.toDouble(script, s, low))
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandRetracement::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // LEVEL_1
-  Setting *level1 = 0;
+  double level1 = 0;
   s = sg->value("LEVEL_1");
-  if (! s.isEmpty())
+  if (vdi.toDouble(script, s, level1))
   {
-    level1 = vdi.setting(SettingFactory::_DOUBLE, script, s);
-    if (! level1)
-    {
-      _message << "invalid LEVEL_1 " + s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandRetracement::runScript: invalid LEVEL_1, using default" << s;
+    level1 = 0;
   }
 
   // LEVEL_2
-  Setting *level2 = 0;
+  double level2 = 0;
   s = sg->value("LEVEL_2");
-  if (! s.isEmpty())
+  if (vdi.toDouble(script, s, level2))
   {
-    level2 = vdi.setting(SettingFactory::_DOUBLE, script, s);
-    if (! level2)
-    {
-      _message << "invalid LEVEL_2 " + s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandRetracement::runScript: invalid LEVEL_2, using default" << s;
+    level2 = 0;
   }
 
   // LEVEL_3
-  Setting *level3 = 0;
+  double level3 = 0;
   s = sg->value("LEVEL_3");
-  if (! s.isEmpty())
+  if (vdi.toDouble(script, s, level3))
   {
-    level3 = vdi.setting(SettingFactory::_DOUBLE, script, s);
-    if (! level3)
-    {
-      _message << "invalid LEVEL_3 " + s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandRetracement::runScript: invalid LEVEL_3, using default" << s;
+    level3 = 0;
   }
 
   // LEVEL_4
-  Setting *level4 = 0;
+  double level4 = 0;
   s = sg->value("LEVEL_4");
-  if (! s.isEmpty())
+  if (vdi.toDouble(script, s, level4))
   {
-    level4 = vdi.setting(SettingFactory::_DOUBLE, script, s);
-    if (! level4)
-    {
-      _message << "invalid LEVEL_4 " + s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandRetracement::runScript: invalid LEVEL_4, using default" << s;
+    level4 = 0;
   }
 
   // LEVEL_5
-  Setting *level5 = 0;
+  double level5 = 0;
   s = sg->value("LEVEL_5");
-  if (! s.isEmpty())
+  if (vdi.toDouble(script, s, level5))
   {
-    level5 = vdi.setting(SettingFactory::_DOUBLE, script, s);
-    if (! level5)
-    {
-      _message << "invalid LEVEL_5 " + s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandRetracement::runScript: invalid LEVEL_5, using default" << s;
+    level5 = 0;
   }
 
   // LEVEL_6
-  Setting *level6 = 0;
+  double level6 = 0;
   s = sg->value("LEVEL_6");
-  if (! s.isEmpty())
+  if (vdi.toDouble(script, s, level6))
   {
-    level6 = vdi.setting(SettingFactory::_DOUBLE, script, s);
-    if (! level6)
-    {
-      _message << "invalid LEVEL_6 " + s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandRetracement::runScript: invalid LEVEL_6, using default" << s;
+    level6 = 0;
   }
 
   // CHART
+  QString chart;
   s = sg->value("CHART");
-  Setting *chart = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! chart)
+  if (vdi.toString(script, s, chart))
   {
-    _message << "invalid CHART " + s;
+    qDebug() << "CommandRetracement::runScript: invalid CHART" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // Z
+  int z = 0;
   s = sg->value("Z");
-  Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! z)
+  if (vdi.toInteger(script, s, z))
   {
-    _message << "invalid Z " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandRetracement::runScript: invalid Z, using default" << s;
+    z = 0;
   }
 
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_COLOR, new SettingColor(color->toColor()));
-  co->set(ChartObjectData::_DATE, new SettingDateTime(date->toDateTime()));
-  co->set(ChartObjectData::_DATE_2, new SettingDateTime(date2->toDateTime()));
-  co->set(ChartObjectData::_HIGH, new SettingDouble(high->toDouble()));
-  co->set(ChartObjectData::_LOW, new SettingDouble(low->toDouble()));
-  co->set(ChartObjectData::_CHART, new SettingString(chart->toString()));
-  co->set(ChartObjectData::_Z, new SettingInteger(z->toInteger()));
-  co->set(ChartObjectData::_ID, new SettingInteger(id));
-  co->set(ChartObjectData::_RO, new SettingBool(TRUE));
-  co->set(ChartObjectData::_TYPE, new SettingString(QString("Retracement")));
+  co->set(ChartObjectData::_COLOR, new DataColor(color));
+  co->set(ChartObjectData::_DATE, new DataDateTime(date));
+  co->set(ChartObjectData::_DATE_2, new DataDateTime(date2));
+  co->set(ChartObjectData::_HIGH, new DataDouble(high));
+  co->set(ChartObjectData::_LOW, new DataDouble(low));
+  co->set(ChartObjectData::_CHART, new DataString(chart));
+  co->set(ChartObjectData::_Z, new DataInteger(z));
+  co->set(ChartObjectData::_ID, new DataInteger(id));
+  co->set(ChartObjectData::_RO, new DataBool(TRUE));
+  co->set(ChartObjectData::_TYPE, new DataString(QString("Retracement")));
 
   if (level1)
-    co->set(ChartObjectData::_LEVEL_1, new SettingDouble(level1->toDouble()));
+    co->set(ChartObjectData::_LEVEL_1, new DataDouble(level1));
   if (level2)
-    co->set(ChartObjectData::_LEVEL_2, new SettingDouble(level2->toDouble()));
+    co->set(ChartObjectData::_LEVEL_2, new DataDouble(level2));
   if (level3)
-    co->set(ChartObjectData::_LEVEL_3, new SettingDouble(level3->toDouble()));
+    co->set(ChartObjectData::_LEVEL_3, new DataDouble(level3));
   if (level4)
-    co->set(ChartObjectData::_LEVEL_4, new SettingDouble(level4->toDouble()));
+    co->set(ChartObjectData::_LEVEL_4, new DataDouble(level4));
   if (level5)
-    co->set(ChartObjectData::_LEVEL_5, new SettingDouble(level5->toDouble()));
+    co->set(ChartObjectData::_LEVEL_5, new DataDouble(level5));
   if (level6)
-    co->set(ChartObjectData::_LEVEL_6, new SettingDouble(level6->toDouble()));
+    co->set(ChartObjectData::_LEVEL_6, new DataDouble(level6));
 
   script->setData(QString::number(id), co);
 

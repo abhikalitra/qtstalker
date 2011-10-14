@@ -31,8 +31,10 @@ CurveBar::CurveBar ()
 
 void CurveBar::clear ()
 {
-  Data::clear();
   _type = DataFactory::_CURVE_BAR;
+
+  qDeleteAll(_data);
+  _data.clear();
 }
 
 int CurveBar::highLow (double &h, double &l)
@@ -41,12 +43,12 @@ int CurveBar::highLow (double &h, double &l)
   h = -99999999;
   l = 99999999;
 
-  QHashIterator<QString, Setting *> it(_data);
+  QHashIterator<int, Data *> it(_data);
   while (it.hasNext())
   {
     it.next();
 
-    int k = it.key().toInt();
+    int k = it.key();
 
     switch ((Parm) k)
     {
@@ -80,4 +82,20 @@ int CurveBar::highLow (double &h, double &l)
   }
 
   return rc;
+}
+
+int CurveBar::set (int k, Data *d)
+{
+  Data *td = _data.value(k);
+  if (td)
+    delete td;
+
+  _data.insert(k, d);
+
+  return 0;
+}
+
+Data * CurveBar::toData (int d)
+{
+  return _data.value(d);
 }

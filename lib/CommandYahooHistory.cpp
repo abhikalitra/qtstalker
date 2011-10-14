@@ -21,7 +21,6 @@
 
 #include "CommandYahooHistory.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
 
 #include <QDebug>
 #include <QtNetwork>
@@ -30,62 +29,63 @@
 CommandYahooHistory::CommandYahooHistory (QObject *p) : Command (p)
 {
   _name = "YAHOO_HISTORY";
-  _type = _THREAD;
 }
 
 int CommandYahooHistory::runScript (Message *sg, Script *script)
 {
-  // DATE_START
   VerifyDataInput vdi;
+
+  // DATE_START
+  QDateTime sd;
   QString s = sg->value("DATE_START");
-  Setting *sd = vdi.setting(SettingFactory::_DATETIME, script, s);
-  if (! sd)
+  if (vdi.toDateTime(script, s, sd))
   {
-    qDebug() << "CommandYahooHistory::runScript: invalid DATE_START" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandYahooHistory::runScript: invalid DATE_START, using default" << s;
+    sd = QDateTime::currentDateTime();
   }
 
   // DATE_END
+  QDateTime ed;
   s = sg->value("DATE_END");
-  Setting *ed = vdi.setting(SettingFactory::_DATETIME, script, s);
-  if (! ed)
+  if (vdi.toDateTime(script, s, ed))
   {
-    qDebug() << "CommandYahooHistory::runScript: invalid DATE_END " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandYahooHistory::runScript: invalid DATE_END, using default" << s;
+    ed = QDateTime::currentDateTime();
   }
 
   // ADJUSTED
+  bool adjusted = TRUE;
   s = sg->value("ADJUSTED");
-  Setting *adjusted = vdi.setting(SettingFactory::_BOOL, script, s);
-  if (! adjusted)
+  if (vdi.toBool(script, s, adjusted))
   {
-    qDebug() << "CommandYahooHistory::runScript: invalid ADJUSTED " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandYahooHistory::runScript: invalid DATE_END, using default" << s;
+    adjusted = TRUE;
   }
 
   // CSV_FILE
+  QStringList tl;
   s = sg->value("CSV_FILE");
-  Setting *outFile = vdi.setting(SettingFactory::_FILE, script, s);
-  if (! outFile)
+  if (vdi.toFile(script, s, tl))
   {
-    qDebug() << "CommandYahooHistory::runScript: invalid CSV_FILE " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandYahooHistory::runScript: invalid CSV_FILE, using default" << s;
+    tl.clear();
+    tl << "/tmp/yahoo.csv";
   }
 
+  QString outFile;
+  if (tl.count())
+    outFile = tl.at(0);
+
   // SYMBOL_FILE
+  QStringList symbolFiles;
   s = sg->value("SYMBOL_FILE");
-  Setting *symbolFile = vdi.setting(SettingFactory::_FILE, script, s);
-  if (! symbolFile)
+  if (vdi.toFile(script, s, symbolFiles))
   {
     qDebug() << "CommandYahooHistory::runScript: invalid SYMBOL_FILE " << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  QStringList symbolFiles = symbolFile->toList();
+
   if (! symbolFiles.count())
   {
     qDebug() << "CommandYahooHistory::runScript: SYMBOL_FILE missing";
@@ -93,10 +93,10 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  QFile f2(outFile->toString());
+  QFile f2(outFile);
   if (! f2.open(QIODevice::WriteOnly | QIODevice::Text))
   {
-    qDebug() << "CommandYahooHistory::runScript: file error " << outFile->toString();
+    qDebug() << "CommandYahooHistory::runScript: file error " << outFile;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -127,7 +127,7 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
 
       // get the url
       QString url;
-      getUrl(sd->toDateTime(), ed->toDateTime(), symbol, url);
+      getUrl(sd, ed, symbol, url);
 
       // download the data
       QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
@@ -137,7 +137,7 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
 
       // parse the data and save quotes
       QByteArray ba = reply->readAll();
-      parse(ba, symbol, name, out, adjusted->toBool());
+      parse(ba, symbol, name, out, adjusted);
     }
 
     f.close();

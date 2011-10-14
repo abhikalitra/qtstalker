@@ -43,10 +43,10 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
 //  painter->setRenderHint(QPainter::Antialiasing, TRUE);
 
   LineStyle ls;
-  int style = ls.stringToStyle(_settings->get(CurveData::_STYLE)->toString());
+  int style = ls.stringToStyle(_settings->toData(CurveData::_STYLE)->toString());
 
   QPen tpen = painter->pen();
-  tpen.setWidth(_settings->get(CurveData::_PEN)->toInteger());
+  tpen.setWidth(_settings->toData(CurveData::_PEN)->toInteger());
   switch ((LineStyle::Style) style)
   {
     case LineStyle::_DASH:
@@ -64,21 +64,21 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
   {
     for (; loop < size; loop++)
     {
-      Data *yb = _settings->getData(loop - 1);
+      Data *yb = _settings->toData(loop - 1);
       if (! yb)
         continue;
 
-      Data *b = _settings->getData(loop);
+      Data *b = _settings->toData(loop);
       if (! b)
         continue;
 
       int x = xMap.transform(loop - 1);
       int x2 = xMap.transform(loop);
 
-      int y = yMap.transform(yb->get(CurveBar::_VALUE)->toDouble());
-      int y2 = yMap.transform(b->get(CurveBar::_VALUE)->toDouble());
+      int y = yMap.transform(yb->toData(CurveBar::_VALUE)->toDouble());
+      int y2 = yMap.transform(b->toData(CurveBar::_VALUE)->toDouble());
 
-      tpen.setColor(b->get(CurveBar::_COLOR)->toColor());
+      tpen.setColor(b->toData(CurveBar::_COLOR)->toColor());
       painter->setPen(tpen);
 
       painter->drawLine (x, y, x2, y2);
@@ -88,14 +88,14 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
   {
     for (; loop < size; loop++)
     {
-      Data *b = _settings->getData(loop);
+      Data *b = _settings->toData(loop);
       if (! b)
         continue;
 
       int x = xMap.transform(loop);
-      int y = yMap.transform(b->get(CurveBar::_VALUE)->toDouble());
+      int y = yMap.transform(b->toData(CurveBar::_VALUE)->toDouble());
 
-      tpen.setColor(b->get(CurveBar::_COLOR)->toColor());
+      tpen.setColor(b->toData(CurveBar::_COLOR)->toColor());
       painter->setPen(tpen);
 
       painter->drawPoint (x, y);

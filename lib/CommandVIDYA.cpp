@@ -26,8 +26,7 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
+#include "DataDouble.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -47,59 +46,56 @@ CommandVIDYA::CommandVIDYA (QObject *p) : Command (p)
 int CommandVIDYA::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandVIDYA::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandVIDYA::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // PERIOD
+  int period = 14;
   s = sg->value("PERIOD");
-  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! period)
+  if (vdi.toInteger(script, s, period))
   {
-    _message << "invalid PERIOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandVIDYA::runScript: invalid PERIOD, using default" << s;
+    period = 14;
   }
 
+  // PERIOD_VOLUME
+  int vperiod = 10;
   s = sg->value("PERIOD_VOLUME");
-  Setting *vperiod = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! vperiod)
+  if (vdi.toInteger(script, s, vperiod))
   {
-    _message << "invalid PERIOD_VOLUME " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandVIDYA::runScript: invalid PERIOD_VOLUME, using default" << s;
+    period = 10;
   }
 
   QList<Data *> list;
   list << in;
 
-  Data *line = getVIDYA(list, period->toInteger(), vperiod->toInteger());
+  Data *line = getVIDYA(list, period, vperiod);
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 
@@ -140,18 +136,18 @@ Data * CommandVIDYA::getVIDYA (QList<Data *> &list, int period, int vperiod)
   Data *in = list.at(0);
   for (; loop < keys.count(); loop++)
   {
-    Data *bar = in->getData(keys.at(loop));
-    (*inSeries)[loop] = bar->get(CurveBar::_VALUE)->toDouble();
+    Data *bar = in->toData(keys.at(loop));
+    (*inSeries)[loop] = bar->toData(CurveBar::_VALUE)->toDouble();
   }
 
-  keys = cmo->barKeys();
+  keys = cmo->keys();
 
   int index = inSeries->size() -1;
   loop = keys.count() - 1;
   for (; loop > -1; loop--)
   {
-    Data *bar = cmo->getData(keys.at(loop));
-    (*absCmo)[index] = fabs(bar->get(CurveBar::_VALUE)->toDouble() / 100);
+    Data *bar = cmo->toData(keys.at(loop));
+    (*absCmo)[index] = fabs(bar->toData(CurveBar::_VALUE)->toDouble() / 100);
     index--;
   }
 
@@ -161,7 +157,7 @@ Data * CommandVIDYA::getVIDYA (QList<Data *> &list, int period, int vperiod)
     (*vidya)[loop] = (inSeries->at(loop) * c * absCmo->at(loop)) + ((1 - absCmo->at(loop) * c) * vidya->at(loop - 1));
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(vidya->at(loop)));
+    b->set(CurveBar::_VALUE, new DataDouble(vidya->at(loop)));
     out->set(loop, b);
   }
 

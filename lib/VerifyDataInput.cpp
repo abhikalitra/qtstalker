@@ -21,11 +21,22 @@
 
 #include "VerifyDataInput.h"
 #include "DataFactory.h"
-#include "DataSetting.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
 #include "CurveData.h"
 #include "CurveBar.h"
+#include "DataBarLength.h"
+#include "DataBool.h"
+#include "DataColor.h"
+#include "DataDateRange.h"
+#include "DataDateTime.h"
+#include "DataDouble.h"
+#include "DataFile.h"
+#include "DataFont.h"
+#include "DataInteger.h"
+#include "DataList.h"
+#include "DataMA.h"
+#include "DataOp.h"
+#include "DataString.h"
+#include "DataSymbol.h"
 
 #include <QtDebug>
 
@@ -33,120 +44,421 @@ VerifyDataInput::VerifyDataInput ()
 {
 }
 
-Data * VerifyDataInput::curve (Script *script, QString key)
+int VerifyDataInput::toString (Script *script, QString key, QString &data)
 {
-  Data *in = script->data(key);
-  if (in)
-  {
-    if (in->type() == DataFactory::_CURVE)
-    {
-      in->setOffset(0);
-      return in;
-    }
+  if (key.isEmpty())
+    return 1;
 
-    return 0;
+  data.clear();
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_STRING)
+    {
+      data = d->toString();
+      return 0;
+    }
+    else
+      return 1;
   }
 
-  // verify if an curve offset version (ma.0 or ma.1)
-  QStringList l = key.split(".");
-  if (l.count() != 2)
-    return 0;
+  data = key;
 
-  in = script->data(l.at(0));
-  if (! in)
-    return 0;
-
-  if (in->type() != DataFactory::_CURVE)
-    return 0;
-
-  bool ok;
-  int offset = l.at(1).toInt(&ok);
-  if (! ok)
-    return 0;
-
-  in->setOffset(offset);
-
-  return in;
+  return 0;
 }
 
-Data * VerifyDataInput::curveAll (Script *script, QString key)
+int VerifyDataInput::toInteger (Script *script, QString key, int &data)
 {
-  Data *in = curve(script, key);
-  if (! in)
+  if (key.isEmpty())
+    return 1;
+
+  data = 0;
+
+  Data *d = script->data(key);
+  if (d)
   {
-    in = script->data(key);
-    if (! in)
+    if (d->type() == DataFactory::_INTEGER)
     {
-      SettingFactory fac;
-      Setting *setting = fac.setting(SettingFactory::_DOUBLE);
-      if (! setting)
-        return 0;
-
-      if (setting->set(key))
-      {
-        delete setting;
-        return 0;
-      }
-
-      DataFactory dfac;
-      in = dfac.data(DataFactory::_DATA_SETTING);
-      in->set(DataSetting::_VALUE, setting);
-
-      // will delete when script ends
-      script->setTData(in);
+      data = d->toInteger();
+      return 0;
     }
+    else
+      return 1;
   }
 
-  return in;
+  DataInteger di;
+  if (di.set(key))
+    return 1;
+
+  data = di.toInteger();
+
+  return 0;
 }
 
-Setting * VerifyDataInput::setting (int type, Script *script, QString key)
+int VerifyDataInput::toDouble (Script *script, QString key, double &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  data = 0;
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_DOUBLE)
+    {
+      data = d->toDouble();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataDouble dd;
+  if (dd.set(key))
+    return 1;
+
+  data = dd.toDouble();
+
+  return 0;
+}
+
+int VerifyDataInput::toBool (Script *script, QString key, bool &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  data = FALSE;
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_BOOL)
+    {
+      data = d->toBool();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataBool db;
+  if (db.set(key))
+    return 1;
+
+  data = db.toBool();
+
+  return 0;
+}
+
+int VerifyDataInput::toColor (Script *script, QString key, QColor &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_COLOR)
+    {
+      data = d->toColor();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataColor dc;
+  if (dc.set(key))
+    return 1;
+
+  data = dc.toColor();
+
+  return 0;
+}
+
+int VerifyDataInput::toBarLength (Script *script, QString key, int &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_BAR_LENGTH)
+    {
+      data = d->toInteger();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataBarLength dbl;
+  if (dbl.set(key))
+    return 1;
+
+  data = dbl.toInteger();
+
+  return 0;
+}
+
+int VerifyDataInput::toDateRange (Script *script, QString key, int &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_DATE_RANGE)
+    {
+      data = d->toInteger();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataDateRange ddr;
+  if (ddr.set(key))
+    return 1;
+
+  data = ddr.toInteger();
+
+  return 0;
+}
+
+int VerifyDataInput::toDateTime (Script *script, QString key, QDateTime &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_DATETIME)
+    {
+      data = d->toDateTime();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataDateTime ddt;
+  if (ddt.set(key))
+    return 1;
+
+  data = ddt.toDateTime();
+
+  return 0;
+}
+
+int VerifyDataInput::toFile (Script *script, QString key, QStringList &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  data.clear();
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_FILE)
+    {
+      data = d->toList();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataFile df;
+  if (df.set(key))
+    return 1;
+
+  data = df.toList();
+
+  return 0;
+}
+
+int VerifyDataInput::toFont (Script *script, QString key, QFont &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_FONT)
+    {
+      data = d->toFont();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataFont df;
+  if (df.set(key))
+    return 1;
+
+  data = df.toFont();
+
+  return 0;
+}
+
+int VerifyDataInput::toMA (Script *script, QString key, int &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_MA)
+    {
+      data = d->toInteger();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataMA dma;
+  if (dma.set(key))
+    return 1;
+
+  data = dma.toInteger();
+
+  return 0;
+}
+
+int VerifyDataInput::toOp (Script *script, QString key, int &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_OP)
+    {
+      data = d->toInteger();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataOp dop;
+  if (dop.set(key))
+    return 1;
+
+  data = dop.toInteger();
+
+  return 0;
+}
+
+int VerifyDataInput::toSymbol (Script *script, QString key, QStringList &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_SYMBOL)
+    {
+      data = d->toList();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  DataSymbol ds;
+  if (ds.set(key))
+    return 1;
+
+  data = ds.toList();
+
+  return 0;
+}
+
+int VerifyDataInput::toList (Script *script, QString key, QString &data)
+{
+  if (key.isEmpty())
+    return 1;
+
+  data.clear();
+
+  Data *d = script->data(key);
+  if (d)
+  {
+    if (d->type() == DataFactory::_LIST)
+    {
+      data = d->toString();
+      return 0;
+    }
+    else
+      return 1;
+  }
+
+  data = key;
+
+  return 0;
+}
+
+Data * VerifyDataInput::toCurve (Script *script, QString key)
 {
   if (key.isEmpty())
     return 0;
 
-  Setting *set = dataSetting(type, script, key);
-  if (set)
-    return set;
-
-  SettingFactory fac;
-  Setting *setting = fac.setting(type);
-  if (! setting)
-    return 0;
-
-  if (setting->set(key))
+  Data *d = script->data(key);
+  if (d)
   {
-    delete setting;
-    return 0;
-  }
-
-  // will delete when scipt ends
-  script->setTSetting(setting);
-
-  return setting;
-}
-
-Setting * VerifyDataInput::dataSetting (int type, Script *script, QString key)
-{
-  Data *in = script->data(key);
-  if (in)
-  {
-    if (in->type() == DataFactory::_DATA_SETTING)
+    if (d->type() == DataFactory::_CURVE)
     {
-      Setting *setting = in->get(DataSetting::_VALUE);
-      if (! setting)
-        return 0;
-
-      if (setting->type() != (SettingFactory::Type) type)
-        return 0;
-
-      return setting;
+      d->set(CurveData::_OFFSET, new DataInteger(0));
+      return d;
     }
+    else
+      return 0;
+  }
 
+  DataDouble *dd = new DataDouble;
+  if (! dd->set(key))
+  {
+    dd->setDeleteFlag(1);
+    script->setTData(dd);
+    return dd;
+  }
+
+  // verify if a curve offset version (ma.0 or ma.1)
+  QStringList l = key.split(".");
+  if (l.count() != 2)
+    return 0;
+
+  d = script->data(l.at(0));
+  if (! d)
+    return 0;
+
+  if (d->type() != DataFactory::_CURVE)
+    return 0;
+
+  DataInteger *di = new DataInteger;
+  if (di->set(l.at(1)))
+  {
+    delete di;
     return 0;
   }
 
-  return 0;
+  d->set(CurveData::_OFFSET, di);
+
+  return d;
 }
 
 int VerifyDataInput::curveKeys (QList<Data *> &list, QList<int> &keys)
@@ -162,16 +474,16 @@ int VerifyDataInput::curveKeys (QList<Data *> &list, QList<int> &keys)
     if (curve->type() != DataFactory::_CURVE)
       continue;
 
-    if (curve->barKeyCount() < minKey)
+    if (curve->keyCount() < minKey)
     {
-      minKey = curve->barKeyCount();
+      minKey = curve->keyCount();
       keyData = curve;
     }
   }
 
   if (keyData)
   {
-    keys = keyData->barKeys();
+    keys = keyData->keys();
     return 0;
   }
 
@@ -181,19 +493,28 @@ int VerifyDataInput::curveKeys (QList<Data *> &list, QList<int> &keys)
 int VerifyDataInput::curveValue (Data *in, QList<int> &keys, int index, int offset, double &v)
 {
   v = 0;
-  if (in->type() == DataFactory::_DATA_SETTING)
-    v = in->get(DataSetting::_VALUE)->toDouble();
-  else
+  switch ((DataFactory::Type) in->type())
   {
-    int i = index - offset;
-    if (i < 0)
-      return 1;
+    case DataFactory::_DOUBLE:
+      v = in->toDouble();
+      break;
+    case DataFactory::_CURVE:
+    {
+      int pos = index;
+      pos -= offset;
+      if (pos < 0)
+        return 1;
 
-    Data *bar = in->getData(keys.at(i));
-    if (! bar)
-      return 1;
+      Data *bar = in->toData(keys.at(pos));
+      if (! bar)
+        return 1;
 
-    v = bar->get(CurveBar::_VALUE)->toDouble();
+      v = bar->toData(CurveBar::_VALUE)->toDouble();
+      break;
+    }
+    default:
+      return 1;
+      break;
   }
 
   return 0;

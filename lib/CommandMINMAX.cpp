@@ -26,7 +26,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -43,56 +42,53 @@ CommandMINMAX::CommandMINMAX (QObject *p) : Command (p)
 int CommandMINMAX::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandMINMAX::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandMINMAX::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  s = sg->value("PERIOD");
-  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! period)
-  {
-    _message << "invalid PERIOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
+  // METHOD
   s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    _message << "invalid METHOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMINMAX::runScript: invalid METHOD, using default" << s;
+    method = _method.indexOf("MAX");
   }
 
-  Data *line = getMINMAX(in, period->toInteger(), method);
+  // PERIOD
+  int period = 10;
+  s = sg->value("PERIOD");
+  if (vdi.toInteger(script, s, period))
+  {
+    qDebug() << "CommandMINMAX::runScript: invalid METHOD, using default" << s;
+    period = 10;
+  }
+
+  Data *line = getMINMAX(in, period, method);
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 
@@ -103,7 +99,7 @@ int CommandMINMAX::runScript (Message *sg, Script *script)
 
 Data * CommandMINMAX::getMINMAX (Data *in, int tperiod, int method)
 {
-  QList<int> keys = in->barKeys();
+  QList<int> keys = in->keys();
 
   int period = tperiod;
   if (period == 0)

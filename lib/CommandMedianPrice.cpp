@@ -23,8 +23,7 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
+#include "DataDouble.h"
 
 #include <QtDebug>
 
@@ -36,35 +35,33 @@ CommandMedianPrice::CommandMedianPrice (QObject *p) : Command (p)
 int CommandMedianPrice::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandMedianPrice::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT_1
   s = sg->value("INPUT_1");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT_1 missing " + s;
+    qDebug() << "CommandMedianPrice::runScript: INPUT_1 not found" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT_2
   s = sg->value("INPUT_2");
-  Data *in2 = vdi.curve(script, s);
+  Data *in2 = vdi.toCurve(script, s);
   if (! in2)
   {
-    _message << "INPUT_2 missing " + s;
+    qDebug() << "CommandMedianPrice::runScript: invalid INPUT_2" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -79,7 +76,7 @@ int CommandMedianPrice::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 
@@ -101,17 +98,17 @@ Data * CommandMedianPrice::getMP (QList<Data *> &list)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    Data *bar = in->getData(keys.at(loop));
+    Data *bar = in->toData(keys.at(loop));
     if (! bar)
       continue;
 
-    Data *bar2 = in2->getData(keys.at(loop));
+    Data *bar2 = in2->toData(keys.at(loop));
     if (! bar2)
       continue;
 
-    double t = (bar->get(CurveBar::_VALUE)->toDouble() + bar2->get(CurveBar::_VALUE)->toDouble()) / 2.0;
+    double t = (bar->toData(CurveBar::_VALUE)->toDouble() + bar2->toData(CurveBar::_VALUE)->toDouble()) / 2.0;
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(t));
+    b->set(CurveBar::_VALUE, new DataDouble(t));
     line->set(keys.at(loop), b);
   }
 

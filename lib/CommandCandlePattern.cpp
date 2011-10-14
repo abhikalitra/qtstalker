@@ -26,8 +26,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
 
 #include <QtDebug>
 #include <QList>
@@ -44,71 +42,69 @@ CommandCandlePattern::CommandCandlePattern (QObject *p) : Command (p)
 int CommandCandlePattern::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandCandlePattern::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // OPEN
   s = sg->value("OPEN");
-  Data *iopen = vdi.curve(script, s);
+  Data *iopen = vdi.toCurve(script, s);
   if (! iopen)
   {
-    _message << "invalid OPEN " + s;
+    qDebug() << "CommandCandlePattern::runScript: invalid OPEN" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // HIGH
   s = sg->value("HIGH");
-  Data *ihigh = vdi.curve(script, s);
+  Data *ihigh = vdi.toCurve(script, s);
   if (! ihigh)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandCandlePattern::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // LOW
   s = sg->value("LOW");
-  Data *ilow = vdi.curve(script, s);
+  Data *ilow = vdi.toCurve(script, s);
   if (! ilow)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandCandlePattern::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // CLOSE
   s = sg->value("CLOSE");
-  Data *iclose = vdi.curve(script, s);
+  Data *iclose = vdi.toCurve(script, s);
   if (! iclose)
   {
-    _message << "invalid CLOSE " + s;
+    qDebug() << "CommandCandlePattern::runScript: invalid CLOSE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // PENETRATION
+  double pen = 0;
   s = sg->value("PENETRATION");
-  Setting *pen = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! pen)
-  {
-    pen = new SettingDouble(0);
-    script->setTSetting(pen);
-  }
+  if (vdi.toDouble(script, s, pen))
+    pen = 0;
 
   CandleType ct;
   s = sg->value("METHOD");
   int method = ct.fromString(s);
   if (method == -1)
   {
-    _message << "invalid METHOD " + s;
+    qDebug() << "CommandCandlePattern::runScript: invalid METHOD" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -116,15 +112,15 @@ int CommandCandlePattern::runScript (Message *sg, Script *script)
   QList<Data *> list;
   list << iopen << ihigh << ilow << iclose;
 
-  Data *line = getPattern(list, method, pen->toDouble());
+  Data *line = getPattern(list, method, pen);
   if (! line)
   {
-    _message << "CandleType error";
+    qDebug() << "CommandCandlePattern::runScript: getPattern error";
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 

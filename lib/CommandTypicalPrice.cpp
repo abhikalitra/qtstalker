@@ -23,8 +23,7 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
+#include "DataDouble.h"
 
 #include <QtDebug>
 
@@ -36,44 +35,43 @@ CommandTypicalPrice::CommandTypicalPrice (QObject *p) : Command (p)
 int CommandTypicalPrice::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandTypicalPrice::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // HIGH
   s = sg->value("HIGH");
-  Data *ihigh = vdi.curve(script, s);
+  Data *ihigh = vdi.toCurve(script, s);
   if (! ihigh)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandTypicalPrice::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // LOW
   s = sg->value("LOW");
-  Data *ilow = vdi.curve(script, s);
+  Data *ilow = vdi.toCurve(script, s);
   if (! ilow)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandTypicalPrice::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // CLOSE
   s = sg->value("CLOSE");
-  Data *iclose = vdi.curve(script, s);
+  Data *iclose = vdi.toCurve(script, s);
   if (! iclose)
   {
-    _message << "invalid CLOSE " + s;
+    qDebug() << "CommandTypicalPrice::runScript: invalid CLOSE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -88,7 +86,7 @@ int CommandTypicalPrice::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 
@@ -114,24 +112,24 @@ Data * CommandTypicalPrice::getTP (QList<Data *> &list)
   Data *iclose = list.at(loop++);
   for (loop = 0; loop < keys.count(); loop++)
   {
-    Data *hbar = ihigh->getData(keys.at(loop));
+    Data *hbar = ihigh->toData(keys.at(loop));
     if (! hbar)
       continue;
 
-    Data *lbar = ilow->getData(keys.at(loop));
+    Data *lbar = ilow->toData(keys.at(loop));
     if (! lbar)
       continue;
 
-    Data *cbar = iclose->getData(keys.at(loop));
+    Data *cbar = iclose->toData(keys.at(loop));
     if (! cbar)
       continue;
 
-    double t = (hbar->get(CurveBar::_VALUE)->toDouble() +
-                lbar->get(CurveBar::_VALUE)->toDouble() +
-                cbar->get(CurveBar::_VALUE)->toDouble()) / 3.0;
+    double t = (hbar->toData(CurveBar::_VALUE)->toDouble() +
+                lbar->toData(CurveBar::_VALUE)->toDouble() +
+                cbar->toData(CurveBar::_VALUE)->toDouble()) / 3.0;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(t));
+    b->set(CurveBar::_VALUE, new DataDouble(t));
     line->set(keys.at(loop), b);
   }
 

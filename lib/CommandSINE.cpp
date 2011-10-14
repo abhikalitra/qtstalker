@@ -26,7 +26,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -42,41 +41,33 @@ CommandSINE::CommandSINE (QObject *p) : Command (p)
 int CommandSINE::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT_SINE
+  QString sname;
   QString s = sg->value("OUTPUT_SINE");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, sname))
   {
-    _message << "invalid OUTPUT_SINE";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *sname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! sname)
-  {
-    _message << "invalid OUTPUT_SINE " + s;
+    qDebug() << "CommandSINE::runScript: invalid OUTPUT_SINE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // OUTPUT_LEAD
+  QString lname;
   s = sg->value("OUTPUT_LEAD");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, lname))
   {
-    _message << "invalid OUTPUT_LEAD";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *lname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! lname)
-  {
-    _message << "invalid OUTPUT_LEAD " + s;
+    qDebug() << "CommandSINE::runScript: invalid OUTPUT_LEAD" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandSINE::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -92,8 +83,8 @@ int CommandSINE::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(sname->toString(), lines.at(0));
-  script->setData(lname->toString(), lines.at(1));
+  script->setData(sname, lines.at(0));
+  script->setData(lname, lines.at(1));
 
   _returnString = "OK";
 

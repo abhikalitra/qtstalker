@@ -22,10 +22,9 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "DataFactory.h"
-#include "SettingFactory.h"
+#include "DataInteger.h"
 
 #include <QtDebug>
-#include <QStringList>
 
 CurveData::CurveData ()
 {
@@ -39,52 +38,73 @@ CurveData::~CurveData ()
 
 void CurveData::clear ()
 {
-  Data::clear();
-
   _type = DataFactory::_CURVE;
   _startIndex = 99999999;
-  _endIndex = -99999999;
-  _offset = 0;
+  _endIndex = -1;
+
+  qDeleteAll(_data);
+  _data.clear();
 
   qDeleteAll(_bars);
   _bars.clear();
+
+  set(_Z, new DataInteger(-1));
 }
 
 int CurveData::set (int k, Data *d)
 {
-  Data *b = _bars.value(k);
-  if (b)
-    delete b;
+  if (k < 0)
+  {
+    Data *td = _data.value(k);
+    if (td)
+      delete td;
 
-  _bars.insert(k, d);
+    _data.insert(k, d);
+  }
+  else
+  {
+    Data *td = _bars.value(k);
+    if (td)
+      delete td;
 
-  if (k < _startIndex)
-    _startIndex = k;
-  if (k > _endIndex)
-    _endIndex = k;
+    _bars.insert(k, d);
+
+    if (k < _startIndex)
+      _startIndex = k;
+
+    if (k > _endIndex)
+      _endIndex = k;
+  }
 
   return 0;
 }
 
-Data * CurveData::getData (int d)
+Data * CurveData::toData (int d)
 {
-  return _bars.value(d);
+  Data *td = 0;
+  if (d < 0)
+    td = _data.value(d);
+  else
+    td = _bars.value(d);
+
+  return td;
 }
 
-QList<int> CurveData::barKeys ()
+QList<int> CurveData::keys ()
 {
   return _bars.keys();
 }
 
-QString CurveData::toString ()
+/*
+QString CurveData::toSaveString ()
 {
   QStringList l;
 
-  QHashIterator<QString, Setting *> it(_data);
+  QHashIterator<int, Data *> it(_data);
   while (it.hasNext())
   {
     it.next();
-    l << it.key() + ";" + QString::number(it.value()->type()) + ";" + it.value()->toString();
+    l << QString::number(it.key()) + ";" + QString::number(it.value()->type()) + ";" + it.value()->toString();
   }
 
   QHashIterator<int, Data *> it2(_bars);
@@ -104,7 +124,9 @@ QString CurveData::toString ()
 
   return l.join("\n");
 }
+*/
 
+/*
 int CurveData::fromString (QString d)
 {
   clear();
@@ -164,24 +186,15 @@ int CurveData::fromString (QString d)
 
   return 0;
 }
+*/
 
-int CurveData::barKeyCount ()
+int CurveData::keyCount ()
 {
   return _bars.count();
 }
 
-void CurveData::barKeyRange (int &start, int &end)
+void CurveData::keyRange (int &start, int &end)
 {
   start = _startIndex;
   end = _endIndex;
-}
-
-void CurveData::setOffset (int d)
-{
-  _offset = d;
-}
-
-int CurveData::offset ()
-{
-  return _offset;
 }

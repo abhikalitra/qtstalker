@@ -25,53 +25,56 @@
 #ifndef DATA_HPP
 #define DATA_HPP
 
-#include <QHash>
+#include <QStringList>
 #include <QMetaType>
-
-#include "Setting.h"
+#include <QColor>
+#include <QFont>
+#include <QDateTime>
 
 class Data
 {
   public:
     Data ();
-    ~Data ();
     int type ();
-    bool dataContains (QString);
-    int dataKeyCount ();
-//    void setCommand (QString);
-//    QString command ();
-//    void setCommandType (QString);
-//    QString commandType ();
-//    void setScriptFile (QString);
-//    QString scriptFile ();
     void setDeleteFlag (int);
     int deleteFlag ();
+    void setTab (int);
+    int tab ();
+    void setLabel (QString);
+    QString label ();
 
     virtual void clear ();
-    virtual int set (QString, Setting *);
-    virtual int set (int, Setting *);
     virtual int set (int, Data *);
-    virtual Setting * get (QString);
-    virtual Setting * get (int);
-    virtual Data * getData (int);
-    virtual int highLow (double &, double &);
-    virtual QList<int> barKeys ();
-    virtual QList<QString> dataKeys ();
-    virtual int barKeyCount ();
-    virtual void barKeyRange (int &, int &);
-    virtual void append (Data *);
-    virtual void setOffset (int);
-    virtual int offset ();
+    virtual int set (QString);
+    virtual int set (QStringList);
+    virtual int set (int);
+    virtual int set (double);
+    virtual int set (bool);
+    virtual int set (QColor);
+    virtual int set (QFont);
+    virtual int set (QDateTime);
     virtual QString toString ();
-    virtual int fromString (QString);
+    virtual QStringList toList ();
+    virtual int toInteger ();
+    virtual double toDouble ();
+    virtual bool toBool ();
+    virtual QColor toColor ();
+    virtual QFont toFont ();
+    virtual QDateTime toDateTime ();
+    virtual Data * toData (int);
+    virtual int highLow (double &, double &);
+    virtual QList<int> keys ();
+    virtual int keyCount ();
+    virtual void keyRange (int &, int &);
+    virtual void append (Data *);
+    virtual QString toSaveString ();
+    virtual int fromSaveString (QString);
 
   protected:
-    QHash<QString, Setting *> _data;
     int _type;
-//    QString _command;
-//    QString _commandType;
-//    QString _scriptFile;
     int _delFlag;
+    int _tab;
+    QString _label;
 };
 
 Q_DECLARE_METATYPE(Data)

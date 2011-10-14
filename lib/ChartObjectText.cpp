@@ -24,12 +24,12 @@
 #include "GlobalParent.h"
 #include "DateScaleDraw.h"
 #include "ChartObjectData.h"
-#include "SettingDouble.h"
-#include "SettingDateTime.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingColor.h"
-#include "SettingFont.h"
+#include "DataDouble.h"
+#include "DataDateTime.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataColor.h"
+#include "DataFont.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -38,30 +38,28 @@
 
 ChartObjectText::ChartObjectText ()
 {
-  _settings->set(ChartObjectData::_TYPE, new SettingString(QString("Text")));
-  _settings->set(ChartObjectData::_TEXT, new SettingString(QString("Text")));
-  _settings->set(ChartObjectData::_DATE, new SettingDateTime(QDateTime::currentDateTime()));
-  _settings->set(ChartObjectData::_PRICE, new SettingDouble(0));
-  _settings->set(ChartObjectData::_COLOR, new SettingColor(QColor(Qt::red)));
-  _settings->set(ChartObjectData::_Z, new SettingInteger(1));
-  _settings->set(ChartObjectData::_PEN, new SettingInteger(1));
+  _settings->set(ChartObjectData::_TYPE, new DataString(QString("Text")));
+  _settings->set(ChartObjectData::_TEXT, new DataString(QString("Text")));
+  _settings->set(ChartObjectData::_DATE, new DataDateTime(QDateTime::currentDateTime()));
+  _settings->set(ChartObjectData::_PRICE, new DataDouble(0));
+  _settings->set(ChartObjectData::_COLOR, new DataColor(QColor(Qt::red)));
 
   QFont f;
-  _settings->set(ChartObjectData::_FONT, new SettingFont(f.toString()));
+  _settings->set(ChartObjectData::_FONT, new DataFont(f.toString()));
 }
 
 void ChartObjectText::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE)->toDateTime()));
+  int x = xMap.transform(dsd->x(_settings->toData(ChartObjectData::_DATE)->toDateTime()));
 
-  int y = yMap.transform(_settings->get(ChartObjectData::_PRICE)->toDouble());
+  int y = yMap.transform(_settings->toData(ChartObjectData::_PRICE)->toDouble());
 
-  p->setPen(_settings->get(ChartObjectData::_COLOR)->toColor());
+  p->setPen(_settings->toData(ChartObjectData::_COLOR)->toColor());
 
-  p->setFont(_settings->get(ChartObjectData::_FONT)->toFont());
+  p->setFont(_settings->toData(ChartObjectData::_FONT)->toFont());
 
-  p->drawText(x, y, _settings->get(ChartObjectData::_TEXT)->toString());
+  p->drawText(x, y, _settings->toData(ChartObjectData::_TEXT)->toString());
 
   QFontMetrics fm = p->fontMetrics();
 
@@ -69,7 +67,7 @@ void ChartObjectText::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScale
 
   _selectionArea.append(QRegion(x,
 		                y - fm.height(),
-		                fm.width(_settings->get(ChartObjectData::_TEXT)->toString(), -1),
+		                fm.width(_settings->toData(ChartObjectData::_TEXT)->toString(), -1),
 		                fm.height(),
 		                QRegion::Rectangle));
 
@@ -87,7 +85,7 @@ void ChartObjectText::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScale
 		y - (fm.height() / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings->get(ChartObjectData::_COLOR)->toColor());
+		_settings->toData(ChartObjectData::_COLOR)->toColor());
   }
 }
 
@@ -103,14 +101,14 @@ void ChartObjectText::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE, new SettingDateTime(dt));
+      _settings->set(ChartObjectData::_DATE, new DataDateTime(dt));
 
       map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_PRICE, new SettingDouble(map.invTransform((double) p.y())));
+      _settings->set(ChartObjectData::_PRICE, new DataDouble(map.invTransform((double) p.y())));
 
       plot()->replot();
 
-      QString s = _settings->get(ChartObjectData::_DATE)->toString() + " " + _settings->get(ChartObjectData::_PRICE)->toString();
+      QString s = _settings->toData(ChartObjectData::_DATE)->toString() + " " + _settings->toData(ChartObjectData::_PRICE)->toString();
       g_parent->statusBar()->showMessage(s);
 
       _modified++;
@@ -131,14 +129,14 @@ int ChartObjectText::create ()
 
 int ChartObjectText::info (Message &info)
 {
-  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE)->toString());
+  info.insert(QObject::tr("Type"), _settings->toData(ChartObjectData::_TYPE)->toString());
 
-  QDateTime dt = _settings->get(ChartObjectData::_DATE)->toDateTime();
+  QDateTime dt = _settings->toData(ChartObjectData::_DATE)->toDateTime();
   info.insert("D", dt.toString("yyyy-MM-dd"));
   info.insert("T", dt.toString("HH:mm:ss"));
 
-  info.insert(QObject::tr("Price"), _settings->get(ChartObjectData::_PRICE)->toString());
-  info.insert(QObject::tr("Text"), _settings->get(ChartObjectData::_TEXT)->toString());
+  info.insert(QObject::tr("Price"), _settings->toData(ChartObjectData::_PRICE)->toString());
+  info.insert(QObject::tr("Text"), _settings->toData(ChartObjectData::_TEXT)->toString());
 
   return 0;
 }

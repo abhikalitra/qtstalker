@@ -26,8 +26,7 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
+#include "DataDouble.h"
 
 #include <QtDebug>
 
@@ -40,86 +39,84 @@ CommandSZ::CommandSZ (QObject *p) : Command (p)
 int CommandSZ::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandSZ::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // HIGH
   s = sg->value("HIGH");
-  Data *ihigh = vdi.curve(script, s);
+  Data *ihigh = vdi.toCurve(script, s);
   if (! ihigh)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandSZ::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // LOW
   s = sg->value("LOW");
-  Data *ilow = vdi.curve(script, s);
+  Data *ilow = vdi.toCurve(script, s);
   if (! ilow)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandSZ::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // METHOD
   s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    _message << "invalid METHOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSZ::runScript: invalid METHOD, using default" << s;
+    method = 0;
   }
 
+  // PERIOD
+  int period = 10;
   s = sg->value("PERIOD");
-  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! period)
+  if (vdi.toInteger(script, s, period))
   {
-    _message << "invalid PERIOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSZ::runScript: invalid PERIOD, using default" << s;
+    period = 10;
   }
 
+  // PERIOD_NO_DECLINE
+  int ndperiod = 2;
   s = sg->value("PERIOD_NO_DECLINE");
-  Setting *no_decline_period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! no_decline_period)
+  if (vdi.toInteger(script, s, ndperiod))
   {
-    _message << "invalid PERIOD_NO_DECLINE " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSZ::runScript: invalid PERIOD_NO_DECLINE, using default" << s;
+    ndperiod = 2;
   }
 
+  // COEFFICIENT
+  double coeff = 2;
   s = sg->value("COEFFICIENT");
-  Setting *coefficient = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! coefficient)
+  if (vdi.toDouble(script, s, coeff))
   {
-    _message << "invalid COEFFICIENT " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSZ::runScript: invalid COEFFICIENT, using default" << s;
+    coeff = 2;
   }
 
   QList<Data *> list;
   list << ihigh << ilow;
 
-  Data *pl = getSZ(list, method, period->toInteger(), no_decline_period->toInteger(), coefficient->toDouble());
+  Data *pl = getSZ(list, method, period, ndperiod, coeff);
   if (! pl)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), pl);
+  script->setData(name, pl);
 
   _returnString = "OK";
 
@@ -186,26 +183,26 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     double dntrend_noise_cnt = 0;
     for (lbloop = lbstart; lbloop < ipos; lbloop++)
     {
-      Data *hbar = ihigh->getData(keys.at(lbloop));
+      Data *hbar = ihigh->toData(keys.at(lbloop));
       if (! hbar)
         continue;
 
-      Data *phbar = ihigh->getData(keys.at(lbloop - 1));
+      Data *phbar = ihigh->toData(keys.at(lbloop - 1));
       if (! phbar)
         continue;
 
-      Data *lbar = ilow->getData(keys.at(lbloop));
+      Data *lbar = ilow->toData(keys.at(lbloop));
       if (! lbar)
         continue;
 
-      Data *plbar = ilow->getData(keys.at(lbloop - 1));
+      Data *plbar = ilow->toData(keys.at(lbloop - 1));
       if (! plbar)
         continue;
 
-      double lo_curr = lbar->get(CurveBar::_VALUE)->toDouble();
-      double lo_last = plbar->get(CurveBar::_VALUE)->toDouble();
-      double hi_curr = hbar->get(CurveBar::_VALUE)->toDouble();
-      double hi_last = phbar->get(CurveBar::_VALUE)->toDouble();
+      double lo_curr = lbar->toData(CurveBar::_VALUE)->toDouble();
+      double lo_last = plbar->toData(CurveBar::_VALUE)->toDouble();
+      double hi_curr = hbar->toData(CurveBar::_VALUE)->toDouble();
+      double hi_last = phbar->toData(CurveBar::_VALUE)->toDouble();
       if (lo_last > lo_curr)
       {
         uptrend_noise_avg += lo_last - lo_curr;
@@ -223,16 +220,16 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     if (dntrend_noise_cnt > 0)
       dntrend_noise_avg /= dntrend_noise_cnt;
 
-    Data *phbar = ihigh->getData(keys.at(ipos - 1));
+    Data *phbar = ihigh->toData(keys.at(ipos - 1));
     if (! phbar)
       continue;
 
-    Data *plbar = ilow->getData(keys.at(ipos - 1));
+    Data *plbar = ilow->toData(keys.at(ipos - 1));
     if (! plbar)
       continue;
 
-    double lo_last = plbar->get(CurveBar::_VALUE)->toDouble();
-    double hi_last = phbar->get(CurveBar::_VALUE)->toDouble();
+    double lo_last = plbar->toData(CurveBar::_VALUE)->toDouble();
+    double hi_last = phbar->toData(CurveBar::_VALUE)->toDouble();
     uptrend_stop = lo_last - coefficient * uptrend_noise_avg;
     dntrend_stop = hi_last + coefficient * dntrend_noise_avg;
 
@@ -260,11 +257,11 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     old_dntrend_stops[0] = dntrend_stop;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(adjusted_uptrend_stop));
+    b->set(CurveBar::_VALUE, new DataDouble(adjusted_uptrend_stop));
     sz_uptrend->set(keys.at(ipos), b);
 
     b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(adjusted_dntrend_stop));
+    b->set(CurveBar::_VALUE, new DataDouble(adjusted_dntrend_stop));
     sz_dntrend->set(keys.at(ipos), b);
   }
 

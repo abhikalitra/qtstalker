@@ -21,14 +21,13 @@
 
 #include "CommandSell.h"
 #include "ChartObjectData.h"
-#include "SettingColor.h"
-#include "SettingDouble.h"
-#include "SettingString.h"
-#include "SettingBool.h"
-#include "SettingInteger.h"
+#include "DataColor.h"
+#include "DataDouble.h"
+#include "DataString.h"
+#include "DataBool.h"
+#include "DataInteger.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
-#include "SettingDateTime.h"
+#include "DataDateTime.h"
 
 #include <QtDebug>
 
@@ -39,68 +38,66 @@ CommandSell::CommandSell (QObject *p) : Command (p)
 
 int CommandSell::runScript (Message *sg, Script *script)
 {
-  // color
   VerifyDataInput vdi;
+
+  // COLOR
+  QColor color;
   QString s = sg->value("COLOR");
-  Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
-  if (! color)
+  if (vdi.toColor(script, s, color))
   {
-    _message << "invalid COLOR " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSell::runScript: invalid COLOR, using default" << s;
+    color = QColor(Qt::red);
   }
 
   // DATE
+  QDateTime date;
   s = sg->value("DATE");
-  Setting *date = vdi.setting(SettingFactory::_DATETIME, script, s);
-  if (! date)
+  if (vdi.toDateTime(script, s, date))
   {
-    _message << "invalid DATETIME " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSell::runScript: invalid DATE, using default" << s;
+    date = QDateTime::currentDateTime();
   }
 
   // PRICE
+  double price = 0;
   s = sg->value("PRICE");
-  Setting *price = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! price)
+  if (vdi.toDouble(script, s, price))
   {
-    _message << "invalid PRICE " + s;
+    qDebug() << "CommandSell::runScript: invalid PRICE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // CHART
+  QString chart;
   s = sg->value("CHART");
-  Setting *chart = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! chart)
+  if (vdi.toString(script, s, chart))
   {
-    _message << "invalid CHART " + s;
+    qDebug() << "CommandSell::runScript: invalid CHART" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // Z
+  int z = 0;
   s = sg->value("Z");
-  Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! z)
+  if (vdi.toInteger(script, s, z))
   {
-    _message << "invalid Z " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSell::runScript: invalid Z, using default" << s;
+    z = 0;
   }
 
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_COLOR, new SettingColor(color->toColor()));
-  co->set(ChartObjectData::_DATE, new SettingDateTime(date->toDateTime()));
-  co->set(ChartObjectData::_PRICE, new SettingDouble(price->toDouble()));
-  co->set(ChartObjectData::_CHART, new SettingString(chart->toString()));
-  co->set(ChartObjectData::_Z, new SettingInteger(z->toInteger()));
-  co->set(ChartObjectData::_ID, new SettingInteger(id));
-  co->set(ChartObjectData::_RO, new SettingBool(TRUE));
-  co->set(ChartObjectData::_TYPE, new SettingString(QString("Sell")));
+  co->set(ChartObjectData::_COLOR, new DataColor(color));
+  co->set(ChartObjectData::_DATE, new DataDateTime(date));
+  co->set(ChartObjectData::_PRICE, new DataDouble(price));
+  co->set(ChartObjectData::_CHART, new DataString(chart));
+  co->set(ChartObjectData::_Z, new DataInteger(z));
+  co->set(ChartObjectData::_ID, new DataInteger(id));
+  co->set(ChartObjectData::_RO, new DataBool(TRUE));
+  co->set(ChartObjectData::_TYPE, new DataString(QString("Sell")));
 
   script->setData(QString::number(id), co);
 

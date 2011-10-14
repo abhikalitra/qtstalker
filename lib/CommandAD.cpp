@@ -25,7 +25,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -41,53 +40,48 @@ CommandAD::CommandAD (QObject *p) : Command (p)
 int CommandAD::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandAD::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   s = sg->value("HIGH");
-  Data *ihigh = vdi.curve(script, s);
+  Data *ihigh = vdi.toCurve(script, s);
   if (! ihigh)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandAD::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   s = sg->value("LOW");
-  Data *ilow = vdi.curve(script, s);
+  Data *ilow = vdi.toCurve(script, s);
   if (! ilow)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandAD::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   s = sg->value("CLOSE");
-  Data *iclose = vdi.curve(script, s);
+  Data *iclose = vdi.toCurve(script, s);
   if (! iclose)
   {
-    _message << "invalid CLOSE " + s;
+    qDebug() << "CommandAD::runScript: invalid CLOSE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   s = sg->value("VOLUME");
-  Data *ivol = vdi.curve(script, s);
+  Data *ivol = vdi.toCurve(script, s);
   if (! ivol)
   {
-    _message << "invalid VOLUME " + s;
+    qDebug() << "CommandAD::runScript: invalid VOLUME" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -102,7 +96,7 @@ int CommandAD::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 

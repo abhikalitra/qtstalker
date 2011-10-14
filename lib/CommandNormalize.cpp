@@ -23,8 +23,7 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
+#include "DataDouble.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -37,26 +36,23 @@ CommandNormalize::CommandNormalize (QObject *p) : Command (p)
 int CommandNormalize::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandNormalize::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandNormalize::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -71,7 +67,7 @@ int CommandNormalize::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 
@@ -102,11 +98,11 @@ Data * CommandNormalize::getNORM (QList<Data *> &list)
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    Data *bar = in->getData(keys.at(loop));
-    double t = ((bar->get(CurveBar::_VALUE)->toDouble() - min) / range) * 100;
+    Data *bar = in->toData(keys.at(loop));
+    double t = ((bar->toData(CurveBar::_VALUE)->toDouble() - min) / range) * 100;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(t));
+    b->set(CurveBar::_VALUE, new DataDouble(t));
     line->set(keys.at(loop), b);
   }
 

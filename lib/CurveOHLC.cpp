@@ -40,21 +40,21 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
   int loop = sd->lowerBound();
   int size = sd->upperBound();
 
-  if (_settings->get(CurveData::_STYLE)->toString() == "OHLC")
+  if (_settings->toData(CurveData::_STYLE)->toString() == "OHLC")
   {
     for (; loop < size; loop++)
     {
-      Data *b = _settings->getData(loop);
+      Data *b = _settings->toData(loop);
       if (! b)
         continue;
 
-      painter->setPen(b->get(CurveBar::_COLOR)->toColor());
+      painter->setPen(b->toData(CurveBar::_COLOR)->toColor());
 
       int x = xMap.transform(loop);
-      int yo = yMap.transform(b->get(CurveBar::_OPEN)->toDouble());
-      int yh = yMap.transform(b->get(CurveBar::_HIGH)->toDouble());
-      int yl = yMap.transform(b->get(CurveBar::_LOW)->toDouble());
-      int yc = yMap.transform(b->get(CurveBar::_CLOSE)->toDouble());
+      int yo = yMap.transform(b->toData(CurveBar::_OPEN)->toDouble());
+      int yh = yMap.transform(b->toData(CurveBar::_HIGH)->toDouble());
+      int yl = yMap.transform(b->toData(CurveBar::_LOW)->toDouble());
+      int yc = yMap.transform(b->toData(CurveBar::_CLOSE)->toDouble());
       int width = xMap.transform(loop + 1) - x;
 
       QRect rect(QPoint(x + 1, yh), QPoint(x + width - 1, yl));
@@ -74,21 +74,21 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
     bool ff = FALSE;
     for (; loop < size; loop++)
     {
-      Data *b = _settings->getData(loop);
+      Data *b = _settings->toData(loop);
       if (! b)
         continue;
 
       ff = FALSE;
-      if (b->get(CurveBar::_CLOSE)->toDouble() < b->get(CurveBar::_OPEN)->toDouble())
+      if (b->toData(CurveBar::_CLOSE)->toDouble() < b->toData(CurveBar::_OPEN)->toDouble())
         ff = TRUE;
 
-      painter->setPen(b->get(CurveBar::_COLOR)->toColor());
+      painter->setPen(b->toData(CurveBar::_COLOR)->toColor());
 
       int x = xMap.transform(loop);
-      int xo = yMap.transform(b->get(CurveBar::_OPEN)->toDouble());
-      int xh = yMap.transform(b->get(CurveBar::_HIGH)->toDouble());
-      int xl = yMap.transform(b->get(CurveBar::_LOW)->toDouble());
-      int xc = yMap.transform(b->get(CurveBar::_CLOSE)->toDouble());
+      int xo = yMap.transform(b->toData(CurveBar::_OPEN)->toDouble());
+      int xh = yMap.transform(b->toData(CurveBar::_HIGH)->toDouble());
+      int xl = yMap.transform(b->toData(CurveBar::_LOW)->toDouble());
+      int xc = yMap.transform(b->toData(CurveBar::_CLOSE)->toDouble());
 
       int width = xMap.transform(loop + 1) - x;
 
@@ -98,7 +98,7 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
         QRect rect(QPoint(x + 2, xc), QPoint(x + width - 2, xo));
         painter->drawLine (rect.center().x(), xh, rect.center().x(), xl);
         painter->setBrush(plot()->canvasBackground());
-        painter->setPen(b->get(CurveBar::_COLOR)->toColor());
+        painter->setPen(b->toData(CurveBar::_COLOR)->toColor());
         painter->drawRect(rect);
       }
       else
@@ -106,7 +106,7 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
         // filled candle c < o
         QRect rect(QPoint(x + 2, xo), QPoint(x + width - 2, xc));
         painter->drawLine (rect.center().x(), xh, rect.center().x(), xl);
-        painter->setBrush(b->get(CurveBar::_COLOR)->toColor());
+        painter->setBrush(b->toData(CurveBar::_COLOR)->toColor());
         painter->drawRect(rect);
       }
     }
@@ -115,23 +115,23 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
 
 int CurveOHLC::info (int index, Message *data)
 {
-  Data *b = _settings->getData(index);
+  Data *b = _settings->toData(index);
   if (! b)
     return 1;
 
   Strip strip;
 
   QString d;
-  strip.strip(b->get(CurveBar::_OPEN)->toDouble(), 4, d);
+  strip.strip(b->toData(CurveBar::_OPEN)->toDouble(), 4, d);
   data->insert("O", d);
 
-  strip.strip(b->get(CurveBar::_HIGH)->toDouble(), 4, d);
+  strip.strip(b->toData(CurveBar::_HIGH)->toDouble(), 4, d);
   data->insert("H", d);
 
-  strip.strip(b->get(CurveBar::_LOW)->toDouble(), 4, d);
+  strip.strip(b->toData(CurveBar::_LOW)->toDouble(), 4, d);
   data->insert("L", d);
 
-  strip.strip(b->get(CurveBar::_CLOSE)->toDouble(), 4, d);
+  strip.strip(b->toData(CurveBar::_CLOSE)->toDouble(), 4, d);
   data->insert("C", d);
 
   return 0;
@@ -139,12 +139,12 @@ int CurveOHLC::info (int index, Message *data)
 
 int CurveOHLC::scalePoint (int i, QColor &color, double &v)
 {
-  Data *bar = _settings->getData(i);
+  Data *bar = _settings->toData(i);
   if (! bar)
     return 1;
 
-  color = bar->get(CurveBar::_COLOR)->toColor();
-  v = bar->get(CurveBar::_CLOSE)->toDouble();
+  color = bar->toData(CurveBar::_COLOR)->toColor();
+  v = bar->toData(CurveBar::_CLOSE)->toDouble();
 
   return 0;
 }

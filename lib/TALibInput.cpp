@@ -21,8 +21,6 @@
 
 #include "TALibInput.h"
 #include "CurveBar.h"
-#include "SettingDouble.h"
-#include "DataFactory.h"
 
 TALibInput::TALibInput ()
 {
@@ -55,11 +53,11 @@ int TALibInput::fill1 (QList<Data *> &list, QList<int> &keys, TA_Real out[])
   Data *in = list.at(0);
   for (; ipos < keys.count(); ipos++)
   {
-    Data *bar = in->getData(keys.at(ipos));
+    Data *bar = in->toData(keys.at(ipos));
     if (! bar)
       continue;
 
-    out[opos] = (TA_Real) bar->get(CurveBar::_VALUE)->toDouble();
+    out[opos] = (TA_Real) bar->toData(CurveBar::_VALUE)->toDouble();
     opos++;
   }
 
@@ -74,16 +72,16 @@ int TALibInput::fill2 (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_
   Data *in2 = list.at(1);
   for (; ipos < keys.count(); ipos++)
   {
-    Data *bar = in->getData(keys.at(ipos));
+    Data *bar = in->toData(keys.at(ipos));
     if (! bar)
       continue;
 
-    Data *bar2 = in2->getData(keys.at(ipos));
+    Data *bar2 = in2->toData(keys.at(ipos));
     if (! bar2)
       continue;
 
-    out[opos] = (TA_Real) bar->get(CurveBar::_VALUE)->toDouble();
-    out2[opos] = (TA_Real) bar2->get(CurveBar::_VALUE)->toDouble();
+    out[opos] = (TA_Real) bar->toData(CurveBar::_VALUE)->toDouble();
+    out2[opos] = (TA_Real) bar2->toData(CurveBar::_VALUE)->toDouble();
     opos++;
   }
 
@@ -99,21 +97,21 @@ int TALibInput::fill3 (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_
   Data *in3 = list.at(2);
   for (; ipos < keys.count(); ipos++)
   {
-    Data *bar = in->getData(keys.at(ipos));
+    Data *bar = in->toData(keys.at(ipos));
     if (! bar)
       continue;
 
-    Data *bar2 = in2->getData(keys.at(ipos));
+    Data *bar2 = in2->toData(keys.at(ipos));
     if (! bar2)
       continue;
 
-    Data *bar3 = in3->getData(keys.at(ipos));
+    Data *bar3 = in3->toData(keys.at(ipos));
     if (! bar3)
       continue;
 
-    out[opos] = (TA_Real) bar->get(CurveBar::_VALUE)->toDouble();
-    out2[opos] = (TA_Real) bar2->get(CurveBar::_VALUE)->toDouble();
-    out3[opos] = (TA_Real) bar3->get(CurveBar::_VALUE)->toDouble();
+    out[opos] = (TA_Real) bar->toData(CurveBar::_VALUE)->toDouble();
+    out2[opos] = (TA_Real) bar2->toData(CurveBar::_VALUE)->toDouble();
+    out3[opos] = (TA_Real) bar3->toData(CurveBar::_VALUE)->toDouble();
     opos++;
   }
 
@@ -130,26 +128,26 @@ int TALibInput::fill4 (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_
   Data *in4 = list.at(3);
   for (; ipos < keys.count(); ipos++)
   {
-    Data *bar = in->getData(keys.at(ipos));
+    Data *bar = in->toData(keys.at(ipos));
     if (! bar)
       continue;
 
-    Data *bar2 = in2->getData(keys.at(ipos));
+    Data *bar2 = in2->toData(keys.at(ipos));
     if (! bar2)
       continue;
 
-    Data *bar3 = in3->getData(keys.at(ipos));
+    Data *bar3 = in3->toData(keys.at(ipos));
     if (! bar3)
       continue;
 
-    Data *bar4 = in4->getData(keys.at(ipos));
+    Data *bar4 = in4->toData(keys.at(ipos));
     if (! bar4)
       continue;
 
-    out[opos] = (TA_Real) bar->get(CurveBar::_VALUE)->toDouble();
-    out2[opos] = (TA_Real) bar2->get(CurveBar::_VALUE)->toDouble();
-    out3[opos] = (TA_Real) bar3->get(CurveBar::_VALUE)->toDouble();
-    out4[opos] = (TA_Real) bar4->get(CurveBar::_VALUE)->toDouble();
+    out[opos] = (TA_Real) bar->toData(CurveBar::_VALUE)->toDouble();
+    out2[opos] = (TA_Real) bar2->toData(CurveBar::_VALUE)->toDouble();
+    out3[opos] = (TA_Real) bar3->toData(CurveBar::_VALUE)->toDouble();
+    out4[opos] = (TA_Real) bar4->toData(CurveBar::_VALUE)->toDouble();
     opos++;
   }
 

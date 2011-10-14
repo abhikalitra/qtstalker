@@ -21,8 +21,6 @@
 
 #include "DataDialog.h"
 #include "DataFactory.h"
-#include "DataSetting.h"
-#include "SettingFactory.h"
 #include "LineEdit.h"
 #include "ColorButton.h"
 #include "FileButton.h"
@@ -69,60 +67,49 @@ void DataDialog::addTab (int pos)
 
 void DataDialog::set (Data *d)
 {
-  if (d->type() != DataFactory::_DATA_SETTING)
-    return;
+  int tab = d->tab();
+  QString key = d->label();
 
-  int tab = d->get(DataSetting::_TAB)->toInteger();
-
-  Setting *vset = d->get(DataSetting::_VALUE);
-  if (! vset)
-    return;
-
-  Setting *set = d->get(DataSetting::_LABEL);
-  if (! set)
-    return;
-  QString key = set->toString();
-
-  switch ((SettingFactory::Type) vset->type())
+  switch ((DataFactory::Type) d->type())
   {
-    case SettingFactory::_STRING:
-      setText(tab, key, vset->toString(), QString());
+    case DataFactory::_STRING:
+      setText(tab, key, d->toString(), QString());
       _settings.insert(key, d);
       break;
-    case SettingFactory::_INTEGER:
-      setInteger(tab, key, vset->toInteger(), 999999, -999999, QString());
+    case DataFactory::_INTEGER:
+      setInteger(tab, key, d->toInteger(), 999999, -999999, QString());
       _settings.insert(key, d);
       break;
-    case SettingFactory::_DOUBLE:
-      setDouble(tab, key, vset->toDouble(), 99999999.0, -99999999.0, QString());
+    case DataFactory::_DOUBLE:
+      setDouble(tab, key, d->toDouble(), 99999999.0, -99999999.0, QString());
       _settings.insert(key, d);
       break;
-    case SettingFactory::_LIST:
-    case SettingFactory::_BAR_LENGTH:
-    case SettingFactory::_DATE_RANGE:
-    case SettingFactory::_MA:
-    case SettingFactory::_OP:
-      setList(tab, key, vset->toString(), vset->toList(), QString());
+    case DataFactory::_LIST:
+    case DataFactory::_BAR_LENGTH:
+    case DataFactory::_DATE_RANGE:
+    case DataFactory::_MA:
+    case DataFactory::_OP:
+      setList(tab, key, d->toString(), d->toList(), QString());
       _settings.insert(key, d);
       break;
-    case SettingFactory::_COLOR:
-      setColor(tab, key, vset->toColor(), QString());
+    case DataFactory::_COLOR:
+      setColor(tab, key, d->toColor(), QString());
       _settings.insert(key, d);
       break;
-    case SettingFactory::_DATETIME:
-      setDateTime(tab, key, vset->toDateTime(), QString());
+    case DataFactory::_DATETIME:
+      setDateTime(tab, key, d->toDateTime(), QString());
       _settings.insert(key, d);
       break;
-    case SettingFactory::_BOOL:
-      setBool(tab, key, vset->toBool(), QString());
+    case DataFactory::_BOOL:
+      setBool(tab, key, d->toBool(), QString());
       _settings.insert(key, d);
       break;
-    case SettingFactory::_FILE:
-      setFile(tab, key, vset->toList(), QString());
+    case DataFactory::_FILE:
+      setFile(tab, key, d->toList(), QString());
       _settings.insert(key, d);
       break;
-    case SettingFactory::_SYMBOL:
-      setSymbol(tab, key, vset->toList(), QString());
+    case DataFactory::_SYMBOL:
+      setSymbol(tab, key, d->toList(), QString());
       _settings.insert(key, d);
       break;
     default:
@@ -310,66 +297,65 @@ void DataDialog::done ()
   {
     it.next();
     Data *d = it.value();
-    Setting *set = d->get(DataSetting::_VALUE);
 
-    switch ((SettingFactory::Type) set->type())
+    switch ((DataFactory::Type) d->type())
     {
-      case SettingFactory::_STRING:
+      case DataFactory::_STRING:
       {
         LineEdit *w = (LineEdit *) _widgets.value(it.key());
-        set->set(w->text());
+        d->set(w->text());
         break;
       }
-      case SettingFactory::_COLOR:
+      case DataFactory::_COLOR:
       {
         ColorButton *w = (ColorButton *) _widgets.value(it.key());
-        set->set(w->color());
+        d->set(w->color());
         break;
       }
-      case SettingFactory::_INTEGER:
+      case DataFactory::_INTEGER:
       {
         QSpinBox *w = (QSpinBox *) _widgets.value(it.key());
-        set->set(w->value());
+        d->set(w->value());
         break;
       }
-      case SettingFactory::_DOUBLE:
+      case DataFactory::_DOUBLE:
       {
         QDoubleSpinBox *w = (QDoubleSpinBox *) _widgets.value(it.key());
-        set->set(w->value());
+        d->set(w->value());
         break;
       }
-      case SettingFactory::_BOOL:
+      case DataFactory::_BOOL:
       {
         QCheckBox *w = (QCheckBox *) _widgets.value(it.key());
-        set->set(w->isChecked());
+        d->set(w->isChecked());
         break;
       }
-      case SettingFactory::_DATETIME:
+      case DataFactory::_DATETIME:
       {
         QDateTimeEdit *w = (QDateTimeEdit *) _widgets.value(it.key());
-        set->set(w->dateTime());
+        d->set(w->dateTime());
         break;
       }
-      case SettingFactory::_LIST:
-      case SettingFactory::_BAR_LENGTH:
-      case SettingFactory::_DATE_RANGE:
-      case SettingFactory::_MA:
-      case SettingFactory::_OP:
+      case DataFactory::_LIST:
+      case DataFactory::_BAR_LENGTH:
+      case DataFactory::_DATE_RANGE:
+      case DataFactory::_MA:
+      case DataFactory::_OP:
       {
         QComboBox *w = (QComboBox *) _widgets.value(it.key());
-        set->set(w->currentText());
+        d->set(w->currentText());
         break;
       }
-      case SettingFactory::_FILE:
+      case DataFactory::_FILE:
       {
         FileButton *w = (FileButton *) _widgets.value(it.key());
-        set->set(w->files());
+        d->set(w->files());
         break;
       }
-      case SettingFactory::_SYMBOL:
+      case DataFactory::_SYMBOL:
       {
         SymbolButton *w = (SymbolButton *) _widgets.value(it.key());
-        set->set(w->symbols());
+        d->set(w->symbols());
         break;
       }
       default:

@@ -62,6 +62,13 @@ class ChartObjectData : public Data
     ChartObjectData ();
     void clear ();
     int highLow (double &, double &);
+    int set (int, Data *);
+    Data * toData (int);
+    QString toSaveString ();
+    int fromSaveString (QString);
+
+  private:
+    QHash<int, Data *> _data;
 };
 
 #endif

@@ -168,6 +168,13 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
+    <name>CommandText</name>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CommandYahooHistory</name>
     <message>
         <source>line</source>
@@ -813,6 +820,38 @@ App restart required to take effect</source>
         <source>Confirm chart object delete</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Test End</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Loss</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit Target</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trailing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -1246,6 +1285,205 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TestDialog</name>
+    <message>
+        <source>Tester</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Long Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Long Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Short Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Short Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Rules</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Long Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Short Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Equity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Commision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Commision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trade Delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Loss Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trailing Stop</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% Gain</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>% P Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Win Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loss Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Draw</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Avg P/L</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T Win Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T Loss Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Avg Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Min Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>T Comm.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trades</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exit Price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Profit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select rule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter new rule</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

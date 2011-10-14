@@ -23,13 +23,9 @@
 #include "QuoteDataBase.h"
 #include "Symbol.h"
 #include "CurveBar.h"
-#include "SettingString.h"
-#include "SettingFile.h"
-#include "SettingBool.h"
-#include "SettingDouble.h"
-#include "SettingDateTime.h"
+#include "DataDouble.h"
+#include "DataDateTime.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 #include <QFile>
@@ -46,43 +42,35 @@ CommandCSV::CommandCSV (QObject *p) : Command (p)
 
 int CommandCSV::runScript (Message *sg, Script *script)
 {
-  // CSV file
   VerifyDataInput vdi;
+
+  // CSV file
+  QStringList files;
   QString s = sg->value("CSV_FILE");
-  Setting *csv = vdi.setting(SettingFactory::_FILE, script, s);
-  if (! csv)
+  if (vdi.toFile(script, s, files))
   {
     qDebug() << "CommandCSV::runScript: invalid CSV_FILE " << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  QStringList files = csv->toList();
 
   // FORMAT
+  QString ts;
   s = sg->value("FORMAT");
-  Setting *formatSetting = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! formatSetting)
+  if (vdi.toString(script, s, ts))
   {
     qDebug() << "CommandCSV::runScript: invalid FORMAT " << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  QStringList format = formatSetting->toString().split(",");
+  QStringList format = ts.split(",");
 
   // DATE_FORMAT
+  QString dateFormat;
   s = sg->value("DATE_FORMAT");
-  Setting *dateFormatSetting = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! dateFormatSetting)
+  if (vdi.toString(script, s, dateFormat))
   {
     qDebug() << "CommandCSV::runScript: invalid DATE_FORMAT " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  QString dateFormat = dateFormatSetting->toString();
-  if (dateFormat.isEmpty())
-  {
-    qDebug() << "CommandCSV::runScript: invalid DATE_FORMAT " << dateFormat;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -90,15 +78,14 @@ int CommandCSV::runScript (Message *sg, Script *script)
   // DELIMITER
   QString delimiter;
   s = sg->value("DELIMITER");
-  Setting *delimiterSetting = vdi.setting(SettingFactory::_LIST, script, s);
-  if (! delimiterSetting)
+  if (vdi.toList(script, s, delimiter))
   {
     qDebug() << "CommandCSV::runScript: invalid DELIMITER " << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  switch ((DelimiterType) _delimiterType.indexOf(delimiterSetting->toString()))
+  switch ((DelimiterType) _delimiterType.indexOf(delimiter))
   {
     case _COMMA:
       delimiter = ",";
@@ -114,9 +101,9 @@ int CommandCSV::runScript (Message *sg, Script *script)
   }
 
   // TYPE
+  QString type;
   s = sg->value("TYPE");
-  Setting *typeSetting = vdi.setting(SettingFactory::_LIST, script, s);
-  if (! typeSetting)
+  if (vdi.toList(script, s, type))
   {
     qDebug() << "CommandCSV::runScript: invalid TYPE " << s;
     emit signalResume((void *) this);
@@ -124,9 +111,9 @@ int CommandCSV::runScript (Message *sg, Script *script)
   }
 
   // FILENAME AS SYMBOL
+  bool fileNameFlag = FALSE;
   s = sg->value("FILENAME_AS_SYMBOL");
-  Setting *fileNameFlag = vdi.setting(SettingFactory::_BOOL, script, s);
-  if (! fileNameFlag)
+  if (vdi.toBool(script, s, fileNameFlag))
   {
     qDebug() << "CommandCSV::runScript: FILENAME_AS_SYMBOL " << s;
     emit signalResume((void *) this);
@@ -136,9 +123,7 @@ int CommandCSV::runScript (Message *sg, Script *script)
   // EXCHANGE
   QString exchange;
   s = sg->value("EXCHANGE");
-  Setting *exchangeSetting = vdi.setting(SettingFactory::_STRING, script, s);
-  if (exchangeSetting)
-    exchange = exchangeSetting->toString();
+  vdi.toString(script, s, exchange);
 
   QHash<QString, Symbol *> symbols;
   int loop = 0;
@@ -153,7 +138,7 @@ int CommandCSV::runScript (Message *sg, Script *script)
     }
 
     QString fileNameSymbol;
-    if (fileNameFlag->toBool())
+    if (fileNameFlag)
     {
       QFileInfo fi(files.at(loop));
       fileNameSymbol = fi.baseName();
@@ -175,7 +160,7 @@ int CommandCSV::runScript (Message *sg, Script *script)
       }
 
       QString symbol, name;
-      if (fileNameFlag->toBool())
+      if (fileNameFlag)
       {
         symbol = fileNameSymbol;
         name = fileNameSymbol;
@@ -209,7 +194,7 @@ int CommandCSV::runScript (Message *sg, Script *script)
               flag++;
             }
             else
-              bar->set(CurveBar::_DATE, new SettingDateTime(dt));
+              bar->set(CurveBar::_DATE, new DataDateTime(dt));
             break;
           }
           case _OPEN:
@@ -232,22 +217,22 @@ int CommandCSV::runScript (Message *sg, Script *script)
             switch ((FormatType) _formatType.indexOf(format.at(loop2)))
             {
               case _OPEN:
-                bar->set(CurveBar::_OPEN, new SettingDouble(t));
+                bar->set(CurveBar::_OPEN, new DataDouble(t));
                 break;
               case _HIGH:
-                bar->set(CurveBar::_HIGH, new SettingDouble(t));
+                bar->set(CurveBar::_HIGH, new DataDouble(t));
                 break;
               case _LOW:
-                bar->set(CurveBar::_LOW, new SettingDouble(t));
+                bar->set(CurveBar::_LOW, new DataDouble(t));
                 break;
               case _CLOSE:
-                bar->set(CurveBar::_CLOSE, new SettingDouble(t));
+                bar->set(CurveBar::_CLOSE, new DataDouble(t));
                 break;
               case _VOLUME:
-                bar->set(CurveBar::_VOLUME, new SettingDouble(t));
+                bar->set(CurveBar::_VOLUME, new DataDouble(t));
                 break;
               case _OI:
-                bar->set(CurveBar::_OI, new SettingDouble(t));
+                bar->set(CurveBar::_OI, new DataDouble(t));
                 break;
               default:
                 break;
@@ -297,7 +282,7 @@ int CommandCSV::runScript (Message *sg, Script *script)
         bd = new Symbol;
         bd->setExchange(texchange);
         bd->setSymbol(symbol);
-        bd->setType(typeSetting->toString());
+        bd->setType(type);
         bd->setName(name);
 
         symbols.insert(key, bd);

@@ -20,12 +20,10 @@
  */
 
 #include "CommandChart.h"
-#include "SettingString.h"
-#include "SettingBool.h"
-#include "SettingInteger.h"
 #include "GlobalPlotGroup.h"
 #include "GlobalControlPanel.h"
 #include "GlobalInfoPanel.h"
+#include "VerifyDataInput.h"
 
 #include <QtDebug>
 
@@ -37,67 +35,55 @@ CommandChart::CommandChart (QObject *p) : Command (p)
 
 int CommandChart::runScript (Message *sg, Script *script)
 {
-  SettingString *name = new SettingString(QString("Chart"));
+  VerifyDataInput vdi;
+
+  // verify name
+  QString name;
   QString s = sg->value("NAME");
-  if (name->set(s, (void *) script))
+  if (vdi.toString(script, s, name))
   {
-    if (name->set(s))
-    {
-      qDebug() <<  "CommandChart::runScript: invalid NAME" << s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandChart::runScript: invalid NAME" << s;
+    emit signalResume((void *) this);
+    return _ERROR;
   }
 
-  SettingBool *date = new SettingBool(TRUE);
+  // verify DATE
+  bool date = TRUE;
   s = sg->value("DATE");
-  if (date->set(s, (void *) script))
+  if (vdi.toBool(script, s, date))
   {
-    if (date->set(s))
-    {
-      qDebug() << "CommandChart::runScript: invalid DATE" << s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandChart::runScript: invalid DATE, using default" << s;
+    date = TRUE;
   }
 
-  SettingBool *log = new SettingBool(FALSE);
+  // verify LOG
+  bool log = FALSE;
   s = sg->value("LOG");
-  if (log->set(s, (void *) script))
+  if (vdi.toBool(script, s, log))
   {
-    if (log->set(s))
-    {
-      qDebug() << "CommandChart::runScript: invalid LOG" << s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandChart::runScript: invalid LOG, using default" << s;
+    log = FALSE;
   }
 
-  SettingInteger *row = new SettingInteger(0);
+  // verify ROW
+  int row = 0;
   s = sg->value("ROW");
-  if (row->set(s, (void *) script))
+  if (vdi.toInteger(script, s, row))
   {
-    if (row->set(s))
-    {
-      qDebug() << "CommandChart::runScript: invalid ROW" << s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandChart::runScript: invalid ROW, using default" << s;
+    row = 0;
   }
 
-  SettingInteger *col = new SettingInteger(0);
+  // verift COL
+  int col = 99;
   s = sg->value("COL");
-  if (col->set(s, (void *) script))
+  if (vdi.toInteger(script, s, col))
   {
-    if (col->set(s))
-    {
-      qDebug() << "CommandChart::runScript: invalid COL" << s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandChart::runScript: invalid COL, using default" << s;
+    col = 99;
   }
 
-  chart(name->toString(), script->file(), row->toInteger(), col->toInteger(), date->toBool(), log->toBool());
+  chart(name, script->file(), row, col, date, log);
 
   _returnString = "OK";
 

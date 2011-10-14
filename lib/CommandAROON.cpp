@@ -26,7 +26,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -42,77 +41,70 @@ CommandAROON::CommandAROON (QObject *p) : Command (p)
 int CommandAROON::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT_UPPER
+  QString uname;
   QString s = sg->value("OUTPUT_UPPER");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, uname))
   {
-    _message << "invalid OUTPUT_UPPER";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *uname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! uname)
-  {
-    _message << "invalid OUTPUT_UPPER " + s;
+    qDebug() << "CommandAROON::runScript: invalid OUTPUT_UPPER" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // OUTPUT_LOWER
+  QString lname;
   s = sg->value("OUTPUT_LOWER");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, lname))
   {
-    _message << "invalid OUTPUT_LOWER";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *lname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! lname)
-  {
-    _message << "invalid OUTPUT_LOWER " + s;
+    qDebug() << "CommandAROON::runScript: invalid OUTPUT_LOWER" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // HIGH
   s = sg->value("HIGH");
-  Data *ihigh = vdi.curve(script, s);
+  Data *ihigh = vdi.toCurve(script, s);
   if (! ihigh)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandAROON::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // LOW
   s = sg->value("LOW");
-  Data *ilow = vdi.curve(script, s);
+  Data *ilow = vdi.toCurve(script, s);
   if (! ilow)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandAROON::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // PERIOD
+  int period = 10;
   s = sg->value("PERIOD");
-  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! period)
+  if (vdi.toInteger(script, s, period))
   {
-    _message << "invalid PERIOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandAROON::runScript: invalid PERIOD, using default" << s;
+    period = 10;
   }
 
   QList<Data *> list;
   list << ihigh << ilow;
 
-  QList<Data *> lines = getAROON(list, period->toInteger());
+  QList<Data *> lines = getAROON(list, period);
   if (! lines.count())
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(uname->toString(), lines.at(0));
+  script->setData(uname, lines.at(0));
 
   if (lines.count() == 2)
-    script->setData(lname->toString(), lines.at(1));
+    script->setData(lname, lines.at(1));
 
   _returnString = "OK";
 

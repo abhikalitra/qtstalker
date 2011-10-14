@@ -35,8 +35,10 @@ CommandBreakout::CommandBreakout (QObject *p) : Command (p)
 int CommandBreakout::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // INPUT_1
   QString s = sg->value("INPUT_1");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
     qDebug() << "CommandBreakout::runScript: INPUT_1 missing" << s;
@@ -44,8 +46,9 @@ int CommandBreakout::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
+  // INPUT_2
   s = sg->value("INPUT_2");
-  Data *in2 = vdi.curve(script, s);
+  Data *in2 = vdi.toCurve(script, s);
   if (! in2)
   {
     qDebug() << "CommandBreakout::runScript: INPUT_2 missing" << s;
@@ -53,6 +56,7 @@ int CommandBreakout::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
+  // METHOD
   s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
@@ -99,16 +103,16 @@ int CommandBreakout::breakout (Data *in, Data *in2, int method, int &flag)
   {
     for (; loop < end - 1; loop++)
     {
-      Data *bar = in->getData(keys.at(loop));
+      Data *bar = in->toData(keys.at(loop));
       if (! bar)
         continue;
 
-      Data *bar2 = in2->getData(keys.at(loop));
+      Data *bar2 = in2->toData(keys.at(loop));
       if (! bar2)
         continue;
 
-      double v = bar->get(CurveBar::_VALUE)->toDouble();
-      double v2 = bar2->get(CurveBar::_VALUE)->toDouble();
+      double v = bar->toData(CurveBar::_VALUE)->toDouble();
+      double v2 = bar2->toData(CurveBar::_VALUE)->toDouble();
       if (v > v2)
         return 0;
     }
@@ -117,32 +121,32 @@ int CommandBreakout::breakout (Data *in, Data *in2, int method, int &flag)
   {
     for (; loop < end - 1; loop++)
     {
-      Data *bar = in->getData(keys.at(loop));
+      Data *bar = in->toData(keys.at(loop));
       if (! bar)
         continue;
 
-      Data *bar2 = in2->getData(keys.at(loop));
+      Data *bar2 = in2->toData(keys.at(loop));
       if (! bar2)
         continue;
 
-      double v = bar->get(CurveBar::_VALUE)->toDouble();
-      double v2 = bar2->get(CurveBar::_VALUE)->toDouble();
+      double v = bar->toData(CurveBar::_VALUE)->toDouble();
+      double v2 = bar2->toData(CurveBar::_VALUE)->toDouble();
       if (v < v2)
         return 0;
     }
   }
 
   // compare last bar to confirm breakout
-  Data *bar = in->getData(keys.at(end));
+  Data *bar = in->toData(keys.at(end));
   if (! bar)
     return 0;
 
-  Data *bar2 = in2->getData(keys.at(end));
+  Data *bar2 = in2->toData(keys.at(end));
   if (! bar2)
     return 0;
 
-  double v = bar->get(CurveBar::_VALUE)->toDouble();
-  double v2 = bar2->get(CurveBar::_VALUE)->toDouble();
+  double v = bar->toData(CurveBar::_VALUE)->toDouble();
+  double v2 = bar2->toData(CurveBar::_VALUE)->toDouble();
 
   if (method == 0)
   {

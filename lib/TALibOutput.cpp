@@ -21,8 +21,7 @@
 
 #include "TALibOutput.h"
 #include "CurveBar.h"
-#include "SettingDouble.h"
-#include "DataFactory.h"
+#include "DataDouble.h"
 
 TALibOutput::TALibOutput ()
 {
@@ -39,7 +38,7 @@ int TALibOutput::fillDouble1 (QList<Data *> &list, QList<int> &keys, int outNb, 
   while (keyLoop > -1 && outLoop > -1)
   {
     CurveBar *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(out[outLoop]));
+    b->set(CurveBar::_VALUE, new DataDouble(out[outLoop]));
     c->set(keys.at(keyLoop), b);
 
     keyLoop--;
@@ -61,11 +60,11 @@ int TALibOutput::fillDouble2 (QList<Data *> &list, QList<int> &keys, int outNb, 
   while (keyLoop > -1 && outLoop > -1)
   {
     CurveBar *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(out[outLoop]));
+    b->set(CurveBar::_VALUE, new DataDouble(out[outLoop]));
     c->set(keys.at(keyLoop), b);
 
     b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(out2[outLoop]));
+    b->set(CurveBar::_VALUE, new DataDouble(out2[outLoop]));
     c2->set(keys.at(keyLoop), b);
 
     keyLoop--;
@@ -88,15 +87,15 @@ int TALibOutput::fillDouble3 (QList<Data *> &list, QList<int> &keys, int outNb, 
   while (keyLoop > -1 && outLoop > -1)
   {
     CurveBar *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(out[outLoop]));
+    b->set(CurveBar::_VALUE, new DataDouble(out[outLoop]));
     c->set(keys.at(keyLoop), b);
 
     b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(out2[outLoop]));
+    b->set(CurveBar::_VALUE, new DataDouble(out2[outLoop]));
     c2->set(keys.at(keyLoop), b);
 
     b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(out3[outLoop]));
+    b->set(CurveBar::_VALUE, new DataDouble(out3[outLoop]));
     c3->set(keys.at(keyLoop), b);
 
     keyLoop--;
@@ -117,7 +116,7 @@ int TALibOutput::fillInteger1 (QList<Data *> &list, QList<int> &keys, int outNb,
   while (keyLoop > -1 && outLoop > -1)
   {
     CurveBar *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(out[outLoop]));
+    b->set(CurveBar::_VALUE, new DataDouble(out[outLoop]));
     c->set(keys.at(keyLoop), b);
 
     keyLoop--;

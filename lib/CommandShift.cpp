@@ -23,7 +23,7 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
+#include "DataDouble.h"
 
 #include <QtDebug>
 
@@ -35,47 +35,44 @@ CommandShift::CommandShift (QObject *p) : Command (p)
 int CommandShift::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandShift::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandShift::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // PERIOD
+  int period = 10;
   s = sg->value("PERIOD");
-  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! period)
+  if (vdi.toInteger(script, s, period))
   {
-    _message << "invalid PERIOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandShift::runScript: invalid PERIOD, using default" << s;
+    period = 10;
   }
 
-  Data *line = getShift(in, period->toInteger());
+  Data *line = getShift(in, period);
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 
@@ -86,20 +83,20 @@ int CommandShift::runScript (Message *sg, Script *script)
 
 Data * CommandShift::getShift (Data *in, int period)
 {
-  QList<int> keys = in->barKeys();
+  QList<int> keys = in->keys();
 
   Data *line = new CurveData;
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    Data *bar = in->getData(keys.at(loop));
+    Data *bar = in->toData(keys.at(loop));
 
     int index = keys.at(loop) + period;
     if (index < 0)
       continue;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, bar->get(CurveBar::_VALUE));
+    b->set(CurveBar::_VALUE, new DataDouble(bar->toData(CurveBar::_VALUE)->toDouble()));
     line->set(keys.at(loop) + period, b);
   }
 

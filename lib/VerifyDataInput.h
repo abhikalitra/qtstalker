@@ -24,19 +24,32 @@
 
 #include "Script.h"
 #include "Data.h"
-#include "Setting.h"
 
-#include <QString>
+#include <QStringList>
+#include <QColor>
+#include <QDateTime>
+#include <QFont>
 #include <QList>
 
 class VerifyDataInput
 {
   public:
     VerifyDataInput ();
-    Data * curve (Script *, QString);
-    Data * curveAll (Script *, QString);
-    Setting * setting (int type, Script *script, QString key);
-    Setting * dataSetting (int type, Script *script, QString key);
+    int toString (Script *script, QString key, QString &data);
+    int toInteger (Script *script, QString key, int &data);
+    int toDouble (Script *script, QString key, double &data);
+    int toBool (Script *script, QString key, bool &data);
+    int toColor (Script *script, QString key, QColor &data);
+    int toBarLength (Script *script, QString key, int &data);
+    int toDateRange (Script *script, QString key, int &data);
+    int toDateTime (Script *script, QString key, QDateTime &data);
+    int toFile (Script *script, QString key, QStringList &data);
+    int toFont (Script *script, QString key, QFont &data);
+    int toMA (Script *script, QString key, int &data);
+    int toOp (Script *script, QString key, int &data);
+    int toSymbol (Script *script, QString key, QStringList &data);
+    int toList (Script *script, QString key, QString &data);
+    Data * toCurve (Script *script, QString key);
     int curveKeys (QList<Data *> &list, QList<int> &keys);
     int curveValue (Data *in, QList<int> &keys, int index, int offset, double &v);
 };

@@ -54,7 +54,7 @@ void TextDialog::createGUI ()
 
   // color
   QColor c(Qt::green);
-  Setting *set = _settings->get(ChartObjectData::_COLOR);
+  Data *set = _settings->toData(ChartObjectData::_COLOR);
   if (set)
     c = set->toColor();
 
@@ -64,7 +64,7 @@ void TextDialog::createGUI ()
 
   // font
   QFont f;
-  set = _settings->get(ChartObjectData::_FONT);
+  set = _settings->toData(ChartObjectData::_FONT);
   if (set)
     f = set->toFont();
 
@@ -74,7 +74,7 @@ void TextDialog::createGUI ()
 
   // date
   QDateTime dt = QDateTime::currentDateTime();
-  set = _settings->get(ChartObjectData::_DATE);
+  set = _settings->toData(ChartObjectData::_DATE);
   if (set)
     dt = set->toDateTime();
 
@@ -87,7 +87,7 @@ void TextDialog::createGUI ()
 
   // price
   double d = 0;
-  set = _settings->get(ChartObjectData::_PRICE);
+  set = _settings->toData(ChartObjectData::_PRICE);
   if (set)
     d = set->toDouble();
 
@@ -99,7 +99,7 @@ void TextDialog::createGUI ()
 
   // text
   QString s;
-  set = _settings->get(ChartObjectData::_TEXT);
+  set = _settings->toData(ChartObjectData::_TEXT);
   if (set)
     s = set->toString();
 
@@ -110,7 +110,7 @@ void TextDialog::createGUI ()
 
   // z
   int z = 1;
-  set = _settings->get(ChartObjectData::_Z);
+  set = _settings->toData(ChartObjectData::_Z);
   if (set)
     z = set->toInteger();
 
@@ -128,27 +128,27 @@ void TextDialog::createGUI ()
 
 void TextDialog::done ()
 {
-  Setting *set = _settings->get(ChartObjectData::_COLOR);
+  Data *set = _settings->toData(ChartObjectData::_COLOR);
   if (set)
     set->set(_color->color());
 
-  set = _settings->get(ChartObjectData::_FONT);
+  set = _settings->toData(ChartObjectData::_FONT);
   if (set)
     set->set(_font->font());
 
-  set = _settings->get(ChartObjectData::_DATE);
+  set = _settings->toData(ChartObjectData::_DATE);
   if (set)
     set->set(_date->dateTime());
 
-  set = _settings->get(ChartObjectData::_PRICE);
+  set = _settings->toData(ChartObjectData::_PRICE);
   if (set)
     set->set(_price->value());
 
-  set = _settings->get(ChartObjectData::_TEXT);
+  set = _settings->toData(ChartObjectData::_TEXT);
   if (set)
     set->set(_text->text());
 
-  set = _settings->get(ChartObjectData::_Z);
+  set = _settings->toData(ChartObjectData::_Z);
   if (set)
     set->set(_z->value());
 

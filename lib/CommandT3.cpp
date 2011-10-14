@@ -26,7 +26,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -42,59 +41,56 @@ CommandT3::CommandT3 (QObject *p) : Command (p)
 int CommandT3::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandT3::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandT3::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // PERIOD
+  int period = 14;
   s = sg->value("PERIOD");
-  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! period)
+  if (vdi.toInteger(script, s, period))
   {
-    _message << "invalid PERIOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandT3::runScript: invalid PERIOD, using default" << s;
+    period = 14;
   }
 
+  // VFACTOR
+  double vfactor = 0.7;
   s = sg->value("VFACTOR");
-  Setting *vfactor = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! vfactor)
+  if (vdi.toDouble(script, s, vfactor))
   {
-    _message << "invalid VFACTOR " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandT3::runScript: invalid VFACTOR, using default" << s;
+    vfactor = 0.7;
   }
 
   QList<Data *> list;
   list << in;
 
-  Data *line = getT3(list, period->toInteger(), vfactor->toDouble());
+  Data *line = getT3(list, period, vfactor);
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 

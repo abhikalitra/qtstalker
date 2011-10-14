@@ -20,29 +20,12 @@
  */
 
 #include "Data.h"
-#include "DataFactory.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
-#include <QStringList>
 
 Data::Data ()
 {
   clear();
-}
-
-Data::~Data ()
-{
-  clear();
-}
-
-void Data::clear ()
-{
-  _type = DataFactory::_DATA;
-  _delFlag = 1;
-
-  qDeleteAll(_data);
-  _data.clear();
 }
 
 int Data::type ()
@@ -50,29 +33,42 @@ int Data::type ()
   return _type;
 }
 
-int Data::dataKeyCount ()
+void Data::setDeleteFlag (int d)
 {
-  return _data.count();
+  _delFlag = d;
 }
 
-int Data::set (QString k, Setting *d)
+int Data::deleteFlag ()
 {
-  Setting *set = _data.value(k);
-  if (set)
-    delete set;
-
-  _data.insert(k, d);
-  return 0;
+  return _delFlag;
 }
 
-int Data::set (int k, Setting *d)
+void Data::setTab (int d)
 {
-  Setting *set = _data.value(QString::number(k));
-  if (set)
-    delete set;
+  _tab = d;
+}
 
-  _data.insert(QString::number(k), d);
-  return 0;
+int Data::tab ()
+{
+  return _tab;
+}
+
+void Data::setLabel (QString d)
+{
+  _label = d;
+}
+
+QString Data::label ()
+{
+  return _label;
+}
+
+// virtual functions
+
+void Data::clear ()
+{
+  _delFlag = 1;
+  _tab = 0;
 }
 
 int Data::set (int, Data *)
@@ -80,21 +76,125 @@ int Data::set (int, Data *)
   return 0;
 }
 
-Setting * Data::get (QString d)
-{
-  return _data.value(d);
-}
-
-Setting * Data::get (int d)
-{
-  return _data.value(QString::number(d));
-}
-
-Data * Data::getData (int)
+int Data::set (QString)
 {
   return 0;
 }
 
+int Data::set (QStringList)
+{
+  return 0;
+}
+
+int Data::set (int)
+{
+  return 0;
+}
+
+int Data::set (double)
+{
+  return 0;
+}
+
+int Data::set (bool)
+{
+  return 0;
+}
+
+int Data::set (QColor)
+{
+  return 0;
+}
+
+int Data::set (QFont)
+{
+  return 0;
+}
+
+int Data::set (QDateTime)
+{
+  return 0;
+}
+
+QString Data::toString ()
+{
+  return QString();
+}
+
+QStringList Data::toList ()
+{
+  return QStringList();
+}
+
+int Data::toInteger ()
+{
+  return 0;
+}
+
+double Data::toDouble ()
+{
+  return 0;
+}
+
+bool Data::toBool ()
+{
+  return FALSE;
+}
+
+QColor Data::toColor ()
+{
+  return QColor();
+}
+
+QFont Data::toFont ()
+{
+  return QFont();
+}
+
+QDateTime Data::toDateTime ()
+{
+  return QDateTime();
+}
+
+Data * Data::toData (int)
+{
+  return 0;
+}
+
+int Data::highLow (double &, double &)
+{
+  return 0;
+}
+
+QList<int> Data::keys ()
+{
+  return QList<int>();
+}
+
+int Data::keyCount ()
+{
+  return 0;
+}
+
+void Data::keyRange (int &, int &)
+{
+}
+
+void Data::append (Data *)
+{
+}
+
+QString Data::toSaveString ()
+{
+  return QString();
+}
+
+int Data::fromSaveString (QString)
+{
+  return 0;
+}
+
+/*
 QString Data::toString ()
 {
   QStringList l;
@@ -146,89 +246,4 @@ int Data::fromString (QString d)
 
   return 0;
 }
-
-int Data::highLow (double &, double &)
-{
-  return 0;
-}
-
-QList<int> Data::barKeys ()
-{
-  return QList<int>();
-}
-
-QList<QString> Data::dataKeys ()
-{
-  return _data.keys();
-}
-
-int Data::barKeyCount ()
-{
-  return 0;
-}
-
-bool Data::dataContains (QString d)
-{
-  return _data.contains(d);
-}
-
-void Data::barKeyRange (int &, int &)
-{
-}
-
-void Data::append (Data *)
-{
-}
-
-void Data::setOffset (int)
-{
-}
-
-int Data::offset ()
-{
-  return 0;
-}
-
-/*
-void Data::setCommand (QString d)
-{
-  _command = d;
-}
-
-QString Data::command ()
-{
-  return _command;
-}
 */
-/*
-void Data::setCommandType (QString d)
-{
-  _commandType = d;
-}
-
-QString Data::commandType ()
-{
-  return _commandType;
-}
-*/
-/*
-void Data::setScriptFile (QString d)
-{
-  _scriptFile = d;
-}
-
-QString Data::scriptFile ()
-{
-  return _scriptFile;
-}
-*/
-
-void Data::setDeleteFlag (int d)
-{
-  _delFlag = d;
-}
-
-int Data::deleteFlag ()
-{
-  return _delFlag;
-}

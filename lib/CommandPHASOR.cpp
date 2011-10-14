@@ -26,7 +26,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -42,41 +41,33 @@ CommandPHASOR::CommandPHASOR (QObject *p) : Command (p)
 int CommandPHASOR::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT_PHASE
+  QString pname;
   QString s = sg->value("OUTPUT_PHASE");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, pname))
   {
-    _message << "invalid OUTPUT_PHASE";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *pname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! pname)
-  {
-    _message << "invalid OUTPUT_PHASE " + s;
+    qDebug() << "CommandPHASOR::runScript: invalid OUTPUT_PHASE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // OUTPUT_QUAD
+  QString qname;
   s = sg->value("OUTPUT_QUAD");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, qname))
   {
-    _message << "invalid OUTPUT_QUAD";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *qname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! qname)
-  {
-    _message << "invalid OUTPUT_QUAD " + s;
+    qDebug() << "CommandPHASOR::runScript: invalid OUTPUT_QUAD" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandPHASOR::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -92,8 +83,8 @@ int CommandPHASOR::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(pname->toString(), lines.at(0));
-  script->setData(qname->toString(), lines.at(1));
+  script->setData(pname, lines.at(0));
+  script->setData(qname, lines.at(1));
 
   _returnString = "OK";
 

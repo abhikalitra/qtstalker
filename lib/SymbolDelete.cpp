@@ -23,7 +23,6 @@
 #include "QuoteDataBase.h"
 #include "Symbol.h"
 #include "ConfirmDialog.h"
-#include "SettingString.h"
 
 #include <QtDebug>
 #include <QTimer>

@@ -28,8 +28,7 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
+#include "DataDouble.h"
 
 #include <QtDebug>
 
@@ -45,60 +44,66 @@ CommandCORREL::CommandCORREL (QObject *p) : Command (p)
 int CommandCORREL::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandCORREL::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandCORREL::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INDEX
+  QString index;
   s = sg->value("INDEX");
-  Data *in2 = getIndex(s, script);
+  if (vdi.toString(script, s, index))
+  {
+    qDebug() << "CommandCORREL::runScript: invalid INDEX" << s;
+    emit signalResume((void *) this);
+    return _ERROR;
+  }
+
+  Data *in2 = getIndex(index, script);
   if (! in2)
   {
-    _message << "invalid INDEX " + s;
+    qDebug() << "CommandCORREL::runScript: invalid INDEX " << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
   script->setTData(in2);
 
+  // PERIOD
+  int period = 10;
   s = sg->value("PERIOD");
-  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! period)
+  if (vdi.toInteger(script, s, period))
   {
-    _message << "invalid PERIOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandCORREL::runScript: invalid PERIOD, using default" << s;
+    period = 10;
   }
 
   QList<Data *> list;
   list << in << in2;
 
-  Data *line = getCORREL(list, period->toInteger());
+  Data *line = getCORREL(list, period);
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 
@@ -200,7 +205,7 @@ Data * CommandCORREL::getIndex (QString d, Script *script)
     Data *b = bd->getData(barKeys.at(loop));
 
     CurveBar *cb = new CurveBar;
-    cb->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_CLOSE)->toDouble()));
+    cb->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_CLOSE)->toDouble()));
     line->set(loop, cb);
   }
 

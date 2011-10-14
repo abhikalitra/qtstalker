@@ -1,7 +1,7 @@
 # qtstalker OHLC + 3 MA indicator
 
 # general parms
-$chartName = 'OHLC';
+$chartName = 'OHLC_3MA';
 $dateName = 'date';
 $openName = 'open';
 $highName = 'high';
@@ -11,7 +11,8 @@ $volumeName = 'volume';
 $oiName = 'oi';
 
 # OHLC parms
-$ohlcName = 'OHLC';
+$ohlcName = 'ohlc';
+$ohlcLabel = 'OHLC';
 $ohlcColor = 'blue';
 $ohlcZ = '0';
 $ohlcUpColor = 'green';
@@ -19,7 +20,8 @@ $ohlcDownColor = 'red';
 
 # MA1 parms
 $ma1Data = 'ma1';
-$ma1Name = 'MA20';
+$ma1Label = 'MA20';
+$ma1Name = 'ma20';
 $ma1Color = 'yellow';
 $ma1Z = '1';
 $ma1Period = '20';
@@ -28,7 +30,8 @@ $ma1Style = 'Line';
 
 # MA2 parms
 $ma2Data = 'ma2';
-$ma2Name = 'MA50';
+$ma2Label = 'MA50';
+$ma2Name = 'ma50';
 $ma2Color = 'red';
 $ma2Z = '1';
 $ma2Period = '50';
@@ -37,7 +40,8 @@ $ma2Style = 'Line';
 
 # MA3 parms
 $ma3Data = 'ma3';
-$ma3Name = 'MA200';
+$ma3Label = 'MA200';
+$ma3Name = 'ma200';
 $ma3Color = 'blue';
 $ma3Z = '1';
 $ma3Period = '200';
@@ -74,6 +78,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 $command = "COMMAND=PLOT_OHLC;
             CHART=$chartName;
             OUTPUT=$ohlcName;
+            LABEL=$ohlcLabel;
             STYLE=OHLC;
             OPEN=$openName;
             HIGH=$highName;
@@ -136,6 +141,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
             OUTPUT=$ma1Name;
+            LABEL=$ma1Label;
             INPUT=$ma1Data;
             STYLE=$ma1Style;
             COLOR=$ma1Color;
@@ -148,6 +154,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
             OUTPUT=$ma2Name;
+            LABEL=$ma2Label;
             INPUT=$ma2Data;
             STYLE=$ma2Style;
             COLOR=$ma2Color;
@@ -160,6 +167,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
             OUTPUT=$ma3Name;
+            LABEL=$ma3Label;
             INPUT=$ma3Data;
             STYLE=$ma3Style;
             COLOR=$ma3Color;

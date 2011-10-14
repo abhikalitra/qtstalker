@@ -23,7 +23,6 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -36,22 +35,24 @@ CommandNewHighLow::CommandNewHighLow (QObject *p) : Command (p)
 int CommandNewHighLow::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // INPUT
   QString s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    qDebug() << "CommandNewHighLow::runScript: INPUT missing" << s;
+    qDebug() << "CommandNewHighLow::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // METHOD
   s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    qDebug() << "CommandNewHighLow::runScript: invalid METHOD" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandNewHighLow::runScript: invalid METHOD, using default" << s;
+    method = 0;
   }
 
   int flag = 0;
@@ -72,20 +73,20 @@ int CommandNewHighLow::runScript (Message *sg, Script *script)
 int CommandNewHighLow::getNewHighLow (Data *in, int method, int &flag)
 {
   flag = 0;
-  QList<int> keys = in->barKeys();
+  QList<int> keys = in->keys();
   if (! keys.count())
     return 1;
 
   int loop = 0;
-  Data *bar = in->getData(keys.at(loop++));
-  double v = bar->get(CurveBar::_VALUE)->toDouble();
+  Data *bar = in->toData(keys.at(loop++));
+  double v = bar->toData(CurveBar::_VALUE)->toDouble();
 
   if (method == 0) // highest
   {
     for (; loop < keys.count() - 2; loop++)
     {
-      bar = in->getData(keys.at(loop));
-      double tv = bar->get(CurveBar::_VALUE)->toDouble();
+      bar = in->toData(keys.at(loop));
+      double tv = bar->toData(CurveBar::_VALUE)->toDouble();
       if (tv > v)
         v = tv;
     }
@@ -94,22 +95,22 @@ int CommandNewHighLow::getNewHighLow (Data *in, int method, int &flag)
   {
     for (; loop < keys.count() - 2; loop++)
     {
-      bar = in->getData(keys.at(loop));
-      double tv = bar->get(CurveBar::_VALUE)->toDouble();
+      bar = in->toData(keys.at(loop));
+      double tv = bar->toData(CurveBar::_VALUE)->toDouble();
       if (tv < v)
         v = tv;
     }
   }
 
-  bar = in->getData(keys.at(keys.count() - 1));
+  bar = in->toData(keys.at(keys.count() - 1));
   if (method == 0)
   {
-    if (bar->get(CurveBar::_VALUE)->toDouble() > v)
+    if (bar->toData(CurveBar::_VALUE)->toDouble() > v)
       flag = 1;
   }
   else
   {
-    if (bar->get(CurveBar::_VALUE)->toDouble() < v)
+    if (bar->toData(CurveBar::_VALUE)->toDouble() < v)
       flag = 1;
   }
 

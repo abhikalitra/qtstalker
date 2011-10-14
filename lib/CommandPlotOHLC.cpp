@@ -22,12 +22,11 @@
 #include "CommandPlotOHLC.h"
 #include "VerifyDataInput.h"
 #include "OHLCStyle.h"
-#include "SettingFactory.h"
 #include "CurveData.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingDouble.h"
-#include "SettingColor.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataDouble.h"
+#include "DataColor.h"
 #include "CurveBar.h"
 
 #include <QtDebug>
@@ -39,67 +38,76 @@ CommandPlotOHLC::CommandPlotOHLC (QObject *p) : Command (p)
 
 int CommandPlotOHLC::runScript (Message *sg, Script *script)
 {
-  QString name = sg->value("OUTPUT");
-  if (name.isEmpty())
+  VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
+  QString s = sg->value("OUTPUT");
+  if (vdi.toString(script, s, name))
   {
-    qDebug() << "CommandPlotOHLC::runScript invalid OUTPUT";
+    qDebug() << "CommandPlotOHLC::runScript invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // CHART
-  QString chart = sg->value("CHART");
-  if (chart.isEmpty())
+  QString chart;
+  s = sg->value("CHART");
+  if (vdi.toString(script, s, chart))
   {
-    qDebug() << "CommandPlotOHLC::runScript invalid CHART";
+    qDebug() << "CommandPlotOHLC::runScript invalid CHART" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  // style
+  // LABEL
+  QString label;
+  s = sg->value("LABEL");
+  if (vdi.toString(script, s, label))
+  {
+    qDebug() << "CommandPlotOHLC::runScript invalid LABEL" << s;
+    emit signalResume((void *) this);
+    return _ERROR;
+  }
+
+  // STYLE
   OHLCStyle ls;
   QString style = sg->value("STYLE");
   if (ls.stringToStyle(style) == -1)
   {
-    qDebug() << "CommandPlotOHLC::runScript invalid STYLE" << style;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandPlotOHLC::runScript invalid STYLE, using default" << style;
+    style = "OHLC";
   }
 
-  VerifyDataInput vdi;
-
-  // color
-  QString s = sg->value("COLOR");
-  Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
-  if (! color)
+  // COLOR
+  QColor color;
+  s = sg->value("COLOR");
+  if (vdi.toColor(script, s, color))
   {
-    qDebug() << "CommandPlotOHLC::runScript invalid COLOR" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandPlotOHLC::runScript invalid COLOR, using default" << s;
+    color = QColor(Qt::red);
   }
 
   // Z
+  int z = 0;
   s = sg->value("Z");
-  Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! z)
+  if (vdi.toInteger(script, s, z))
   {
-    qDebug() << "CommandPlotOHLC::runScript invalid Z" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandPlotOHLC::runScript invalid Z, using default" << s;
+    z = 1;
   }
 
   // PEN
+  int pen = 1;
   s = sg->value("PEN");
-  Setting *pen = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! pen)
+  if (vdi.toInteger(script, s, pen))
   {
-    qDebug() << "CommandPlotOHLC::runScript invalid PEN" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandPlotOHLC::runScript invalid PEN, using default" << s;
+    pen = 1;
   }
 
   s = sg->value("OPEN");
-  Data *iopen = vdi.curve(script, s);
+  Data *iopen = vdi.toCurve(script, s);
   if (! iopen)
   {
     qDebug() << "CommandPlotOHLC::runScript invalid OPEN" << s;
@@ -108,7 +116,7 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   }
 
   s = sg->value("HIGH");
-  Data *ihigh = vdi.curve(script, s);
+  Data *ihigh = vdi.toCurve(script, s);
   if (! ihigh)
   {
     qDebug() << "CommandPlotOHLC::runScript invalid HIGH" << s;
@@ -117,7 +125,7 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   }
 
   s = sg->value("LOW");
-  Data *ilow = vdi.curve(script, s);
+  Data *ilow = vdi.toCurve(script, s);
   if (! ilow)
   {
     qDebug() << "CommandPlotOHLC::runScript invalid LOW" << s;
@@ -126,7 +134,7 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
   }
 
   s = sg->value("CLOSE");
-  Data *iclose = vdi.curve(script, s);
+  Data *iclose = vdi.toCurve(script, s);
   if (! iclose)
   {
     qDebug() << "CommandPlotOHLC::runScript invalid CLOSE" << s;
@@ -145,41 +153,39 @@ int CommandPlotOHLC::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-//qDebug() << "CommandPlotOHLC::runScript:" << keys.count();
-
   Data *line = new CurveData;
-  line->set(CurveData::_TYPE, new SettingString(QString("OHLC")));
-  line->set(CurveData::_Z, new SettingInteger(z->toInteger()));
-  line->set(CurveData::_PEN, new SettingInteger(pen->toInteger()));
-  line->set(CurveData::_LABEL, new SettingString(name));
-  line->set(CurveData::_CHART, new SettingString(chart));
-  line->set(CurveData::_STYLE, new SettingString(style));
+  line->set(CurveData::_TYPE, new DataString(QString("OHLC")));
+  line->set(CurveData::_Z, new DataInteger(z));
+  line->set(CurveData::_PEN, new DataInteger(pen));
+  line->set(CurveData::_LABEL, new DataString(label));
+  line->set(CurveData::_CHART, new DataString(chart));
+  line->set(CurveData::_STYLE, new DataString(style));
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    Data *obar = iopen->getData(keys.at(loop));
+    Data *obar = iopen->toData(keys.at(loop));
     if (! obar)
       continue;
 
-    Data *hbar = ihigh->getData(keys.at(loop));
+    Data *hbar = ihigh->toData(keys.at(loop));
     if (! hbar)
       continue;
 
-    Data *lbar = ilow->getData(keys.at(loop));
+    Data *lbar = ilow->toData(keys.at(loop));
     if (! lbar)
       continue;
 
-    Data *cbar = iclose->getData(keys.at(loop));
+    Data *cbar = iclose->toData(keys.at(loop));
     if (! cbar)
       continue;
 
     Data *bar = new CurveBar;
-    bar->set(CurveBar::_OPEN, new SettingDouble(obar->get(CurveBar::_VALUE)->toDouble()));
-    bar->set(CurveBar::_HIGH, new SettingDouble(hbar->get(CurveBar::_VALUE)->toDouble()));
-    bar->set(CurveBar::_LOW, new SettingDouble(lbar->get(CurveBar::_VALUE)->toDouble()));
-    bar->set(CurveBar::_CLOSE, new SettingDouble(cbar->get(CurveBar::_VALUE)->toDouble()));
-    bar->set(CurveBar::_COLOR, new SettingColor(color->toColor()));
+    bar->set(CurveBar::_OPEN, new DataDouble(obar->toData(CurveBar::_VALUE)->toDouble()));
+    bar->set(CurveBar::_HIGH, new DataDouble(hbar->toData(CurveBar::_VALUE)->toDouble()));
+    bar->set(CurveBar::_LOW, new DataDouble(lbar->toData(CurveBar::_VALUE)->toDouble()));
+    bar->set(CurveBar::_CLOSE, new DataDouble(cbar->toData(CurveBar::_VALUE)->toDouble()));
+    bar->set(CurveBar::_COLOR, new DataColor(color));
     line->set(keys.at(loop), bar);
   }
 

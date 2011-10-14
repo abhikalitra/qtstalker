@@ -26,7 +26,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -42,86 +41,85 @@ CommandULTOSC::CommandULTOSC (QObject *p) : Command (p)
 int CommandULTOSC::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandULTOSC::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // HIGH
   s = sg->value("HIGH");
-  Data *ihigh = vdi.curve(script, s);
+  Data *ihigh = vdi.toCurve(script, s);
   if (! ihigh)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandULTOSC::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // LOW
   s = sg->value("LOW");
-  Data *ilow = vdi.curve(script, s);
+  Data *ilow = vdi.toCurve(script, s);
   if (! ilow)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandULTOSC::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // CLOSE
   s = sg->value("CLOSE");
-  Data *iclose = vdi.curve(script, s);
+  Data *iclose = vdi.toCurve(script, s);
   if (! iclose)
   {
-    _message << "invalid CLOSE " + s;
+    qDebug() << "CommandULTOSC::runScript: invalid CLOSE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // PERIOD
+  int sp = 7;
   s = sg->value("PERIOD_SHORT");
-  Setting *sp = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! sp)
+  if (vdi.toInteger(script, s, sp))
   {
-    _message << "invalid PERIOD_SHORT " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandULTOSC::runScript: invalid PERIOD_SHORT, using default" << s;
+    sp = 7;
   }
 
+  // PERIOD_MED
+  int mp = 14;
   s = sg->value("PERIOD_MED");
-  Setting *mp = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! mp)
+  if (vdi.toInteger(script, s, mp))
   {
-    _message << "invalid PERIOD_MED " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandULTOSC::runScript: invalid PERIOD_MED, using default" << s;
+    mp = 14;
   }
 
+  // PERIOD_LONG
+  int lp = 28;
   s = sg->value("PERIOD_LONG");
-  Setting *lp = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! lp)
+  if (vdi.toInteger(script, s, lp))
   {
-    _message << "invalid PERIOD_LONG " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandULTOSC::runScript: invalid PERIOD_LONG, using default" << s;
+    lp = 28;
   }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose;
 
-  Data *line = getULTOSC(list, sp->toInteger(), mp->toInteger(), lp->toInteger());
+  Data *line = getULTOSC(list, sp, mp, lp);
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 

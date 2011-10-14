@@ -26,7 +26,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -42,68 +41,66 @@ CommandSAR::CommandSAR (QObject *p) : Command (p)
 int CommandSAR::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandSAR::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // HIGH
   s = sg->value("HIGH");
-  Data *ihigh = vdi.curve(script, s);
+  Data *ihigh = vdi.toCurve(script, s);
   if (! ihigh)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandSAR::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // LOW
   s = sg->value("LOW");
-  Data *ilow = vdi.curve(script, s);
+  Data *ilow = vdi.toCurve(script, s);
   if (! ilow)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandSAR::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // STEP_INITIAL
+  double init = 0.02;
   s = sg->value("STEP_INITIAL");
-  Setting *init = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! init)
+  if (vdi.toDouble(script, s, init))
   {
-    _message << "invalid STEP_INITIAL " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSAR::runScript: invalid STEP_INITIAL, using default" << s;
+    init = 0.02;
   }
 
+  // STEP_MAX
+  double max = 0.02;
   s = sg->value("STEP_MAX");
-  Setting *max = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! max)
+  if (vdi.toDouble(script, s, max))
   {
-    _message << "invalid STEP_MAX " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSAR::runScript: invalid STEP_INITIAL, using default" << s;
+    max = 0.2;
   }
 
   QList<Data *> list;
   list << ihigh << ilow;
 
-  Data *line = getSAR(list, init->toDouble(), max->toDouble());
+  Data *line = getSAR(list, init, max);
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 

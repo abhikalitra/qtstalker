@@ -54,7 +54,7 @@ void TLineDialog::createGUI ()
 
   // color
   QColor c(Qt::green);
-  Setting *set = _settings->get(ChartObjectData::_COLOR);
+  Data *set = _settings->toData(ChartObjectData::_COLOR);
   if (set)
     c = set->toColor();
 
@@ -64,7 +64,7 @@ void TLineDialog::createGUI ()
 
   // start date
   QDateTime dt = QDateTime::currentDateTime();
-  set = _settings->get(ChartObjectData::_DATE);
+  set = _settings->toData(ChartObjectData::_DATE);
   if (set)
     dt = set->toDateTime();
 
@@ -77,7 +77,7 @@ void TLineDialog::createGUI ()
 
   // end date
   dt = QDateTime::currentDateTime();
-  set = _settings->get(ChartObjectData::_DATE_2);
+  set = _settings->toData(ChartObjectData::_DATE_2);
   if (set)
     dt = set->toDateTime();
 
@@ -90,7 +90,7 @@ void TLineDialog::createGUI ()
 
   // price
   double d = 0;
-  set = _settings->get(ChartObjectData::_PRICE);
+  set = _settings->toData(ChartObjectData::_PRICE);
   if (set)
     d = set->toDouble();
 
@@ -102,7 +102,7 @@ void TLineDialog::createGUI ()
 
   // price 2
   d = 0;
-  set = _settings->get(ChartObjectData::_PRICE_2);
+  set = _settings->toData(ChartObjectData::_PRICE_2);
   if (set)
     d = set->toDouble();
 
@@ -114,7 +114,7 @@ void TLineDialog::createGUI ()
 
   // extend
   bool b = FALSE;
-  set = _settings->get(ChartObjectData::_EXTEND);
+  set = _settings->toData(ChartObjectData::_EXTEND);
   if (set)
     b = set->toBool();
 
@@ -125,7 +125,7 @@ void TLineDialog::createGUI ()
 
   // z
   int z = 1;
-  set = _settings->get(ChartObjectData::_Z);
+  set = _settings->toData(ChartObjectData::_Z);
   if (set)
     z = set->toInteger();
 
@@ -143,31 +143,31 @@ void TLineDialog::createGUI ()
 
 void TLineDialog::done ()
 {
-  Setting *set = _settings->get(ChartObjectData::_COLOR);
+  Data *set = _settings->toData(ChartObjectData::_COLOR);
   if (set)
     set->set(_color->color());
 
-  set = _settings->get(ChartObjectData::_DATE);
+  set = _settings->toData(ChartObjectData::_DATE);
   if (set)
     set->set(_date->dateTime());
 
-  set = _settings->get(ChartObjectData::_DATE_2);
+  set = _settings->toData(ChartObjectData::_DATE_2);
   if (set)
     set->set(_date2->dateTime());
 
-  set = _settings->get(ChartObjectData::_PRICE);
+  set = _settings->toData(ChartObjectData::_PRICE);
   if (set)
     set->set(_price->value());
 
-  set = _settings->get(ChartObjectData::_PRICE_2);
+  set = _settings->toData(ChartObjectData::_PRICE_2);
   if (set)
     set->set(_price2->value());
 
-  set = _settings->get(ChartObjectData::_EXTEND);
+  set = _settings->toData(ChartObjectData::_EXTEND);
   if (set)
     set->set(_extend->isChecked());
 
-  set = _settings->get(ChartObjectData::_Z);
+  set = _settings->toData(ChartObjectData::_Z);
   if (set)
     set->set(_z->value());
 

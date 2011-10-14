@@ -21,14 +21,13 @@
 
 #include "CommandTLine.h"
 #include "ChartObjectData.h"
-#include "SettingColor.h"
-#include "SettingDouble.h"
-#include "SettingString.h"
-#include "SettingBool.h"
-#include "SettingInteger.h"
+#include "DataColor.h"
+#include "DataDouble.h"
+#include "DataString.h"
+#include "DataBool.h"
+#include "DataInteger.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
-#include "SettingDateTime.h"
+#include "DataDateTime.h"
 
 #include <QtDebug>
 
@@ -39,90 +38,87 @@ CommandTLine::CommandTLine (QObject *p) : Command (p)
 
 int CommandTLine::runScript (Message *sg, Script *script)
 {
-  // color
   VerifyDataInput vdi;
+
+  // COLOR
+  QColor color;
   QString s = sg->value("COLOR");
-  Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
-  if (! color)
+  if (vdi.toColor(script, s, color))
   {
-    _message << "invalid COLOR " + s;
+    qDebug() << "CommandTLine::runScript: invalid COLOR, using default" << s;
+    color = QColor(Qt::red);
+  }
+
+  // DATE_START
+  QDateTime date;
+  s = sg->value("DATE_START");
+  if (vdi.toDateTime(script, s, date))
+  {
+    qDebug() << "CommandTLine::runScript: invalid DATE_START, using default" << s;
+    date = QDateTime::currentDateTime();
+  }
+
+  // DATE_END
+  QDateTime date2;
+  s = sg->value("DATE_END");
+  if (vdi.toDateTime(script, s, date2))
+  {
+    qDebug() << "CommandTLine::runScript: invalid DATE_END, using default" << s;
+    date2 = QDateTime::currentDateTime();
+  }
+
+  // PRICE_START
+  double price = 0;
+  s = sg->value("PRICE_START");
+  if (vdi.toDouble(script, s, price))
+  {
+    qDebug() << "CommandTLine::runScript: invalid PRICE_START" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  // START_DATE
-  s = sg->value("START_DATE");
-  Setting *date = vdi.setting(SettingFactory::_DATETIME, script, s);
-  if (! date)
+  // PRICE_END
+  double price2 = 0;
+  s = sg->value("PRICE_END");
+  if (vdi.toDouble(script, s, price2))
   {
-    _message << "invalid START_DATE " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // END_DATE
-  s = sg->value("END_DATE");
-  Setting *date2 = vdi.setting(SettingFactory::_DATETIME, script, s);
-  if (! date2)
-  {
-    _message << "invalid END_DATE " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // START_PRICE
-  s = sg->value("START_PRICE");
-  Setting *price = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! price)
-  {
-    _message << "invalid START_PRICE " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // END_PRICE
-  s = sg->value("END_PRICE");
-  Setting *price2 = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! price2)
-  {
-    _message << "invalid END_PRICE " + s;
+    qDebug() << "CommandTLine::runScript: invalid PRICE_END" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // CHART
+  QString chart;
   s = sg->value("CHART");
-  Setting *chart = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! chart)
+  if (vdi.toString(script, s, chart))
   {
-    _message << "invalid CHART " + s;
+    qDebug() << "CommandTLine::runScript: invalid CHART" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // Z
+  int z = 0;
   s = sg->value("Z");
-  Setting *z = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! z)
+  if (vdi.toInteger(script, s, z))
   {
-    _message << "invalid Z " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandTLine::runScript: invalid Z, using default" << s;
+    z = 0;
   }
 
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_COLOR, new SettingColor(color->toColor()));
-  co->set(ChartObjectData::_DATE, new SettingDateTime(date->toDateTime()));
-  co->set(ChartObjectData::_DATE_2, new SettingDateTime(date2->toDateTime()));
-  co->set(ChartObjectData::_PRICE, new SettingDouble(price->toDouble()));
-  co->set(ChartObjectData::_PRICE_2, new SettingDouble(price2->toDouble()));
-  co->set(ChartObjectData::_CHART, new SettingString(chart->toString()));
-  co->set(ChartObjectData::_Z, new SettingInteger(z->toInteger()));
-  co->set(ChartObjectData::_ID, new SettingInteger(id));
-  co->set(ChartObjectData::_RO, new SettingBool(TRUE));
-  co->set(ChartObjectData::_TYPE, new SettingString(QString("TLine")));
+  co->set(ChartObjectData::_COLOR, new DataColor(color));
+  co->set(ChartObjectData::_DATE, new DataDateTime(date));
+  co->set(ChartObjectData::_DATE_2, new DataDateTime(date2));
+  co->set(ChartObjectData::_PRICE, new DataDouble(price));
+  co->set(ChartObjectData::_PRICE_2, new DataDouble(price2));
+  co->set(ChartObjectData::_CHART, new DataString(chart));
+  co->set(ChartObjectData::_Z, new DataInteger(z));
+  co->set(ChartObjectData::_ID, new DataInteger(id));
+  co->set(ChartObjectData::_RO, new DataBool(TRUE));
+  co->set(ChartObjectData::_TYPE, new DataString(QString("TLine")));
 
   script->setData(QString::number(id), co);
 

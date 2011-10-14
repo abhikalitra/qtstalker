@@ -21,13 +21,11 @@
 
 #include "CommandMACD.h"
 #include "ta_libc.h"
-#include "MAType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -43,119 +41,105 @@ CommandMACD::CommandMACD (QObject *p) : Command (p)
 int CommandMACD::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT_MACD
+  QString mname;
   QString s = sg->value("OUTPUT_MACD");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, mname))
   {
-    _message << "invalid OUTPUT_MACD";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *mname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! mname)
-  {
-    _message << "invalid OUTPUT_MACD " + s;
+    qDebug() << "CommandMACD::runScript: invalid OUTPUT_UPPER" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // OUTPUT_SIGNAL
+  QString sname;
   s = sg->value("OUTPUT_SIGNAL");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, sname))
   {
-    _message << "invalid OUTPUT_SIGNAL";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *sname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! sname)
-  {
-    _message << "invalid OUTPUT_SIGNAL " + s;
+    qDebug() << "CommandMACD::runScript: invalid OUTPUT_MIDDLE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // OUTPUT_HIST
+  QString hname;
   s = sg->value("OUTPUT_HIST");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, hname))
   {
-    _message << "invalid OUTPUT_HIST";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *hname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! hname)
-  {
-    _message << "invalid OUTPUT_HIST " + s;
+    qDebug() << "CommandMACD::runScript: invalid OUTPUT_LOWER" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandMACD::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // PERIOD_FAST
+  int fperiod = 12;
   s = sg->value("PERIOD_FAST");
-  Setting *fperiod = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! fperiod)
+  if (vdi.toInteger(script, s, fperiod))
   {
-    _message << "invalid PERIOD_FAST " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMACD::runScript: invalid PERIOD_FAST, using default" << s;
+    fperiod = 12;
   }
 
-  MAType mat;
+  // MA_TYPE_FAST
+  int ftype = 0;
   s = sg->value("MA_TYPE_FAST");
-  int ftype = mat.fromString(s);
-  if (ftype == -1)
+  if (vdi.toMA(script, s, ftype))
   {
-    _message << "invalid MA_TYPE_FAST " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMACD::runScript: invalid MA_TYPE_FAST, using default" << s;
+    ftype = 0;
   }
 
+  // PERIOD_SLOW
+  int speriod = 24;
   s = sg->value("PERIOD_SLOW");
-  Setting *speriod = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! speriod)
+  if (vdi.toInteger(script, s, speriod))
   {
-    _message << "invalid PERIOD_SLOW " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMACD::runScript: invalid PERIOD_SLOW, using default" << s;
+    speriod = 24;
   }
 
+  // MA_TYPE_SLOW
+  int stype = 0;
   s = sg->value("MA_TYPE_SLOW");
-  int stype = mat.fromString(s);
-  if (stype == -1)
+  if (vdi.toMA(script, s, stype))
   {
-    _message << "invalid MA_TYPE_SLOW " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMACD::runScript: invalid MA_TYPE_SLOW, using default" << s;
+    stype = 0;
   }
 
+  // PERIOD_SIGNAL
+  int sigperiod = 9;
   s = sg->value("PERIOD_SIGNAL");
-  Setting *sigperiod = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! sigperiod)
+  if (vdi.toInteger(script, s, sigperiod))
   {
-    _message << "invalid PERIOD_SIGNAL " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMACD::runScript: invalid PERIOD_SIGNAL, using default" << s;
+    sigperiod = 9;
   }
 
+  // MA_TYPE_SIGNAL
+  int sigtype = 0;
   s = sg->value("MA_TYPE_SIGNAL");
-  int sigtype = mat.fromString(s);
-  if (sigtype == -1)
+  if (vdi.toMA(script, s, sigtype))
   {
-    _message << "invalid MA_TYPE_SIGNAL " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMACD::runScript: invalid MA_TYPE_SIGNAL, using default" << s;
+    sigtype = 0;
   }
 
   QList<Data *> list;
   list << in;
 
-  QList<Data *> lines = getMACD(list, fperiod->toInteger(), speriod->toInteger(), sigperiod->toInteger(), ftype, stype, sigtype);
+  QList<Data *> lines = getMACD(list, fperiod, speriod, sigperiod, ftype, stype, sigtype);
   if (lines.count() != 3)
   {
     qDeleteAll(lines);
@@ -163,9 +147,9 @@ int CommandMACD::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(mname->toString(), lines.at(0));
-  script->setData(sname->toString(), lines.at(1));
-  script->setData(hname->toString(), lines.at(2));
+  script->setData(mname, lines.at(0));
+  script->setData(sname, lines.at(1));
+  script->setData(hname, lines.at(2));
 
   _returnString = "OK";
 

@@ -23,15 +23,15 @@
 #include "Strip.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "SettingInteger.h"
-#include "SettingString.h"
-#include "SettingColor.h"
+#include "DataInteger.h"
+#include "DataString.h"
+#include "DataColor.h"
 
 #include <QDebug>
 
 Curve::Curve ()
 {
-  _settings = new Data;
+  _settings = new CurveData;
   init();
 }
 
@@ -47,11 +47,11 @@ void Curve::init ()
   setZ(-1);
 
   delete _settings;
-  _settings = new Data;
+  _settings = new CurveData;
 
-  _settings->set(CurveData::_PEN, new SettingInteger(1));
-  _settings->set(CurveData::_Z, new SettingInteger(-1));
-  _settings->set(CurveData::_LABEL, new SettingString(QString()));
+  _settings->set(CurveData::_PEN, new DataInteger(1));
+  _settings->set(CurveData::_Z, new DataInteger(-1));
+  _settings->set(CurveData::_LABEL, new DataString(QString()));
 
   setItemAttribute(QwtPlotItem::AutoScale, TRUE);
   setItemAttribute(QwtPlotItem::Legend, TRUE);
@@ -84,7 +84,7 @@ int Curve::highLowRange (int start, int end, double &h, double &l)
   int flag = 0;
   for (; loop < end; loop++)
   {
-    CurveBar *r = (CurveBar *) _settings->getData(loop);
+    CurveBar *r = (CurveBar *) _settings->toData(loop);
     if (! r)
       continue;
 
@@ -114,39 +114,39 @@ int Curve::highLowRange (int start, int end, double &h, double &l)
 
 int Curve::info (int index, Message *data)
 {
-  Data *b = _settings->getData(index);
+  Data *b = _settings->toData(index);
   if (! b)
     return 1;
 
   Strip strip;
   QString s;
-  strip.strip(b->get(CurveBar::_VALUE)->toDouble(), 4, s);
+  strip.strip(b->toData(CurveBar::_VALUE)->toDouble(), 4, s);
 
-  data->insert(_settings->get(CurveData::_LABEL)->toString(), s);
+  data->insert(_settings->toData(CurveData::_LABEL)->toString(), s);
 
   return 0;
 }
 
 QList<int> Curve::keys ()
 {
-  return _settings->barKeys();
+  return _settings->keys();
 }
 
 void Curve::keyRange (int &startIndex, int &endIndex)
 {
   startIndex = 0;
   endIndex = 0;
-  _settings->barKeyRange(startIndex, endIndex);
+  _settings->keyRange(startIndex, endIndex);
 }
 
 int Curve::setAllColor (QColor color)
 {
-  QList<int> keys = _settings->barKeys();
+  QList<int> keys = _settings->keys();
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    Data *set = _settings->getData(keys.at(loop));
-    set->set(CurveBar::_COLOR, new SettingColor(color));
+    Data *set = _settings->toData(keys.at(loop));
+    set->set(CurveBar::_COLOR, new DataColor(color));
   }
 
   return 0;
@@ -157,7 +157,7 @@ void Curve::setSettings (Data *d)
   delete _settings;
   _settings = d;
 
-  setZ(_settings->get(CurveData::_Z)->toInteger());
+  setZ(_settings->toData(CurveData::_Z)->toInteger());
 }
 
 Data * Curve::settings ()
@@ -167,12 +167,12 @@ Data * Curve::settings ()
 
 int Curve::scalePoint (int i, QColor &color, double &v)
 {
-  Data *bar = _settings->getData(i);
+  Data *bar = _settings->toData(i);
   if (! bar)
     return 1;
 
-  color = bar->get(CurveBar::_COLOR)->toColor();
-  v = bar->get(CurveBar::_VALUE)->toDouble();
+  color = bar->toData(CurveBar::_COLOR)->toColor();
+  v = bar->toData(CurveBar::_VALUE)->toDouble();
 
   return 0;
 }

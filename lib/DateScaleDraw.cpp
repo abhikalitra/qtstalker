@@ -42,16 +42,16 @@ void DateScaleDraw::clear ()
 
 void DateScaleDraw::setDates (Data *d)
 {
-  QList<int> keys = d->barKeys();
+  QList<int> keys = d->keys();
 
   DateRange dr;
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    Data *cb = d->getData(keys.at(loop));
+    Data *cb = d->toData(keys.at(loop));
 
     QDateTime tsd, ted;
-    dr.dateInterval(cb->get(CurveBar::_DATE)->toDateTime(),
+    dr.dateInterval(cb->toData(CurveBar::_DATE)->toDateTime(),
                     (BarLength::Length) g_currentSymbol->length(),
                     tsd,
                     ted);
@@ -59,7 +59,7 @@ void DateScaleDraw::setDates (Data *d)
 
     _data.insert(s, keys.at(loop));
 
-    _dates.insert(keys.at(loop), cb->get(CurveBar::_DATE)->toDateTime());
+    _dates.insert(keys.at(loop), cb->toData(CurveBar::_DATE)->toDateTime());
   }
 }
 

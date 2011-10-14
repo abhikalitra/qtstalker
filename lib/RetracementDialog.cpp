@@ -55,7 +55,7 @@ void RetracementDialog::createGUI ()
 
   // color
   QColor c(Qt::green);
-  Setting *set = _settings->get(ChartObjectData::_COLOR);
+  Data *set = _settings->toData(ChartObjectData::_COLOR);
   if (set)
     c = set->toColor();
 
@@ -65,7 +65,7 @@ void RetracementDialog::createGUI ()
 
   // start date
   QDateTime dt = QDateTime::currentDateTime();
-  set = _settings->get(ChartObjectData::_DATE);
+  set = _settings->toData(ChartObjectData::_DATE);
   if (set)
     dt = set->toDateTime();
 
@@ -78,7 +78,7 @@ void RetracementDialog::createGUI ()
 
   // end date
   dt = QDateTime::currentDateTime();
-  set = _settings->get(ChartObjectData::_DATE_2);
+  set = _settings->toData(ChartObjectData::_DATE_2);
   if (set)
     dt = set->toDateTime();
 
@@ -91,7 +91,7 @@ void RetracementDialog::createGUI ()
 
   // high
   double d = 0;
-  set = _settings->get(ChartObjectData::_HIGH);
+  set = _settings->toData(ChartObjectData::_HIGH);
   if (set)
     d = set->toDouble();
 
@@ -103,7 +103,7 @@ void RetracementDialog::createGUI ()
 
   // low
   d = 0;
-  set = _settings->get(ChartObjectData::_LOW);
+  set = _settings->toData(ChartObjectData::_LOW);
   if (set)
     d = set->toDouble();
 
@@ -115,7 +115,7 @@ void RetracementDialog::createGUI ()
 
   // extend
   bool b = FALSE;
-  set = _settings->get(ChartObjectData::_EXTEND);
+  set = _settings->toData(ChartObjectData::_EXTEND);
   if (set)
     b = set->toBool();
 
@@ -126,7 +126,7 @@ void RetracementDialog::createGUI ()
 
   // z
   int z = 1;
-  set = _settings->get(ChartObjectData::_Z);
+  set = _settings->toData(ChartObjectData::_Z);
   if (set)
     z = set->toInteger();
 
@@ -153,7 +153,7 @@ void RetracementDialog::createGUI2 ()
 
   // level 1
   double d = 0;
-  Setting *set = _settings->get(ChartObjectData::_LEVEL_1);
+  Data *set = _settings->toData(ChartObjectData::_LEVEL_1);
   if (set)
     d = set->toDouble();
 
@@ -165,7 +165,7 @@ void RetracementDialog::createGUI2 ()
 
   // level 2
   d = 0;
-  set = _settings->get(ChartObjectData::_LEVEL_2);
+  set = _settings->toData(ChartObjectData::_LEVEL_2);
   if (set)
     d = set->toDouble();
 
@@ -177,7 +177,7 @@ void RetracementDialog::createGUI2 ()
 
   // level 3
   d = 0;
-  set = _settings->get(ChartObjectData::_LEVEL_3);
+  set = _settings->toData(ChartObjectData::_LEVEL_3);
   if (set)
     d = set->toDouble();
 
@@ -189,7 +189,7 @@ void RetracementDialog::createGUI2 ()
 
   // level 4
   d = 0;
-  set = _settings->get(ChartObjectData::_LEVEL_4);
+  set = _settings->toData(ChartObjectData::_LEVEL_4);
   if (set)
     d = set->toDouble();
 
@@ -201,7 +201,7 @@ void RetracementDialog::createGUI2 ()
 
   // level 5
   d = 0;
-  set = _settings->get(ChartObjectData::_LEVEL_5);
+  set = _settings->toData(ChartObjectData::_LEVEL_5);
   if (set)
     d = set->toDouble();
 
@@ -213,7 +213,7 @@ void RetracementDialog::createGUI2 ()
 
   // level 6
   d = 0;
-  set = _settings->get(ChartObjectData::_LEVEL_6);
+  set = _settings->toData(ChartObjectData::_LEVEL_6);
   if (set)
     d = set->toDouble();
 
@@ -228,55 +228,55 @@ void RetracementDialog::createGUI2 ()
 
 void RetracementDialog::done ()
 {
-  Setting *set = _settings->get(ChartObjectData::_COLOR);
+  Data *set = _settings->toData(ChartObjectData::_COLOR);
   if (set)
     set->set(_color->color());
 
-  set = _settings->get(ChartObjectData::_DATE);
+  set = _settings->toData(ChartObjectData::_DATE);
   if (set)
     set->set(_date->dateTime());
 
-  set = _settings->get(ChartObjectData::_DATE_2);
+  set = _settings->toData(ChartObjectData::_DATE_2);
   if (set)
     set->set(_date2->dateTime());
 
-  set = _settings->get(ChartObjectData::_HIGH);
+  set = _settings->toData(ChartObjectData::_HIGH);
   if (set)
     set->set(_high->value());
 
-  set = _settings->get(ChartObjectData::_LOW);
+  set = _settings->toData(ChartObjectData::_LOW);
   if (set)
     set->set(_low->value());
 
-  set = _settings->get(ChartObjectData::_EXTEND);
+  set = _settings->toData(ChartObjectData::_EXTEND);
   if (set)
     set->set(_extend->isChecked());
 
-  set = _settings->get(ChartObjectData::_Z);
+  set = _settings->toData(ChartObjectData::_Z);
   if (set)
     set->set(_z->value());
 
-  set = _settings->get(ChartObjectData::_LEVEL_1);
+  set = _settings->toData(ChartObjectData::_LEVEL_1);
   if (set)
     set->set(_level1->value());
 
-  set = _settings->get(ChartObjectData::_LEVEL_2);
+  set = _settings->toData(ChartObjectData::_LEVEL_2);
   if (set)
     set->set(_level2->value());
 
-  set = _settings->get(ChartObjectData::_LEVEL_3);
+  set = _settings->toData(ChartObjectData::_LEVEL_3);
   if (set)
     set->set(_level3->value());
 
-  set = _settings->get(ChartObjectData::_LEVEL_4);
+  set = _settings->toData(ChartObjectData::_LEVEL_4);
   if (set)
     set->set(_level4->value());
 
-  set = _settings->get(ChartObjectData::_LEVEL_5);
+  set = _settings->toData(ChartObjectData::_LEVEL_5);
   if (set)
     set->set(_level5->value());
 
-  set = _settings->get(ChartObjectData::_LEVEL_6);
+  set = _settings->toData(ChartObjectData::_LEVEL_6);
   if (set)
     set->set(_level6->value());
 

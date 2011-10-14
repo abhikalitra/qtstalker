@@ -68,7 +68,7 @@ int ChartObjectDataBase::load (QString chart, QString symbol, QHash<QString, Dat
   while (q.next())
   {
     Data *co = new ChartObjectData;
-    if (co->fromString(q.value(1).toString()))
+    if (co->fromSaveString(q.value(1).toString()))
     {
       delete co;
       qDebug() << "ChartObjectDataBase::load: Data::fromString error";
@@ -83,7 +83,7 @@ int ChartObjectDataBase::load (QString chart, QString symbol, QHash<QString, Dat
 
 int ChartObjectDataBase::load (Data *co)
 {
-  QString id = co->get(ChartObjectData::_ID)->toString();
+  QString id = co->toData(ChartObjectData::_ID)->toString();
   if (id.isEmpty())
     return 1;
 
@@ -100,7 +100,7 @@ int ChartObjectDataBase::load (Data *co)
   while (q.next())
   {
     co->clear();
-    if (co->fromString(q.value(0).toString()))
+    if (co->fromSaveString(q.value(0).toString()))
     {
       qDebug() << "ChartObjectDataBase::load: Data::fromString error";
       return 1;
@@ -113,17 +113,17 @@ int ChartObjectDataBase::load (Data *co)
 int ChartObjectDataBase::save (Data *co)
 {
   QStringList l;
-  l << co->get(ChartObjectData::_ID)->toString();
+  l << co->toData(ChartObjectData::_ID)->toString();
   if (remove(l))
     return 1;
 
   QSqlQuery q(_db);
 
   QString s = "INSERT OR REPLACE INTO " + _table + " VALUES (";
-  s.append(co->get(ChartObjectData::_ID)->toString());
-  s.append(",'" + co->get(ChartObjectData::_SYMBOL)->toString() + "'");
-  s.append(",'" + co->get(ChartObjectData::_CHART)->toString() + "'");
-  s.append(",'" + co->toString() + "'");
+  s.append(co->toData(ChartObjectData::_ID)->toString());
+  s.append(",'" + co->toData(ChartObjectData::_SYMBOL)->toString() + "'");
+  s.append(",'" + co->toData(ChartObjectData::_CHART)->toString() + "'");
+  s.append(",'" + co->toSaveString() + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())

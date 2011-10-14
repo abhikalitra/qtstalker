@@ -23,8 +23,7 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
+#include "DataDouble.h"
 
 #include <QtDebug>
 
@@ -36,35 +35,33 @@ CommandFI::CommandFI (QObject *p) : Command (p)
 int CommandFI::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandFI::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // CLOSE
   s = sg->value("CLOSE");
-  Data *iclose = vdi.curve(script, s);
+  Data *iclose = vdi.toCurve(script, s);
   if (! iclose)
   {
-    _message << "invalid CLOSE " + s;
+    qDebug() << "CommandFI::runScript: invalid CLOSE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // VOLUME
   s = sg->value("VOLUME");
-  Data *ivol = vdi.curve(script, s);
+  Data *ivol = vdi.toCurve(script, s);
   if (! ivol)
   {
-    _message << "invalid VOLUME " + s;
+    qDebug() << "CommandFI::runScript: invalid VOLUME" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -79,7 +76,7 @@ int CommandFI::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 
@@ -105,23 +102,23 @@ Data * CommandFI::getFI (QList<Data *> &list)
   double force = 0;
   for (; loop < keys.count(); loop++)
   {
-    Data *cbar = close->getData(keys.at(loop));
+    Data *cbar = close->toData(keys.at(loop));
     if (! cbar)
       continue;
 
-    Data *ycbar = close->getData(keys.at(loop - 1));
+    Data *ycbar = close->toData(keys.at(loop - 1));
     if (! ycbar)
       continue;
 
-    Data *vbar = vol->getData(keys.at(loop));
+    Data *vbar = vol->toData(keys.at(loop));
     if (! vbar)
       continue;
 
-    double cdiff = cbar->get(CurveBar::_VALUE)->toDouble() - ycbar->get(CurveBar::_VALUE)->toDouble();
-    force = vbar->get(CurveBar::_VALUE)->toDouble() * cdiff;
+    double cdiff = cbar->toData(CurveBar::_VALUE)->toDouble() - ycbar->toData(CurveBar::_VALUE)->toDouble();
+    force = vbar->toData(CurveBar::_VALUE)->toDouble() * cdiff;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(force));
+    b->set(CurveBar::_VALUE, new DataDouble(force));
     line->set(keys.at(loop), b);
   }
 

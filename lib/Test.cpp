@@ -99,10 +99,10 @@ int Test::run ()
           break;
         }
 
-        Data *bar = _exitLong->getData(keys.at(pos));
+        Data *bar = _exitLong->toData(keys.at(pos));
         if (bar)
         {
-          double d = bar->get(CurveBar::_VALUE)->toDouble();
+          double d = bar->toData(CurveBar::_VALUE)->toDouble();
           if (d > 0)
           {
             status = _NONE;
@@ -121,10 +121,10 @@ int Test::run ()
           status = _NONE;
         }
 
-        Data *bar = _exitShort->getData(keys.at(pos));
+        Data *bar = _exitShort->toData(keys.at(pos));
         if (bar)
         {
-          double d = bar->get(CurveBar::_VALUE)->toDouble();
+          double d = bar->toData(CurveBar::_VALUE)->toDouble();
           if (d > 0)
           {
             status = _NONE;
@@ -143,10 +143,10 @@ int Test::run ()
         // check if we enter long trade
         if (_enterLong)
         {
-          Data *bar = _enterLong->getData(keys.at(pos));
+          Data *bar = _enterLong->toData(keys.at(pos));
           if (bar)
           {
-            double d = bar->get(CurveBar::_VALUE)->toDouble();
+            double d = bar->toData(CurveBar::_VALUE)->toDouble();
             if (d > 0)
             {
               if (enterTrade(1, keys.at(pos)))
@@ -161,10 +161,10 @@ int Test::run ()
         // check if we enter short trade
         if (_enterShort)
         {
-          Data *bar = _enterShort->getData(keys.at(pos));
+          Data *bar = _enterShort->toData(keys.at(pos));
           if (bar)
           {
-            double d = bar->get(CurveBar::_VALUE)->toDouble();
+            double d = bar->toData(CurveBar::_VALUE)->toDouble();
             if (d > 0)
             {
               if (enterTrade(-1, keys.at(pos)))
@@ -193,11 +193,11 @@ int Test::run ()
 
 int Test::enterTrade (int status, int pos)
 {
-  Data *bar = _open->getData(pos);
+  Data *bar = _open->toData(pos);
   if (! bar)
     return 1;
 
-  Data *date = _date->getData(pos);
+  Data *date = _date->toData(pos);
   if (! date)
     return 1;
 
@@ -216,8 +216,8 @@ int Test::enterTrade (int status, int pos)
   if (trade->enterTrade(type,
                         _volume,
                         _equity,
-                        bar->get(CurveBar::_VALUE)->toDouble(),
-                        date->get(CurveBar::_DATE)->toDateTime(),
+                        bar->toData(CurveBar::_VALUE)->toDouble(),
+                        date->toData(CurveBar::_DATE)->toDateTime(),
                         _enterComm))
     return 1;
 
@@ -231,7 +231,7 @@ int Test::enterTrade (int status, int pos)
 
 int Test::exitTrade (int pos, int signal)
 {
-  Data *bar = _close->getData(pos);
+  Data *bar = _close->toData(pos);
   if (! bar)
     return 1;
 
@@ -239,16 +239,16 @@ int Test::exitTrade (int pos, int signal)
   if (! trade)
     return 1;
 
-  Data *date = _date->getData(pos);
+  Data *date = _date->toData(pos);
   if (! date)
     return 1;
 
   trade->exitTrade(signal,
-                   bar->get(CurveBar::_VALUE)->toDouble(),
-                   date->get(CurveBar::_DATE)->toDateTime(),
+                   bar->toData(CurveBar::_VALUE)->toDouble(),
+                   date->toData(CurveBar::_DATE)->toDateTime(),
                    _exitComm);
 
-  double value = trade->volume() * bar->get(CurveBar::_VALUE)->toDouble();
+  double value = trade->volume() * bar->toData(CurveBar::_VALUE)->toDouble();
   _equity += value;
   _equity -= _exitComm;
 
@@ -257,11 +257,11 @@ int Test::exitTrade (int pos, int signal)
 
 int Test::updateTrade (int pos)
 {
-  Data *bar = _close->getData(pos);
+  Data *bar = _close->toData(pos);
   if (! bar)
     return 0;
 
-  Data *date = _date->getData(pos);
+  Data *date = _date->toData(pos);
   if (! date)
     return 0;
 
@@ -269,7 +269,7 @@ int Test::updateTrade (int pos)
   if (! trade)
     return 0;
 
-  return trade->updateTrade(bar->get(CurveBar::_VALUE)->toDouble(), date->get(CurveBar::_DATE)->toDateTime());
+  return trade->updateTrade(bar->toData(CurveBar::_VALUE)->toDouble(), date->toData(CurveBar::_DATE)->toDateTime());
 }
 
 int Test::saveSummary ()

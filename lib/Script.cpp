@@ -69,9 +69,6 @@ void Script::clear ()
 //  _file.clear();
   _command.clear();
 
-  qDeleteAll(_tsettings);
-  _tsettings.clear();
-
   qDeleteAll(_tdata);
   _tdata.clear();
 }
@@ -226,7 +223,7 @@ int Script::nextROID ()
     if (dg->type() != DataFactory::_CHART_OBJECT)
       continue;
 
-    int t = dg->get(ChartObjectData::_ID)->toInteger();
+    int t = dg->toData(ChartObjectData::_ID)->toInteger();
     if (t < low)
       low = t;
   }
@@ -244,11 +241,6 @@ void Script::setCommand (QString d)
 QString Script::command ()
 {
   return _command;
-}
-
-void Script::setTSetting (Setting *d)
-{
-  _tsettings << d;
 }
 
 void Script::setTData (Data *d)

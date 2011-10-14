@@ -21,18 +21,26 @@
 
 #include "ChartObjectData.h"
 #include "DataFactory.h"
+#include "DataBool.h"
+#include "DataInteger.h"
 
 #include <QtDebug>
 
 ChartObjectData::ChartObjectData ()
 {
   clear();
+
+  set(_RO, new DataBool(FALSE));
+  set(_Z, new DataInteger(1));
+  set(_PEN, new DataInteger(1));
 }
 
 void ChartObjectData::clear ()
 {
-  Data::clear();
   _type = DataFactory::_CHART_OBJECT;
+
+  qDeleteAll(_data);
+  _data.clear();
 }
 
 int ChartObjectData::highLow (double &h, double &l)
@@ -41,11 +49,11 @@ int ChartObjectData::highLow (double &h, double &l)
   h = -99999999;
   l = 99999999;
 
-  QHashIterator<QString, Setting *> it(_data);
+  QHashIterator<int, Data *> it(_data);
   while (it.hasNext())
   {
     it.next();
-    int k = it.key().toInt();
+    int k = it.key();
 
     switch ((Parm) k)
     {
@@ -82,4 +90,72 @@ int ChartObjectData::highLow (double &h, double &l)
   }
 
   return rc;
+}
+
+int ChartObjectData::set (int k, Data * d)
+{
+  Data *td = _data.value(k);
+  if (td)
+    delete td;
+
+  _data.insert(k, d);
+
+  return 0;
+}
+
+Data * ChartObjectData::toData (int k)
+{
+  return _data.value(k);
+}
+
+QString ChartObjectData::toSaveString ()
+{
+  QStringList l;
+
+  QHashIterator<int, Data *> it(_data);
+  while (it.hasNext())
+  {
+    it.next();
+    if (! it.value()->toString().isEmpty())
+      l << QString::number(it.key()) + ";" + QString::number(it.value()->type()) + ";" + it.value()->toString();
+  }
+
+  return l.join("\n");
+}
+
+int ChartObjectData::fromSaveString (QString d)
+{
+  clear();
+
+  QStringList l = d.split("\n");
+
+  DataFactory fac;
+  int loop = 0;
+  for (; loop < l.count(); loop++)
+  {
+    QStringList tl = l.at(loop).split(";");
+    if (tl.count() != 3)
+    {
+      qDebug() << "ChartObjectData::fromString: " << l.at(loop);
+      continue;
+    }
+
+    Data *setting = fac.data(tl.at(1));
+    if (! setting)
+    {
+      qDebug() << "ChartObjectData::fromString: invalid Setting::Type" << tl.at(1);
+      continue;
+    }
+
+    if (setting->set(tl.at(2)))
+    {
+      qDebug() << "ChartObjectData::fromString: Setting::fromString error" << tl.at(2);
+      delete setting;
+      continue;
+    }
+
+    set(tl.at(0).toInt(), setting);
+  }
+
+  return 0;
 }

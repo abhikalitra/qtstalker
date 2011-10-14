@@ -24,9 +24,8 @@
 #include "VerifyDataInput.h"
 #include "DataFactory.h"
 #include "CurveBar.h"
-#include "DataSetting.h"
-#include "SettingColor.h"
-#include "SettingFactory.h"
+#include "CurveData.h"
+#include "DataColor.h"
 
 #include <QtDebug>
 
@@ -39,59 +38,67 @@ int CommandColor::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
 
-  // color
+  // COLOR
+  QColor color;
   QString s = sg->value("COLOR");
-  Setting *color = vdi.setting(SettingFactory::_COLOR, script, s);
-  if (! color)
+  if (vdi.toColor(script, s, color))
   {
-    _message << "invalid COLOR " + s;
+    qDebug() << "CommandColor::runScript: invalid COLOR" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  // verify INPUT_1
+  // INPUT_1
   s = sg->value("INPUT_1");
-  Data *line = vdi.curveAll(script, s);
+  Data *line = vdi.toCurve(script, s);
   if (! line)
   {
-    _message << "INPUT_1 not found " + s;
+    qDebug() << "CommandColor::runScript: INPUT_1 not found" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  int offset = line->offset();
+  int offset = 0;
+  Data *set = line->toData(CurveData::_OFFSET);
+  if (set)
+    offset = set->toInteger();
 
-  // verify OP
-  Operator top;
+  // OP
+  int op;
   s = sg->value("OP");
-  Operator::Type op = top.stringToOperator(s);
-  if (op == -1)
+  if (vdi.toOp(script, s, op))
   {
-    _message << "invalid OP " + s;
+    qDebug() << "CommandColor::runScript: invalid OP" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  // verify INPUT_2
+  // INPUT_2
   s = sg->value("INPUT_2");
-  Data *line2 = vdi.curveAll(script, s);
+  Data *line2 = vdi.toCurve(script, s);
   if (! line2)
   {
-    _message << "invalid INPUT_2 " + s;
+    qDebug() << "CommandColor::runScript: invalid INPUT_2" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  int offset2 = line2->offset();
+  int offset2 = 0;
+  set = line2->toData(CurveData::_OFFSET);
+  if (set)
+    offset2 = set->toInteger();
 
-  // verify INPUT_3
+  // INPUT_3
   s = sg->value("INPUT_3");
-  Data *line3 = vdi.curve(script, s);
+  Data *line3 = vdi.toCurve(script, s);
   if (! line3)
   {
-    _message << "INPUT_3 not found " + s;
+    qDebug() << "CommandColor::runScript: invalid INPUT_3" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  int offset3 = line3->offset();
+  int offset3 = 0;
+  set = line3->toData(CurveData::_OFFSET);
+  if (set)
+    offset3 = set->toInteger();
 
   QList<Data *> list;
   list << line << line2 << line3;
@@ -99,11 +106,12 @@ int CommandColor::runScript (Message *sg, Script *script)
   QList<int> keys;
   if (vdi.curveKeys(list, keys))
   {
-    _message << "invalid keys";
+    qDebug() << "CommandColor::runScript: invalid keys";
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  Operator top;
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
@@ -115,16 +123,16 @@ int CommandColor::runScript (Message *sg, Script *script)
     if (vdi.curveValue(line2, keys, loop, offset2, v2))
       continue;
 
-    int tloop = loop - offset3;
+    int tloop = loop;
+    tloop -= offset3;
     if (tloop < 0)
       continue;
-
-    Data *bar3 = line3->getData(keys.at(tloop));
+    Data *bar3 = line3->toData(keys.at(tloop));
     if (! bar3)
       continue;
 
-    if (top.test(v, op, v2))
-      bar3->set(CurveBar::_COLOR, new SettingColor(color->toColor()));
+    if (top.test(v, (Operator::Type) op, v2))
+      bar3->set(CurveBar::_COLOR, new DataColor(color));
   }
 
   _returnString = "OK";

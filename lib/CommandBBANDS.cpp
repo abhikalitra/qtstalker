@@ -21,13 +21,11 @@
 
 #include "CommandBBANDS.h"
 #include "ta_libc.h"
-#include "MAType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -43,101 +41,87 @@ CommandBBANDS::CommandBBANDS (QObject *p) : Command (p)
 int CommandBBANDS::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT_UPPER
+  QString uname;
   QString s = sg->value("OUTPUT_UPPER");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, uname))
   {
-    _message << "invalid OUTPUT_UPPER";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *uname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! uname)
-  {
-    _message << "invalid OUTPUT_UPPER " + s;
+    qDebug() << "CommandBBANDS::runScript: invalid OUTPUT_UPPER" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // OUTPUT_MIDDLE
+  QString mname;
   s = sg->value("OUTPUT_MIDDLE");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, mname))
   {
-    _message << "invalid OUTPUT_MIDDLE";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *mname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! mname)
-  {
-    _message << "invalid OUTPUT_MIDDLE " + s;
+    qDebug() << "CommandBBANDS::runScript: invalid OUTPUT_MIDDLE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // OUTPUT_LOWER
+  QString lname;
   s = sg->value("OUTPUT_LOWER");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, lname))
   {
-    _message << "invalid OUTPUT_LOWER";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *lname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! lname)
-  {
-    _message << "invalid OUTPUT_LOWER " + s;
+    qDebug() << "CommandBBANDS::runScript: invalid OUTPUT_LOWER" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandBBANDS::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // PERIOD
+  int period = 20;
   s = sg->value("PERIOD");
-  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! period)
+  if (vdi.toInteger(script, s, period))
   {
-    _message << "invalid PERIOD " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandBBANDS::runScript: invalid PERIOD, using default" << s;
+    period = 20;
   }
 
-  MAType types;
+  // MA_TYPE
+  int type = 0;
   s = sg->value("MA_TYPE");
-  int type = types.fromString(s);
-  if (type == -1)
+  if (vdi.toMA(script, s, type))
   {
-    qDebug() << _type << "::runScript: invalid MA_TYPE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandBBANDS::runScript: invalid MA_TYPE, using default" << s;
+    type = 0;
   }
 
+  // DEV_UP
+  double udev = 2;
   s = sg->value("DEV_UP");
-  Setting *udev = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! udev)
+  if (vdi.toDouble(script, s, udev))
   {
-    _message << "invalid DEV_UP " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandBBANDS::runScript: invalid DEV_UP, using default" << s;
+    udev = 2;
   }
 
+  // DEV_DOWN
+  double ddev = 2;
   s = sg->value("DEV_DOWN");
-  Setting *ldev = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! ldev)
+  if (vdi.toDouble(script, s, ddev))
   {
-    _message << "invalid DEV_DOWN " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandBBANDS::runScript: invalid DEV_DOWN, using default" << s;
+    udev = 2;
   }
 
   QList<Data *> list;
   list << in;
 
-  QList<Data *> lines = getBBANDS(list, period->toInteger(), udev->toDouble(), ldev->toDouble(), type);
+  QList<Data *> lines = getBBANDS(list, period, udev, ddev, type);
   if (lines.count() != 3)
   {
     qDeleteAll(lines);
@@ -145,9 +129,9 @@ int CommandBBANDS::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(uname->toString(), lines.at(0));
-  script->setData(mname->toString(), lines.at(1));
-  script->setData(lname->toString(), lines.at(2));
+  script->setData(uname, lines.at(0));
+  script->setData(mname, lines.at(1));
+  script->setData(lname, lines.at(2));
 
   _returnString = "OK";
 

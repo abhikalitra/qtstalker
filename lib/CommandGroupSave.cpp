@@ -21,9 +21,7 @@
 
 #include "CommandGroupSave.h"
 #include "GroupDataBase.h"
-#include "SettingString.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -36,29 +34,29 @@ int CommandGroupSave::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
 
-  // NAME
+  // OUTPUT
+  QString name;
   QString s = sg->value("NAME");
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
+  if (vdi.toString(script, s, name))
   {
-    qDebug() << "CommandGroupSave::runScript: invalid NAME" << s;
+    qDebug() << "CommandGroupSave::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // SYMBOLS
+  QStringList symbols;
   s = sg->value("SYMBOLS");
-  Setting *symbols = vdi.setting(SettingFactory::_SYMBOL, script, s);
-  if (! symbols)
+  if (vdi.toSymbol(script, s, symbols))
   {
-    qDebug() << "CommandGroupSave::runScript: invalid SYMBOLS" << s;
+    qDebug() << "CommandGroupSave::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   GroupDataBase db;
   db.transaction();
-  if (db.save(name->toString(), symbols->toList()))
+  if (db.save(name, symbols))
   {
     emit signalResume((void *) this);
     return _ERROR;

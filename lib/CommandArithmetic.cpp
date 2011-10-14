@@ -23,7 +23,7 @@
 #include "VerifyDataInput.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "SettingDouble.h"
+#include "DataDouble.h"
 
 #include <QtDebug>
 
@@ -35,43 +35,51 @@ CommandArithmetic::CommandArithmetic (QObject *p) : Command (p)
 
 int CommandArithmetic::runScript (Message *sg, Script *script)
 {
+  VerifyDataInput vdi;
+
   // verify NAME
-  QString name = sg->value("OUTPUT");
-  if (name.isEmpty())
+  QString s = sg->value("OUTPUT");
+  QString name;
+  if (vdi.toString(script, s, name))
   {
-    qDebug() << "CommandArithmetic::runScript: invalid OUTPUT " << name;
+    qDebug() << "CommandArithmetic::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // verify INPUT_1
-  VerifyDataInput vdi;
-  QString s = sg->value("INPUT_1");
-  Data *in = vdi.curveAll(script, s);
+  s = sg->value("INPUT_1");
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    qDebug() << "CommandArithmetic::runScript: invalid INPUT_1 " << s;
+    qDebug() << "CommandArithmetic::runScript: invalid INPUT_1" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  int offset = in->offset();
+  int offset = 0;
+  Data *set = in->toData(CurveData::_OFFSET);
+  if (set)
+    offset = set->toInteger();
 
   // verify INPUT_2
   s = sg->value("INPUT_2");
-  Data *in2 = vdi.curveAll(script, s);
+  Data *in2 = vdi.toCurve(script, s);
   if (! in2)
   {
-    qDebug() << "CommandArithmetic::runScript: invalid INPUT_2 " << s;
+    qDebug() << "CommandArithmetic::runScript: invalid INPUT_2" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  int offset2 = in2->offset();
+  int offset2 = 0;
+  set = in2->toData(CurveData::_OFFSET);
+  if (set)
+    offset2 = set->toInteger();
 
   s = sg->value("METHOD");
   int method = _method.indexOf(s);
   if (method == -1)
   {
-    qDebug() << "CommandArithmetic::runScript: invalid METHOD " << s;
+    qDebug() << "CommandArithmetic::runScript: invalid METHOD" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -93,7 +101,7 @@ int CommandArithmetic::runScript (Message *sg, Script *script)
   return _OK;
 }
 
-Data * CommandArithmetic::getArithmetic (Data *in, int off, Data *in2, int off2, int method)
+Data * CommandArithmetic::getArithmetic (Data *in, int offset, Data *in2, int offset2, int method)
 {
   QList<Data *> list;
   list << in << in2;
@@ -111,11 +119,11 @@ Data * CommandArithmetic::getArithmetic (Data *in, int off, Data *in2, int off2,
   for (; loop < keys.count(); loop++)
   {
     double v = 0;
-    if (vdi.curveValue(in, keys, loop, off, v))
+    if (vdi.curveValue(in, keys, loop, offset, v))
       continue;
 
     double v2 = 0;
-    if (vdi.curveValue(in2, keys, loop, off2, v2))
+    if (vdi.curveValue(in2, keys, loop, offset2, v2))
       continue;
 
     switch (method)
@@ -123,28 +131,28 @@ Data * CommandArithmetic::getArithmetic (Data *in, int off, Data *in2, int off2,
       case 0: // add
       {
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, new SettingDouble(v + v2));
+        b->set(CurveBar::_VALUE, new DataDouble(v + v2));
         line->set(keys.at(loop), b);
 	break;
       }
       case 1: // div
       {
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, new SettingDouble(v / v2));
+        b->set(CurveBar::_VALUE, new DataDouble(v / v2));
         line->set(keys.at(loop), b);
 	break;
       }
       case 2: // mult
       {
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, new SettingDouble(v * v2));
+        b->set(CurveBar::_VALUE, new DataDouble(v * v2));
         line->set(keys.at(loop), b);
 	break;
       }
       case 3: // sub
       {
         Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, new SettingDouble(v - v2));
+        b->set(CurveBar::_VALUE, new DataDouble(v - v2));
         line->set(keys.at(loop), b);
 	break;
       }

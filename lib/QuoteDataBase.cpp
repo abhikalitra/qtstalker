@@ -23,8 +23,8 @@
 #include "QuoteDataBase.h"
 #include "CurveBar.h"
 #include "DateRange.h"
-#include "SettingDouble.h"
-#include "SettingDateTime.h"
+#include "DataDouble.h"
+#include "DataDateTime.h"
 
 #include <QDateTime>
 #include <QtDebug>
@@ -151,35 +151,35 @@ int QuoteDataBase::getBars (Symbol *bd)
     if (! bar)
     {
       bar = new CurveBar;
-      bar->set(CurveBar::_OPEN, new SettingDouble(q.value(1).toDouble()));
-      bar->set(CurveBar::_HIGH, new SettingDouble(q.value(2).toDouble()));
-      bar->set(CurveBar::_LOW, new SettingDouble(q.value(3).toDouble()));
-      bar->set(CurveBar::_CLOSE, new SettingDouble(q.value(4).toDouble()));
-      bar->set(CurveBar::_VOLUME, new SettingDouble(q.value(5).toDouble()));
-      bar->set(CurveBar::_OI, new SettingDouble(q.value(6).toDouble()));
-      bar->set(CurveBar::_DATE, new SettingDateTime(lastDate));
+      bar->set(CurveBar::_OPEN, new DataDouble(q.value(1).toDouble()));
+      bar->set(CurveBar::_HIGH, new DataDouble(q.value(2).toDouble()));
+      bar->set(CurveBar::_LOW, new DataDouble(q.value(3).toDouble()));
+      bar->set(CurveBar::_CLOSE, new DataDouble(q.value(4).toDouble()));
+      bar->set(CurveBar::_VOLUME, new DataDouble(q.value(5).toDouble()));
+      bar->set(CurveBar::_OI, new DataDouble(q.value(6).toDouble()));
+      bar->set(CurveBar::_DATE, new DataDateTime(lastDate));
       bars.insert(s, bar);
       order.prepend(bar);
     }
     else
     {
-      bar->set(CurveBar::_OPEN, new SettingDouble(q.value(1).toDouble()));
+      bar->set(CurveBar::_OPEN, new DataDouble(q.value(1).toDouble()));
 
       double v = q.value(2).toDouble();
-      double t = bar->get(CurveBar::_HIGH)->toDouble();
+      double t = bar->toData(CurveBar::_HIGH)->toDouble();
       if (v > t)
-        bar->set(CurveBar::_HIGH, new SettingDouble(q.value(2).toDouble()));
+        bar->set(CurveBar::_HIGH, new DataDouble(q.value(2).toDouble()));
 
       v = q.value(3).toDouble();
-      t = bar->get(CurveBar::_LOW)->toDouble();
+      t = bar->toData(CurveBar::_LOW)->toDouble();
       if (v < t)
-        bar->set(CurveBar::_LOW, new SettingDouble(q.value(3).toDouble()));
+        bar->set(CurveBar::_LOW, new DataDouble(q.value(3).toDouble()));
 
       v = q.value(5).toDouble();
-      v += bar->get(CurveBar::_VOLUME)->toDouble();
-      bar->set(CurveBar::_VOLUME, new SettingDouble(v));
+      v += bar->toData(CurveBar::_VOLUME)->toDouble();
+      bar->set(CurveBar::_VOLUME, new DataDouble(v));
 
-      bar->set(CurveBar::_OI, new SettingDouble(q.value(6).toDouble()));
+      bar->set(CurveBar::_OI, new DataDouble(q.value(6).toDouble()));
     }
   }
 
@@ -217,7 +217,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
     if (! bar)
       continue;
 
-    QDateTime dt = bar->get(CurveBar::_DATE)->toDateTime();
+    QDateTime dt = bar->toData(CurveBar::_DATE)->toDateTime();
     QString date = dt.toString("yyyyMMddHHmmss");
 
     // first check if record exists so we know to do an update or insert
@@ -236,7 +236,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
 
       QStringList tl;
 
-      Setting *set = bar->get(CurveBar::_OPEN);
+      Data *set = bar->toData(CurveBar::_OPEN);
       if (set)
       {
         QString ts = set->toString();
@@ -244,7 +244,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
           tl << "open=" + ts;
       }
 
-      set = bar->get(CurveBar::_HIGH);
+      set = bar->toData(CurveBar::_HIGH);
       if (set)
       {
         QString ts = set->toString();
@@ -252,7 +252,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
           tl << "high=" + ts;
       }
 
-      set = bar->get(CurveBar::_LOW);
+      set = bar->toData(CurveBar::_LOW);
       if (set)
       {
         QString ts = set->toString();
@@ -260,7 +260,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
           tl << "low=" + ts;
       }
 
-      set = bar->get(CurveBar::_CLOSE);
+      set = bar->toData(CurveBar::_CLOSE);
       if (set)
       {
         QString ts = set->toString();
@@ -268,7 +268,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
           tl << "close=" + ts;
       }
 
-      set = bar->get(CurveBar::_VOLUME);
+      set = bar->toData(CurveBar::_VOLUME);
       if (set)
       {
         QString ts = set->toString();
@@ -276,7 +276,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
           tl << "volume=" + ts;
       }
 
-      set = bar->get(CurveBar::_OI);
+      set = bar->toData(CurveBar::_OI);
       if (set)
       {
         QString ts = set->toString();
@@ -296,7 +296,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
       tl << date;
 
       QString ts;
-      Setting *set = bar->get(CurveBar::_OPEN);
+      Data *set = bar->toData(CurveBar::_OPEN);
       if (set)
         ts = set->toString();
       if (ts.isEmpty())
@@ -304,7 +304,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
       tl << ts;
 
       ts.clear();
-      set = bar->get(CurveBar::_HIGH);
+      set = bar->toData(CurveBar::_HIGH);
       if (set)
         ts = set->toString();
       if (ts.isEmpty())
@@ -312,7 +312,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
       tl << ts;
 
       ts.clear();
-      set = bar->get(CurveBar::_LOW);
+      set = bar->toData(CurveBar::_LOW);
       if (set)
         ts = set->toString();
       if (ts.isEmpty())
@@ -320,7 +320,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
       tl << ts;
 
       ts.clear();
-      set = bar->get(CurveBar::_CLOSE);
+      set = bar->toData(CurveBar::_CLOSE);
       if (set)
         ts = set->toString();
       if (ts.isEmpty())
@@ -328,7 +328,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
       tl << ts;
 
       ts.clear();
-      set = bar->get(CurveBar::_VOLUME);
+      set = bar->toData(CurveBar::_VOLUME);
       if (set)
         ts = set->toString();
       if (ts.isEmpty())
@@ -336,7 +336,7 @@ int QuoteDataBase::setBars (Symbol *symbol)
       tl << ts;
 
       ts.clear();
-      set = bar->get(CurveBar::_OI);
+      set = bar->toData(CurveBar::_OI);
       if (set)
         ts = set->toString();
       if (ts.isEmpty())

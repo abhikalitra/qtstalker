@@ -22,10 +22,7 @@
 #include "CommandMA.h"
 #include "MAType.h"
 #include "CurveData.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -39,26 +36,28 @@ int CommandMA::runScript (Message *sg, Script *script)
   VerifyDataInput vdi;
   MAType mat;
 
+  // METHOD
+  int method;
   QString s = sg->value("METHOD");
-  Setting *method = vdi.setting(SettingFactory::_MA, script, s);
-  if (! method)
+  if (vdi.toMA(script, s, method))
   {
-    qDebug() << "CommandMA::runScript: invalid METHOD" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMA::runScript: invalid METHOD, using default" << s;
+    method = MAType::_EMA;
   }
 
+  // OUTPUT
+  QString output;
   s = sg->value("OUTPUT");
-  Setting *output = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! output)
+  if (vdi.toString(script, s, output))
   {
     qDebug() << "CommandMA::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
     qDebug() << "CommandMA::runScript: INPUT missing " << s;
@@ -67,23 +66,22 @@ int CommandMA::runScript (Message *sg, Script *script)
   }
 
   // PERIOD
+  int period = 10;
   s = sg->value("PERIOD");
-  Setting *period = vdi.setting(SettingFactory::_INTEGER, script, s);
-  if (! period)
+  if (vdi.toInteger(script, s, period))
   {
-    qDebug() << "CommandMA::runScript: invalid PERIOD " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMA::runScript: invalid PERIOD, using default " << s;
+    period = 10;
   }
 
-  Data *line = mat.getMA(in, period->toInteger(), method->toInteger());
+  Data *line = mat.getMA(in, period, method);
   if (! line)
   {
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  script->setData(output->toString(), line);
+  script->setData(output, line);
 
   _returnString = "OK";
 

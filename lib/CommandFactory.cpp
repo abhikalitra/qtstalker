@@ -41,6 +41,8 @@
 #include "CommandCompare.h"
 #include "CommandCORREL.h"
 #include "CommandCSV.h"
+#include "CommandDataGet.h"
+#include "CommandDataSet.h"
 #include "CommandDialog.h"
 #include "CommandFI.h"
 #include "CommandGroupPanelRefresh.h"
@@ -67,8 +69,6 @@
 #include "CommandRSI.h"
 #include "CommandSAR.h"
 #include "CommandSell.h"
-#include "CommandSetting.h"
-#include "CommandSettingGet.h"
 #include "CommandShift.h"
 #include "CommandSINE.h"
 #include "CommandSTDDEV.h"
@@ -106,7 +106,7 @@ CommandFactory::CommandFactory ()
   _types << "CHART_OBJECT_TEXT" << "CHART_OBJECT_TLINE" << "CHART_OBJECT_VLINE";
   _types << "CHART_PANEL_REFRESH" << "CHART_UPDATE";
   _types << "CMO" << "COLOR" << "COMPARE" << "CORREL" << "CSV";
-  _types << "DIALOG";
+  _types << "DATA_GET" << "DATA_SET" << "DIALOG";
   _types << "FI";
   _types << "GROUP_PANEL_REFRESH" << "GROUP_SAVE";
   _types << "HT" << "HT_PHASOR" << "HT_SINE";
@@ -115,7 +115,7 @@ CommandFactory::CommandFactory ()
   _types << "NEW_HIGH_LOW" << "NORMALIZE";
   _types << "PO" << "PLOT_LINE" << "PLOT_HISTOGRAM" << "PLOT_OHLC";
   _types << "ROC" << "RSI";
-  _types << "SAR" << "SETTING" << "SETTING_GET";
+  _types << "SAR";
   _types << "SHIFT" << "STDDEV";
   _types << "STOCH_FAST" << "STOCH_RSI" << "STOCH_SLOW" << "SZ";
   _types << "SYMBOL" << "SYMBOL_CURRENT";
@@ -213,6 +213,12 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _CSV:
       c = new CommandCSV(p);
       break;
+    case _DATA_GET:
+      c = new CommandDataGet(p);
+      break;
+    case _DATA_SET:
+      c = new CommandDataSet(p);
+      break;
     case _DIALOG:
       c = new CommandDialog(p);
       break;
@@ -284,12 +290,6 @@ Command * CommandFactory::command (QObject *p, QString type)
       break;
     case _SAR:
       c = new CommandSAR(p);
-      break;
-    case _SETTING:
-      c = new CommandSetting(p);
-      break;
-    case _SETTING_GET:
-      c = new CommandSettingGet(p);
       break;
     case _SHIFT:
       c = new CommandShift(p);

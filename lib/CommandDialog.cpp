@@ -21,8 +21,6 @@
 
 #include "CommandDialog.h"
 #include "DataDialog.h"
-#include "SettingString.h"
-#include "DataFactory.h"
 #include "GlobalParent.h"
 
 #include <QtDebug>
@@ -54,12 +52,6 @@ int CommandDialog::runScript (Message *sg, Script *script)
     Data *d = script->data(s2);
     if (! d)
       continue;
-
-    if (d->type() != DataFactory::_DATA_SETTING)
-    {
-      qDebug() << "CommandDialog::runScript: invalid" << s;
-      continue;
-    }
 
     dialog->set(d);
   }

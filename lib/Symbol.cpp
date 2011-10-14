@@ -199,7 +199,7 @@ void Symbol::copy (Symbol *d)
   {
      Data *obar = getData(keys.at(loop));
      Data *nbar = new CurveBar;
-     nbar->fromString(obar->toString());
+     nbar->fromSaveString(obar->toString());
      d->set(keys.at(loop), nbar);
   }
 }

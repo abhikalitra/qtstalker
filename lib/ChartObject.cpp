@@ -23,7 +23,6 @@
 #include "ChartObjectDataBase.h"
 #include "Plot.h"
 #include "ChartObjectData.h"
-#include "SettingBool.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -36,8 +35,7 @@ ChartObject::ChartObject ()
   setYAxis(QwtPlot::yRight);
   _modified = 0;
 
-  _settings = new Data;
-  _settings->set(ChartObjectData::_RO, new SettingBool(FALSE));
+  _settings = new ChartObjectData;
 }
 
 ChartObject::~ChartObject ()
@@ -111,12 +109,12 @@ int ChartObject::highLow (int start, int end, double &high, double &low)
   if (! dsd)
     return 1;
 
-  int x = dsd->x(_settings->get(ChartObjectData::_DATE)->toDateTime());
+  int x = dsd->x(_settings->toData(ChartObjectData::_DATE)->toDateTime());
 
   if (x < start || x > end)
     return 1;
 
-  double d = _settings->get(ChartObjectData::_PRICE)->toDouble();
+  double d = _settings->toData(ChartObjectData::_PRICE)->toDouble();
   if (! flag)
   {
     h = d;
@@ -210,7 +208,7 @@ void ChartObject::click (int button, QPoint p)
             _selected = 1;
 
 	    Plot *tplot = (Plot *) plot();
-	    tplot->select(_settings->get(ChartObjectData::_ID)->toString());
+	    tplot->select(_settings->toData(ChartObjectData::_ID)->toString());
 
             plot()->replot();
             return;
@@ -234,7 +232,7 @@ int ChartObject::create ()
 
 int ChartObject::save ()
 {
-  if (_settings->get(ChartObjectData::_RO)->toBool())
+  if (_settings->toData(ChartObjectData::_RO)->toBool())
     return 1;
 
   if (! _modified)

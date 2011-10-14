@@ -22,14 +22,13 @@
 #include "CommandChartUpdate.h"
 #include "CurveData.h"
 #include "ChartObjectData.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
 #include "DataFactory.h"
 #include "CurveFactory.h"
 #include "ChartObjectFactory.h"
 #include "ChartObjectDataBase.h"
 #include "GlobalPlotGroup.h"
 #include "GlobalSymbol.h"
+#include "VerifyDataInput.h"
 
 #include <QtDebug>
 #include <QTime>
@@ -43,39 +42,37 @@ CommandChartUpdate::CommandChartUpdate (QObject *p) : Command (p)
 
 int CommandChartUpdate::runScript (Message *sg, Script *script)
 {
-  SettingString *name = new SettingString(QString("Chart"));
+  VerifyDataInput vdi;
+
+  QString name;
   QString s = sg->value("CHART");
-  if (name->set(s, (void *) script))
+  if (vdi.toString(script, s, name))
   {
-    if (name->set(s))
-    {
-      qDebug() << "CommandChartUpdate::runScript: invalid CHART" << s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandChartUpdate::runScript: invalid CHART" << s;
+    emit signalResume((void *) this);
+    return _ERROR;
   }
 
-  SettingString *date = new SettingString(QString("date"));
   s = sg->value("DATE");
-  if (date->set(s, (void *) script))
+  Data *date = vdi.toCurve(script, s);
+  if (! date)
   {
-    if (date->set(s))
-    {
-      qDebug() << "CommandChartUpdate::runScript: invalid DATE" << s;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    qDebug() << "CommandChartUpdate::runScript: invalid DATE" << s;
+    emit signalResume((void *) this);
+    return _ERROR;
   }
 
-  Plot *plot = g_plotGroup->plot(name->toString());
+  Plot *plot = g_plotGroup->plot(name);
   if (! plot)
   {
-    qDebug() << "CommandChartUpdate::runScript: chart not found" << name->toString();
+    qDebug() << "CommandChartUpdate::runScript: chart not found" << name;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   plot->clear();
+
+  plot->setDates(date);
 
   QList<QString> keys = script->dataKeys();
 
@@ -84,27 +81,20 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
   {
     Data *dg = script->data(keys.at(loop));
 
-    if (dg->type() == DataFactory::_CURVE)
+    switch ((DataFactory::Type) dg->type())
     {
-      if (keys.at(loop) == date->toString())
-      {
-        plot->setDates(dg);
-      }
-      else
-      {
-        curve(dg, name->toString(), plot);
-      }
-
-      continue;
-    }
-
-    if (dg->type() == DataFactory::_CHART_OBJECT)
-    {
-      chartObject(dg, name->toString(), plot);
+      case DataFactory::_CURVE:
+        curve(dg, name, plot);
+        break;
+      case DataFactory::_CHART_OBJECT:
+        chartObject(dg, name, plot);
+        break;
+      default:
+        break;
     }
   }
 
-  update(name->toString(), plot);
+  update(name, plot);
 
   _returnString = "OK";
 
@@ -115,23 +105,35 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
 
 void CommandChartUpdate::curve (Data *dg, QString name, Plot *plot)
 {
-  Setting *setting = dg->get(CurveData::_Z);
+  Data *setting = dg->toData(CurveData::_Z);
   if (! setting)
+  {
+//qDebug() << "CommandChartUpdate::curve: no Z";
     return;
+  }
 
   if (setting->toInteger() < 0)
+  {
+//qDebug() << "CommandChartUpdate::curve: z < 0";
     return;
+  }
 
-  setting = dg->get(CurveData::_CHART);
+  setting = dg->toData(CurveData::_CHART);
   if (! setting)
+  {
+//qDebug() << "CommandChartUpdate::curve: no CHART";
     return;
+  }
 
   if (setting->toString() != name)
+  {
+//qDebug() << "CommandChartUpdate::curve: CHART != name";
     return;
+  }
 
   dg->setDeleteFlag(0);
 
-  QString type = dg->get(CurveData::_TYPE)->toString();
+  QString type = dg->toData(CurveData::_TYPE)->toString();
 
   CurveFactory fac;
   Curve *curve = fac.curve(type);
@@ -148,14 +150,14 @@ void CommandChartUpdate::curve (Data *dg, QString name, Plot *plot)
 
 void CommandChartUpdate::chartObject (Data *dg, QString name, Plot *plot)
 {
-  Setting *setting = dg->get(ChartObjectData::_Z);
+  Data *setting = dg->toData(ChartObjectData::_Z);
   if (! setting)
     return;
 
   if (setting->toInteger() < 0)
     return;
 
-  setting = dg->get(ChartObjectData::_CHART);
+  setting = dg->toData(ChartObjectData::_CHART);
   if (! setting)
     return;
 
@@ -164,7 +166,7 @@ void CommandChartUpdate::chartObject (Data *dg, QString name, Plot *plot)
 
   dg->setDeleteFlag(0);
 
-  QString type = dg->get(ChartObjectData::_TYPE)->toString();
+  QString type = dg->toData(ChartObjectData::_TYPE)->toString();
 
   ChartObjectFactory fac;
   ChartObject *co = fac.chartObject(type);
@@ -194,7 +196,7 @@ void CommandChartUpdate::update (QString chart, Plot *plot)
     {
       it.next();
       Data *tdg = it.value();
-      ChartObject *co = fac.chartObject(tdg->get(ChartObjectData::_TYPE)->toString());
+      ChartObject *co = fac.chartObject(tdg->toData(ChartObjectData::_TYPE)->toString());
       if (! co)
         continue;
 

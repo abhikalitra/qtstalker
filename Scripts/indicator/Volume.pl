@@ -1,7 +1,7 @@
 # qtstalker VOL indicator
 
 # general parms
-$chartName = 'VOL';
+$chartName = 'Vol';
 $dateName = 'date';
 $openName = 'open';
 $highName = 'high';
@@ -11,7 +11,8 @@ $volumeName = 'volume';
 $oiName = 'oi';
 
 #vol parms
-$volName = 'VOL';
+$volName = 'vol';
+$volLabel = 'VOL';
 $volColor = 'blue';
 $volZ = '0';
 $volUpColor = 'green';
@@ -20,7 +21,8 @@ $volStyle = 'Histogram Bar';
 
 # MA parms
 $maData = 'ma';
-$maName = 'MA20';
+$maName = 'ma20';
+$maLabel = 'MA20';
 $maColor = 'yellow';
 $maZ = '1';
 $maPeriod = '20';
@@ -56,6 +58,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # plot the histogram
 $command = "COMMAND=PLOT_HISTOGRAM;
             CHART=$chartName;
+            LABEL=$volLabel;
             HIGH=$volumeName;
             LOW=0;
             OUTPUT=$volName;
@@ -99,6 +102,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 $command = "COMMAND=PLOT_LINE;
             CHART=$chartName;
             OUTPUT=$maName;
+            LABEL=$maLabel;
             INPUT=$maData;
             STYLE=$maStyle;
             COLOR=$maColor;

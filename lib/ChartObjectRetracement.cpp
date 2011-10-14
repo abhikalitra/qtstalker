@@ -26,12 +26,12 @@
 #include "DateScaleDraw.h"
 #include "Plot.h"
 #include "ChartObjectData.h"
-#include "SettingDouble.h"
-#include "SettingDateTime.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingColor.h"
-#include "SettingBool.h"
+#include "DataDouble.h"
+#include "DataDateTime.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataColor.h"
+#include "DataBool.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -43,45 +43,43 @@ ChartObjectRetracement::ChartObjectRetracement ()
 {
   _createFlag = 0;
 
-  _settings->set(ChartObjectData::_TYPE, new SettingString(QString("Retracement")));
-  _settings->set(ChartObjectData::_DATE, new SettingDateTime(QDateTime::currentDateTime()));
-  _settings->set(ChartObjectData::_DATE_2, new SettingDateTime(QDateTime::currentDateTime()));
-  _settings->set(ChartObjectData::_HIGH, new SettingDouble(0));
-  _settings->set(ChartObjectData::_LOW, new SettingDouble(0));
-  _settings->set(ChartObjectData::_COLOR, new SettingColor(QColor(Qt::red)));
-  _settings->set(ChartObjectData::_Z, new SettingInteger(1));
-  _settings->set(ChartObjectData::_PEN, new SettingInteger(1));
-  _settings->set(ChartObjectData::_EXTEND, new SettingBool(FALSE));
-  _settings->set(ChartObjectData::_LEVEL_1, new SettingDouble(0.382));
-  _settings->set(ChartObjectData::_LEVEL_2, new SettingDouble(0.5));
-  _settings->set(ChartObjectData::_LEVEL_3, new SettingDouble(0.618));
-  _settings->set(ChartObjectData::_LEVEL_4, new SettingDouble(0));
-  _settings->set(ChartObjectData::_LEVEL_5, new SettingDouble(0));
-  _settings->set(ChartObjectData::_LEVEL_6, new SettingDouble(0));
+  _settings->set(ChartObjectData::_TYPE, new DataString(QString("Retracement")));
+  _settings->set(ChartObjectData::_DATE, new DataDateTime(QDateTime::currentDateTime()));
+  _settings->set(ChartObjectData::_DATE_2, new DataDateTime(QDateTime::currentDateTime()));
+  _settings->set(ChartObjectData::_HIGH, new DataDouble(0));
+  _settings->set(ChartObjectData::_LOW, new DataDouble(0));
+  _settings->set(ChartObjectData::_COLOR, new DataColor(QColor(Qt::red)));
+  _settings->set(ChartObjectData::_EXTEND, new DataBool(FALSE));
+  _settings->set(ChartObjectData::_LEVEL_1, new DataDouble(0.382));
+  _settings->set(ChartObjectData::_LEVEL_2, new DataDouble(0.5));
+  _settings->set(ChartObjectData::_LEVEL_3, new DataDouble(0.618));
+  _settings->set(ChartObjectData::_LEVEL_4, new DataDouble(0));
+  _settings->set(ChartObjectData::_LEVEL_5, new DataDouble(0));
+  _settings->set(ChartObjectData::_LEVEL_6, new DataDouble(0));
 }
 
 void ChartObjectRetracement::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->get(ChartObjectData::_DATE)->toDateTime()));
+  int x = xMap.transform(dsd->x(_settings->toData(ChartObjectData::_DATE)->toDateTime()));
 
-  QDateTime dt = _settings->get(ChartObjectData::_DATE_2)->toDateTime();
-  if (_settings->get(ChartObjectData::_EXTEND)->toBool())
+  QDateTime dt = _settings->toData(ChartObjectData::_DATE_2)->toDateTime();
+  if (_settings->toData(ChartObjectData::_EXTEND)->toBool())
     dsd->date(dsd->count() - 1, dt);
 
   int x2 = xMap.transform(dsd->x(dt));
 
-  p->setPen(_settings->get(ChartObjectData::_COLOR)->toColor());
+  p->setPen(_settings->toData(ChartObjectData::_COLOR)->toColor());
 
   _selectionArea.clear();
 
   QList<double> lineList;
-  lineList.append(_settings->get(ChartObjectData::_LEVEL_1)->toDouble());
-  lineList.append(_settings->get(ChartObjectData::_LEVEL_2)->toDouble());
-  lineList.append(_settings->get(ChartObjectData::_LEVEL_3)->toDouble());
-  lineList.append(_settings->get(ChartObjectData::_LEVEL_4)->toDouble());
-  lineList.append(_settings->get(ChartObjectData::_LEVEL_5)->toDouble());
-  lineList.append(_settings->get(ChartObjectData::_LEVEL_6)->toDouble());
+  lineList.append(_settings->toData(ChartObjectData::_LEVEL_1)->toDouble());
+  lineList.append(_settings->toData(ChartObjectData::_LEVEL_2)->toDouble());
+  lineList.append(_settings->toData(ChartObjectData::_LEVEL_3)->toDouble());
+  lineList.append(_settings->toData(ChartObjectData::_LEVEL_4)->toDouble());
+  lineList.append(_settings->toData(ChartObjectData::_LEVEL_5)->toDouble());
+  lineList.append(_settings->toData(ChartObjectData::_LEVEL_6)->toDouble());
 
   int loop;
   for (loop = 0; loop < lineList.count(); loop++)
@@ -89,20 +87,20 @@ void ChartObjectRetracement::draw (QPainter *p, const QwtScaleMap &xMap, const Q
     double td = lineList[loop];
     if (td != 0)
     {
-      double range = _settings->get(ChartObjectData::_HIGH)->toDouble() - _settings->get(ChartObjectData::_LOW)->toDouble();
+      double range = _settings->toData(ChartObjectData::_HIGH)->toDouble() - _settings->toData(ChartObjectData::_LOW)->toDouble();
       double r = 0;
       if (td < 0)
-        r = _settings->get(ChartObjectData::_LOW)->toDouble() + (range * td);
+        r = _settings->toData(ChartObjectData::_LOW)->toDouble() + (range * td);
       else
       {
         if (td > 0)
-          r = _settings->get(ChartObjectData::_LOW)->toDouble() + (range * td);
+          r = _settings->toData(ChartObjectData::_LOW)->toDouble() + (range * td);
         else
         {
           if (td < 0)
-            r = _settings->get(ChartObjectData::_HIGH)->toDouble();
+            r = _settings->toData(ChartObjectData::_HIGH)->toDouble();
           else
-            r = _settings->get(ChartObjectData::_LOW)->toDouble();
+            r = _settings->toData(ChartObjectData::_LOW)->toDouble();
         }
       }
 
@@ -117,11 +115,11 @@ void ChartObjectRetracement::draw (QPainter *p, const QwtScaleMap &xMap, const Q
   }
 
   // draw the low line
-  int y = yMap.transform(_settings->get(ChartObjectData::_LOW)->toDouble());
+  int y = yMap.transform(_settings->toData(ChartObjectData::_LOW)->toDouble());
   p->drawLine (x, y, x2, y);
   Strip strip;
   QString ts;
-  strip.strip(_settings->get(ChartObjectData::_LOW)->toDouble(), 4, ts);
+  strip.strip(_settings->toData(ChartObjectData::_LOW)->toDouble(), 4, ts);
   p->drawText(x, y - 1, "0% - " + ts);
 
   // store the selectable area the low line occupies
@@ -130,9 +128,9 @@ void ChartObjectRetracement::draw (QPainter *p, const QwtScaleMap &xMap, const Q
   _selectionArea.append(QRegion(array));
 
   // draw the high line
-  int y2 = yMap.transform(_settings->get(ChartObjectData::_HIGH)->toDouble());
+  int y2 = yMap.transform(_settings->toData(ChartObjectData::_HIGH)->toDouble());
   p->drawLine (x, y2, x2, y2);
-  strip.strip(_settings->get(ChartObjectData::_HIGH)->toDouble(), 4, ts);
+  strip.strip(_settings->toData(ChartObjectData::_HIGH)->toDouble(), 4, ts);
   p->drawText(x, y2 - 1, "100% - " + ts);
 
   // store the selectable area the high line occupies
@@ -154,7 +152,7 @@ void ChartObjectRetracement::draw (QPainter *p, const QwtScaleMap &xMap, const Q
 		y2 - (_handleWidth / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings->get(ChartObjectData::_COLOR)->toColor());
+		_settings->toData(ChartObjectData::_COLOR)->toColor());
 
     //bottom right corner
     _grabHandles.append(QRegion(x2, y - (_handleWidth / 2),
@@ -166,30 +164,30 @@ void ChartObjectRetracement::draw (QPainter *p, const QwtScaleMap &xMap, const Q
 		y - (_handleWidth / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings->get(ChartObjectData::_COLOR)->toColor());
+		_settings->toData(ChartObjectData::_COLOR)->toColor());
   }
 }
 
 int ChartObjectRetracement::info (Message &info)
 {
-  info.insert(QObject::tr("Type"), _settings->get(ChartObjectData::_TYPE)->toString());
+  info.insert(QObject::tr("Type"), _settings->toData(ChartObjectData::_TYPE)->toString());
 
-  QDateTime dt = _settings->get(ChartObjectData::_DATE)->toDateTime();
+  QDateTime dt = _settings->toData(ChartObjectData::_DATE)->toDateTime();
   info.insert("SD", dt.toString("yyyy-MM-dd"));
   info.insert("ST", dt.toString("HH:mm:ss"));
 
-  dt = _settings->get(ChartObjectData::_DATE_2)->toDateTime();
+  dt = _settings->toData(ChartObjectData::_DATE_2)->toDateTime();
   info.insert("ED", dt.toString("yyyy-MM-dd"));
   info.insert("ET", dt.toString("HH:mm:ss"));
 
-  info.insert(QObject::tr("High"), _settings->get(ChartObjectData::_HIGH)->toString());
-  info.insert(QObject::tr("Low"), _settings->get(ChartObjectData::_LOW)->toString());
-  info.insert(QObject::tr("Level 1"), _settings->get(ChartObjectData::_LEVEL_1)->toString());
-  info.insert(QObject::tr("Level 2"), _settings->get(ChartObjectData::_LEVEL_2)->toString());
-  info.insert(QObject::tr("Level 3"), _settings->get(ChartObjectData::_LEVEL_3)->toString());
-  info.insert(QObject::tr("Level 4"), _settings->get(ChartObjectData::_LEVEL_4)->toString());
-  info.insert(QObject::tr("Level 5"), _settings->get(ChartObjectData::_LEVEL_5)->toString());
-  info.insert(QObject::tr("Level 6"), _settings->get(ChartObjectData::_LEVEL_6)->toString());
+  info.insert(QObject::tr("High"), _settings->toData(ChartObjectData::_HIGH)->toString());
+  info.insert(QObject::tr("Low"), _settings->toData(ChartObjectData::_LOW)->toString());
+  info.insert(QObject::tr("Level 1"), _settings->toData(ChartObjectData::_LEVEL_1)->toString());
+  info.insert(QObject::tr("Level 2"), _settings->toData(ChartObjectData::_LEVEL_2)->toString());
+  info.insert(QObject::tr("Level 3"), _settings->toData(ChartObjectData::_LEVEL_3)->toString());
+  info.insert(QObject::tr("Level 4"), _settings->toData(ChartObjectData::_LEVEL_4)->toString());
+  info.insert(QObject::tr("Level 5"), _settings->toData(ChartObjectData::_LEVEL_5)->toString());
+  info.insert(QObject::tr("Level 6"), _settings->toData(ChartObjectData::_LEVEL_6)->toString());
 
   return 0;
 }
@@ -200,19 +198,19 @@ int ChartObjectRetracement::highLow (int start, int end, double &high, double &l
   if (! dsd)
     return 1;
 
-  int x = dsd->x(_settings->get(ChartObjectData::_DATE)->toDateTime());
+  int x = dsd->x(_settings->toData(ChartObjectData::_DATE)->toDateTime());
   if (x >= start && x <= end)
   {
-    high = _settings->get(ChartObjectData::_HIGH)->toDouble();
-    low = _settings->get(ChartObjectData::_LOW)->toDouble();
+    high = _settings->toData(ChartObjectData::_HIGH)->toDouble();
+    low = _settings->toData(ChartObjectData::_LOW)->toDouble();
     return 0;
   }
 
-  int x2 = dsd->x(_settings->get(ChartObjectData::_DATE_2)->toDateTime());
+  int x2 = dsd->x(_settings->toData(ChartObjectData::_DATE_2)->toDateTime());
   if (x2 >= start && x2 <= end)
   {
-    high = _settings->get(ChartObjectData::_HIGH)->toDouble();
-    low = _settings->get(ChartObjectData::_LOW)->toDouble();
+    high = _settings->toData(ChartObjectData::_HIGH)->toDouble();
+    low = _settings->toData(ChartObjectData::_LOW)->toDouble();
     return 0;
   }
 
@@ -231,24 +229,24 @@ void ChartObjectRetracement::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE, new SettingDateTime(dt));
+      _settings->set(ChartObjectData::_DATE, new DataDateTime(dt));
 
       map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_HIGH, new SettingDouble(map.invTransform((double) p.y())));
+      _settings->set(ChartObjectData::_HIGH, new DataDouble(map.invTransform((double) p.y())));
 
       if (_createFlag)
       {
-        _settings->set(ChartObjectData::_DATE_2, new SettingDateTime(dt));
-        _settings->set(ChartObjectData::_LOW, new SettingDouble(_settings->get(ChartObjectData::_HIGH)->toDouble()));
+        _settings->set(ChartObjectData::_DATE_2, new DataDateTime(dt));
+        _settings->set(ChartObjectData::_LOW, new DataDouble(_settings->toData(ChartObjectData::_HIGH)->toDouble()));
       }
 
       plot()->replot();
 
       QStringList l;
-      l << _settings->get(ChartObjectData::_DATE)->toString();
+      l << _settings->toData(ChartObjectData::_DATE)->toString();
       Strip strip;
       QString ts;
-      strip.strip(_settings->get(ChartObjectData::_HIGH)->toDouble(), 4, ts);
+      strip.strip(_settings->toData(ChartObjectData::_HIGH)->toDouble(), 4, ts);
       l << ts;
       g_parent->statusBar()->showMessage(l.join(" "));
 
@@ -263,18 +261,18 @@ void ChartObjectRetracement::move (QPoint p)
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE_2, new SettingDateTime(dt));
+      _settings->set(ChartObjectData::_DATE_2, new DataDateTime(dt));
 
       map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_LOW, new SettingDouble(map.invTransform((double) p.y())));
+      _settings->set(ChartObjectData::_LOW, new DataDouble(map.invTransform((double) p.y())));
 
       plot()->replot();
 
       QStringList l;
-      l << _settings->get(ChartObjectData::_DATE_2)->toString();
+      l << _settings->toData(ChartObjectData::_DATE_2)->toString();
       Strip strip;
       QString ts;
-      strip.strip(_settings->get(ChartObjectData::_LOW)->toDouble(), 4, ts);
+      strip.strip(_settings->toData(ChartObjectData::_LOW)->toDouble(), 4, ts);
       l << ts;
       g_parent->statusBar()->showMessage(l.join(" "));
 
@@ -374,7 +372,7 @@ void ChartObjectRetracement::click (int button, QPoint p)
             _selected = 1;
 
 	    Plot *tplot = (Plot *) plot();
-	    tplot->select(_settings->get(ChartObjectData::_ID)->toString());
+	    tplot->select(_settings->toData(ChartObjectData::_ID)->toString());
 
             plot()->replot();
             return;

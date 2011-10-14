@@ -23,16 +23,14 @@
 #include "Symbol.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "SettingString.h"
-#include "SettingInteger.h"
-#include "SettingDouble.h"
-#include "SettingDateTime.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataDouble.h"
+#include "DataDateTime.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
 #include "QuoteDataBase.h"
 
 #include <QtDebug>
-#include <QSharedMemory>
 
 CommandSymbol::CommandSymbol (QObject *p) : Command (p)
 {
@@ -44,19 +42,19 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   VerifyDataInput vdi;
 
   // SYMBOL
+  QString tsymbol;
   QString s = sg->value("SYMBOL");
-  Setting *set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  if (vdi.toString(script, s, tsymbol))
   {
     qDebug() << "CommandSymbol::runScript: invalid SYMBOL" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  QStringList tl = set->toString().split(":");
+  QStringList tl = tsymbol.split(":");
   if (tl.count() != 2)
   {
-    qDebug() << "CommandSymbol::runScript: invalid SYMBOL" << set->toString();
+    qDebug() << "CommandSymbol::runScript: invalid SYMBOL" << tsymbol;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -65,126 +63,118 @@ int CommandSymbol::runScript (Message *sg, Script *script)
   QString symbol = tl.at(1);
 
   // LENGTH
+  int length = 7;
   s = sg->value("LENGTH");
-  Setting *length = vdi.setting(SettingFactory::_BAR_LENGTH, script, s);
-  if (! length)
+  if (vdi.toBarLength(script, s, length))
   {
-    qDebug() << "CommandSymbol::runScript: invalid LENGTH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSymbol::runScript: invalid LENGTH, using default" << s;
+    length = 7;
   }
 
   // RANGE
+  int range = 5;
   s = sg->value("RANGE");
-  Setting *range = vdi.setting(SettingFactory::_DATE_RANGE, script, s);
-  if (! range)
+  if (vdi.toDateRange(script, s, range))
   {
-    qDebug() << "CommandSymbol::runScript: invalid RANGE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSymbol::runScript: invalid RANGE, using default" << s;
+    range = 5;
   }
 
   Symbol bd;
   bd.setExchange(exchange);
   bd.setSymbol(symbol);
-  bd.setLength(length->toInteger());
+  bd.setLength(length);
   bd.setStartDate(QDateTime());
   bd.setEndDate(QDateTime());
-  bd.setRange(range->toInteger());
+  bd.setRange(range);
 
   // load quotes
   QuoteDataBase db;
   if (db.getBars(&bd))
   {
     qDebug() << "CommandSymbol::runScript: QuoteDataBase error" << "EXCHANGE=" << exchange << "SYMBOL=" << symbol;
-    qDebug() << "CommandSymbol::runScript: LENGTH=" << length->toString() << "RANGE=" << range->toString();
+    qDebug() << "CommandSymbol::runScript: LENGTH=" << length << "RANGE=" << range;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // date
+  QString ts;
   s = sg->value("DATE");
-  set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  if (vdi.toString(script, s, ts))
   {
     qDebug() << "CommandSymbol::runScript: invalid DATE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
   Data *dline = new CurveData;
-  script->setData(set->toString(), dline);
+  script->setData(ts, dline);
 
   // open
   s = sg->value("OPEN");
-  set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  if (vdi.toString(script, s, ts))
   {
     qDebug() << "CommandSymbol::runScript: invalid OPEN" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
   Data *oline = new CurveData;
-  script->setData(set->toString(), oline);
+  script->setData(ts, oline);
 
   // high
   s = sg->value("HIGH");
-  set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  if (vdi.toString(script, s, ts))
   {
     qDebug() << "CommandSymbol::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
   Data *hline = new CurveData;
-  script->setData(set->toString(), hline);
+  script->setData(ts, hline);
 
   // low
   s = sg->value("LOW");
-  set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  if (vdi.toString(script, s, ts))
   {
     qDebug() << "CommandSymbol::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
   Data *lline = new CurveData;
-  script->setData(set->toString(), lline);
+  script->setData(ts, lline);
 
   // close
   s = sg->value("CLOSE");
-  set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  if (vdi.toString(script, s, ts))
   {
     qDebug() << "CommandSymbol::runScript: invalid CLOSE" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
   Data *cline = new CurveData;
-  script->setData(set->toString(), cline);
+  script->setData(ts, cline);
 
   // volume
   s = sg->value("VOLUME");
-  set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  if (vdi.toString(script, s, ts))
   {
     qDebug() << "CommandSymbol::runScript: invalid VOLUME" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
   Data *vline = new CurveData;
-  script->setData(set->toString(), vline);
+  script->setData(ts, vline);
 
   // oi
   s = sg->value("OI");
-  set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  if (vdi.toString(script, s, ts))
   {
     qDebug() << "CommandSymbol::runScript: invalid OI" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
   Data *iline = new CurveData;
-  script->setData(set->toString(), iline);
+  script->setData(ts, iline);
 
   int loop = 0;
   QList<int> barKeys = bd.barKeys();
@@ -193,31 +183,31 @@ int CommandSymbol::runScript (Message *sg, Script *script)
     Data *b = bd.getData(barKeys.at(loop));
 
     Data *db = new CurveBar;
-    db->set(CurveBar::_DATE, new SettingDateTime(b->get(CurveBar::_DATE)->toDateTime()));
+    db->set(CurveBar::_DATE, new DataDateTime(b->toData(CurveBar::_DATE)->toDateTime()));
     dline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_OPEN)->toDouble()));
+    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_OPEN)->toDouble()));
     oline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_HIGH)->toDouble()));
+    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_HIGH)->toDouble()));
     hline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_LOW)->toDouble()));
+    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_LOW)->toDouble()));
     lline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_CLOSE)->toDouble()));
+    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_CLOSE)->toDouble()));
     cline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_VOLUME)->toDouble()));
+    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_VOLUME)->toDouble()));
     vline->set(loop, db);
 
     db = new CurveBar;
-    db->set(CurveBar::_VALUE, new SettingDouble(b->get(CurveBar::_OI)->toDouble()));
+    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_OI)->toDouble()));
     iline->set(loop, db);
   }
 

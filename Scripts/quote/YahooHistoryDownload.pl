@@ -33,27 +33,27 @@ $|=1;
 # create the settings that will be displayed in the dialog the user can modify
 
 # create start date setting
-$command = "COMMAND=SETTING; KEY=$dateStartKey; TYPE=DATETIME";
+$command = "COMMAND=DATA_SET; KEY=$dateStartKey; TYPE=DATETIME";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create end date setting
-$command = "COMMAND=SETTING; KEY=$dateEndKey; TYPE=DATETIME";
+$command = "COMMAND=DATA_SET; KEY=$dateEndKey; TYPE=DATETIME";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create symbol file setting
-$command = "COMMAND=SETTING; KEY=$symbolFileKey; TYPE=FILE";
+$command = "COMMAND=DATA_SET; KEY=$symbolFileKey; TYPE=FILE";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create csv file setting
-$command = "COMMAND=SETTING; KEY=$csvFileKey; VALUE=$csvFile; TYPE=FILE";
+$command = "COMMAND=DATA_SET; KEY=$csvFileKey; VALUE=$csvFile; TYPE=FILE";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create adjusted setting
-$command = "COMMAND=SETTING; KEY=$adjustedKey; VALUE=true; TYPE=BOOL";
+$command = "COMMAND=DATA_SET; KEY=$adjustedKey; VALUE=true; TYPE=BOOL";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
@@ -83,27 +83,27 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # create CSV dialog settings that will appear in the CSV dialog we will create
 
 # create FORMAT setting
-$command = "COMMAND=SETTING; KEY=$formatKey; VALUE=$format; TYPE=STRING";
+$command = "COMMAND=DATA_SET; KEY=$formatKey; VALUE=$format; TYPE=STRING";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create DATE_FORMAT setting
-$command = "COMMAND=SETTING; KEY=$dateFormatKey; VALUE=$dateFormat; TYPE=STRING";
+$command = "COMMAND=DATA_SET; KEY=$dateFormatKey; VALUE=$dateFormat; TYPE=STRING";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create DELIMITER setting
-$command = "COMMAND=SETTING; KEY=$delimiterKey; VALUE=$delimiter; LIST=$delimiterList; TYPE=LIST";
+$command = "COMMAND=DATA_SET; KEY=$delimiterKey; VALUE=$delimiter; LIST=$delimiterList; TYPE=LIST";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create TYPE setting
-$command = "COMMAND=SETTING; KEY=$typeKey; VALUE=$type; LIST=$typeList; TYPE=LIST";
+$command = "COMMAND=DATA_SET; KEY=$typeKey; VALUE=$type; LIST=$typeList; TYPE=LIST";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create FILENAME_AS_SYMBOL setting
-$command = "COMMAND=SETTING; KEY=$filenameAsSymbolKey; VALUE=$filenameAsSymbol; TYPE=BOOL";
+$command = "COMMAND=DATA_SET; KEY=$filenameAsSymbolKey; VALUE=$filenameAsSymbol; TYPE=BOOL";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 

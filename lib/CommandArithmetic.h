@@ -31,7 +31,7 @@ class CommandArithmetic : public Command
   public:
     CommandArithmetic (QObject *);
     int runScript (Message *, Script *);
-    Data * getArithmetic (Data *in, int off, Data *in2, int off2, int method);
+    Data * getArithmetic (Data *in, int offset, Data *in2, int offset2, int method);
 
   private:
     QStringList _method;

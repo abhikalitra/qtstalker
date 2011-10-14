@@ -31,16 +31,32 @@ class DataFactory
   public:
     enum Type
     {
+      _BAR_LENGTH,
+      _BOOL,
       _CHART_OBJECT,
+      _COLOR,
       _CURVE,
       _CURVE_BAR,
-      _DATA,
-      _DATA_SETTING
+      _DATE_RANGE,
+      _DATETIME,
+      _DOUBLE,
+      _FILE,
+      _FONT,
+      _INTEGER,
+      _LIST,
+      _MA,
+      _OP,
+      _STRING,
+      _SYMBOL
     };
 
     DataFactory ();
     Data * data (QString);
     Data * data (int);
+    int stringToType (QString);
+
+  private:
+    QStringList _types;
 };
 
 #endif

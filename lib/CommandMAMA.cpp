@@ -26,7 +26,6 @@
 #include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
-#include "SettingFactory.h"
 
 #include <QtDebug>
 
@@ -42,67 +41,59 @@ CommandMAMA::CommandMAMA (QObject *p) : Command (p)
 int CommandMAMA::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT_MAMA
+  QString mname;
   QString s = sg->value("OUTPUT_MAMA");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, mname))
   {
-    _message << "invalid OUTPUT_MAMA";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *mname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! mname)
-  {
-    _message << "invalid OUTPUT_MAMA " + s;
+    qDebug() << "CommandMAMA::runScript: invalid OUTPUT_MAMA" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // OUTPUT_FAMA
+  QString fname;
   s = sg->value("OUTPUT_FAMA");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, fname))
   {
-    _message << "invalid OUTPUT_FAMA";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *fname = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! fname)
-  {
-    _message << "invalid OUTPUT_FAMA " + s;
+    qDebug() << "CommandMAMA::runScript: invalid OUTPUT_FAMA" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // INPUT
   s = sg->value("INPUT");
-  Data *in = vdi.curve(script, s);
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "INPUT missing " + s;
+    qDebug() << "CommandMAMA::runScript: invalid INPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // LIMIT_FAST
+  double flimit = 0.5;
   s = sg->value("LIMIT_FAST");
-  Setting *flimit = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! flimit)
+  if (vdi.toDouble(script, s, flimit))
   {
-    _message << "invalid LIMIT_FAST " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMAMA::runScript: invalid LIMIT_FAST, using default" << s;
+    flimit = 0.5;
   }
 
+  // LIMIT_SLOW
+  double slimit = 0.05;
   s = sg->value("LIMIT_SLOW");
-  Setting *slimit = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! slimit)
+  if (vdi.toDouble(script, s, slimit))
   {
-    _message << "invalid LIMIT_SLOW " + s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandMAMA::runScript: invalid LIMIT_SLOW, using default" << s;
+    flimit = 0.05;
   }
 
   QList<Data *> list;
   list << in;
 
-  QList<Data *> lines = getMAMA(list, flimit->toDouble(), slimit->toDouble());
+  QList<Data *> lines = getMAMA(list, flimit, slimit);
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
@@ -110,8 +101,8 @@ int CommandMAMA::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(mname->toString(), lines.at(0));
-  script->setData(fname->toString(), lines.at(1));
+  script->setData(mname, lines.at(0));
+  script->setData(fname, lines.at(1));
 
   _returnString = "OK";
 

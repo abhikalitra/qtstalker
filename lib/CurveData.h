@@ -25,6 +25,8 @@
 #ifndef CURVE_DATA_HPP
 #define CURVE_DATA_HPP
 
+#include <QHash>
+
 #include "Data.h"
 
 class CurveData : public Data
@@ -37,27 +39,26 @@ class CurveData : public Data
       _CHART = -30,
       _Z = -40,
       _PEN = -50,
-      _STYLE = -60
+      _STYLE = -60,
+      _OFFSET = -70
     };
 
     CurveData ();
     ~CurveData ();
     void clear ();
     int set (int, Data *);
-    Data * getData (int);
-    QList<int> barKeys ();
-    QString toString ();
-    int fromString (QString);
-    int barKeyCount ();
-    void barKeyRange (int &start, int &end);
-    void setOffset (int);
-    int offset ();
+    Data * toData (int);
+    QList<int> keys ();
+//    QString toSaveString ();
+//    int fromSaveString (QString);
+    int keyCount ();
+    void keyRange (int &start, int &end);
 
-  protected:
+  private:
     QHash<int, Data *> _bars;
+    QHash<int, Data *> _data;
     int _startIndex;
     int _endIndex;
-    int _offset;
 };
 
 #endif

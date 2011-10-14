@@ -28,13 +28,11 @@
 3) explosive move expected when therm stays below MA for 5-7 days
 */
 
-
 #include "CommandTHERM.h"
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
-#include "SettingDouble.h"
+#include "DataDouble.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -47,35 +45,33 @@ CommandTHERM::CommandTHERM (QObject *p) : Command (p)
 int CommandTHERM::runScript (Message *sg, Script *script)
 {
   VerifyDataInput vdi;
+
+  // OUTPUT
+  QString name;
   QString s = sg->value("OUTPUT");
-  if (s.isEmpty())
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  Setting *name = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! name)
-  {
-    _message << "invalid OUTPUT " + s;
+    qDebug() << "CommandTHERM::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // HIGH
   s = sg->value("HIGH");
-  Data *ihigh = vdi.curve(script, s);
+  Data *ihigh = vdi.toCurve(script, s);
   if (! ihigh)
   {
-    _message << "invalid HIGH " + s;
+    qDebug() << "CommandTHERM::runScript: invalid HIGH" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  // LOW
   s = sg->value("LOW");
-  Data *ilow = vdi.curve(script, s);
+  Data *ilow = vdi.toCurve(script, s);
   if (! ilow)
   {
-    _message << "invalid LOW " + s;
+    qDebug() << "CommandTHERM::runScript: invalid LOW" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
@@ -90,7 +86,7 @@ int CommandTHERM::runScript (Message *sg, Script *script)
     return _ERROR;
   }
 
-  script->setData(name->toString(), line);
+  script->setData(name, line);
 
   _returnString = "OK";
 
@@ -116,24 +112,24 @@ Data * CommandTHERM::getTHERM (QList<Data *> &list)
   int loop = 1;
   for (; loop < keys.count(); loop++)
   {
-    Data *hbar = ihigh->getData(keys.at(loop));
+    Data *hbar = ihigh->toData(keys.at(loop));
     if (! hbar)
       continue;
 
-    Data *phbar = ihigh->getData(keys.at(loop - 1));
+    Data *phbar = ihigh->toData(keys.at(loop - 1));
     if (! phbar)
       continue;
 
-    Data *lbar = ilow->getData(keys.at(loop));
+    Data *lbar = ilow->toData(keys.at(loop));
     if (! lbar)
       continue;
 
-    Data *plbar = ilow->getData(keys.at(loop - 1));
+    Data *plbar = ilow->toData(keys.at(loop - 1));
     if (! plbar)
       continue;
 
-    double high = fabs(hbar->get(CurveBar::_VALUE)->toDouble() - phbar->get(CurveBar::_VALUE)->toDouble());
-    double lo = fabs(plbar->get(CurveBar::_VALUE)->toDouble() - lbar->get(CurveBar::_VALUE)->toDouble());
+    double high = fabs(hbar->toData(CurveBar::_VALUE)->toDouble() - phbar->toData(CurveBar::_VALUE)->toDouble());
+    double lo = fabs(plbar->toData(CurveBar::_VALUE)->toDouble() - lbar->toData(CurveBar::_VALUE)->toDouble());
 
     if (high > lo)
       thermometer = high;
@@ -141,7 +137,7 @@ Data * CommandTHERM::getTHERM (QList<Data *> &list)
       thermometer = lo;
 
     Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new SettingDouble(thermometer));
+    b->set(CurveBar::_VALUE, new DataDouble(thermometer));
     line->set(keys.at(loop), b);
   }
 

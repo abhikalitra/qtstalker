@@ -28,6 +28,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QMetaType>
+#include <QHash>
 
 #include "Data.h"
 

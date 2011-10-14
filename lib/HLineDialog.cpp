@@ -54,7 +54,7 @@ void HLineDialog::createGUI ()
 
   // color
   QColor c(Qt::green);
-  Setting *set = _settings->get(ChartObjectData::_COLOR);
+  Data *set = _settings->toData(ChartObjectData::_COLOR);
   if (set)
     c = set->toColor();
 
@@ -64,7 +64,7 @@ void HLineDialog::createGUI ()
 
   // price
   double d = 0;
-  set = _settings->get(ChartObjectData::_PRICE);
+  set = _settings->toData(ChartObjectData::_PRICE);
   if (set)
     d = set->toDouble();
 
@@ -76,7 +76,7 @@ void HLineDialog::createGUI ()
 
   // z
   int z = 1;
-  set = _settings->get(ChartObjectData::_Z);
+  set = _settings->toData(ChartObjectData::_Z);
   if (set)
     z = set->toInteger();
 
@@ -94,15 +94,15 @@ void HLineDialog::createGUI ()
 
 void HLineDialog::done ()
 {
-  Setting *set = _settings->get(ChartObjectData::_COLOR);
+  Data *set = _settings->toData(ChartObjectData::_COLOR);
   if (set)
     set->set(_color->color());
 
-  set = _settings->get(ChartObjectData::_PRICE);
+  set = _settings->toData(ChartObjectData::_PRICE);
   if (set)
     set->set(_price->value());
 
-  set = _settings->get(ChartObjectData::_Z);
+  set = _settings->toData(ChartObjectData::_Z);
   if (set)
     set->set(_z->value());
 

@@ -22,7 +22,6 @@
 #include "CommandTest.h"
 #include "CurveData.h"
 #include "VerifyDataInput.h"
-#include "SettingFactory.h"
 #include "Test.h"
 
 #include <QtDebug>
@@ -38,30 +37,29 @@ int CommandTest::runScript (Message *sg, Script *script)
   Test test(this);
 
   // NAME
+  QString ts;
   QString s = sg->value("NAME");
-  Setting *set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  if (vdi.toString(script, s, ts))
   {
     qDebug() << "CommandTest::runScript: invalid NAME" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  test.setName(set->toString());
+  test.setName(ts);
 
   // SYMBOL
   s = sg->value("SYMBOL");
-  set = vdi.setting(SettingFactory::_STRING, script, s);
-  if (! set)
+  if (vdi.toString(script, s, ts))
   {
     qDebug() << "CommandTest::runScript: invalid SYMBOL" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  test.setSymbol(set->toString());
+  test.setSymbol(ts);
 
   // ENTER_LONG
   s = sg->value("ENTER_LONG");
-  Data *d = vdi.curveAll(script, s);
+  Data *d = vdi.toCurve(script, s);
   if (! d)
   {
     qDebug() << "CommandTest::runScript: invalid ENTER_LONG" << s;
@@ -73,7 +71,7 @@ int CommandTest::runScript (Message *sg, Script *script)
 
   // EXIT_LONG
   s = sg->value("EXIT_LONG");
-  d = vdi.curveAll(script, s);
+  d = vdi.toCurve(script, s);
   if (! d)
   {
     qDebug() << "CommandTest::runScript: invalid EXIT_LONG" << s;
@@ -85,7 +83,7 @@ int CommandTest::runScript (Message *sg, Script *script)
 
   // ENTER_SHORT
   s = sg->value("ENTER_SHORT");
-  d = vdi.curveAll(script, s);
+  d = vdi.toCurve(script, s);
   if (! d)
   {
     qDebug() << "CommandTest::runScript: invalid ENTER_SHORT" << s;
@@ -97,7 +95,7 @@ int CommandTest::runScript (Message *sg, Script *script)
 
   // EXIT_SHORT
   s = sg->value("EXIT_SHORT");
-  d = vdi.curveAll(script, s);
+  d = vdi.toCurve(script, s);
   if (! d)
   {
     qDebug() << "CommandTest::runScript: invalid EXIT_SHORT" << s;
@@ -109,7 +107,7 @@ int CommandTest::runScript (Message *sg, Script *script)
 
   // DATE
   s = sg->value("DATE");
-  d = vdi.curve(script, s);
+  d = vdi.toCurve(script, s);
   if (! d)
   {
     qDebug() << "CommandTest::runScript: invalid DATE" << s;
@@ -120,7 +118,7 @@ int CommandTest::runScript (Message *sg, Script *script)
 
   // OPEN
   s = sg->value("OPEN");
-  d = vdi.curve(script, s);
+  d = vdi.toCurve(script, s);
   if (! d)
   {
     qDebug() << "CommandTest::runScript: invalid OPEN" << s;
@@ -131,7 +129,7 @@ int CommandTest::runScript (Message *sg, Script *script)
 
   // HIGH
   s = sg->value("HIGH");
-  d = vdi.curve(script, s);
+  d = vdi.toCurve(script, s);
   if (! d)
   {
     qDebug() << "CommandTest::runScript: invalid HIGH" << s;
@@ -142,7 +140,7 @@ int CommandTest::runScript (Message *sg, Script *script)
 
   // LOW
   s = sg->value("LOW");
-  d = vdi.curve(script, s);
+  d = vdi.toCurve(script, s);
   if (! d)
   {
     qDebug() << "CommandTest::runScript: invalid LOW" << s;
@@ -153,7 +151,7 @@ int CommandTest::runScript (Message *sg, Script *script)
 
   // CLOSE
   s = sg->value("CLOSE");
-  d = vdi.curve(script, s);
+  d = vdi.toCurve(script, s);
   if (! d)
   {
     qDebug() << "CommandTest::runScript: invalid CLOSE" << s;
@@ -163,70 +161,66 @@ int CommandTest::runScript (Message *sg, Script *script)
   test.setClose(d);
 
   // ENTER_COMM
+  double td = 0;
   s = sg->value("ENTER_COMM");
-  set = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! set)
+  if (vdi.toDouble(script, s, td))
   {
     qDebug() << "CommandTest::runScript: invalid ENTER_COMM" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  test.setEnterComm(set->toDouble());
+  test.setEnterComm(td);
 
   // EXIT_COMM
   s = sg->value("EXIT_COMM");
-  set = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! set)
+  if (vdi.toDouble(script, s, td))
   {
     qDebug() << "CommandTest::runScript: invalid EXIT_COMM" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  test.setExitComm(set->toDouble());
+  test.setExitComm(td);
 
   // EQUITY
   s = sg->value("EQUITY");
-  set = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! set)
+  if (vdi.toDouble(script, s, td))
   {
     qDebug() << "CommandTest::runScript: invalid EQUITY" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  test.setEquity(set->toDouble());
+  test.setEquity(td);
 
   // MAX_LOSS_STOP
   s = sg->value("MAX_LOSS_STOP");
-  set = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! set)
+  if (vdi.toDouble(script, s, td))
   {
     qDebug() << "CommandTest::runScript: invalid MAX_LOSS_STOP" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  test.setMaxLossStop(set->toDouble());
+  test.setMaxLossStop(td);
 
   // TRAILING_STOP
+  bool tb = FALSE;
   s = sg->value("TRAILING_STOP");
-  set = vdi.setting(SettingFactory::_BOOL, script, s);
-  if (! set)
+  if (vdi.toBool(script, s, tb))
   {
     qDebug() << "CommandTest::runScript: invalid TRAILING_STOP" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  test.setTrailingStop(set->toBool());
+  test.setTrailingStop(tb);
 
   // VOLUME
   s = sg->value("VOLUME");
-  set = vdi.setting(SettingFactory::_DOUBLE, script, s);
-  if (! set)
+  if (vdi.toDouble(script, s, td))
   {
     qDebug() << "CommandTest::runScript: invalid VOLUME" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  test.setVolume(set->toDouble());
+  test.setVolume(td);
 
   // run test
   if (! test.run())

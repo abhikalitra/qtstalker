@@ -24,9 +24,8 @@
 #include "VerifyDataInput.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "SettingDouble.h"
+#include "DataDouble.h"
 #include "DataFactory.h"
-#include "DataSetting.h"
 
 #include <QtDebug>
 
@@ -40,69 +39,80 @@ int CommandCompare::runScript (Message *sg, Script *script)
   VerifyDataInput vdi;
 
   // OUTPUT
-  QString name = sg->value("OUTPUT");
-  if (name.isEmpty())
+  QString name;
+  QString s = sg->value("OUTPUT");
+  if (vdi.toString(script, s, name))
   {
-    _message << "invalid OUTPUT";
+    qDebug() << "CommandCompare::runScript: invalid OUTPUT" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
-  // INPUT_1
-  QString s = sg->value("INPUT_1");
-  Data *in = vdi.curveAll(script, s);
+  // verify INPUT_1
+  s = sg->value("INPUT_1");
+  Data *in = vdi.toCurve(script, s);
   if (! in)
   {
-    _message << "invalid INPUT_1 " + s;
+    qDebug() << "CommandCompare::runScript: invalid INPUT_1" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  int offset = in->offset();
+  int offset = 0;
+  Data *set = in->toData(CurveData::_OFFSET);
+  if (set)
+    offset = set->toInteger();
 
   // verify OP
-  Operator top;
+  int op = 0;
   s = sg->value("OP");
-  Operator::Type op = top.stringToOperator(s);
-  if (op == -1)
+  if (vdi.toOp(script, s, op))
   {
-    _message << "invalid OP " + s;
+    qDebug() << "CommandCompare::runScript: invalid OP" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
 
   // verify INPUT_2
   s = sg->value("INPUT_2");
-  Data *in2 = vdi.curveAll(script, s);
+  Data *in2 = vdi.toCurve(script, s);
   if (! in2)
   {
-    _message << "invalid INPUT_2 " + s;
+    qDebug() << "CommandCompare::runScript: invalid INPUT_2" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  int offset2 = in2->offset();
+  int offset2 = 0;
+  set = in2->toData(CurveData::_OFFSET);
+  if (set)
+    offset2 = set->toInteger();
 
-  // verify RESULT_1
+  // RESULT_1
   s = sg->value("RESULT_1");
-  Data *in3 = vdi.curveAll(script, s);
+  Data *in3 = vdi.toCurve(script, s);
   if (! in3)
   {
-    _message << "invalid RESULT_1 " + s;
+    qDebug() << "CommandCompare::runScript: invalid RESULT_1" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  int offset3 = in3->offset();
+  int offset3 = 0;
+  set = in3->toData(CurveData::_OFFSET);
+  if (set)
+    offset3 = set->toInteger();
 
-
-  // verify RESULT_2
+  // RESULT_2
   s = sg->value("RESULT_2");
-  Data *in4 = vdi.curveAll(script, s);
+  Data *in4 = vdi.toCurve(script, s);
   if (! in4)
   {
-    _message << "invalid RESULT_4 " + s;
+    qDebug() << "CommandCompare::runScript: invalid RESULT_2" << s;
     emit signalResume((void *) this);
     return _ERROR;
   }
-  int offset4 = in4->offset();
+  int offset4 = 0;
+  set = in4->toData(CurveData::_OFFSET);
+  if (set)
+    offset4 = set->toInteger();
 
   QList<Data *> list;
   list << in << in2 << in3 << in4;
@@ -110,11 +120,12 @@ int CommandCompare::runScript (Message *sg, Script *script)
   QList<int> keys;
   if (vdi.curveKeys(list, keys))
   {
-    _message << "invalid keys";
+    qDebug() << "CommandCompare::runScript: invalid keys";
     emit signalResume((void *) this);
     return _ERROR;
   }
 
+  Operator top;
   Data *line = new CurveData;
   int loop = 0;
   for (; loop < keys.count(); loop++)
@@ -135,16 +146,16 @@ int CommandCompare::runScript (Message *sg, Script *script)
     if (vdi.curveValue(in4, keys, loop, offset4, v4))
       continue;
 
-    if (top.test(v, op, v2))
+    if (top.test(v, (Operator::Type) op, v2))
     {
       Data *b = new CurveBar;
-      b->set(CurveBar::_VALUE, new SettingDouble(v3));
+      b->set(CurveBar::_VALUE, new DataDouble(v3));
       line->set(keys.at(loop), b);
     }
     else
     {
       Data *b = new CurveBar;
-      b->set(CurveBar::_VALUE, new SettingDouble(v4));
+      b->set(CurveBar::_VALUE, new DataDouble(v4));
       line->set(keys.at(loop), b);
     }
   }
