@@ -26,7 +26,6 @@
 #include "DataString.h"
 #include "DataBool.h"
 #include "DataInteger.h"
-#include "VerifyDataInput.h"
 #include "DataDateTime.h"
 
 #include <QtDebug>
@@ -34,97 +33,41 @@
 CommandTLine::CommandTLine (QObject *p) : Command (p)
 {
   _name = "CHART_OBJECT_TLINE";
+
+  _values.insert(_ParmTypeChart, new DataString());
+  _values.insert(_ParmTypeColor, new DataColor(QColor(Qt::green)));
+  _values.insert(_ParmTypeDateStart, new DataDateTime(QDateTime::currentDateTime()));
+  _values.insert(_ParmTypeDateEnd, new DataDateTime(QDateTime::currentDateTime()));
+  _values.insert(_ParmTypePriceStart, new DataDouble(0));
+  _values.insert(_ParmTypePriceEnd, new DataDouble(0));
+  _values.insert(_ParmTypeZ, new DataInteger(0));
+  _values.insert(_ParmTypePen, new DataInteger(1));
 }
 
-int CommandTLine::runScript (Message *sg, Script *script)
+void CommandTLine::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // COLOR
-  QColor color;
-  QString s = sg->value("COLOR");
-  if (vdi.toColor(script, s, color))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandTLine::runScript: invalid COLOR, using default" << s;
-    color = QColor(Qt::red);
-  }
-
-  // DATE_START
-  QDateTime date;
-  s = sg->value("DATE_START");
-  if (vdi.toDateTime(script, s, date))
-  {
-    qDebug() << "CommandTLine::runScript: invalid DATE_START, using default" << s;
-    date = QDateTime::currentDateTime();
-  }
-
-  // DATE_END
-  QDateTime date2;
-  s = sg->value("DATE_END");
-  if (vdi.toDateTime(script, s, date2))
-  {
-    qDebug() << "CommandTLine::runScript: invalid DATE_END, using default" << s;
-    date2 = QDateTime::currentDateTime();
-  }
-
-  // PRICE_START
-  double price = 0;
-  s = sg->value("PRICE_START");
-  if (vdi.toDouble(script, s, price))
-  {
-    qDebug() << "CommandTLine::runScript: invalid PRICE_START" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PRICE_END
-  double price2 = 0;
-  s = sg->value("PRICE_END");
-  if (vdi.toDouble(script, s, price2))
-  {
-    qDebug() << "CommandTLine::runScript: invalid PRICE_END" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // CHART
-  QString chart;
-  s = sg->value("CHART");
-  if (vdi.toString(script, s, chart))
-  {
-    qDebug() << "CommandTLine::runScript: invalid CHART" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // Z
-  int z = 0;
-  s = sg->value("Z");
-  if (vdi.toInteger(script, s, z))
-  {
-    qDebug() << "CommandTLine::runScript: invalid Z, using default" << s;
-    z = 0;
+    Command::error("CommandText::runScript: parse error");
+    return;
   }
 
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_COLOR, new DataColor(color));
-  co->set(ChartObjectData::_DATE, new DataDateTime(date));
-  co->set(ChartObjectData::_DATE_2, new DataDateTime(date2));
-  co->set(ChartObjectData::_PRICE, new DataDouble(price));
-  co->set(ChartObjectData::_PRICE_2, new DataDouble(price2));
-  co->set(ChartObjectData::_CHART, new DataString(chart));
-  co->set(ChartObjectData::_Z, new DataInteger(z));
+  co->set(ChartObjectData::_COLOR, new DataColor(_values.value(_ParmTypeColor)->toColor()));
+  co->set(ChartObjectData::_DATE, new DataDateTime(_values.value(_ParmTypeDateStart)->toDateTime()));
+  co->set(ChartObjectData::_DATE_2, new DataDateTime(_values.value(_ParmTypeDateEnd)->toDateTime()));
+  co->set(ChartObjectData::_PRICE, new DataDouble(_values.value(_ParmTypePriceStart)->toDouble()));
+  co->set(ChartObjectData::_PRICE_2, new DataDouble(_values.value(_ParmTypePriceEnd)->toDouble()));
+  co->set(ChartObjectData::_CHART, new DataString(_values.value(_ParmTypeChart)->toString()));
+  co->set(ChartObjectData::_Z, new DataInteger(_values.value(_ParmTypeZ)->toInteger()));
+  co->set(ChartObjectData::_PEN, new DataInteger(_values.value(_ParmTypePen)->toInteger()));
   co->set(ChartObjectData::_ID, new DataInteger(id));
   co->set(ChartObjectData::_RO, new DataBool(TRUE));
   co->set(ChartObjectData::_TYPE, new DataString(QString("TLine")));
 
   script->setData(QString::number(id), co);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }

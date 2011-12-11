@@ -29,8 +29,16 @@ class CommandVAR : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeInput,
+      _ParmTypePeriod,
+      _ParmTypeDev
+    };
+
     CommandVAR (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getVAR (QList<Data *> &, int, double);
 };
 

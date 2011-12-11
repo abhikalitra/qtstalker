@@ -23,9 +23,11 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,43 +35,30 @@ CommandPHASOR::CommandPHASOR (QObject *p) : Command (p)
 {
   _name = "HT_PHASOR";
 
+  _values.insert(_ParmTypePhase, new DataString());
+  _values.insert(_ParmTypeQuad, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandPHASOR::CommandPHASOR: error on TA_Initialize");
 }
 
-int CommandPHASOR::runScript (Message *sg, Script *script)
+void CommandPHASOR::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT_PHASE
-  QString pname;
-  QString s = sg->value("OUTPUT_PHASE");
-  if (vdi.toString(script, s, pname))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandPHASOR::runScript: invalid OUTPUT_PHASE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandPHASOR::runScript: parse error");
+    return;
   }
 
-  // OUTPUT_QUAD
-  QString qname;
-  s = sg->value("OUTPUT_QUAD");
-  if (vdi.toString(script, s, qname))
-  {
-    qDebug() << "CommandPHASOR::runScript: invalid OUTPUT_QUAD" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandPHASOR::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandPHASOR::runScript: invalid Input");
+    return;
   }
 
   QList<Data *> list;
@@ -79,18 +68,14 @@ int CommandPHASOR::runScript (Message *sg, Script *script)
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandPHASOR::runScript: getPHASOR error");
+    return;
   }
 
-  script->setData(pname, lines.at(0));
-  script->setData(qname, lines.at(1));
+  script->setData(_values.value(_ParmTypePhase)->toString(), lines.at(0));
+  script->setData(_values.value(_ParmTypeQuad)->toString(), lines.at(1));
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 QList<Data *> CommandPHASOR::getPHASOR (QList<Data *> &list)
@@ -99,9 +84,9 @@ QList<Data *> CommandPHASOR::getPHASOR (QList<Data *> &list)
   if (! list.count())
     return lines;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return lines;
 
   int size = keys.count();

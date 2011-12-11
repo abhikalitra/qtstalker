@@ -23,9 +23,14 @@
 #include "QuoteDataBase.h"
 #include "Symbol.h"
 #include "CurveBar.h"
+#include "DataFile.h"
 #include "DataDouble.h"
 #include "DataDateTime.h"
-#include "VerifyDataInput.h"
+#include "DataString.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
+#include "DataList.h"
+#include "DataBool.h"
 
 #include <QtDebug>
 #include <QFile>
@@ -33,108 +38,78 @@
 CommandCSV::CommandCSV (QObject *p) : Command (p)
 {
   _name = "CSV";
-  _type = _THREAD;
 
   _formatType << "EXCHANGE" << "SYMBOL" << "NAME" << "DATE" << "OPEN" << "HIGH" << "LOW" << "CLOSE" << "VOLUME" << "OI";
 
   _delimiterType << tr("Comma") << tr("Semicolon");
+
+  _values.insert(_ParmTypeCSVFile, new DataFile());
+  _values.insert(_ParmTypeFormat, new DataString());
+  _values.insert(_ParmTypeDateFormat, new DataString());
+
+  DataList *dl = new DataList(_delimiterType.at(0));
+  dl->set(_delimiterType);
+  _values.insert(_ParmTypeDelimiter, dl);
+
+  QStringList tl;
+  tl << "Stock" << "Futures";
+  dl = new DataList(tl.at(0));
+  dl->set(tl);
+  _values.insert(_ParmTypeType, dl);
+
+  _values.insert(_ParmTypeFilenameAsSymbol, new DataBool(FALSE));
+  _values.insert(_ParmTypeExchange, new DataString());
 }
 
-int CommandCSV::runScript (Message *sg, Script *script)
+void CommandCSV::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
+  if (Command::parse(sg, script))
+  {
+    Command::error("CommandCSV::runScript: parse error");
+    return;
+  }
 
   // CSV file
-  QStringList files;
-  QString s = sg->value("CSV_FILE");
-  if (vdi.toFile(script, s, files))
-  {
-    qDebug() << "CommandCSV::runScript: invalid CSV_FILE " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
+  QStringList files = _values.value(_ParmTypeCSVFile)->toList();
 
   // FORMAT
-  QString ts;
-  s = sg->value("FORMAT");
-  if (vdi.toString(script, s, ts))
-  {
-    qDebug() << "CommandCSV::runScript: invalid FORMAT " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  QStringList format = ts.split(",");
+  QStringList format = _values.value(_ParmTypeFormat)->toString().split(";");
 
   // DATE_FORMAT
-  QString dateFormat;
-  s = sg->value("DATE_FORMAT");
-  if (vdi.toString(script, s, dateFormat))
-  {
-    qDebug() << "CommandCSV::runScript: invalid DATE_FORMAT " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
+  QString dateFormat = _values.value(_ParmTypeDateFormat)->toString();
 
   // DELIMITER
   QString delimiter;
-  s = sg->value("DELIMITER");
-  if (vdi.toList(script, s, delimiter))
+  QString s = _values.value(_ParmTypeDelimiter)->toString();
+  switch (_delimiterType.indexOf(s))
   {
-    qDebug() << "CommandCSV::runScript: invalid DELIMITER " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  switch ((DelimiterType) _delimiterType.indexOf(delimiter))
-  {
-    case _COMMA:
+    case 0: // Comma
       delimiter = ",";
       break;
-    case _SEMICOLON:
+    default: // Semicolon
       delimiter = ";";
-      break;
-    default:
-      qDebug() << "CommandCSV::runScript: invalid DELIMITER " << s;
-      emit signalResume((void *) this);
-      return _ERROR;
       break;
   }
 
   // TYPE
-  QString type;
-  s = sg->value("TYPE");
-  if (vdi.toList(script, s, type))
-  {
-    qDebug() << "CommandCSV::runScript: invalid TYPE " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
+  QString type = _values.value(_ParmTypeType)->toString();
 
   // FILENAME AS SYMBOL
-  bool fileNameFlag = FALSE;
-  s = sg->value("FILENAME_AS_SYMBOL");
-  if (vdi.toBool(script, s, fileNameFlag))
-  {
-    qDebug() << "CommandCSV::runScript: FILENAME_AS_SYMBOL " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
+  bool fileNameFlag = _values.value(_ParmTypeFilenameAsSymbol)->toBool();
 
   // EXCHANGE
-  QString exchange;
-  s = sg->value("EXCHANGE");
-  vdi.toString(script, s, exchange);
+  QString exchange = _values.value(_ParmTypeExchange)->toString();
 
+  // away we go
   QHash<QString, Symbol *> symbols;
   int loop = 0;
-  for (; loop < files.count(); loop++)
+  for (; loop < files.size(); loop++)
   {
     QFile f(files.at(loop));
     if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      qDebug() << "CommandCSV::runScript: CSV_FILE error " << files.at(loop);
-      emit signalResume((void *) this);
-      return _ERROR;
+      qDebug() << "CommandCSV::runScript: CSV_FILE error" << files.at(loop);
+      continue;
     }
 
     QString fileNameSymbol;
@@ -146,16 +121,16 @@ int CommandCSV::runScript (Message *sg, Script *script)
 
     while (! f.atEnd())
     {
-      s = f.readLine();
+      QString s = f.readLine();
       s = s.trimmed();
       if (s.isEmpty())
         continue;
 
       QStringList data = s.split(delimiter);
 
-      if (format.count() != data.count())
+      if (format.size() != data.size())
       {
-        qDebug() << "CommandCSV::runScript: invalid number of fields " << s;
+        qDebug() << "CommandCSV::runScript: invalid number of fields " << format.size() << data.size() << s;
         continue;
       }
 
@@ -242,11 +217,10 @@ int CommandCSV::runScript (Message *sg, Script *script)
           }
           default:
           {
-            qDebug() << "CommandCSV::runScript: invalid format";
             delete bar;
             qDeleteAll(symbols);
-            emit signalResume((void *) this);
-            return _ERROR;
+            Command::error("CommandCSV::runScript: invalid format");
+            return;
             break;
           }
         }
@@ -308,9 +282,5 @@ int CommandCSV::runScript (Message *sg, Script *script)
 
   qDeleteAll(symbols);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }

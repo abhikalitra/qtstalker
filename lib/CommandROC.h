@@ -29,8 +29,16 @@ class CommandROC : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeInput,
+      _ParmTypePeriod,
+      _ParmTypeMethod
+    };
+
     CommandROC (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getROC (QList<Data *> &, int, int);
 
   protected:

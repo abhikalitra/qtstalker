@@ -23,9 +23,13 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataMA.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,111 +37,68 @@ CommandStochFast::CommandStochFast (QObject *p) : Command (p)
 {
   _name = "STOCH_FAST";
 
+  _values.insert(_ParmTypeK, new DataString());
+  _values.insert(_ParmTypeD, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+  _values.insert(_ParmTypePeriodK, new DataInteger(5));
+  _values.insert(_ParmTypePeriodD, new DataInteger(3));
+  _values.insert(_ParmTypeMA, new DataMA("EMA"));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandStochFast::CommandStochFast: error on TA_Initialize");
 }
 
-int CommandStochFast::runScript (Message *sg, Script *script)
+void CommandStochFast::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT_FASTK
-  QString kname;
-  QString s = sg->value("OUTPUT_FASTK");
-  if (vdi.toString(script, s, kname))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandStochFast::runScript: invalid OUTPUT_FASTK" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandStochFast::runScript: parse error");
+    return;
   }
 
-  // OUTPUT_FASTD
-  QString dname;
-  s = sg->value("OUTPUT_FASTD");
-  if (vdi.toString(script, s, dname))
-  {
-    qDebug() << "CommandStochFast::runScript: invalid OUTPUT_FASTD" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // HIGH
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandStochFast::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandStochFast::runScript: invalid High");
+    return;
   }
 
-  // LOW
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandStochFast::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandStochFast::runScript: invalid Low");
+    return;
   }
 
-  // CLOSE
-  s = sg->value("CLOSE");
-  Data *iclose = vdi.toCurve(script, s);
+  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
   if (! iclose)
   {
-    qDebug() << "CommandStochFast::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PERIOD_FASTK
-  int kperiod = 5;
-  s = sg->value("PERIOD_FASTK");
-  if (vdi.toInteger(script, s, kperiod))
-  {
-    qDebug() << "CommandStochFast::runScript: invalid PERIOD_FASTK, using default" << s;
-    kperiod = 5;
-  }
-
-  // PERIOD_FASTD
-  int dperiod = 3;
-  s = sg->value("PERIOD_FASTD");
-  if (vdi.toInteger(script, s, dperiod))
-  {
-    qDebug() << "CommandStochFast::runScript: invalid PERIOD_FASTD, using default" << s;
-    dperiod = 3;
-  }
-
-  // MA_TYPE
-  int type = 0;
-  s = sg->value("MA_TYPE");
-  if (vdi.toMA(script, s, type))
-  {
-    qDebug() << "CommandStochFast::runScript: invalid MA_TYPE, using default" << s;
-    type = 0;
+    Command::error("CommandStochFast::runScript: invalid Close");
+    return;
   }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose;
 
-  QList<Data *> lines = getSTOCHF(list, kperiod, dperiod, type);
+  QList<Data *> lines = getSTOCHF(list,
+				  _values.value(_ParmTypePeriodK)->toInteger(),
+				  _values.value(_ParmTypePeriodD)->toInteger(),
+				  _values.value(_ParmTypeMA)->toInteger());
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandStochFast::runScript: getSTOCHF error");
+    return;
   }
 
-  script->setData(kname, lines.at(0));
-  script->setData(dname, lines.at(1));
+  script->setData(_values.value(_ParmTypeK)->toString(), lines.at(0));
+  script->setData(_values.value(_ParmTypeD)->toString(), lines.at(1));
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 QList<Data *> CommandStochFast::getSTOCHF (QList<Data *> &list, int kperiod, int dperiod, int type)
@@ -146,9 +107,9 @@ QList<Data *> CommandStochFast::getSTOCHF (QList<Data *> &list, int kperiod, int
   if (! list.count())
     return lines;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return lines;
 
   int size = keys.count();

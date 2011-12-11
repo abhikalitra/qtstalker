@@ -22,68 +22,61 @@
 #include "CommandAveragePrice.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "DataDouble.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
 CommandAveragePrice::CommandAveragePrice (QObject *p) : Command (p)
 {
   _name = "AVERAGE_PRICE";
+
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeOpen, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
 }
 
-int CommandAveragePrice::runScript (Message *sg, Script *script)
+void CommandAveragePrice::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandAveragePrice::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandAveragePrice::runScript: parse error");
+    return;
   }
 
-  // OPEN
-  s = sg->value("OPEN");
-  Data *iopen = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *iopen = svc.toCurve(script, _values.value(_ParmTypeOpen)->toString(), toffset);
   if (! iopen)
   {
-    qDebug() << "CommandAveragePrice::runScript: invalid OPEN" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandAveragePrice::runScript: invalid Open");
+    return;
   }
 
-  // HIGH
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandAveragePrice::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandAveragePrice::runScript: invalid High");
+    return;
   }
 
-  // LOW
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandAveragePrice::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandAveragePrice::runScript: invalid Low");
+    return;
   }
 
-  // CLOSE
-  s = sg->value("CLOSE");
-  Data *iclose = vdi.toCurve(script, s);
+  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
   if (! iclose)
   {
-    qDebug() << "CommandAveragePrice::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandAveragePrice::runScript: invalid Close");
+    return;
   }
 
   QList<Data *> list;
@@ -92,17 +85,13 @@ int CommandAveragePrice::runScript (Message *sg, Script *script)
   Data *line = getAP(list);
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandAveragePrice::runScript: getAveragePrice error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandAveragePrice::getAP (QList<Data *> &list)
@@ -110,9 +99,9 @@ Data * CommandAveragePrice::getAP (QList<Data *> &list)
   if (list.count() != 4)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   Data *line = new CurveData;

@@ -36,8 +36,17 @@ class CommandYahooHistory : public Command
     void signalMessage (QString);
 
   public:
+    enum ParmType
+    {
+      _ParmTypeDateStart,
+      _ParmTypeDateEnd,
+      _ParmTypeAdjusted,
+      _ParmTypeCSVFile,
+      _ParmTypeSymbolFile
+    };
+
     CommandYahooHistory (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     void getUrl (QDateTime sd, QDateTime ed, QString symbol, QString &url);
     void parse (QByteArray &ba, QString &symbol, QString &name, QTextStream &out, bool adjusted);
     int downloadName (QString symbol, QString &name);

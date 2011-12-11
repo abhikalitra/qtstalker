@@ -37,13 +37,28 @@
 #include "CommandChartPanelRefresh.h"
 #include "CommandChartUpdate.h"
 #include "CommandCMO.h"
-#include "CommandColor.h"
 #include "CommandCompare.h"
 #include "CommandCORREL.h"
 #include "CommandCSV.h"
+#include "CommandDataBarLength.cpp"
+#include "CommandDataBool.cpp"
+#include "CommandDataColor.cpp"
+#include "CommandDataDateRange.cpp"
+#include "CommandDataDateTime.cpp"
+#include "CommandDataDouble.cpp"
+#include "CommandDataFile.cpp"
+#include "CommandDataFont.cpp"
 #include "CommandDataGet.h"
+#include "CommandDataInteger.cpp"
+#include "CommandDataList.cpp"
+#include "CommandDataMA.cpp"
+#include "CommandDataOp.cpp"
 #include "CommandDataSet.h"
+#include "CommandDataString.cpp"
+#include "CommandDataSymbol.cpp"
 #include "CommandDialog.h"
+#include "CommandDialogRun.h"
+#include "CommandDialogSet.h"
 #include "CommandFI.h"
 #include "CommandGroupPanelRefresh.h"
 #include "CommandGroupSave.h"
@@ -79,7 +94,7 @@
 #include "CommandSymbol.h"
 #include "CommandSymbolCurrent.h"
 #include "CommandT3.h"
-#include "CommandTest.h"
+//#include "CommandTest.h"
 #include "CommandText.h"
 #include "CommandTHERM.h"
 #include "CommandTLine.h"
@@ -105,8 +120,12 @@ CommandFactory::CommandFactory ()
   _types << "CHART_OBJECT_BUY" << "CHART_OBJECT_HLINE" << "CHART_OBJECT_RETRACEMENT" << "CHART_OBJECT_SELL";
   _types << "CHART_OBJECT_TEXT" << "CHART_OBJECT_TLINE" << "CHART_OBJECT_VLINE";
   _types << "CHART_PANEL_REFRESH" << "CHART_UPDATE";
-  _types << "CMO" << "COLOR" << "COMPARE" << "CORREL" << "CSV";
-  _types << "DATA_GET" << "DATA_SET" << "DIALOG";
+  _types << "CMO" << "COMPARE" << "CORREL" << "CSV";
+  _types << "DATA_BAR_LENGTH" << "DATA_BOOL" << "DATA_COLOR" << "DATA_DATE_RANGE";
+  _types << "DATA_DATE_TIME" << "DATA_DOUBLE" << "DATA_FILE" << "DATA_FONT";
+  _types << "DATA_GET" << "DATA_INTEGER" << "DATA_LIST" << "DATA_MA" << "DATA_OP";
+  _types << "DATA_SET" << "DATA_STRING" << "DATA_SYMBOL";
+  _types << "DIALOG" << "DIALOG_RUN" << "DIALOG_SET";
   _types << "FI";
   _types << "GROUP_PANEL_REFRESH" << "GROUP_SAVE";
   _types << "HT" << "HT_PHASOR" << "HT_SINE";
@@ -201,9 +220,6 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _CMO:
       c = new CommandCMO(p);
       break;
-    case _COLOR:
-      c = new CommandColor(p);
-      break;
     case _COMPARE:
       c = new CommandCompare(p);
       break;
@@ -213,14 +229,62 @@ Command * CommandFactory::command (QObject *p, QString type)
     case _CSV:
       c = new CommandCSV(p);
       break;
+    case _DATA_BAR_LENGTH:
+      c = new CommandDataBarLength(p);
+      break;
+    case _DATA_BOOL:
+      c = new CommandDataBool(p);
+      break;
+    case _DATA_COLOR:
+      c = new CommandDataColor(p);
+      break;
+    case _DATA_DATE_RANGE:
+      c = new CommandDataDateRange(p);
+      break;
+    case _DATA_DATE_TIME:
+      c = new CommandDataDateTime(p);
+      break;
+    case _DATA_DOUBLE:
+      c = new CommandDataDouble(p);
+      break;
+    case _DATA_FILE:
+      c = new CommandDataFile(p);
+      break;
+    case _DATA_FONT:
+      c = new CommandDataFont(p);
+      break;
     case _DATA_GET:
       c = new CommandDataGet(p);
+      break;
+    case _DATA_INTEGER:
+      c = new CommandDataInteger(p);
+      break;
+    case _DATA_LIST:
+      c = new CommandDataList(p);
+      break;
+    case _DATA_MA:
+      c = new CommandDataMA(p);
+      break;
+    case _DATA_OP:
+      c = new CommandDataOp(p);
       break;
     case _DATA_SET:
       c = new CommandDataSet(p);
       break;
+    case _DATA_STRING:
+      c = new CommandDataString(p);
+      break;
+    case _DATA_SYMBOL:
+      c = new CommandDataSymbol(p);
+      break;
     case _DIALOG:
       c = new CommandDialog(p);
+      break;
+    case _DIALOG_RUN:
+      c = new CommandDialogRun(p);
+      break;
+    case _DIALOG_SET:
+      c = new CommandDialogSet(p);
       break;
     case _FI:
       c = new CommandFI(p);
@@ -319,7 +383,7 @@ Command * CommandFactory::command (QObject *p, QString type)
       c = new CommandT3(p);
       break;
     case _TEST:
-      c = new CommandTest(p);
+//      c = new CommandTest(p);
       break;
     case _THERM:
       c = new CommandTHERM(p);

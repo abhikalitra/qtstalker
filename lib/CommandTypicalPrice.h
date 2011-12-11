@@ -29,8 +29,16 @@ class CommandTypicalPrice : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeHigh,
+      _ParmTypeLow,
+      _ParmTypeClose
+    };
+
     CommandTypicalPrice (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getTP (QList<Data *> &);
 };
 

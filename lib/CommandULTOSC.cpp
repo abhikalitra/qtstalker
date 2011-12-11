@@ -23,9 +23,12 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,99 +36,66 @@ CommandULTOSC::CommandULTOSC (QObject *p) : Command (p)
 {
   _name = "ULTOSC";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+  _values.insert(_ParmTypePeriodS, new DataInteger(7));
+  _values.insert(_ParmTypePeriodM, new DataInteger(14));
+  _values.insert(_ParmTypePeriodL, new DataInteger(28));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandULTOSC::CommandULTOSC: error on TA_Initialize");
 }
 
-int CommandULTOSC::runScript (Message *sg, Script *script)
+void CommandULTOSC::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandULTOSC::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandULTOSC::runScript: parse error");
+    return;
   }
 
-  // HIGH
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandULTOSC::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandULTOSC::runScript: invalid High");
+    return;
   }
 
-  // LOW
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandULTOSC::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandULTOSC::runScript: invalid Low");
+    return;
   }
 
-  // CLOSE
-  s = sg->value("CLOSE");
-  Data *iclose = vdi.toCurve(script, s);
+  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
   if (! iclose)
   {
-    qDebug() << "CommandULTOSC::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PERIOD
-  int sp = 7;
-  s = sg->value("PERIOD_SHORT");
-  if (vdi.toInteger(script, s, sp))
-  {
-    qDebug() << "CommandULTOSC::runScript: invalid PERIOD_SHORT, using default" << s;
-    sp = 7;
-  }
-
-  // PERIOD_MED
-  int mp = 14;
-  s = sg->value("PERIOD_MED");
-  if (vdi.toInteger(script, s, mp))
-  {
-    qDebug() << "CommandULTOSC::runScript: invalid PERIOD_MED, using default" << s;
-    mp = 14;
-  }
-
-  // PERIOD_LONG
-  int lp = 28;
-  s = sg->value("PERIOD_LONG");
-  if (vdi.toInteger(script, s, lp))
-  {
-    qDebug() << "CommandULTOSC::runScript: invalid PERIOD_LONG, using default" << s;
-    lp = 28;
+    Command::error("CommandULTOSC::runScript: invalid Close");
+    return;
   }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose;
 
-  Data *line = getULTOSC(list, sp, mp, lp);
+  Data *line = getULTOSC(list,
+			 _values.value(_ParmTypePeriodS)->toInteger(),
+			 _values.value(_ParmTypePeriodM)->toInteger(),
+			 _values.value(_ParmTypePeriodL)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandULTOSC::runScript: getULTOSC error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandULTOSC::getULTOSC (QList<Data *> &list, int sp, int mp, int lp)
@@ -133,9 +103,9 @@ Data * CommandULTOSC::getULTOSC (QList<Data *> &list, int sp, int mp, int lp)
   if (list.count() != 3)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int size = keys.count();

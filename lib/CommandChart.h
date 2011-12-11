@@ -29,8 +29,17 @@ class CommandChart : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeName,
+      _ParmTypeDate,
+      _ParmTypeLog,
+      _ParmTypeRow,
+      _ParmTypeCol
+    };
+
     CommandChart (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     void chart (QString chart, QString script, int row, int col, bool date, bool log);
 };
 

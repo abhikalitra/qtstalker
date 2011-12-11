@@ -23,9 +23,12 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataList.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -34,61 +37,48 @@ CommandHT::CommandHT (QObject *p) : Command (p)
   _name = "HT";
   _method << "DCPERIOD" << "DCPHASE" << "TRENDLINE" << "TRENDMODE";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+
+  DataList *dl = new DataList(_method.at(2));
+  dl->set(_method);
+  _values.insert(_ParmTypeMethod, dl);
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandHT::CommandHT: error on TA_Initialize");
 }
 
-int CommandHT::runScript (Message *sg, Script *script)
+void CommandHT::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandHT::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandHT::runScript: parse error");
+    return;
   }
 
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandHT::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // METHOD
-  s = sg->value("METHOD");
-  int method = _method.indexOf(s);
-  if (method == -1)
-  {
-    qDebug() << "CommandHT::runScript: invalid METHOD, using default" << s;
-    method = _method.indexOf("TRENDMODE");
+    Command::error("CommandHT::runScript: invalid Input");
+    return;
   }
 
   QList<Data *> list;
   list << in;
 
-  Data *line = getHT(list, method);
+  Data *line = getHT(list, _values.value(_ParmTypeMethod)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandHT::runScript: getHT error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandHT::getHT (QList<Data *> &list, int method)
@@ -96,9 +86,9 @@ Data * CommandHT::getHT (QList<Data *> &list, int method)
   if (! list.count())
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int size = keys.count();

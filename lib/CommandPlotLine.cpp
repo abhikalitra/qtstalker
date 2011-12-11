@@ -20,7 +20,6 @@
  */
 
 #include "CommandPlotLine.h"
-#include "VerifyDataInput.h"
 #include "LineStyle.h"
 #include "CurveData.h"
 #include "CurveBar.h"
@@ -28,112 +27,68 @@
 #include "DataInteger.h"
 #include "DataColor.h"
 #include "DataDouble.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
+#include "DataList.h"
 
 #include <QtDebug>
 
 CommandPlotLine::CommandPlotLine (QObject *p) : Command (p)
 {
   _name = "PLOT_LINE";
+  _type = _WAIT;
+
+  _values.insert(_ParmTypeName, new DataString());
+  _values.insert(_ParmTypeChart, new DataString());
+  _values.insert(_ParmTypeLabel, new DataString());
+
+  DataList *dl = new DataList("Line");
+  LineStyle ls;
+  QStringList tl = ls.list();
+  dl->set(tl);
+  _values.insert(_ParmTypeStyle, dl);
+
+  _values.insert(_ParmTypeColor, new DataColor());
+  _values.insert(_ParmTypeZ, new DataInteger(0));
+  _values.insert(_ParmTypePen, new DataInteger(1));
+  _values.insert(_ParmTypeInput, new DataString());
 }
 
-int CommandPlotLine::runScript (Message *sg, Script *script)
+void CommandPlotLine::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandPlotLine::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandPlotLine::runScript: parse error");
+    return;
   }
 
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandPlotLine::runScript: INPUT not found" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // CHART
-  QString chart;
-  s = sg->value("CHART");
-  if (vdi.toString(script, s, chart))
-  {
-    qDebug() << "CommandPlotLine::runScript: invalid CHART" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // LABEL
-  QString label;
-  s = sg->value("LABEL");
-  if (vdi.toString(script, s, label))
-  {
-    qDebug() << "CommandPlotLine::runScript invalid LABEL" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // STYLE
-  LineStyle ls;
-  QString style = sg->value("STYLE");
-  if (ls.stringToStyle(style) == -1)
-  {
-    qDebug() << "CommandPlotLine::runScript: invalid STYLE, using default" << style;
-    style = "Line";
-  }
-
-  // COLOR
-  QColor color;
-  s = sg->value("COLOR");
-  if (vdi.toColor(script, s, color))
-  {
-    qDebug() << "CommandPlotLine::runScript: invalid COLOR, using default" << s;
-    color = QColor(Qt::red);
-  }
-
-  // Z
-  int z = 0;
-  s = sg->value("Z");
-  if (vdi.toInteger(script, s, z))
-  {
-    qDebug() << "CommandPlotLine::runScript: invalid Z, using default" << s;
-    z = 0;
-  }
-
-  // PEN
-  int pen = 1;
-  s = sg->value("PEN");
-  if (vdi.toInteger(script, s, pen))
-  {
-    qDebug() << "CommandPlotLine::runScript: invalid PEN, using default" << s;
-    pen = 1;
+    Command::error("CommandPlotLine::runScript: invalid Input");
+    return;
   }
 
   QList<Data *> list;
   list << in;
 
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
   {
-    qDebug() << "CommandPlotLine::runScript: invalid keys";
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandPlotLine::runScript: invalid keys");
+    return;
   }
 
   Data *line = new CurveData;
   line->set(CurveData::_TYPE, new DataString(QString("Line")));
-  line->set(CurveData::_Z, new DataInteger(z));
-  line->set(CurveData::_PEN, new DataInteger(pen));
-  line->set(CurveData::_LABEL, new DataString(label));
-  line->set(CurveData::_CHART, new DataString(chart));
-  line->set(CurveData::_STYLE, new DataString(style));
+  line->set(CurveData::_Z, new DataInteger(_values.value(_ParmTypeZ)->toInteger()));
+  line->set(CurveData::_PEN, new DataInteger(_values.value(_ParmTypePen)->toInteger()));
+  line->set(CurveData::_LABEL, new DataString(_values.value(_ParmTypeLabel)->toString()));
+  line->set(CurveData::_CHART, new DataString(_values.value(_ParmTypeChart)->toString()));
+  line->set(CurveData::_STYLE, new DataString(_values.value(_ParmTypeStyle)->toString()));
 
   int loop = 0;
   for (; loop < keys.count(); loop++)
@@ -144,15 +99,11 @@ int CommandPlotLine::runScript (Message *sg, Script *script)
 
     Data *bar = new CurveBar;
     bar->set(CurveBar::_VALUE, new DataDouble(ibar->toData(CurveBar::_VALUE)->toDouble()));
-    bar->set(CurveBar::_COLOR, new DataColor(color));
+    bar->set(CurveBar::_COLOR, new DataColor(_values.value(_ParmTypeColor)->toColor()));
     line->set(keys.at(loop), bar);
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeName)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }

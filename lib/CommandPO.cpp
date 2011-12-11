@@ -23,9 +23,14 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataMA.h"
+#include "DataList.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -34,88 +39,55 @@ CommandPO::CommandPO (QObject *p) : Command (p)
   _name = "PO";
   _method << "APO" << "PPO";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypePeriodFast, new DataInteger(12));
+  _values.insert(_ParmTypePeriodSlow, new DataInteger(24));
+  _values.insert(_ParmTypeMA, new DataMA("EMA"));
+
+  DataList *dl = new DataList(_method.at(0));
+  dl->set(_method);
+  _values.insert(_ParmTypeMethod, dl);
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandPO::CommandPO: error on TA_Initialize");
 }
 
-int CommandPO::runScript (Message *sg, Script *script)
+void CommandPO::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandPO::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandPO::runScript: parse error");
+    return;
   }
 
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandPO::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // METHOD
-  s = sg->value("METHOD");
-  int method = _method.indexOf(s);
-  if (method == -1)
-  {
-    qDebug() << "CommandPO::runScript: invalid METHOD, using default" << s;
-    method = _method.indexOf("APO");
-  }
-
-  // PERIOD_FAST
-  int fast = 12;
-  s = sg->value("PERIOD_FAST");
-  if (vdi.toInteger(script, s, fast))
-  {
-    qDebug() << "CommandPO::runScript: invalid PERIOD_FAST, using default" << s;
-    fast = 12;
-  }
-
-  // PERIOD_SLOW
-  int slow = 24;
-  s = sg->value("PERIOD_SLOW");
-  if (vdi.toInteger(script, s, slow))
-  {
-    qDebug() << "CommandPO::runScript: invalid PERIOD_SLOW, using default" << s;
-    slow = 24;
-  }
-
-  // MA_TYPE
-  int type = 0;
-  s = sg->value("MA_TYPE");
-  if (vdi.toMA(script, s, type))
-  {
-    qDebug() << "CommandPO::runScript: invalid MA_TYPE, using default" << s;
-    type = 0;
+    Command::error("CommandPO::runScript: invalid Input");
+    return;
   }
 
   QList<Data *> list;
   list << in;
 
-  Data *line = getPO(list, fast, slow, type, method);
+  Data *line = getPO(list,
+		     _values.value(_ParmTypePeriodFast)->toInteger(),
+		     _values.value(_ParmTypePeriodSlow)->toInteger(),
+		     _values.value(_ParmTypeMA)->toInteger(),
+		     _values.value(_ParmTypeMethod)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandPO::runScript: getPO error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandPO::getPO (QList<Data *> &list, int fast, int slow, int type, int method)
@@ -123,9 +95,9 @@ Data * CommandPO::getPO (QList<Data *> &list, int fast, int slow, int type, int 
   if (! list.count())
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int size = keys.count();

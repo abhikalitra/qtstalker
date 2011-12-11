@@ -29,8 +29,15 @@ class CommandPHASOR : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypePhase,
+      _ParmTypeQuad,
+      _ParmTypeInput
+    };
+
     CommandPHASOR (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     QList<Data *> getPHASOR (QList<Data *> &);
 };
 

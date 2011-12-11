@@ -49,8 +49,19 @@ class CommandCSV : public Command
       _SEMICOLON
     };
 
+    enum ParmType
+    {
+      _ParmTypeCSVFile,
+      _ParmTypeFormat,
+      _ParmTypeDateFormat,
+      _ParmTypeDelimiter,
+      _ParmTypeType,
+      _ParmTypeFilenameAsSymbol,
+      _ParmTypeExchange
+    };
+
     CommandCSV (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
 
   private:
     QStringList _formatType;

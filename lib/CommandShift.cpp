@@ -22,68 +22,61 @@
 #include "CommandShift.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "DataDouble.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
 CommandShift::CommandShift (QObject *p) : Command (p)
 {
   _name = "SHIFT";
+
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(10));
 }
 
-int CommandShift::runScript (Message *sg, Script *script)
+void CommandShift::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandShift::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandShift::runScript: parse error");
+    return;
   }
 
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandShift::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandShift::runScript: invalid Input");
+    return;
   }
 
-  // PERIOD
-  int period = 10;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandShift::runScript: invalid PERIOD, using default" << s;
-    period = 10;
-  }
-
-  Data *line = getShift(in, period);
+  Data *line = getShift(in, _values.value(_ParmTypePeriod)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandShift::runScript: getShift error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandShift::getShift (Data *in, int period)
 {
-  QList<int> keys = in->keys();
+  QList<Data *> list;
+  list << in;
+
+  ScriptVerifyCurveKeys svck;
+  QList<int> keys;
+  if (svck.keys(list, keys))
+    return 0;
 
   Data *line = new CurveData;
   int loop = 0;

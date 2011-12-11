@@ -21,71 +21,51 @@
 
 #include "CommandMA.h"
 #include "MAType.h"
-#include "CurveData.h"
-#include "VerifyDataInput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataMA.h"
+#include "ScriptVerifyCurve.h"
 
 #include <QtDebug>
 
 CommandMA::CommandMA (QObject *p) : Command (p)
 {
   _name = "MA";
+
+  _values.insert(_ParmTypeName, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(10));
+  _values.insert(_ParmTypeType, new DataMA("EMA"));
 }
 
-int CommandMA::runScript (Message *sg, Script *script)
+void CommandMA::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-  MAType mat;
-
-  // METHOD
-  int method;
-  QString s = sg->value("METHOD");
-  if (vdi.toMA(script, s, method))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandMA::runScript: invalid METHOD, using default" << s;
-    method = MAType::_EMA;
+    Command::error("CommandMA::runScript: parse error");
+    return;
   }
 
-  // OUTPUT
-  QString output;
-  s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, output))
-  {
-    qDebug() << "CommandMA::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandMA::runScript: INPUT missing " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMA::runScript: invalid Input");
+    return;
   }
 
-  // PERIOD
-  int period = 10;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandMA::runScript: invalid PERIOD, using default " << s;
-    period = 10;
-  }
-
-  Data *line = mat.getMA(in, period, method);
+  MAType mat;
+  Data *line = mat.getMA(in,
+			 _values.value(_ParmTypePeriod)->toInteger(),
+			 _values.value(_ParmTypeType)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error(QString());
+    return;
   }
 
-  script->setData(output, line);
+  script->setData(_values.value(_ParmTypeName)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }

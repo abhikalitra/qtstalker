@@ -29,8 +29,18 @@ class CommandVFI : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeHigh,
+      _ParmTypeLow,
+      _ParmTypeClose,
+      _ParmTypeVolume,
+      _ParmTypePeriod
+    };
+
     CommandVFI (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getVFI (QList<Data *> &, int);
 };
 

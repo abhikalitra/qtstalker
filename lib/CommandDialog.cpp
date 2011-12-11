@@ -22,6 +22,8 @@
 #include "CommandDialog.h"
 #include "DataDialog.h"
 #include "GlobalParent.h"
+#include "Global.h"
+#include "DataString.h"
 
 #include <QtDebug>
 #include <QDialog>
@@ -29,55 +31,27 @@
 CommandDialog::CommandDialog (QObject *p) : Command (p)
 {
   _name = "DIALOG";
-  _type = _DIALOG;
+  _type = _WAIT;
+
+  _values.insert(_ParmTypeKey, new DataString());
+  _values.insert(_ParmTypeTitle, new DataString());
 }
 
-int CommandDialog::runScript (Message *sg, Script *script)
+void CommandDialog::runScript (CommandParse sg, Script *script)
 {
-  DataDialog *dialog = new DataDialog(g_parent);
-  connect(dialog, SIGNAL(accepted()), this, SLOT(dialogAccepted()));
-  connect(dialog, SIGNAL(rejected()), this, SLOT(dialogRejected()));
+  if (Command::parse(sg, script))
+  {
+    Command::error("CommandDialog::runScript: parse error");
+    return;
+  }
 
-  // verify TITLE
+  DataDialog *dialog = new DataDialog(g_parent);
+
   QStringList l;
-  l << "QtStalker:" << sg->value("TITLE");
+  l << "QtStalker" + g_session + ":" << _values.value(_ParmTypeTitle)->toString();
   dialog->setWindowTitle(l.join(" "));
 
-  int loop = 0;
-  for (; loop < 20; loop++)
-  {
-    // get DATA_SETTING
-    QString s = "SETTING_" + QString::number(loop);
-    QString s2 = sg->value(s);
-    Data *d = script->data(s2);
-    if (! d)
-      continue;
+  script->setDialog(_values.value(_ParmTypeKey)->toString(), dialog);
 
-    dialog->set(d);
-  }
-
-  for (loop = 0; loop < 5; loop++)
-  {
-    QString s = "TAB_TITLE_" + QString::number(loop);
-    QString s2 = sg->value(s);
-    if (s2.isEmpty())
-      continue;
-
-    dialog->setTabTitle(loop, s2);
-  }
-
-  dialog->show();
-
-  return _OK;
-}
-
-void CommandDialog::dialogAccepted ()
-{
-  _returnString = "OK";
-  emit signalResume((void *) this);
-}
-
-void CommandDialog::dialogRejected ()
-{
-  emit signalResume((void *) this);
+  Command::done(QString());
 }

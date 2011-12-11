@@ -29,8 +29,15 @@ class CommandCMO : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeInput,
+      _ParmTypePeriod
+    };
+
     CommandCMO (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getCMO (QList<Data *> &, int);
 };
 

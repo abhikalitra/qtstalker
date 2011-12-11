@@ -27,13 +27,12 @@
 CommandChartPanelRefresh::CommandChartPanelRefresh (QObject *p) : Command (p)
 {
   _name = "CHART_PANEL_REFRESH";
-  _type = _NORMAL;
+  _type = _WAIT;
 }
 
-int CommandChartPanelRefresh::runScript (Message *, Script *)
+void CommandChartPanelRefresh::runScript (CommandParse, Script *)
 {
   g_sidePanel->chartPanel()->updateList();
-  _returnString = "OK";
-  emit signalResume((void *) this);
-  return _OK;
+
+  Command::done(QString());
 }

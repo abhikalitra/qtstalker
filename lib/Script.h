@@ -30,6 +30,8 @@
 
 #include "Data.h"
 #include "Symbol.h"
+#include "DataDialog.h"
+#include "CommandThread.h"
 
 class Script : public QObject
 {
@@ -56,11 +58,12 @@ class Script : public QObject
     int nextROID ();
     void setCommand (QString);
     QString command ();
-    void setTData (Data *);
     void setSymbol (Symbol *);
     Symbol * symbol ();
     void deleteData ();
     QString id ();
+    void setDialog (QString, DataDialog *);
+    DataDialog * dialog (QString);
 
   public slots:
     int run ();
@@ -68,7 +71,7 @@ class Script : public QObject
     void readFromStderr ();
     void done (int, QProcess::ExitStatus);
     void stopScript ();
-    void resume (void *);
+    void resume (QString);
     void error (QProcess::ProcessError);
 
   protected:
@@ -76,7 +79,7 @@ class Script : public QObject
     QString _file;
     QString _command;
     QHash<QString, Data *> _data;
-    QList<Data *> _tdata;
+    QHash<QString, DataDialog *> _dialog;
     QProcess *_proc;
     int _killFlag;
     Symbol *_symbol;

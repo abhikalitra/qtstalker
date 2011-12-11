@@ -29,8 +29,17 @@ class CommandAveragePrice : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeOpen,
+      _ParmTypeHigh,
+      _ParmTypeLow,
+      _ParmTypeClose
+    };
+
     CommandAveragePrice (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getAP (QList<Data *> &);
 };
 

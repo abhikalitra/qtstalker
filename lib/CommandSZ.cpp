@@ -25,8 +25,12 @@
 #include "CommandSZ.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "DataDouble.h"
+#include "DataInteger.h"
+#include "DataString.h"
+#include "DataList.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -34,95 +38,61 @@ CommandSZ::CommandSZ (QObject *p) : Command (p)
 {
   _name = "SZ";
   _method << "LONG" << "SHORT";
+
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(10));
+
+  DataList *dl = new DataList(_method.at(0));
+  dl->set(_method);
+  _values.insert(_ParmTypeMethod, dl);
+
+  _values.insert(_ParmTypeNoDecline, new DataInteger(2));
+  _values.insert(_ParmTypeCoeff, new DataDouble(2));
 }
 
-int CommandSZ::runScript (Message *sg, Script *script)
+void CommandSZ::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandSZ::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSZ::runScript: parse error");
+    return;
   }
 
-  // HIGH
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandSZ::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSZ::runScript: invalid High");
+    return;
   }
 
-  // LOW
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandSZ::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // METHOD
-  s = sg->value("METHOD");
-  int method = _method.indexOf(s);
-  if (method == -1)
-  {
-    qDebug() << "CommandSZ::runScript: invalid METHOD, using default" << s;
-    method = 0;
-  }
-
-  // PERIOD
-  int period = 10;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandSZ::runScript: invalid PERIOD, using default" << s;
-    period = 10;
-  }
-
-  // PERIOD_NO_DECLINE
-  int ndperiod = 2;
-  s = sg->value("PERIOD_NO_DECLINE");
-  if (vdi.toInteger(script, s, ndperiod))
-  {
-    qDebug() << "CommandSZ::runScript: invalid PERIOD_NO_DECLINE, using default" << s;
-    ndperiod = 2;
-  }
-
-  // COEFFICIENT
-  double coeff = 2;
-  s = sg->value("COEFFICIENT");
-  if (vdi.toDouble(script, s, coeff))
-  {
-    qDebug() << "CommandSZ::runScript: invalid COEFFICIENT, using default" << s;
-    coeff = 2;
+    Command::error("CommandSZ::runScript: invalid Low");
+    return;
   }
 
   QList<Data *> list;
   list << ihigh << ilow;
 
-  Data *pl = getSZ(list, method, period, ndperiod, coeff);
-  if (! pl)
+  Data *line = getSZ(list,
+		     _values.value(_ParmTypeMethod)->toInteger(),
+		     _values.value(_ParmTypePeriod)->toInteger(),
+		     _values.value(_ParmTypeNoDecline)->toInteger(),
+	             _values.value(_ParmTypeCoeff)->toDouble());
+  if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSZ::runScript: getSZ error");
+    return;
   }
 
-  script->setData(name, pl);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_decline_period, double coefficient)
@@ -130,9 +100,9 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
   if (list.count() != 2)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int display_uptrend = 0;

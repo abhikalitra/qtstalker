@@ -27,13 +27,11 @@
 CommandGroupPanelRefresh::CommandGroupPanelRefresh (QObject *p) : Command (p)
 {
   _name = "GROUP_PANEL_REFRESH";
-  _type = _NORMAL;
+  _type = _WAIT;
 }
 
-int CommandGroupPanelRefresh::runScript (Message *, Script *)
+void CommandGroupPanelRefresh::runScript (CommandParse, Script *)
 {
   g_sidePanel->groupPanel()->updateList();
-  _returnString = "OK";
-  emit signalResume((void *) this);
-  return _OK;
+  Command::done(QString());
 }

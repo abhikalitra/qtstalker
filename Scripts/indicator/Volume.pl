@@ -34,86 +34,41 @@ $maStyle = 'Line';
 $|++;
 
 # create the chart
-$command = "COMMAND=CHART;
-            NAME=$chartName;
-            DATE=0;
-            LOG=0;
-            ROW=1;
-            COL=0";
+$command = "CHART($chartName, 0, 0, 1, 0)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # load current bars
-$command = "COMMAND=SYMBOL_CURRENT;
-            DATE=$dateName;
-            OPEN=$openName;
-            HIGH=$highName;
-            LOW=$lowName;
-            CLOSE=$closeName;
-            VOLUME=$volumeName;
-            OI=$oiName";
+$command = "SYMBOL_CURRENT($dateName, $openName, $highName, $lowName, $closeName, $volumeName, $oiName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot the histogram
-$command = "COMMAND=PLOT_HISTOGRAM;
-            CHART=$chartName;
-            LABEL=$volLabel;
-            HIGH=$volumeName;
-            LOW=0;
-            OUTPUT=$volName;
-            STYLE=$volStyle;
-            COLOR=$volColor;
-            Z=$volZ;
-            PEN=1";
+$command = "PLOT_HISTOGRAM($volName, $chartName, $volLabel, $volStyle, $volColor, $volZ, 1, $volumeName, 0)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # color up bars
-$command = "COMMAND=COLOR;
-            INPUT_1=$closeName;
-            OP=GT;
-            INPUT_2=$closeName.1;
-            INPUT_3=$volName;
-            COLOR=$volUpColor";
+$command = "COMPARE($closeName, >, $closeName.1, $volName, $volUpColor)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # color down bars
-$command = "COMMAND=COLOR;
-            INPUT_1=$closeName;
-            OP=LT;
-            INPUT_2=$closeName.1;
-            INPUT_3=$volName;
-            COLOR=$volDownColor";
+$command = "COMPARE($closeName, <, $closeName.1, $volName, $volDownColor)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # MA
-$command = "COMMAND=MA;
-            OUTPUT=$maData;
-            INPUT=$volumeName;
-            PERIOD=$maPeriod;
-            METHOD=$maType";
+$command = "MA($maData, $volumeName, $maPeriod, $maType)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot the MA
-$command = "COMMAND=PLOT_LINE;
-            CHART=$chartName;
-            OUTPUT=$maName;
-            LABEL=$maLabel;
-            INPUT=$maData;
-            STYLE=$maStyle;
-            COLOR=$maColor;
-            Z=$maZ;
-            PEN=1";
+$command = "PLOT_LINE($maName, $chartName, $maLabel, $maStyle, $maColor, $maZ, 1, $maData)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # update chart
-$command = "COMMAND=CHART_UPDATE;
-            CHART=$chartName;
-            DATE=$dateName";
+$command = "CHART_UPDATE($chartName, $dateName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

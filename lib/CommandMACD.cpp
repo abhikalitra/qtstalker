@@ -23,9 +23,13 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataMA.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,129 +37,61 @@ CommandMACD::CommandMACD (QObject *p) : Command (p)
 {
   _name = "MACD";
 
+  _values.insert(_ParmTypeMACD, new DataString());
+  _values.insert(_ParmTypeSignal, new DataString());
+  _values.insert(_ParmTypeHist, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypePeriodFast, new DataInteger(12));
+  _values.insert(_ParmTypeMAFast, new DataMA("EMA"));
+  _values.insert(_ParmTypePeriodSlow, new DataInteger(24));
+  _values.insert(_ParmTypeMASlow, new DataMA("EMA"));
+  _values.insert(_ParmTypePeriodSignal, new DataInteger(9));
+  _values.insert(_ParmTypeMASignal, new DataMA("EMA"));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandMACD::CommandMACD: error on TA_Initialize");
 }
 
-int CommandMACD::runScript (Message *sg, Script *script)
+void CommandMACD::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT_MACD
-  QString mname;
-  QString s = sg->value("OUTPUT_MACD");
-  if (vdi.toString(script, s, mname))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandMACD::runScript: invalid OUTPUT_UPPER" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMACD::runScript: parse error");
+    return;
   }
 
-  // OUTPUT_SIGNAL
-  QString sname;
-  s = sg->value("OUTPUT_SIGNAL");
-  if (vdi.toString(script, s, sname))
-  {
-    qDebug() << "CommandMACD::runScript: invalid OUTPUT_MIDDLE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // OUTPUT_HIST
-  QString hname;
-  s = sg->value("OUTPUT_HIST");
-  if (vdi.toString(script, s, hname))
-  {
-    qDebug() << "CommandMACD::runScript: invalid OUTPUT_LOWER" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandMACD::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PERIOD_FAST
-  int fperiod = 12;
-  s = sg->value("PERIOD_FAST");
-  if (vdi.toInteger(script, s, fperiod))
-  {
-    qDebug() << "CommandMACD::runScript: invalid PERIOD_FAST, using default" << s;
-    fperiod = 12;
-  }
-
-  // MA_TYPE_FAST
-  int ftype = 0;
-  s = sg->value("MA_TYPE_FAST");
-  if (vdi.toMA(script, s, ftype))
-  {
-    qDebug() << "CommandMACD::runScript: invalid MA_TYPE_FAST, using default" << s;
-    ftype = 0;
-  }
-
-  // PERIOD_SLOW
-  int speriod = 24;
-  s = sg->value("PERIOD_SLOW");
-  if (vdi.toInteger(script, s, speriod))
-  {
-    qDebug() << "CommandMACD::runScript: invalid PERIOD_SLOW, using default" << s;
-    speriod = 24;
-  }
-
-  // MA_TYPE_SLOW
-  int stype = 0;
-  s = sg->value("MA_TYPE_SLOW");
-  if (vdi.toMA(script, s, stype))
-  {
-    qDebug() << "CommandMACD::runScript: invalid MA_TYPE_SLOW, using default" << s;
-    stype = 0;
-  }
-
-  // PERIOD_SIGNAL
-  int sigperiod = 9;
-  s = sg->value("PERIOD_SIGNAL");
-  if (vdi.toInteger(script, s, sigperiod))
-  {
-    qDebug() << "CommandMACD::runScript: invalid PERIOD_SIGNAL, using default" << s;
-    sigperiod = 9;
-  }
-
-  // MA_TYPE_SIGNAL
-  int sigtype = 0;
-  s = sg->value("MA_TYPE_SIGNAL");
-  if (vdi.toMA(script, s, sigtype))
-  {
-    qDebug() << "CommandMACD::runScript: invalid MA_TYPE_SIGNAL, using default" << s;
-    sigtype = 0;
+    Command::error("CommandMACD::runScript: invalid Input");
+    return;
   }
 
   QList<Data *> list;
   list << in;
 
-  QList<Data *> lines = getMACD(list, fperiod, speriod, sigperiod, ftype, stype, sigtype);
+  QList<Data *> lines = getMACD(list,
+				_values.value(_ParmTypePeriodFast)->toInteger(),
+				_values.value(_ParmTypePeriodSlow)->toInteger(),
+				_values.value(_ParmTypePeriodSignal)->toInteger(),
+				_values.value(_ParmTypeMAFast)->toInteger(),
+				_values.value(_ParmTypeMASlow)->toInteger(),
+				_values.value(_ParmTypeMASignal)->toInteger());
   if (lines.count() != 3)
   {
     qDeleteAll(lines);
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMACD::runScript: getMACD error");
+    return;
   }
 
-  script->setData(mname, lines.at(0));
-  script->setData(sname, lines.at(1));
-  script->setData(hname, lines.at(2));
+  script->setData(_values.value(_ParmTypeMACD)->toString(), lines.at(0));
+  script->setData(_values.value(_ParmTypeSignal)->toString(), lines.at(1));
+  script->setData(_values.value(_ParmTypeHist)->toString(), lines.at(2));
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 QList<Data *> CommandMACD::getMACD (QList<Data *> &list, int fp, int sp, int sigp, int fma, int sma, int sigma)
@@ -164,9 +100,9 @@ QList<Data *> CommandMACD::getMACD (QList<Data *> &list, int fp, int sp, int sig
   if (! list.count())
     return lines;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return lines;
 
   int size = keys.count();

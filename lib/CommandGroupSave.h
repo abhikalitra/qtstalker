@@ -29,8 +29,14 @@ class CommandGroupSave : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeGroup,
+      _ParmTypeSymbol
+    };
+
     CommandGroupSave (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

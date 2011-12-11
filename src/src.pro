@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-CONFIG += qt thread warn_on debug qdbus
+CONFIG += qt thread warn_on debug
 #CONFIG(debug, debug|release): DEFINES += DEBUG _DEBUG
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math

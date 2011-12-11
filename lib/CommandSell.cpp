@@ -26,7 +26,6 @@
 #include "DataString.h"
 #include "DataBool.h"
 #include "DataInteger.h"
-#include "VerifyDataInput.h"
 #include "DataDateTime.h"
 
 #include <QtDebug>
@@ -34,76 +33,37 @@
 CommandSell::CommandSell (QObject *p) : Command (p)
 {
   _name = "CHART_OBJECT_SELL";
+
+  _values.insert(_ParmTypeChart, new DataString());
+  _values.insert(_ParmTypeColor, new DataColor(QColor(Qt::red)));
+  _values.insert(_ParmTypeDate, new DataDateTime(QDateTime::currentDateTime()));
+  _values.insert(_ParmTypePrice, new DataDouble(0));
+  _values.insert(_ParmTypeZ, new DataInteger(0));
+  _values.insert(_ParmTypePen, new DataInteger(1));
 }
 
-int CommandSell::runScript (Message *sg, Script *script)
+void CommandSell::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // COLOR
-  QColor color;
-  QString s = sg->value("COLOR");
-  if (vdi.toColor(script, s, color))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandSell::runScript: invalid COLOR, using default" << s;
-    color = QColor(Qt::red);
-  }
-
-  // DATE
-  QDateTime date;
-  s = sg->value("DATE");
-  if (vdi.toDateTime(script, s, date))
-  {
-    qDebug() << "CommandSell::runScript: invalid DATE, using default" << s;
-    date = QDateTime::currentDateTime();
-  }
-
-  // PRICE
-  double price = 0;
-  s = sg->value("PRICE");
-  if (vdi.toDouble(script, s, price))
-  {
-    qDebug() << "CommandSell::runScript: invalid PRICE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // CHART
-  QString chart;
-  s = sg->value("CHART");
-  if (vdi.toString(script, s, chart))
-  {
-    qDebug() << "CommandSell::runScript: invalid CHART" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // Z
-  int z = 0;
-  s = sg->value("Z");
-  if (vdi.toInteger(script, s, z))
-  {
-    qDebug() << "CommandSell::runScript: invalid Z, using default" << s;
-    z = 0;
+    Command::error("CommandSell::runScript: parse error");
+    return;
   }
 
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_COLOR, new DataColor(color));
-  co->set(ChartObjectData::_DATE, new DataDateTime(date));
-  co->set(ChartObjectData::_PRICE, new DataDouble(price));
-  co->set(ChartObjectData::_CHART, new DataString(chart));
-  co->set(ChartObjectData::_Z, new DataInteger(z));
+  co->set(ChartObjectData::_COLOR, new DataColor(_values.value(_ParmTypeColor)->toColor()));
+  co->set(ChartObjectData::_DATE, new DataDateTime(_values.value(_ParmTypeDate)->toDateTime()));
+  co->set(ChartObjectData::_PRICE, new DataDouble(_values.value(_ParmTypePrice)->toDouble()));
+  co->set(ChartObjectData::_CHART, new DataString(_values.value(_ParmTypeChart)->toString()));
+  co->set(ChartObjectData::_Z, new DataInteger(_values.value(_ParmTypeZ)->toInteger()));
+  co->set(ChartObjectData::_PEN, new DataInteger(_values.value(_ParmTypePen)->toInteger()));
   co->set(ChartObjectData::_ID, new DataInteger(id));
   co->set(ChartObjectData::_RO, new DataBool(TRUE));
   co->set(ChartObjectData::_TYPE, new DataString(QString("Sell")));
 
   script->setData(QString::number(id), co);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }

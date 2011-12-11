@@ -23,9 +23,13 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataList.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -34,72 +38,59 @@ CommandMINMAX::CommandMINMAX (QObject *p) : Command (p)
   _name = "MINMAX";
   _method << "MIN" << "MAX";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(10));
+
+  DataList *dl = new DataList(_method.at(0));
+  dl->set(_method);
+  _values.insert(_ParmTypeMethod, dl);
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandMINMAX::CommandMINMAX: error on TA_Initialize");
 }
 
-int CommandMINMAX::runScript (Message *sg, Script *script)
+void CommandMINMAX::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandMINMAX::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMINMAX::runScript: parse error");
+    return;
   }
 
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandMINMAX::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMINMAX::runScript: invalid Input");
+    return;
   }
 
-  // METHOD
-  s = sg->value("METHOD");
-  int method = _method.indexOf(s);
-  if (method == -1)
-  {
-    qDebug() << "CommandMINMAX::runScript: invalid METHOD, using default" << s;
-    method = _method.indexOf("MAX");
-  }
-
-  // PERIOD
-  int period = 10;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandMINMAX::runScript: invalid METHOD, using default" << s;
-    period = 10;
-  }
-
-  Data *line = getMINMAX(in, period, method);
+  Data *line = getMINMAX(in,
+			 _values.value(_ParmTypePeriod)->toInteger(),
+			 _values.value(_ParmTypeMethod)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMINMAX::runScript: getMINMAX error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandMINMAX::getMINMAX (Data *in, int tperiod, int method)
 {
-  QList<int> keys = in->keys();
+  QList<Data *> list;
+  list << in;
+
+  ScriptVerifyCurveKeys svck;
+  QList<int> keys;
+  if (svck.keys(list, keys))
+    return 0;
 
   int period = tperiod;
   if (period == 0)
@@ -110,9 +101,6 @@ Data * CommandMINMAX::getMINMAX (Data *in, int tperiod, int method)
   TA_Real out[size];
   TA_Integer outBeg;
   TA_Integer outNb;
-
-  QList<Data *> list;
-  list << in;
 
   TALibInput tai;
   size = tai.fill1(list, keys, &input[0]);

@@ -168,13 +168,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>CommandText</name>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CommandYahooHistory</name>
     <message>
         <source>line</source>

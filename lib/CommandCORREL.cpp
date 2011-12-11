@@ -25,10 +25,13 @@
 #include "CurveBar.h"
 #include "Symbol.h"
 #include "QuoteDataBase.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
 #include "DataDouble.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -36,80 +39,54 @@ CommandCORREL::CommandCORREL (QObject *p) : Command (p)
 {
   _name = "CORREL";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypeIndex, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(10));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandCORREL::CommandCORREL: error on TA_Initialize");
 }
 
-int CommandCORREL::runScript (Message *sg, Script *script)
+void CommandCORREL::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandCORREL::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandCORREL::runScript: parse error");
+    return;
   }
 
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandCORREL::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandCORREL::runScript: invalid Input");
+    return;
   }
 
-  // INDEX
-  QString index;
-  s = sg->value("INDEX");
-  if (vdi.toString(script, s, index))
-  {
-    qDebug() << "CommandCORREL::runScript: invalid INDEX" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  Data *in2 = getIndex(index, script);
+  Data *in2 = getIndex(_values.value(_ParmTypeIndex)->toString(), script);
   if (! in2)
   {
-    qDebug() << "CommandCORREL::runScript: invalid INDEX " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandCORREL::runScript: invalid Index");
+    return;
   }
-  script->setTData(in2);
-
-  // PERIOD
-  int period = 10;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandCORREL::runScript: invalid PERIOD, using default" << s;
-    period = 10;
-  }
+  Command::setTData(in2);
 
   QList<Data *> list;
   list << in << in2;
 
-  Data *line = getCORREL(list, period);
+  Data *line = getCORREL(list, _values.value(_ParmTypePeriod)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandCORREL::runScript: getCORREL error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandCORREL::getCORREL (QList<Data *> &list, int period)
@@ -117,9 +94,9 @@ Data * CommandCORREL::getCORREL (QList<Data *> &list, int period)
   if (list.count() != 2)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int size = keys.count();
@@ -191,7 +168,7 @@ Data * CommandCORREL::getIndex (QString d, Script *script)
   QuoteDataBase db;
   if (db.getBars(bd))
   {
-    _message << "QuoteDataBase error";
+    qDebug() << "CommandCORREL::getIndex: error";
     delete bd;
     return 0;
   }

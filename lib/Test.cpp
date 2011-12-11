@@ -23,7 +23,6 @@
 #include "Strip.h"
 #include "TestSignal.h"
 #include "TestDataBase.h"
-#include "VerifyDataInput.h"
 #include "CurveBar.h"
 #include "Message.h"
 
@@ -74,13 +73,13 @@ int Test::run ()
   QList<Data *> list;
   list << _date << _open << _high << _low << _close;
 
-  VerifyDataInput vdi;
+//  VerifyDataInput vdi;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
-  {
-    qDebug() << "Test::run: invalid keys";
-    return 1;
-  }
+//  if (vdi.curveKeys(list, keys))
+//  {
+//    qDebug() << "Test::run: invalid keys";
+//    return 1;
+//  }
 
   int rc = 0;
   int loop = 0;

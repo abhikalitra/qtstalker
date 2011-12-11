@@ -30,7 +30,7 @@ class CommandChartPanelRefresh : public Command
 
   public:
     CommandChartPanelRefresh (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

@@ -22,7 +22,11 @@
 #include "CommandNewHighLow.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
+#include "CurveBar.h"
+#include "DataString.h"
+#include "DataList.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -30,51 +34,52 @@ CommandNewHighLow::CommandNewHighLow (QObject *p) : Command (p)
 {
   _name = "NEW_HIGH_LOW";
   _method << "HIGH" << "LOW";
+
+  _values.insert(_ParmTypeInput, new DataString());
+
+  DataList *dl = new DataList(_method.at(0));
+  dl->set(_method);
+  _values.insert(_ParmTypeMethod, dl);
 }
 
-int CommandNewHighLow::runScript (Message *sg, Script *script)
+void CommandNewHighLow::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // INPUT
-  QString s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
-  if (! in)
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandNewHighLow::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandNewHighLow::runScript: parse error");
+    return;
   }
 
-  // METHOD
-  s = sg->value("METHOD");
-  int method = _method.indexOf(s);
-  if (method == -1)
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
+  if (! in)
   {
-    qDebug() << "CommandNewHighLow::runScript: invalid METHOD, using default" << s;
-    method = 0;
+    Command::error("CommandNewHighLow::runScript: invalid Input");
+    return;
   }
 
   int flag = 0;
-  int rc = getNewHighLow(in, method, flag);
+  int rc = getNewHighLow(in, _values.value(_ParmTypeMethod)->toInteger(), flag);
   if (rc)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandNewHighLow::runScript: getNewHighLow error");
+    return;
   }
 
-  _returnString = QString::number(flag);
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString::number(flag));
 }
 
 int CommandNewHighLow::getNewHighLow (Data *in, int method, int &flag)
 {
   flag = 0;
-  QList<int> keys = in->keys();
-  if (! keys.count())
+
+  QList<Data *> list;
+  list << in;
+
+  ScriptVerifyCurveKeys svck;
+  QList<int> keys;
+  if (svck.keys(list, keys))
     return 1;
 
   int loop = 0;

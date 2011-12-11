@@ -30,7 +30,7 @@ class CommandGroupPanelRefresh : public Command
 
   public:
     CommandGroupPanelRefresh (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

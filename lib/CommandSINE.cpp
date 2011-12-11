@@ -23,9 +23,12 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,43 +36,30 @@ CommandSINE::CommandSINE (QObject *p) : Command (p)
 {
   _name = "HT_SINE";
 
+  _values.insert(_ParmTypeSine, new DataString());
+  _values.insert(_ParmTypeLead, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandSINE::CommandSINE: error on TA_Initialize");
 }
 
-int CommandSINE::runScript (Message *sg, Script *script)
+void CommandSINE::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT_SINE
-  QString sname;
-  QString s = sg->value("OUTPUT_SINE");
-  if (vdi.toString(script, s, sname))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandSINE::runScript: invalid OUTPUT_SINE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSINE::runScript: parse error");
+    return;
   }
 
-  // OUTPUT_LEAD
-  QString lname;
-  s = sg->value("OUTPUT_LEAD");
-  if (vdi.toString(script, s, lname))
-  {
-    qDebug() << "CommandSINE::runScript: invalid OUTPUT_LEAD" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandSINE::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSINE::runScript: invalid Input");
+    return;
   }
 
   QList<Data *> list;
@@ -79,18 +69,14 @@ int CommandSINE::runScript (Message *sg, Script *script)
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSINE::runScript: getSINE error");
+    return;
   }
 
-  script->setData(sname, lines.at(0));
-  script->setData(lname, lines.at(1));
+  script->setData(_values.value(_ParmTypeSine)->toString(), lines.at(0));
+  script->setData(_values.value(_ParmTypeLead)->toString(), lines.at(1));
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 QList<Data *> CommandSINE::getSINE (QList<Data *> &list)
@@ -99,9 +85,9 @@ QList<Data *> CommandSINE::getSINE (QList<Data *> &list)
   if (! list.count())
     return lines;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return lines;
 
   int size = keys.count();

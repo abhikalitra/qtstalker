@@ -62,7 +62,7 @@ void DataDialog::addTab (int pos)
   w->setLayout(form);
   _formList.insert(pos, form);
 
-  _tabs->insertTab(pos, w, QString());
+  _tabs->insertTab(pos, w, QString::number(pos));
 }
 
 void DataDialog::set (Data *d)

@@ -27,154 +27,94 @@
 #include "DataInteger.h"
 #include "DataDouble.h"
 #include "DataDateTime.h"
-#include "VerifyDataInput.h"
 #include "QuoteDataBase.h"
+#include "DataSymbol.h"
+#include "DataBarLength.h"
+#include "DataDateRange.h"
 
 #include <QtDebug>
 
 CommandSymbol::CommandSymbol (QObject *p) : Command (p)
 {
   _name = "SYMBOL";
+
+  _values.insert(_ParmTypeSymbol, new DataSymbol);
+  _values.insert(_ParmTypeLength, new DataBarLength);
+  _values.insert(_ParmTypeRange, new DataDateRange);
+  _values.insert(_ParmTypeDate, new DataString);
+  _values.insert(_ParmTypeOpen, new DataString);
+  _values.insert(_ParmTypeHigh, new DataString);
+  _values.insert(_ParmTypeLow, new DataString);
+  _values.insert(_ParmTypeClose, new DataString);
+  _values.insert(_ParmTypeVolume, new DataString);
+  _values.insert(_ParmTypeOI, new DataString);
 }
 
-int CommandSymbol::runScript (Message *sg, Script *script)
+void CommandSymbol::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
+  if (Command::parse(sg, script))
+  {
+    Command::error("CommandSymbol::runScript: parse error");
+    return;
+  }
+
+  QStringList tl = _values.value(_ParmTypeSymbol)->toList();
+  if (! tl.count())
+  {
+    Command::error("CommandSymbol::runScript: invalid Symbol");
+    return;
+  }
 
   // SYMBOL
-  QString tsymbol;
-  QString s = sg->value("SYMBOL");
-  if (vdi.toString(script, s, tsymbol))
-  {
-    qDebug() << "CommandSymbol::runScript: invalid SYMBOL" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  QStringList tl = tsymbol.split(":");
-  if (tl.count() != 2)
-  {
-    qDebug() << "CommandSymbol::runScript: invalid SYMBOL" << tsymbol;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  QString exchange = tl.at(0);
-  QString symbol = tl.at(1);
-
-  // LENGTH
-  int length = 7;
-  s = sg->value("LENGTH");
-  if (vdi.toBarLength(script, s, length))
-  {
-    qDebug() << "CommandSymbol::runScript: invalid LENGTH, using default" << s;
-    length = 7;
-  }
-
-  // RANGE
-  int range = 5;
-  s = sg->value("RANGE");
-  if (vdi.toDateRange(script, s, range))
-  {
-    qDebug() << "CommandSymbol::runScript: invalid RANGE, using default" << s;
-    range = 5;
-  }
+  QStringList tl2 = tl.at(0).split(":");
+  QString exchange = tl2.at(0);
+  QString symbol = tl2.at(1);
 
   Symbol bd;
   bd.setExchange(exchange);
   bd.setSymbol(symbol);
-  bd.setLength(length);
+  bd.setLength(_values.value(_ParmTypeLength)->toInteger());
   bd.setStartDate(QDateTime());
   bd.setEndDate(QDateTime());
-  bd.setRange(range);
+  bd.setRange(_values.value(_ParmTypeRange)->toInteger());
 
   // load quotes
   QuoteDataBase db;
   if (db.getBars(&bd))
   {
     qDebug() << "CommandSymbol::runScript: QuoteDataBase error" << "EXCHANGE=" << exchange << "SYMBOL=" << symbol;
-    qDebug() << "CommandSymbol::runScript: LENGTH=" << length << "RANGE=" << range;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandSymbol::runScript: LENGTH=" <<_values.value(_ParmTypeLength)->toString() << "RANGE=" << _values.value(_ParmTypeRange)->toString();
+    Command::error("CommandSymbol::runScript: QuoteDataBase error");
+    return;
   }
 
   // date
-  QString ts;
-  s = sg->value("DATE");
-  if (vdi.toString(script, s, ts))
-  {
-    qDebug() << "CommandSymbol::runScript: invalid DATE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *dline = new CurveData;
-  script->setData(ts, dline);
+  script->setData(_values.value(_ParmTypeDate)->toString(), dline);
 
   // open
-  s = sg->value("OPEN");
-  if (vdi.toString(script, s, ts))
-  {
-    qDebug() << "CommandSymbol::runScript: invalid OPEN" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *oline = new CurveData;
-  script->setData(ts, oline);
+  script->setData(_values.value(_ParmTypeOpen)->toString(), oline);
 
   // high
-  s = sg->value("HIGH");
-  if (vdi.toString(script, s, ts))
-  {
-    qDebug() << "CommandSymbol::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *hline = new CurveData;
-  script->setData(ts, hline);
+  script->setData(_values.value(_ParmTypeHigh)->toString(), hline);
 
   // low
-  s = sg->value("LOW");
-  if (vdi.toString(script, s, ts))
-  {
-    qDebug() << "CommandSymbol::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *lline = new CurveData;
-  script->setData(ts, lline);
+  script->setData(_values.value(_ParmTypeLow)->toString(), lline);
 
   // close
-  s = sg->value("CLOSE");
-  if (vdi.toString(script, s, ts))
-  {
-    qDebug() << "CommandSymbol::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *cline = new CurveData;
-  script->setData(ts, cline);
+  script->setData(_values.value(_ParmTypeClose)->toString(), cline);
 
   // volume
-  s = sg->value("VOLUME");
-  if (vdi.toString(script, s, ts))
-  {
-    qDebug() << "CommandSymbol::runScript: invalid VOLUME" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *vline = new CurveData;
-  script->setData(ts, vline);
+  script->setData(_values.value(_ParmTypeVolume)->toString(), vline);
 
   // oi
-  s = sg->value("OI");
-  if (vdi.toString(script, s, ts))
-  {
-    qDebug() << "CommandSymbol::runScript: invalid OI" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *iline = new CurveData;
-  script->setData(ts, iline);
+  script->setData(_values.value(_ParmTypeOI)->toString(), iline);
 
   int loop = 0;
   QList<int> barKeys = bd.barKeys();
@@ -211,9 +151,5 @@ int CommandSymbol::runScript (Message *sg, Script *script)
     iline->set(loop, db);
   }
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }

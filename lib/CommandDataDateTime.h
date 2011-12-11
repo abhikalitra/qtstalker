@@ -19,25 +19,24 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// *************************************************************************************************
+#ifndef COMMAND_DATA_DATE_TIME_HPP
+#define COMMAND_DATA_DATE_TIME_HPP
 
-#ifndef DATA_SETTING_HPP
-#define DATA_SETTING_HPP
+#include "Command.h"
 
-#include "Data.h"
-
-class DataSetting : public Data
+class CommandDataDateTime : public Command
 {
+  Q_OBJECT
+
   public:
-    enum Parm
+    enum ParmType
     {
-      _VALUE = -10,
-      _TAB = -20,
-      _LABEL = -30
+      _ParmTypeKey,
+      _ParmTypeValue
     };
 
-    DataSetting ();
+    CommandDataDateTime (QObject *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

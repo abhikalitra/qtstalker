@@ -23,9 +23,11 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,58 +35,53 @@ CommandBOP::CommandBOP (QObject *p) : Command (p)
 {
   _name = "BOP";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeOpen, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandBOP::CommandBOP: error on TA_Initialize");
 }
 
-int CommandBOP::runScript (Message *sg, Script *script)
+void CommandBOP::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandBOP::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBOP::runScript: parse error");
+    return;
   }
 
-  s = sg->value("OPEN");
-  Data *iopen = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *iopen = svc.toCurve(script, _values.value(_ParmTypeOpen)->toString(), toffset);
   if (! iopen)
   {
-    qDebug() << "CommandBOP::runScript: invalid OPEN" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBOP::runScript: invalid Open");
+    return;
   }
 
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandBOP::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBOP::runScript: invalid High");
+    return;
   }
 
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandBOP::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBOP::runScript: invalid Low");
+    return;
   }
 
-  s = sg->value("CLOSE");
-  Data *iclose = vdi.toCurve(script, s);
+  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
   if (! iclose)
   {
-    qDebug() << "CommandBOP::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBOP::runScript: invalid Close");
+    return;
   }
 
   QList<Data *> list;
@@ -93,17 +90,13 @@ int CommandBOP::runScript (Message *sg, Script *script)
   Data *line = getBOP(list);
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBOP::runScript: getBOP error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandBOP::getBOP (QList<Data *> &list)
@@ -111,9 +104,9 @@ Data * CommandBOP::getBOP (QList<Data *> &list)
   if (list.count() != 4)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int size = keys.count();

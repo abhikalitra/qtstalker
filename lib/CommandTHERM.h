@@ -29,8 +29,15 @@ class CommandTHERM : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeHigh,
+      _ParmTypeLow
+    };
+
     CommandTHERM (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getTHERM (QList<Data *> &);
 };
 

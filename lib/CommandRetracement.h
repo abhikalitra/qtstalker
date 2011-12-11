@@ -29,8 +29,25 @@ class CommandRetracement : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeChart,
+      _ParmTypeColor,
+      _ParmTypeDateStart,
+      _ParmTypeDateEnd,
+      _ParmTypeHigh,
+      _ParmTypeLow,
+      _ParmTypeZ,
+      _ParmTypePen,
+      _ParmTypeLevel1,
+      _ParmTypeLevel2,
+      _ParmTypeLevel3,
+      _ParmTypeLevel4,
+      _ParmTypeLevel5
+    };
+
     CommandRetracement (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

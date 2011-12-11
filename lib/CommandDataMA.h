@@ -19,13 +19,24 @@
  *  USA.
  */
 
-#include "DataSetting.h"
-#include "DataFactory.h"
+#ifndef COMMAND_DATA_MA_HPP
+#define COMMAND_DATA_MA_HPP
 
-#include <QtDebug>
+#include "Command.h"
 
-DataSetting::DataSetting ()
+class CommandDataMA : public Command
 {
-  Data::clear();
-  _type = DataFactory::_DATA_SETTING;
-}
+  Q_OBJECT
+
+  public:
+    enum ParmType
+    {
+      _ParmTypeKey,
+      _ParmTypeValue
+    };
+
+    CommandDataMA (QObject *);
+    void runScript (CommandParse, Script *);
+};
+
+#endif

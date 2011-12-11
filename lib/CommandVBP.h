@@ -29,8 +29,17 @@ class CommandVBP : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeClose,
+      _ParmTypeVolume,
+      _ParmTypeColorUp,
+      _ParmTypeColorDown
+    };
+
     CommandVBP (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getVBP (QList<Data *> &, QColor, QColor);
 };
 

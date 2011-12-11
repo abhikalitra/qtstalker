@@ -22,9 +22,11 @@
 #include "CommandVBP.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "DataDouble.h"
 #include "DataColor.h"
+#include "DataString.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 #include <QHash>
@@ -32,79 +34,53 @@
 CommandVBP::CommandVBP (QObject *p) : Command (p)
 {
   _name = "VBP";
+
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+  _values.insert(_ParmTypeVolume, new DataString());
+  _values.insert(_ParmTypeColorUp, new DataColor(QColor(Qt::green)));
+  _values.insert(_ParmTypeColorDown, new DataColor(QColor(Qt::red)));
 }
 
-int CommandVBP::runScript (Message *sg, Script *script)
+void CommandVBP::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandVBP::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVBP::runScript: parse error");
+    return;
   }
 
-  // CLOSE
-  s = sg->value("CLOSE");
-  Data *iclose = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
   if (! iclose)
   {
-    qDebug() << "CommandVBP::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVBP::runScript: invalid Close");
+    return;
   }
 
-  // VOLUME
-  s = sg->value("VOLUME");
-  Data *ivol = vdi.toCurve(script, s);
+  Data *ivol = svc.toCurve(script, _values.value(_ParmTypeVolume)->toString(), toffset);
   if (! ivol)
   {
-    qDebug() << "CommandVBP::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // COLOR_UP
-  QColor upColor;
-  s = sg->value("COLOR_UP");
-  if (vdi.toColor(script, s, upColor))
-  {
-    qDebug() << "CommandVBP::runScript: invalid COLOR_UP" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // COLOR_DOWN
-  QColor downColor;
-  s = sg->value("COLOR_DOWN");
-  if (vdi.toColor(script, s, downColor))
-  {
-    qDebug() << "CommandVBP::runScript: invalid COLOR_DOWN" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVBP::runScript: invalid Volume");
+    return;
   }
 
   QList<Data *> list;
   list << iclose << ivol;
 
-  Data *line = getVBP(list, upColor, downColor);
+  Data *line = getVBP(list,
+		      _values.value(_ParmTypeColorUp)->toColor(),
+		      _values.value(_ParmTypeColorDown)->toColor());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVBP::runScript: getVBP error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor)
@@ -112,9 +88,9 @@ Data * CommandVBP::getVBP (QList<Data *> &list, QColor upColor, QColor downColor
   if (list.count() != 2)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   // get close high/low

@@ -20,7 +20,9 @@
  */
 
 #include "CommandYahooHistory.h"
-#include "VerifyDataInput.h"
+#include "DataDateTime.h"
+#include "DataBool.h"
+#include "DataFile.h"
 
 #include <QDebug>
 #include <QtNetwork>
@@ -29,47 +31,41 @@
 CommandYahooHistory::CommandYahooHistory (QObject *p) : Command (p)
 {
   _name = "YAHOO_HISTORY";
+
+  _values.insert(_ParmTypeDateStart, new DataDateTime(QDateTime::currentDateTime()));
+  _values.insert(_ParmTypeDateEnd, new DataDateTime(QDateTime::currentDateTime()));
+  _values.insert(_ParmTypeAdjusted, new DataBool(TRUE));
+
+  QStringList tl;
+  tl << "/tmp/yahoo.csv";
+  _values.insert(_ParmTypeCSVFile, new DataFile(tl));
+
+  _values.insert(_ParmTypeSymbolFile, new DataFile);
 }
 
-int CommandYahooHistory::runScript (Message *sg, Script *script)
+void CommandYahooHistory::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
+  if (Command::parse(sg, script))
+  {
+    Command::error("CommandYahooHistory::runScript: parse error");
+    return;
+  }
 
   // DATE_START
-  QDateTime sd;
-  QString s = sg->value("DATE_START");
-  if (vdi.toDateTime(script, s, sd))
-  {
-    qDebug() << "CommandYahooHistory::runScript: invalid DATE_START, using default" << s;
-    sd = QDateTime::currentDateTime();
-  }
+  QDateTime sd = _values.value(_ParmTypeDateStart)->toDateTime();
 
   // DATE_END
-  QDateTime ed;
-  s = sg->value("DATE_END");
-  if (vdi.toDateTime(script, s, ed))
-  {
-    qDebug() << "CommandYahooHistory::runScript: invalid DATE_END, using default" << s;
-    ed = QDateTime::currentDateTime();
-  }
+  QDateTime ed = _values.value(_ParmTypeDateEnd)->toDateTime();
 
   // ADJUSTED
-  bool adjusted = TRUE;
-  s = sg->value("ADJUSTED");
-  if (vdi.toBool(script, s, adjusted))
-  {
-    qDebug() << "CommandYahooHistory::runScript: invalid DATE_END, using default" << s;
-    adjusted = TRUE;
-  }
+  bool adjusted = _values.value(_ParmTypeAdjusted)->toBool();
 
   // CSV_FILE
-  QStringList tl;
-  s = sg->value("CSV_FILE");
-  if (vdi.toFile(script, s, tl))
+  QStringList tl = _values.value(_ParmTypeCSVFile)->toList();
+  if (! tl.count())
   {
-    qDebug() << "CommandYahooHistory::runScript: invalid CSV_FILE, using default" << s;
-    tl.clear();
-    tl << "/tmp/yahoo.csv";
+    Command::error("CommandYahooHistory::runScript: invalid CSV file");
+    return;
   }
 
   QString outFile;
@@ -77,28 +73,18 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
     outFile = tl.at(0);
 
   // SYMBOL_FILE
-  QStringList symbolFiles;
-  s = sg->value("SYMBOL_FILE");
-  if (vdi.toFile(script, s, symbolFiles))
-  {
-    qDebug() << "CommandYahooHistory::runScript: invalid SYMBOL_FILE " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
+  QStringList symbolFiles = _values.value(_ParmTypeSymbolFile)->toList();
   if (! symbolFiles.count())
   {
-    qDebug() << "CommandYahooHistory::runScript: SYMBOL_FILE missing";
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandYahooHistory::runScript: invalid symbol file");
+    return;
   }
 
   QFile f2(outFile);
   if (! f2.open(QIODevice::WriteOnly | QIODevice::Text))
   {
-    qDebug() << "CommandYahooHistory::runScript: file error " << outFile;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandYahooHistory::runScript: file error " + outFile);
+    return;
   }
   QTextStream out(&f2);
 
@@ -143,11 +129,7 @@ int CommandYahooHistory::runScript (Message *sg, Script *script)
     f.close();
   }
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 void CommandYahooHistory::getUrl (QDateTime sd, QDateTime ed, QString symbol, QString &url)
@@ -242,9 +224,9 @@ int CommandYahooHistory::downloadName (QString symbol, QString &name)
   s = s.remove(',');
   s = s.trimmed();
   if (s.isEmpty())
-    return _ERROR;
+    return 1;
 
   name = s;
 
-  return _OK;
+  return 0;
 }

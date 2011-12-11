@@ -20,23 +20,26 @@
  */
 
 #include "Command.h"
+#include "DataFactory.h"
 
 #include <QtDebug>
 
 Command::Command (QObject *p) : QObject (p)
 {
   _type = _THREAD;
-  _returnString = "ERROR";
+//  _type = _WAIT;
 }
 
 Command::~Command ()
 {
+  qDeleteAll(_values);
+  qDeleteAll(_tdata);
+
 //  qDebug() << "Command::~Command" << _name << "deleted";
 }
 
-int Command::runScript (Message *, Script *)
+void Command::runScript (CommandParse, Script *)
 {
-  return 0;
 }
 
 int Command::type ()
@@ -49,7 +52,89 @@ QString Command::name ()
   return _name;
 }
 
-QString Command::returnString ()
+int Command::parse (CommandParse sg, Script *script)
 {
-  return _returnString;
+  if (sg.values() != _values.count())
+  {
+    qDebug() << "Command::parse: invalid number of values";
+    return 1;
+  }
+
+  int loop = 0;
+  for (; loop < sg.values(); loop++)
+  {
+    if (parse1(script, sg.value(loop), loop))
+      return 1;
+  }
+
+  return 0;
+}
+
+
+int Command::parse1 (Script *script, QString d, int pos)
+{
+  // is it a Data object?
+  Data *sv = script->data(d);
+  if (sv)
+  {
+    Data *v = _values.value(pos);
+
+    // if its a curve, ignore it and just copy the value
+    if (sv->type() == DataFactory::_CURVE)
+    {
+      if (v->set(d))
+      {
+        qDebug() << "Command::parse1: invalid value" << d <<"at pos" << pos;
+        return 1;
+      }
+    }
+    else
+    {
+      // not a curve, try to copy the object value
+      if (v->set(sv->toString()))
+      {
+        qDebug() << "Command::parse1: invalid value" << d <<"at pos" << pos;
+        return 1;
+      }
+    }
+  }
+  else
+  {
+    // its a string, try to convert to proper type
+    Data *v = _values.value(pos);
+    if (v->set(d))
+    {
+      qDebug() << "Command::parse1: invalid value" << d <<"at pos" << pos;
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+void Command::setTData (Data *d)
+{
+  _tdata << d;
+}
+
+void Command::done (QString d)
+{
+  QString s;
+  if (d.isEmpty())
+    s = "OK";
+  else
+    s = d;
+  s.append("\n");
+
+  emit signalDone(s);
+
+  deleteLater();
+}
+
+void Command::error (QString d)
+{
+  qDebug() << d;
+  QString s = "ERROR\n";
+  emit signalDone(s);
+  deleteLater();
 }

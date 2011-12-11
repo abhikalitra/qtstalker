@@ -29,8 +29,18 @@ class CommandBuy : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeChart,
+      _ParmTypeColor,
+      _ParmTypeDate,
+      _ParmTypePrice,
+      _ParmTypeZ,
+      _ParmTypePen
+    };
+
     CommandBuy (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

@@ -23,10 +23,13 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
 #include "DataDouble.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -38,70 +41,48 @@ CommandVIDYA::CommandVIDYA (QObject *p) : Command (p)
 {
   _name = "VIDYA";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(14));
+  _values.insert(_ParmTypePeriodV, new DataInteger(10));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandVIDYA::CommandVIDYA: error on TA_Initialize");
 }
 
-int CommandVIDYA::runScript (Message *sg, Script *script)
+void CommandVIDYA::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandVIDYA::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVIDYA::runScript: parse error");
+    return;
   }
 
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandVIDYA::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PERIOD
-  int period = 14;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandVIDYA::runScript: invalid PERIOD, using default" << s;
-    period = 14;
-  }
-
-  // PERIOD_VOLUME
-  int vperiod = 10;
-  s = sg->value("PERIOD_VOLUME");
-  if (vdi.toInteger(script, s, vperiod))
-  {
-    qDebug() << "CommandVIDYA::runScript: invalid PERIOD_VOLUME, using default" << s;
-    period = 10;
+    Command::error("CommandVIDYA::runScript: invalid Input");
+    return;
   }
 
   QList<Data *> list;
   list << in;
 
-  Data *line = getVIDYA(list, period, vperiod);
+  Data *line = getVIDYA(list,
+			_values.value(_ParmTypePeriod)->toInteger(),
+			_values.value(_ParmTypePeriodV)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVIDYA::runScript: getVIDYA error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandVIDYA::getVIDYA (QList<Data *> &list, int period, int vperiod)
@@ -113,10 +94,11 @@ Data * CommandVIDYA::getVIDYA (QList<Data *> &list, int period, int vperiod)
   if (! cmo)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
+
   int size = keys.count();
 
   Data *out = new CurveData;
@@ -175,9 +157,9 @@ Data * CommandVIDYA::getCMO (QList<Data *> &list, int period)
   if (! list.count())
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int size = keys.count();

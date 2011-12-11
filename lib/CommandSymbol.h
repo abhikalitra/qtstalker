@@ -31,8 +31,22 @@ class CommandSymbol : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeSymbol,
+      _ParmTypeLength,
+      _ParmTypeRange,
+      _ParmTypeDate,
+      _ParmTypeOpen,
+      _ParmTypeHigh,
+      _ParmTypeLow,
+      _ParmTypeClose,
+      _ParmTypeVolume,
+      _ParmTypeOI
+    };
+
     CommandSymbol (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

@@ -29,6 +29,14 @@ class CommandLINEARREG : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeInput,
+      _ParmTypePeriod,
+      _ParmTypeMethod
+    };
+
     enum Method
     {
       _LINEARREG,
@@ -39,7 +47,7 @@ class CommandLINEARREG : public Command
     };
 
     CommandLINEARREG (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getLR (QList<Data *> &, int, int);
 
   protected:

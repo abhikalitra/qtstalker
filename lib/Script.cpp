@@ -23,15 +23,13 @@
 #include "ChartObjectData.h"
 #include "DataFactory.h"
 #include "CommandFactory.h"
-#include "CommandThread.h"
+#include "CommandParse.h"
 
 #include <QDebug>
 #include <QUuid>
 
 Script::Script (QObject *p) : QObject (p)
 {
-//  _symbol = 0;
-
   clear();
 
   _proc = new QProcess(this);
@@ -57,20 +55,15 @@ Script::~Script ()
 void Script::clear ()
 {
   _killFlag = 0;
-
-//  if (_symbol)
-//    delete _symbol;
   _symbol = 0;
 
   deleteData();
   _data.clear();
 
-  _name.clear();
-//  _file.clear();
-  _command.clear();
+  _dialog.clear();
 
-  qDeleteAll(_tdata);
-  _tdata.clear();
+  _name.clear();
+  _command.clear();
 }
 
 int Script::run ()
@@ -118,8 +111,6 @@ void Script::done (int, QProcess::ExitStatus)
     qDebug() << l.join(" ");
     emit signalDone(_file);
   }
-
-  deleteLater();
 }
 
 void Script::readFromStdout ()
@@ -132,46 +123,43 @@ void Script::readFromStdout ()
   }
 
   QByteArray ba = _proc->readAllStandardOutput();
-qDebug() << ba;
+qDebug() << _file << ba;
 
-  Message tsg;
+  // parse command
   QString s(ba);
-  QStringList l = s.split(";");
-  int loop = 0;
-  for (; loop < l.count(); loop++)
+  CommandParse cp;
+  if (cp.parse(s))
   {
-    QStringList tl = l.at(loop).split("=");
-    if (tl.count() != 2)
-      continue;
-
-    tsg.insert(tl.at(0).trimmed(), tl.at(1).trimmed());
-  }
-
-  CommandFactory fac;
-  Command *command = fac.command(this, tsg.value("COMMAND"));
-  if (! command)
-  {
-    qDebug() << "QtStalkerScript::run: command not found" << tsg.value("COMMAND");
+    qDebug() << "Script::readFromStdout: command parse error";
     clear();
     return;
   }
 
-  connect(command, SIGNAL(signalResume(void *)), this, SLOT(resume(void *)));
+  // check if command
+  CommandFactory fac;
+  Command *command = fac.command(this, cp.command());
+  if (! command)
+  {
+    qDebug() << "Script::readFromStdout: command parse error" << s << cp.command();
+    clear();
+    return;
+  }
+
+  connect(command, SIGNAL(signalDone(QString)), this, SLOT(resume(QString)));
 
   switch ((Command::Type)command->type())
   {
-    case Command::_DIALOG:
-      command->runScript(&tsg, this);
-      break;
     case Command::_THREAD:
     {
-      CommandThread *ct = new CommandThread(this, tsg, command, this);
+      CommandThread *ct = new CommandThread(this, this, cp, command);
       ct->start();
       break;
     }
-    default: // _NORMAL
-      command->runScript(&tsg, this);
+    default: // _WAIT
+    {
+      command->runScript(cp, this);
       break;
+    }
   }
 }
 
@@ -190,16 +178,11 @@ void Script::stopScript ()
 //qDebug() << "Script::stopScript";
 }
 
-void Script::resume (void *d)
+void Script::resume (QString d)
 {
-  Command *command = (Command *) d;
-  QString s = command->returnString() + "\n";
-
   QByteArray ba;
-  ba.append(s);
+  ba.append(d);
   _proc->write(ba);
-
-  command->deleteLater();
 }
 
 int Script::count ()
@@ -241,11 +224,6 @@ void Script::setCommand (QString d)
 QString Script::command ()
 {
   return _command;
-}
-
-void Script::setTData (Data *d)
-{
-  _tdata << d;
 }
 
 void Script::setData (QString key, Data *d)
@@ -323,4 +301,18 @@ void Script::error (QProcess::ProcessError)
 QString Script::id ()
 {
   return _id;
+}
+
+void Script::setDialog (QString key, DataDialog *d)
+{
+  DataDialog *dialog = _dialog.value(key);
+  if (dialog)
+    delete dialog;
+
+  _dialog.insert(key, d);
+}
+
+DataDialog * Script::dialog (QString d)
+{
+  return _dialog.value(d);
 }

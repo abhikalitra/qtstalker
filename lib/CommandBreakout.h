@@ -29,8 +29,15 @@ class CommandBreakout : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeInput,
+      _ParmTypeInput2,
+      _ParmTypeMethod
+    };
+
     CommandBreakout (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     int breakout (Data *, Data *, int method, int &flag);
 
   private:

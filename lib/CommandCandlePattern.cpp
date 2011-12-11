@@ -23,9 +23,13 @@
 #include "CandleType.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataDouble.h"
+#include "DataList.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 #include <QList>
@@ -34,99 +38,76 @@ CommandCandlePattern::CommandCandlePattern (QObject *p) : Command (p)
 {
   _name = "CANDLE_PATTERN";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeOpen, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+  _values.insert(_ParmTypePenetration, new DataDouble(50));
+
+  DataList *dl = new DataList;
+  CandleType ct;
+  dl->set(ct.list());
+  _values.insert(_ParmTypeMethod, dl);
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
-    qDebug() << _type << "::CandleType: error on TA_Initialize";
+    qDebug() << "CommandCandlePattern::CommandCandlePattern: error on TA_Initialize";
 }
 
-int CommandCandlePattern::runScript (Message *sg, Script *script)
+void CommandCandlePattern::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandCandlePattern::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandCandlePattern::runScript: parse error");
+    return;
   }
 
-  // OPEN
-  s = sg->value("OPEN");
-  Data *iopen = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *iopen = svc.toCurve(script, _values.value(_ParmTypeOpen)->toString(), toffset);
   if (! iopen)
   {
-    qDebug() << "CommandCandlePattern::runScript: invalid OPEN" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandCandlePattern::runScript: invalid Open");
+    return;
   }
 
-  // HIGH
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandCandlePattern::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandCandlePattern::runScript: invalid High");
+    return;
   }
 
-  // LOW
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandCandlePattern::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandCandlePattern::runScript: invalid Low");
+    return;
   }
 
-  // CLOSE
-  s = sg->value("CLOSE");
-  Data *iclose = vdi.toCurve(script, s);
+  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
   if (! iclose)
   {
-    qDebug() << "CommandCandlePattern::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PENETRATION
-  double pen = 0;
-  s = sg->value("PENETRATION");
-  if (vdi.toDouble(script, s, pen))
-    pen = 0;
-
-  CandleType ct;
-  s = sg->value("METHOD");
-  int method = ct.fromString(s);
-  if (method == -1)
-  {
-    qDebug() << "CommandCandlePattern::runScript: invalid METHOD" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandCandlePattern::runScript: invalid Close");
+    return;
   }
 
   QList<Data *> list;
   list << iopen << ihigh << ilow << iclose;
 
-  Data *line = getPattern(list, method, pen);
+  Data *line = getPattern(list,
+			  _values.value(_ParmTypeMethod)->toInteger(),
+			  _values.value(_ParmTypePenetration)->toDouble());
   if (! line)
   {
-    qDebug() << "CommandCandlePattern::runScript: getPattern error";
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandCandlePattern::runScript: getPattern error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandCandlePattern::getPattern (QList<Data *> &list, int type, double pen)
@@ -150,13 +131,10 @@ Data * CommandCandlePattern::getPattern (QList<Data *> &list, int type, double p
 
 Data * CommandCandlePattern::getCandles (QList<Data *> &list, int type)
 {
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
-  {
-    _message << "invalid keys";
+  if (svck.keys(list, keys))
     return 0;
-  }
 
   int size = keys.count();
   TA_Integer out[size];
@@ -364,13 +342,10 @@ Data * CommandCandlePattern::getCandles (QList<Data *> &list, int type)
 
 Data * CommandCandlePattern::getCandlesPen (QList<Data *> &list, int type, double pen)
 {
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
-  {
-    _message << "invalid keys";
+  if (svck.keys(list, keys))
     return 0;
-  }
 
   int size = keys.count();
   TA_Integer out[size];

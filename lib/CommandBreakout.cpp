@@ -22,7 +22,10 @@
 #include "CommandBreakout.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
+#include "DataString.h"
+#include "DataList.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -30,55 +33,48 @@ CommandBreakout::CommandBreakout (QObject *p) : Command (p)
 {
   _name = "BREAKOUT";
   _method << "ABOVE" << "BELOW";
+
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypeInput2, new DataString());
+
+  DataList *dl = new DataList(_method.at(0));
+  dl->set(_method);
+  _values.insert(_ParmTypeMethod, dl);
 }
 
-int CommandBreakout::runScript (Message *sg, Script *script)
+void CommandBreakout::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
+  if (Command::parse(sg, script))
+  {
+    Command::error("CommandBreakout::runScript: parse error");
+    return;
+  }
 
-  // INPUT_1
-  QString s = sg->value("INPUT_1");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandBreakout::runScript: INPUT_1 missing" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBreakout::runScript: invalid Input");
+    return;
   }
 
-  // INPUT_2
-  s = sg->value("INPUT_2");
-  Data *in2 = vdi.toCurve(script, s);
+  Data *in2 = svc.toCurve(script, _values.value(_ParmTypeInput2)->toString(), toffset);
   if (! in2)
   {
-    qDebug() << "CommandBreakout::runScript: INPUT_2 missing" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // METHOD
-  s = sg->value("METHOD");
-  int method = _method.indexOf(s);
-  if (method == -1)
-  {
-    qDebug() << "CommandBreakout::runScript: invalid METHOD" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBreakout::runScript: invalid Input2");
+    return;
   }
 
   int flag = 0;
-  int rc = breakout(in, in2, method, flag);
+  int rc = breakout(in, in2, _values.value(_ParmTypeMethod)->toInteger(), flag);
   if (rc)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBreakout::runScript: breakout error");
+    return;
   }
 
-  _returnString = QString::number(flag);
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString::number(flag));
 }
 
 int CommandBreakout::breakout (Data *in, Data *in2, int method, int &flag)
@@ -88,10 +84,10 @@ int CommandBreakout::breakout (Data *in, Data *in2, int method, int &flag)
   QList<Data *> list;
   list << in << in2;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
-    return 1;
+  if (svck.keys(list, keys))
+    return 0;
 
   int end = keys.count() - 1;
   if (end < 0)

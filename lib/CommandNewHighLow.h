@@ -29,8 +29,14 @@ class CommandNewHighLow : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeInput,
+      _ParmTypeMethod
+    };
+
     CommandNewHighLow (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     int getNewHighLow (Data *, int method, int &flag);
 
   protected:

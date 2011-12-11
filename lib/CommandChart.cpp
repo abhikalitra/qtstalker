@@ -23,73 +23,40 @@
 #include "GlobalPlotGroup.h"
 #include "GlobalControlPanel.h"
 #include "GlobalInfoPanel.h"
-#include "VerifyDataInput.h"
+#include "DataString.h"
+#include "DataBool.h"
+#include "DataInteger.h"
 
 #include <QtDebug>
 
 CommandChart::CommandChart (QObject *p) : Command (p)
 {
   _name = "CHART";
-  _type = _NORMAL;
+  _type = _WAIT;
+
+  _values.insert(_ParmTypeName, new DataString());
+  _values.insert(_ParmTypeDate, new DataBool(TRUE));
+  _values.insert(_ParmTypeLog, new DataBool(FALSE));
+  _values.insert(_ParmTypeRow, new DataInteger(0));
+  _values.insert(_ParmTypeCol, new DataInteger(99));
 }
 
-int CommandChart::runScript (Message *sg, Script *script)
+void CommandChart::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // verify name
-  QString name;
-  QString s = sg->value("NAME");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandChart::runScript: invalid NAME" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandChart::runScript: parse error");
+    return;
   }
 
-  // verify DATE
-  bool date = TRUE;
-  s = sg->value("DATE");
-  if (vdi.toBool(script, s, date))
-  {
-    qDebug() << "CommandChart::runScript: invalid DATE, using default" << s;
-    date = TRUE;
-  }
+  chart(_values.value(_ParmTypeName)->toString(),
+	script->file(),
+	_values.value(_ParmTypeRow)->toInteger(),
+	_values.value(_ParmTypeCol)->toInteger(),
+	_values.value(_ParmTypeDate)->toBool(),
+	_values.value(_ParmTypeLog)->toBool());
 
-  // verify LOG
-  bool log = FALSE;
-  s = sg->value("LOG");
-  if (vdi.toBool(script, s, log))
-  {
-    qDebug() << "CommandChart::runScript: invalid LOG, using default" << s;
-    log = FALSE;
-  }
-
-  // verify ROW
-  int row = 0;
-  s = sg->value("ROW");
-  if (vdi.toInteger(script, s, row))
-  {
-    qDebug() << "CommandChart::runScript: invalid ROW, using default" << s;
-    row = 0;
-  }
-
-  // verift COL
-  int col = 99;
-  s = sg->value("COL");
-  if (vdi.toInteger(script, s, col))
-  {
-    qDebug() << "CommandChart::runScript: invalid COL, using default" << s;
-    col = 99;
-  }
-
-  chart(name, script->file(), row, col, date, log);
-
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 void CommandChart::chart (QString chart, QString script, int row, int col, bool date, bool log)

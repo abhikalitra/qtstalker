@@ -29,8 +29,15 @@ class CommandFI : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeClose,
+      _ParmTypeVolume
+    };
+
     CommandFI (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getFI (QList<Data *> &);
 };
 

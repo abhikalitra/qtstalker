@@ -29,8 +29,14 @@ class CommandDataGet : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeKey
+    };
+
     CommandDataGet (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
+    int curveData (CommandParse *sg, Data *d);
 };
 
 #endif

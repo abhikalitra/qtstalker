@@ -19,39 +19,18 @@
  *  USA.
  */
 
-#ifndef QTSTALKER_SCRIPT_HPP
-#define QTSTALKER_SCRIPT_HPP
-
-#include <QObject>
-#include <QStringList>
-#include <QProcess>
-#include <QWidget>
+#ifndef SCRIPT_VERIFY_CURVE_HPP
+#define SCRIPT_VERIFY_CURVE_HPP
 
 #include "Script.h"
 
-class QtStalkerScript : public QObject
+#include <QString>
+
+class ScriptVerifyCurve
 {
-  Q_OBJECT
-
-  signals:
-
   public:
-    QtStalkerScript (QString session, QString command, QString file);
-    ~QtStalkerScript ();
-
-  public slots:
-    void run ();
-    void message (QString command, QString mess);
-    void scriptFinished (int, QProcess::ExitStatus);
-    void scriptError (QProcess::ProcessError);
-    void readFromStderr ();
-
-  private:
-    Script *_script;
-    QStringList _messages;
-    QProcess *_pro;
-    QWidget *_parent;
+    ScriptVerifyCurve ();
+    Data * toCurve (Script *script, QString key, int &offset);
 };
 
 #endif
-

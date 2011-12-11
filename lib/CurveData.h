@@ -39,8 +39,7 @@ class CurveData : public Data
       _CHART = -30,
       _Z = -40,
       _PEN = -50,
-      _STYLE = -60,
-      _OFFSET = -70
+      _STYLE = -60
     };
 
     CurveData ();
@@ -49,8 +48,6 @@ class CurveData : public Data
     int set (int, Data *);
     Data * toData (int);
     QList<int> keys ();
-//    QString toSaveString ();
-//    int fromSaveString (QString);
     int keyCount ();
     void keyRange (int &start, int &end);
 

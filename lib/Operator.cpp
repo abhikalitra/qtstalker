@@ -23,7 +23,7 @@
 
 Operator::Operator ()
 {
-  _list << "LT" << "LTE" << "EQ" << "NE" << "GTE" << "GT";
+  _list << "<" << "<=" << "=" << "!=" << "=>" << ">";
 }
 
 QStringList & Operator::list ()
@@ -39,7 +39,7 @@ Operator::Type Operator::stringToOperator (QString d)
 int Operator::test (double val, Operator::Type op, double val2)
 {
   int rc = 0;
-  
+
   switch (op)
   {
     case _LESS_THAN:

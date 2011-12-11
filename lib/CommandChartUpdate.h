@@ -30,8 +30,15 @@ class CommandChartUpdate : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeChart,
+      _ParmTypeDate
+    };
+
     CommandChartUpdate (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
+    int chartUpdate (Script *, QString chart, QString ds);
     void curve (Data *dg, QString name, Plot *);
     void chartObject (Data *dg, QString name, Plot *);
     void update (QString chart, Plot *);

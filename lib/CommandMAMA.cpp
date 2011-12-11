@@ -23,9 +23,12 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataDouble.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,82 +36,51 @@ CommandMAMA::CommandMAMA (QObject *p) : Command (p)
 {
   _name = "MAMA";
 
+  _values.insert(_ParmTypeMAMA, new DataString());
+  _values.insert(_ParmTypeFAMA, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypeLimitFast, new DataDouble(0.5));
+  _values.insert(_ParmTypeLimitSlow, new DataDouble(0.05));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandMAMA::CommandMAMA: error on TA_Initialize");
 }
 
-int CommandMAMA::runScript (Message *sg, Script *script)
+void CommandMAMA::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT_MAMA
-  QString mname;
-  QString s = sg->value("OUTPUT_MAMA");
-  if (vdi.toString(script, s, mname))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandMAMA::runScript: invalid OUTPUT_MAMA" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMAMA::runScript: parse error");
+    return;
   }
 
-  // OUTPUT_FAMA
-  QString fname;
-  s = sg->value("OUTPUT_FAMA");
-  if (vdi.toString(script, s, fname))
-  {
-    qDebug() << "CommandMAMA::runScript: invalid OUTPUT_FAMA" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandMAMA::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // LIMIT_FAST
-  double flimit = 0.5;
-  s = sg->value("LIMIT_FAST");
-  if (vdi.toDouble(script, s, flimit))
-  {
-    qDebug() << "CommandMAMA::runScript: invalid LIMIT_FAST, using default" << s;
-    flimit = 0.5;
-  }
-
-  // LIMIT_SLOW
-  double slimit = 0.05;
-  s = sg->value("LIMIT_SLOW");
-  if (vdi.toDouble(script, s, slimit))
-  {
-    qDebug() << "CommandMAMA::runScript: invalid LIMIT_SLOW, using default" << s;
-    flimit = 0.05;
+    Command::error("CommandMAMA::runScript: invalid Input");
+    return;
   }
 
   QList<Data *> list;
   list << in;
 
-  QList<Data *> lines = getMAMA(list, flimit, slimit);
+  QList<Data *> lines = getMAMA(list,
+				_values.value(_ParmTypeLimitFast)->toDouble(),
+				_values.value(_ParmTypeLimitSlow)->toDouble());
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMAMA::runScript: getMAMA error");
+    return;
   }
 
-  script->setData(mname, lines.at(0));
-  script->setData(fname, lines.at(1));
+  script->setData(_values.value(_ParmTypeMAMA)->toString(), lines.at(0));
+  script->setData(_values.value(_ParmTypeFAMA)->toString(), lines.at(1));
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 QList<Data *> CommandMAMA::getMAMA (QList<Data *> &list, double flimit, double slimit)
@@ -117,9 +89,9 @@ QList<Data *> CommandMAMA::getMAMA (QList<Data *> &list, double flimit, double s
   if (! list.count())
     return lines;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return lines;
 
   int size = keys.count();

@@ -1,139 +1,226 @@
 # QtStalker YahooHistoryDownload script
 
 # yahoo dialog settings
-$dateStartKey = 'Date Start';
-$dateEndKey = 'Date End';
-$symbolFileKey = 'Symbol File';
-$csvFileKey = 'CSV File';
-$csvFile = '/tmp/yahoo.csv';
-$adjustedKey = 'Adjusted';
+$yahooDialogName = 'yahooSettings';
+$yahooDialogTitle = 'Yahoo Download';
+$yahooDialogTab = '0';
 
-# csv dialog settings
-$formatKey = 'Format';
-$format = 'EXCHANGE,SYMBOL,NAME,DATE,OPEN,HIGH,LOW,CLOSE,VOLUME';
+# date start setting
+$dateStartKey = 'dateStartKey';
+$dateStartLabel = 'Date Start';
+$dateStartValue = '2010-12-11 00:00:00';
 
-$dateFormatKey = 'Date Format';
-$dateFormat = 'yyyy-MM-dd';
+# date end setting
+$dateEndKey = 'dateEndKey';
+$dateEndLabel = 'Date End';
+$dateEndValue = '2011-12-11 23:59:59';
 
-$delimiterKey = 'Delimiter';
-$delimiter = 'Semicolon';
-$delimiterList = 'Comma,Semicolon';
+# symbol file setting
+$symbolFileKey = 'symbolFileKey';
+$symbolFileLabel = 'Symbol File';
+$symbolFileValue = '/home';
 
-$typeKey = 'Quote Type';
-$type = 'Stock';
-$typeList = 'Futures,Stock,Bond,Option,Mutual Fund,ETF';
+# csv file setting
+$csvFileKey = 'csvFileKey';
+$csvFileLabel = 'CSV File';
+$csvFileValue = '/tmp/yahoo.csv';
 
-$filenameAsSymbolKey = 'Use Filename As Symbol';
-$filenameAsSymbol = 'false';
+# adjusted setting
+$adjustedKey = 'adjustedKey';
+$adjustedLabel = 'Adjusted';
+$adjustedValue = 'true';
+
+# CSV dialog settings
+$csvDialogName = 'csvSettings';
+$csvDialogTitle = 'Yahoo CSV Quote Import';
+$csvDialogTab = '0';
+
+# csv format setting
+$csvFormatKey = 'csvFormatKey';
+$csvFormatLabel = 'CSV Format';
+$csvFormatValue = 'EXCHANGE;SYMBOL;NAME;DATE;OPEN;HIGH;LOW;CLOSE;VOLUME';
+
+# csv date format setting
+$csvDateFormatKey = 'csvDateFormatKey';
+$csvDateFormatLabel = 'Date Format';
+$csvDateFormatValue = 'yyyy-MM-dd';
+
+# csv delimiter setting
+$csvDelimiterKey = 'csvDelimiterKey';
+$csvDelimiterLabel = 'Delimiter';
+$csvDelimiterValue = 'Semicolon';
+$csvDelimiterList = 'Comma;Semicolon';
+
+# csv quote type setting
+$csvQuoteTypeKey = 'csvQuoteTypeKey';
+$csvQuoteTypeLabel = 'Quote Type';
+$csvQuoteTypeValue = 'Stock';
+$csvQuoteTypeList = 'Futures;Stock;Bond;Option;Mutual Fund;ETF';
+
+# csv filename as symbol setting
+$csvFilenameAsSymbolKey = 'csvFilenameAsSymbolKey';
+$csvFilenameAsSymbolLabel = 'Use Filename As Symbol';
+$csvFilenameAsSymbolValue = 'false';
+
+# csv exchange setting
+$csvExchangeKey = 'csvExchangeKey';
+$csvExchangeLabel = 'Exchange Overide';
+$csvExchangeValue = '';
 
 ################################################################################
 
+# all perl scripts must turn on buffer flush flag otherwise script will hang
 $|=1;
 
-# create the settings that will be displayed in the dialog the user can modify
+########################################################################################
+############################# create the Yahoo dialog ####################################
+########################################################################################
 
-# create start date setting
-$command = "COMMAND=DATA_SET; KEY=$dateStartKey; TYPE=DATETIME";
+$command = "DIALOG($yahooDialogName, $yahooDialogTitle)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# create end date setting
-$command = "COMMAND=DATA_SET; KEY=$dateEndKey; TYPE=DATETIME";
+# create date start setting
+$command = "DATA_DATE_TIME($dateStartKey, $dateStartValue)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# add setting to dialog
+$command = "DIALOG_SET($yahooDialogName, $dateStartKey, $dateStartLabel, $yahooDialogTab)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# create date end setting
+$command = "DATA_DATE_TIME($dateEndKey, $dateEndValue)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# add setting to dialog
+$command = "DIALOG_SET($yahooDialogName, $dateEndKey, $dateEndLabel, $yahooDialogTab)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create symbol file setting
-$command = "COMMAND=DATA_SET; KEY=$symbolFileKey; TYPE=FILE";
+$command = "DATA_FILE($symbolFileKey, $symbolFileValue)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# add setting to dialog
+$command = "DIALOG_SET($yahooDialogName, $symbolFileKey, $symbolFileLabel, $yahooDialogTab)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create csv file setting
-$command = "COMMAND=DATA_SET; KEY=$csvFileKey; VALUE=$csvFile; TYPE=FILE";
+$command = "DATA_FILE($csvFileKey, $csvFileValue)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# add setting to dialog
+$command = "DIALOG_SET($yahooDialogName, $csvFileKey, $csvFileLabel, $yahooDialogTab)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create adjusted setting
-$command = "COMMAND=DATA_SET; KEY=$adjustedKey; VALUE=true; TYPE=BOOL";
+$command = "DATA_BOOL($adjustedKey, $adjustedValue)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# we add the above settings to the dialog to create the yahoo dialog
-$command = "COMMAND=DIALOG;
-            TITLE=Yahoo Quotes Download;
-            TAB_TITLE_0=Settings;
-            SETTING_0=$dateStartKey;
-            SETTING_1=$dateEndKey;
-            SETTING_2=$symbolFileKey;
-            SETTING_3=$csvFileKey;
-            SETTING_4=$adjustedKey";
+# add setting to dialog
+$command = "DIALOG_SET($yahooDialogName, $adjustedKey, $adjustedLabel, $yahooDialogTab)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# show the yahoo dialog
+$command = "DIALOG_RUN($yahooDialogName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # we now pass the settings modified by the yahoo dialog to the yahoo history command
 # download the quotes
-$command = "COMMAND=YAHOO_HISTORY;
-            DATE_START=$dateStartKey;
-            DATE_END=$dateEndKey;
-            SYMBOL_FILE=$symbolFileKey;
-            CSV_FILE=$csvFileKey;
-            ADJUSTED=$adjustedKey";
+$command = "YAHOO_HISTORY($dateStartKey, $dateEndKey, $adjustedKey, $csvFileKey, $symbolFileKey)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# create CSV dialog settings that will appear in the CSV dialog we will create
+########################################################################################
+############################# create the CSV dialog ####################################
+########################################################################################
 
-# create FORMAT setting
-$command = "COMMAND=DATA_SET; KEY=$formatKey; VALUE=$format; TYPE=STRING";
+$command = "DIALOG($csvDialogName, $csvDialogTitle)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# create DATE_FORMAT setting
-$command = "COMMAND=DATA_SET; KEY=$dateFormatKey; VALUE=$dateFormat; TYPE=STRING";
+# create csv format setting
+$command = "DATA_STRING($csvFormatKey, $csvFormatValue)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# create DELIMITER setting
-$command = "COMMAND=DATA_SET; KEY=$delimiterKey; VALUE=$delimiter; LIST=$delimiterList; TYPE=LIST";
+# add csv format setting to dialog
+$command = "DIALOG_SET($csvDialogName, $csvFormatKey, $csvFormatLabel, $csvDialogTab)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# create TYPE setting
-$command = "COMMAND=DATA_SET; KEY=$typeKey; VALUE=$type; LIST=$typeList; TYPE=LIST";
+# create csv date format setting
+$command = "DATA_STRING($csvDateFormatKey, $csvDateFormatValue)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# create FILENAME_AS_SYMBOL setting
-$command = "COMMAND=DATA_SET; KEY=$filenameAsSymbolKey; VALUE=$filenameAsSymbol; TYPE=BOOL";
+# add csv date format setting to dialog
+$command = "DIALOG_SET($csvDialogName, $csvDateFormatKey, $csvDateFormatLabel, $csvDialogTab)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# we add the above settings to create an editable dialog
+# create csv delimiter setting
+$command = "DATA_LIST($csvDelimiterKey, $csvDelimiterValue, $csvDelimiterList)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# add csv date format setting to dialog
+$command = "DIALOG_SET($csvDialogName, $csvDelimiterKey, $csvDelimiterLabel, $csvDialogTab)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# create csv quote type setting
+$command = "DATA_LIST($csvQuoteTypeKey, $csvQuoteTypeValue, $csvQuoteTypeList)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# add csv quote type setting to dialog
+$command = "DIALOG_SET($csvDialogName, $csvQuoteTypeKey, $csvQuoteTypeLabel, $csvDialogTab)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# create csv filename as symbol setting
+$command = "DATA_BOOL($csvFilenameAsSymbolKey, $csvFilenameAsSymbolValue)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# add csv filename as symbol setting to dialog
+$command = "DIALOG_SET($csvDialogName, $csvFilenameAsSymbolKey, $csvFilenameAsSymbolLabel, $csvDialogTab)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# create csv exchange setting
+$command = "DATA_STRING($csvExchangeKey, $csvExchangeValue)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# add csv exchange setting to dialog
+$command = "DIALOG_SET($csvDialogName, $csvExchangeKey, $csvExchangeLabel, $csvDialogTab)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
 # show the CSV dialog
-$command = "COMMAND=DIALOG;
-            TITLE=CSV Settings;
-            TAB_TITLE_0=Settings;
-            SETTING_0=$csvFileKey;
-            SETTING_1=$formatKey;
-            SETTING_2=$dateFormatKey;
-            SETTING_3=$delimiterKey;
-            SETTING_4=$typeKey;
-            SETTING_5=$filenameAsSymbolKey";
+$command = "DIALOG_RUN($csvDialogName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # we pass the settings modified by the dialog to the CSV command
 # import the CSV file into the quote database
-$command = "COMMAND=CSV;
-            CSV_FILE=$csvFileKey;
-            FORMAT=$formatKey;
-            DATE_FORMAT=$dateFormatKey;
-            DELIMITER=$delimiterKey;
-            TYPE=$typeKey;
-            FILENAME_AS_SYMBOL=$filenameAsSymbolKey";
+$command = "CSV($csvFileKey, $csvFormatKey, $csvDateFormatKey, $csvDelimiterKey, $csvQuoteTypeKey, $csvFilenameAsSymbolKey, $csvExchangeKey)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # refresh the chart panel
-$command = "COMMAND=CHART_PANEL_REFRESH";
+$command = "CHART_PANEL_REFRESH()";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

@@ -29,8 +29,20 @@ class CommandBBANDS : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeUpper,
+      _ParmTypeMiddle,
+      _ParmTypeLower,
+      _ParmTypeInput,
+      _ParmTypePeriod,
+      _ParmTypeMAType,
+      _ParmTypeDevUp,
+      _ParmTypeDevDown
+    };
+
     CommandBBANDS (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     QList<Data *> getBBANDS (QList<Data *> &, int period, double udev, double ldev, int type);
 };
 

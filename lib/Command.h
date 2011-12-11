@@ -24,44 +24,43 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QHash>
 
-#include "Message.h"
+#include "CommandParse.h"
 #include "Script.h"
+#include "Data.h"
 
 class Command : public QObject
 {
   Q_OBJECT
 
   signals:
-    void signalResume (void *);
+    void signalDone (QString);
 
   public:
-    enum ReturnCode
-    {
-      _OK,
-      _ERROR
-    };
-
     enum Type
     {
-      _NORMAL,
-      _DIALOG,
+      _WAIT,
       _THREAD
     };
 
     Command (QObject *);
     ~Command ();
-    virtual int runScript (Message *, Script *);
+    virtual void runScript (CommandParse, Script *);
 
     QString name ();
     int type ();
-    QString returnString ();
+    int parse (CommandParse, Script *);
+    int parse1 (Script *, QString, int);
+    void setTData (Data *);
+    void done (QString);
+    void error (QString);
 
   protected:
+    QHash<int, Data *> _values;
+    QList<Data *> _tdata;
     int _type;
     QString _name;
-    QString _returnString;
-    QStringList _message;
 };
 
 #endif

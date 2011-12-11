@@ -29,6 +29,13 @@ class CommandHT : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeInput,
+      _ParmTypeMethod
+    };
+
     enum Method
     {
       _DCPERIOD,
@@ -38,7 +45,7 @@ class CommandHT : public Command
     };
 
     CommandHT (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getHT (QList<Data *> &, int);
 
   protected:

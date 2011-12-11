@@ -25,24 +25,22 @@
 #include <QString>
 #include <QThread>
 
-#include "Command.h"
-#include "Script.h"
-#include "Message.h"
+#include "CommandParse.h"
 
 class CommandThread : public QThread
 {
   Q_OBJECT
 
   public:
-    CommandThread (QObject *, Message, Command *, Script *);
+    CommandThread (QObject *, void *, CommandParse, void *);
 
   protected:
     void run ();
 
   private:
-    Command *_command;
-    Script *_script;
-    Message _message;
+    CommandParse _cp;
+    void *_script;
+    void *_command;
 };
 
 #endif

@@ -26,7 +26,6 @@
 #include "DataString.h"
 #include "DataDouble.h"
 #include "DataDateTime.h"
-#include "VerifyDataInput.h"
 #include "GlobalSymbol.h"
 
 #include <QtDebug>
@@ -35,99 +34,61 @@
 CommandSymbolCurrent::CommandSymbolCurrent (QObject *p) : Command (p)
 {
   _name = "SYMBOL_CURRENT";
-//  _type = _NORMAL;
+//  _type = _WAIT;
+
+  _values.insert(_ParmTypeDate, new DataString());
+  _values.insert(_ParmTypeOpen, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+  _values.insert(_ParmTypeVolume, new DataString());
+  _values.insert(_ParmTypeOI, new DataString());
 }
 
-int CommandSymbolCurrent::runScript (Message *sg, Script *script)
+void CommandSymbolCurrent::runScript (CommandParse sg, Script *script)
 {
+  if (Command::parse(sg, script))
+  {
+    Command::error("CommandSymbolCurrent::runScript: parse error");
+    return;
+  }
+
   QMutexLocker locker(&g_symbolMutex);
 
   Symbol *bd = script->symbol();
   if (! bd)
   {
-    qDebug() << "CommandSymbolCurrent::runScript: invalid symbol";
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSymbolCurrent::runScript: invalid symbol");
+    return;
   }
 
   // date
-  VerifyDataInput vdi;
-  QString name;
-  QString s = sg->value("DATE");
-  if (vdi.toString(script, s, name))
-  {
-    qDebug() << "CommandSymbolCurrent::runScript: invalid DATE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *dline = new CurveData;
-  script->setData(name, dline);
+  script->setData(_values.value(_ParmTypeDate)->toString(), dline);
 
   // open
-  s = sg->value("OPEN");
-  if (vdi.toString(script, s, name))
-  {
-    qDebug() << "CommandSymbolCurrent::runScript: invalid OPEN" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *oline = new CurveData;
-  script->setData(name, oline);
+  script->setData(_values.value(_ParmTypeOpen)->toString(), oline);
 
   // high
-  s = sg->value("HIGH");
-  if (vdi.toString(script, s, name))
-  {
-    qDebug() << "CommandSymbolCurrent::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *hline = new CurveData;
-  script->setData(name, hline);
+  script->setData(_values.value(_ParmTypeHigh)->toString(), hline);
 
   // low
-  s = sg->value("LOW");
-  if (vdi.toString(script, s, name))
-  {
-    qDebug() << "CommandSymbolCurrent::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *lline = new CurveData;
-  script->setData(name, lline);
+  script->setData(_values.value(_ParmTypeLow)->toString(), lline);
 
   // close
-  s = sg->value("CLOSE");
-  if (vdi.toString(script, s, name))
-  {
-    qDebug() << "CommandSymbolCurrent::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *cline = new CurveData;
-  script->setData(name, cline);
+  script->setData(_values.value(_ParmTypeClose)->toString(), cline);
 
   // volume
-  s = sg->value("VOLUME");
-  if (vdi.toString(script, s, name))
-  {
-    qDebug() << "CommandSymbolCurrent::runScript: invalid VOLUME" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *vline = new CurveData;
-  script->setData(name, vline);
+  script->setData(_values.value(_ParmTypeVolume)->toString(), vline);
 
   // oi
-  s = sg->value("OI");
-  if (vdi.toString(script, s, name))
-  {
-    qDebug() << "CommandSymbolCurrent::runScript: invalid OI" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
   Data *iline = new CurveData;
-  script->setData(name, iline);
+  script->setData(_values.value(_ParmTypeOI)->toString(), iline);
 
   int loop = 0;
   QList<int> keys = bd->barKeys();
@@ -164,9 +125,5 @@ int CommandSymbolCurrent::runScript (Message *sg, Script *script)
     iline->set(loop, db);
   }
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }

@@ -22,48 +22,44 @@
 #include "CommandMedianPrice.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "DataDouble.h"
+#include "DataString.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
 CommandMedianPrice::CommandMedianPrice (QObject *p) : Command (p)
 {
   _name = "MEDIAN_PRICE";
+
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypeInput2, new DataString());
 }
 
-int CommandMedianPrice::runScript (Message *sg, Script *script)
+void CommandMedianPrice::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandMedianPrice::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMedianPrice::runScript: parse error");
+    return;
   }
 
-  // INPUT_1
-  s = sg->value("INPUT_1");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandMedianPrice::runScript: INPUT_1 not found" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMAMA::runScript: invalid Input");
+    return;
   }
 
-  // INPUT_2
-  s = sg->value("INPUT_2");
-  Data *in2 = vdi.toCurve(script, s);
+  Data *in2 = svc.toCurve(script, _values.value(_ParmTypeInput2)->toString(), toffset);
   if (! in2)
   {
-    qDebug() << "CommandMedianPrice::runScript: invalid INPUT_2" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMAMA::runScript: invalid Input2");
+    return;
   }
 
   QList<Data *> list;
@@ -72,24 +68,20 @@ int CommandMedianPrice::runScript (Message *sg, Script *script)
   Data *line = getMP(list);
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMAMA::runScript: getMP error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandMedianPrice::getMP (QList<Data *> &list)
 {
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   Data *line = new CurveData;

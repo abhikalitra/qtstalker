@@ -28,7 +28,8 @@
 #include "ChartObjectDataBase.h"
 #include "GlobalPlotGroup.h"
 #include "GlobalSymbol.h"
-#include "VerifyDataInput.h"
+#include "DataString.h"
+#include "ScriptVerifyCurve.h"
 
 #include <QtDebug>
 #include <QTime>
@@ -37,41 +38,50 @@
 CommandChartUpdate::CommandChartUpdate (QObject *p) : Command (p)
 {
   _name = "CHART_UPDATE";
-  _type = _NORMAL;
+  _type = _WAIT;
+
+  _values.insert(_ParmTypeChart, new DataString());
+  _values.insert(_ParmTypeDate, new DataString());
 }
 
-int CommandChartUpdate::runScript (Message *sg, Script *script)
+void CommandChartUpdate::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  QString name;
-  QString s = sg->value("CHART");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandChartUpdate::runScript: invalid CHART" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandChartUpdate::runScript: parse error");
+    return;
   }
 
-  s = sg->value("DATE");
-  Data *date = vdi.toCurve(script, s);
-  if (! date)
+  if (chartUpdate(script,
+	          _values.value(_ParmTypeChart)->toString(),
+	          _values.value(_ParmTypeDate)->toString()))
   {
-    qDebug() << "CommandChartUpdate::runScript: invalid DATE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error(QString());
+    return;
   }
 
+  Command::done(QString());
+}
+
+int CommandChartUpdate::chartUpdate (Script *script, QString name, QString ds)
+{
   Plot *plot = g_plotGroup->plot(name);
   if (! plot)
   {
-    qDebug() << "CommandChartUpdate::runScript: chart not found" << name;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandChartUpdate::chartUpdate: chart not found" << name;
+    return 1;
+  }
+
+  int offset = 0;
+  ScriptVerifyCurve svc;
+  Data *date = svc.toCurve(script, ds, offset);
+  if (! date)
+  {
+    qDebug() << "CommandChartUpdate::chartUpdate: date not found" << ds;
+    return 1;
   }
 
   plot->clear();
-
   plot->setDates(date);
 
   QList<QString> keys = script->dataKeys();
@@ -96,40 +106,24 @@ int CommandChartUpdate::runScript (Message *sg, Script *script)
 
   update(name, plot);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  return 0;
 }
 
 void CommandChartUpdate::curve (Data *dg, QString name, Plot *plot)
 {
   Data *setting = dg->toData(CurveData::_Z);
   if (! setting)
-  {
-//qDebug() << "CommandChartUpdate::curve: no Z";
     return;
-  }
 
   if (setting->toInteger() < 0)
-  {
-//qDebug() << "CommandChartUpdate::curve: z < 0";
     return;
-  }
 
   setting = dg->toData(CurveData::_CHART);
   if (! setting)
-  {
-//qDebug() << "CommandChartUpdate::curve: no CHART";
     return;
-  }
 
   if (setting->toString() != name)
-  {
-//qDebug() << "CommandChartUpdate::curve: CHART != name";
     return;
-  }
 
   dg->setDeleteFlag(0);
 

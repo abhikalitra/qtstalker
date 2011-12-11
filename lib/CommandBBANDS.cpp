@@ -23,9 +23,14 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataMA.h"
+#include "DataDouble.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,111 +38,57 @@ CommandBBANDS::CommandBBANDS (QObject *p) : Command (p)
 {
   _name = "BBANDS";
 
+  _values.insert(_ParmTypeUpper, new DataString());
+  _values.insert(_ParmTypeMiddle, new DataString());
+  _values.insert(_ParmTypeLower, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(20));
+  _values.insert(_ParmTypeMAType, new DataMA("EMA"));
+  _values.insert(_ParmTypeDevUp, new DataDouble(2));
+  _values.insert(_ParmTypeDevDown, new DataDouble(2));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandBBANDS::CommandBBANDS: error on TA_Initialize");
 }
 
-int CommandBBANDS::runScript (Message *sg, Script *script)
+void CommandBBANDS::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT_UPPER
-  QString uname;
-  QString s = sg->value("OUTPUT_UPPER");
-  if (vdi.toString(script, s, uname))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandBBANDS::runScript: invalid OUTPUT_UPPER" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBBANDS::runScript: parse error");
+    return;
   }
 
-  // OUTPUT_MIDDLE
-  QString mname;
-  s = sg->value("OUTPUT_MIDDLE");
-  if (vdi.toString(script, s, mname))
-  {
-    qDebug() << "CommandBBANDS::runScript: invalid OUTPUT_MIDDLE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // OUTPUT_LOWER
-  QString lname;
-  s = sg->value("OUTPUT_LOWER");
-  if (vdi.toString(script, s, lname))
-  {
-    qDebug() << "CommandBBANDS::runScript: invalid OUTPUT_LOWER" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandBBANDS::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PERIOD
-  int period = 20;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandBBANDS::runScript: invalid PERIOD, using default" << s;
-    period = 20;
-  }
-
-  // MA_TYPE
-  int type = 0;
-  s = sg->value("MA_TYPE");
-  if (vdi.toMA(script, s, type))
-  {
-    qDebug() << "CommandBBANDS::runScript: invalid MA_TYPE, using default" << s;
-    type = 0;
-  }
-
-  // DEV_UP
-  double udev = 2;
-  s = sg->value("DEV_UP");
-  if (vdi.toDouble(script, s, udev))
-  {
-    qDebug() << "CommandBBANDS::runScript: invalid DEV_UP, using default" << s;
-    udev = 2;
-  }
-
-  // DEV_DOWN
-  double ddev = 2;
-  s = sg->value("DEV_DOWN");
-  if (vdi.toDouble(script, s, ddev))
-  {
-    qDebug() << "CommandBBANDS::runScript: invalid DEV_DOWN, using default" << s;
-    udev = 2;
+    Command::error("CommandBBANDS::runScript: invalid Input");
+    return;
   }
 
   QList<Data *> list;
   list << in;
 
-  QList<Data *> lines = getBBANDS(list, period, udev, ddev, type);
+  QList<Data *> lines = getBBANDS(list,
+				  _values.value(_ParmTypePeriod)->toInteger(),
+				  _values.value(_ParmTypeDevUp)->toDouble(),
+				  _values.value(_ParmTypeDevDown)->toDouble(),
+				  _values.value(_ParmTypeMAType)->toInteger());
   if (lines.count() != 3)
   {
     qDeleteAll(lines);
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBBANDS::runScript: getBBANDS error");
+    return;
   }
 
-  script->setData(uname, lines.at(0));
-  script->setData(mname, lines.at(1));
-  script->setData(lname, lines.at(2));
+  script->setData(_values.value(_ParmTypeUpper)->toString(), lines.at(0));
+  script->setData(_values.value(_ParmTypeMiddle)->toString(), lines.at(1));
+  script->setData(_values.value(_ParmTypeLower)->toString(), lines.at(2));
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 QList<Data *> CommandBBANDS::getBBANDS (QList<Data *> &list, int period, double udev, double ldev, int type)
@@ -146,9 +97,9 @@ QList<Data *> CommandBBANDS::getBBANDS (QList<Data *> &list, int period, double 
   if (! list.count())
     return lines;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return lines;
 
   int size = keys.count();

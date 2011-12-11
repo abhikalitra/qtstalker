@@ -29,12 +29,14 @@ class CommandDialog : public Command
   Q_OBJECT
 
   public:
-    CommandDialog (QObject *);
-    int runScript (Message *, Script *);
+    enum ParmType
+    {
+      _ParmTypeKey,
+      _ParmTypeTitle
+    };
 
-  public slots:
-    void dialogAccepted ();
-    void dialogRejected ();
+    CommandDialog (QObject *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

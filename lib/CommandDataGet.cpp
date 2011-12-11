@@ -21,32 +21,37 @@
 
 #include "CommandDataGet.h"
 #include "DataFactory.h"
+#include "DataString.h"
 
 #include <QtDebug>
 
 CommandDataGet::CommandDataGet (QObject *p) : Command (p)
 {
   _name = "DATA_GET";
+
+  _values.insert(_ParmTypeKey, new DataString());
 }
 
-int CommandDataGet::runScript (Message *sg, Script *script)
+void CommandDataGet::runScript (CommandParse sg, Script *script)
 {
-  // KEY
-  QString key = sg->value("KEY");
-  if (key.isEmpty())
+  // we need to verify values manually due to conflict with Data objects returning values
+  // we want the object not the value
+
+  if (sg.values() != _values.count())
   {
-    qDebug() << "CommandDataGet::runScript: invalid KEY" << key;
-    emit signalResume((void *) this);
-    return _ERROR;
+    qDebug() << "CommandDataGet::runScript: invalid number of values";
+    return;
   }
 
-  Data *d = script->data(key);
+  QString s = sg.value(_ParmTypeKey);
+  Data *d = script->data(s);
   if (! d)
   {
-    qDebug() << "CommandDataGet::runScript: invalid KEY" << key;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandDataGet::runScript: invalid value pos 0 " + s);
+    return;
   }
+
+  QString rs;
 
   switch ((DataFactory::Type) d->type())
   {
@@ -54,7 +59,6 @@ int CommandDataGet::runScript (Message *sg, Script *script)
     case DataFactory::_BOOL:
     case DataFactory::_COLOR:
     case DataFactory::_CURVE:
-    case DataFactory::_CURVE_BAR:
     case DataFactory::_DATE_RANGE:
     case DataFactory::_DATETIME:
     case DataFactory::_DOUBLE:
@@ -63,13 +67,11 @@ int CommandDataGet::runScript (Message *sg, Script *script)
     case DataFactory::_LIST:
     case DataFactory::_STRING:
     case DataFactory::_SYMBOL:
-      _returnString = d->toString();
+      rs = d->toString();
       break;
     default:
       break;
   }
 
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(rs);
 }

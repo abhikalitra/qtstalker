@@ -29,8 +29,20 @@ class CommandPlotLine : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeName,
+      _ParmTypeChart,
+      _ParmTypeLabel,
+      _ParmTypeStyle,
+      _ParmTypeColor,
+      _ParmTypeZ,
+      _ParmTypePen,
+      _ParmTypeInput
+    };
+
     CommandPlotLine (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

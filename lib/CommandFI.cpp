@@ -22,48 +22,44 @@
 #include "CommandFI.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "DataDouble.h"
+#include "DataString.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
 CommandFI::CommandFI (QObject *p) : Command (p)
 {
   _name = "FI";
+
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+  _values.insert(_ParmTypeVolume, new DataString());
 }
 
-int CommandFI::runScript (Message *sg, Script *script)
+void CommandFI::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandFI::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandFI::runScript: parse error");
+    return;
   }
 
-  // CLOSE
-  s = sg->value("CLOSE");
-  Data *iclose = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
   if (! iclose)
   {
-    qDebug() << "CommandFI::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandFI::runScript: invalid Close");
+    return;
   }
 
-  // VOLUME
-  s = sg->value("VOLUME");
-  Data *ivol = vdi.toCurve(script, s);
+  Data *ivol = svc.toCurve(script, _values.value(_ParmTypeVolume)->toString(), toffset);
   if (! ivol)
   {
-    qDebug() << "CommandFI::runScript: invalid VOLUME" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandFI::runScript: invalid Volume");
+    return;
   }
 
   QList<Data *> list;
@@ -72,17 +68,13 @@ int CommandFI::runScript (Message *sg, Script *script)
   Data *line = getFI(list);
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandFI::runScript: getFI error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandFI::getFI (QList<Data *> &list)
@@ -90,9 +82,9 @@ Data * CommandFI::getFI (QList<Data *> &list)
   if (list.count() != 2)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   Data *line = new CurveData;

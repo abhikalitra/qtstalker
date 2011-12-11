@@ -29,8 +29,22 @@ class CommandMACD : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeMACD,
+      _ParmTypeSignal,
+      _ParmTypeHist,
+      _ParmTypeInput,
+      _ParmTypePeriodFast,
+      _ParmTypeMAFast,
+      _ParmTypePeriodSlow,
+      _ParmTypeMASlow,
+      _ParmTypePeriodSignal,
+      _ParmTypeMASignal
+    };
+
     CommandMACD (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     QList<Data *> getMACD (QList<Data *> &, int fp, int sp, int sigp, int fma, int sma, int sigma);
 };
 

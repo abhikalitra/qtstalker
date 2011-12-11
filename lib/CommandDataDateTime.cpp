@@ -19,38 +19,42 @@
  *  USA.
  */
 
-#include <QApplication>
-#include <QString>
+#include "CommandDataDateTime.h"
+#include "DataFactory.h"
+#include "DataString.h"
+#include "DataDateTime.h"
+
 #include <QtDebug>
-#include <QDBusConnection>
 
-#include "QtStalkerScript.h"
-#include "../lib/qtstalker_defines.h"
-
-int main(int argc, char *argv[])
+CommandDataDateTime::CommandDataDateTime (QObject *p) : Command (p)
 {
-  if (argc != 4)
+  _name = "DATA_DATE_TIME";
+
+  _values.insert(_ParmTypeKey, new DataString());
+  _values.insert(_ParmTypeValue, new DataDateTime());
+}
+
+void CommandDataDateTime::runScript (CommandParse sg, Script *script)
+{
+  if (Command::parse(sg, script))
   {
-    qDebug() << "QtStalkerScript::main: invalid args" << argc;
-    exit(1);
+    Command::error("CommandDataDateTime::runScript: parse error");
+    return;
   }
 
-  int pos = 1;
-  QString session = argv[pos++];
-  QString command = argv[pos++];
-  QString file = argv[pos++];
+  QString key = _values.value(_ParmTypeKey)->toString();
 
-  QApplication a(argc, argv);
-  QCoreApplication::setOrganizationName("QtStalkerScript");
-  QCoreApplication::setApplicationName("QtStalkerScript");
-
-  if (! QDBusConnection::sessionBus().isConnected())
+  DataFactory dfac;
+  Data *d = dfac.data(DataFactory::_DATETIME);
+  if (! d)
   {
-    qWarning("Cannot connect to the D-Bus session bus.\n"
-             "Please check your system settings and try again.\n");
-    return 1;
+    Command::error("CommandDataDateTime::runScript: error creating DataDateTime");
+    return;
   }
 
-  QtStalkerScript app(session, command, file);
-  return a.exec();
+  script->setData(key, d);
+
+  d->set(_values.value(_ParmTypeValue)->toDateTime());
+
+  Command::done(QString());
 }

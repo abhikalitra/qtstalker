@@ -53,132 +53,62 @@ $ma3Style = 'Line';
 $|++;
 
 # create the chart
-$command = "COMMAND=CHART;
-            NAME=$chartName;
-            DATE=1;
-            LOG=0;
-            ROW=0;
-            COL=0";
+$command = "CHART($chartName, 1, 0, 0, 0)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # load current bars
-$command = "COMMAND=SYMBOL_CURRENT;
-            DATE=$dateName;
-            OPEN=$openName;
-            HIGH=$highName;
-            LOW=$lowName;
-            CLOSE=$closeName;
-            VOLUME=$volumeName;
-            OI=$oiName";
+$command = "SYMBOL_CURRENT($dateName, $openName, $highName, $lowName, $closeName, $volumeName, $oiName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot OHLC bars
-$command = "COMMAND=PLOT_OHLC;
-            CHART=$chartName;
-            OUTPUT=$ohlcName;
-            LABEL=$ohlcLabel;
-            STYLE=OHLC;
-            OPEN=$openName;
-            HIGH=$highName;
-            LOW=$lowName;
-            CLOSE=$closeName;
-            COLOR=$ohlcColor;
-            Z=$ohlcZ;
-            PEN=1";
+$command = "PLOT_OHLC($ohlcName, $chartName, $ohlcLabel, OHLC, $ohlcColor,
+                      $ohlcZ, 1, $openName, $highName, $lowName, $closeName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # color up bars
-$command = "COMMAND=COLOR;
-            INPUT_1=$closeName;
-            OP=GT;
-            INPUT_2=$closeName.1;
-            INPUT_3=$ohlcName;
-            COLOR=$ohlcUpColor";
+$command = "COMPARE($closeName, >, $closeName.1, $ohlcName, $ohlcUpColor)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # color down bars
-$command = "COMMAND=COLOR;
-            INPUT_1=$closeName;
-            OP=LT;
-            INPUT_2=$closeName.1;
-            INPUT_3=$ohlcName;
-            COLOR=$ohlcDownColor";
+$command = "COMPARE($closeName, <, $closeName.1, $ohlcName, $ohlcDownColor)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create MA1
-$command = "COMMAND=MA;
-            OUTPUT=$ma1Data;
-            INPUT=$closeName;
-            PERIOD=$ma1Period;
-            METHOD=$ma1Type";
+$command = "MA($ma1Data, $closeName, $ma1Period, $ma1Type)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create MA2
-$command = "COMMAND=MA;
-            OUTPUT=$ma2Data;
-            INPUT=$closeName;
-            PERIOD=$ma2Period;
-            METHOD=$ma2Type";
+$command = "MA($ma2Data, $closeName, $ma2Period, $ma2Type)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # create MA3
-$command = "COMMAND=MA;
-            OUTPUT=$ma3Data;
-            INPUT=$closeName;
-            PERIOD=$ma3Period;
-            METHOD=$ma3Type";
+$command = "MA($ma3Data, $closeName, $ma3Period, $ma3Type)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot MA1
-$command = "COMMAND=PLOT_LINE;
-            CHART=$chartName;
-            OUTPUT=$ma1Name;
-            LABEL=$ma1Label;
-            INPUT=$ma1Data;
-            STYLE=$ma1Style;
-            COLOR=$ma1Color;
-            Z=$ma1Z;
-            PEN=1";
+$command = "PLOT_LINE($ma1Name, $chartName, $ma1Label, $ma1Style, $ma1Color, $ma1Z, 1, $ma1Data)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot MA2
-$command = "COMMAND=PLOT_LINE;
-            CHART=$chartName;
-            OUTPUT=$ma2Name;
-            LABEL=$ma2Label;
-            INPUT=$ma2Data;
-            STYLE=$ma2Style;
-            COLOR=$ma2Color;
-            Z=$ma2Z;
-            PEN=1";
+$command = "PLOT_LINE($ma2Name, $chartName, $ma2Label, $ma2Style, $ma2Color, $ma2Z, 1, $ma2Data)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # plot MA3
-$command = "COMMAND=PLOT_LINE;
-            CHART=$chartName;
-            OUTPUT=$ma3Name;
-            LABEL=$ma3Label;
-            INPUT=$ma3Data;
-            STYLE=$ma3Style;
-            COLOR=$ma3Color;
-            Z=$ma3Z;
-            PEN=1";
+$command = "PLOT_LINE($ma3Name, $chartName, $ma3Label, $ma3Style, $ma3Color, $ma3Z, 1, $ma3Data)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # update chart
-$command = "COMMAND=CHART_UPDATE;
-            CHART=$chartName;
-            DATE=$dateName";
+$command = "CHART_UPDATE($chartName, $dateName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

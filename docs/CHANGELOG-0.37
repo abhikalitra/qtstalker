@@ -1290,3 +1290,8 @@
 
 **************************************************************************************************************************
 
+20111211:  Changed the scripting language format to a more familiar COMMAND(parm, parm, parm) and less verbose
+           format more in keeping with other scripting languages. Scripts updated.
+
+           BUG FIX: old D-Bus configuration prevents building - ID: 3456847
+

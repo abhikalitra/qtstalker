@@ -23,9 +23,12 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,91 +36,69 @@ CommandMFI::CommandMFI (QObject *p) : Command (p)
 {
   _name = "MFI";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+  _values.insert(_ParmTypeVolume, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(14));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandMFI::CommandMFI: error on TA_Initialize");
 }
 
-int CommandMFI::runScript (Message *sg, Script *script)
+void CommandMFI::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandMFI::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMFI::runScript: parse error");
+    return;
   }
 
-  // HIGH
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandMFI::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMFI::runScript: invalid High");
+    return;
   }
 
-  // LOW
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandMFI::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMFI::runScript: invalid Low");
+    return;
   }
 
-  // CLOSE
-  s = sg->value("CLOSE");
-  Data *iclose = vdi.toCurve(script, s);
+  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
   if (! iclose)
   {
-    qDebug() << "CommandMFI::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMFI::runScript: invalid Close");
+    return;
   }
 
-  // VOLUME
-  s = sg->value("VOLUME");
-  Data *ivol = vdi.toCurve(script, s);
+  Data *ivol = svc.toCurve(script, _values.value(_ParmTypeVolume)->toString(), toffset);
   if (! ivol)
   {
-    qDebug() << "CommandMFI::runScript: invalid VOLUME" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PERIOD
-  int period = 14;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandMFI::runScript: invalid PERIOD, using default" << s;
-    period = 14;
+    Command::error("CommandMFI::runScript: invalid Volume");
+    return;
   }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose << ivol;
 
-  Data *line = getMFI(list, period);
+  Data *line = getMFI(list, _values.value(_ParmTypePeriod)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandMFI::runScript: getMFI error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandMFI::getMFI (QList<Data *> &list, int period)
@@ -125,9 +106,9 @@ Data * CommandMFI::getMFI (QList<Data *> &list, int period)
   if (list.count() != 4)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int size = keys.count();

@@ -23,9 +23,13 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataDouble.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,70 +37,48 @@ CommandSTDDEV::CommandSTDDEV (QObject *p) : Command (p)
 {
   _name = "STDDEV";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(14));
+  _values.insert(_ParmTypeDev, new DataDouble(2));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandSTDDEV::CommandSTDDEV: error on TA_Initialize");
 }
 
-int CommandSTDDEV::runScript (Message *sg, Script *script)
+void CommandSTDDEV::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandSTDDEV::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSTDDEV::runScript: parse error");
+    return;
   }
 
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandSTDDEV::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PERIOD
-  int period = 14;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandSTDDEV::runScript: invalid PERIOD, using default" << s;
-    period = 14;
-  }
-
-  // DEVIATION
-  double dev = 2;
-  s = sg->value("DEVIATION");
-  if (vdi.toDouble(script, s, dev))
-  {
-    qDebug() << "CommandSTDDEV::runScript: invalid DEVIATION, using default" << s;
-    dev = 2;
+    Command::error("CommandSTDDEV::runScript: invalid Input");
+    return;
   }
 
   QList<Data *> list;
   list << in;
 
-  Data *line = getSTDDEV(list, period, dev);
+  Data *line = getSTDDEV(list,
+			 _values.value(_ParmTypePeriod)->toInteger(),
+			 _values.value(_ParmTypeDev)->toDouble());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSTDDEV::runScript: getSTDDEV error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandSTDDEV::getSTDDEV (QList<Data *> &list, int period, double dev)
@@ -104,9 +86,9 @@ Data * CommandSTDDEV::getSTDDEV (QList<Data *> &list, int period, double dev)
   if (! list.count())
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int size = keys.count();

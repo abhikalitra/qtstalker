@@ -29,8 +29,18 @@ class CommandAROON : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeUpper,
+      _ParmTypeLower,
+      _ParmTypeHigh,
+      _ParmTypeLow,
+      _ParmTypeClose,
+      _ParmTypePeriod
+    };
+
     CommandAROON (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     QList<Data *> getAROON (QList<Data *> &, int period);
 };
 

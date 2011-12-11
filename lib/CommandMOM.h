@@ -29,8 +29,15 @@ class CommandMOM : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeInput,
+      _ParmTypePeriod
+    };
+
     CommandMOM (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getMOM (QList<Data *> &, int);
 };
 

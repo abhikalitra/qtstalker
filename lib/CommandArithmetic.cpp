@@ -20,10 +20,15 @@
  */
 
 #include "CommandArithmetic.h"
-#include "VerifyDataInput.h"
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "DataDouble.h"
+#include "DataString.h"
+#include "DataList.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveValue.h"
+#include "ScriptVerifyCurveKeys.h"
+#include "DataFactory.h"
 
 #include <QtDebug>
 
@@ -31,74 +36,79 @@ CommandArithmetic::CommandArithmetic (QObject *p) : Command (p)
 {
   _name = "ARITHMETIC";
   _method << "ADD" << "DIV" << "MULT" << "SUB";
+
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+  _values.insert(_ParmTypeInput2, new DataString());
+
+  DataList *dl = new DataList("ADD");
+  dl->set(_method);
+  _values.insert(_ParmTypeMethod, dl);
 }
 
-int CommandArithmetic::runScript (Message *sg, Script *script)
+void CommandArithmetic::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // verify NAME
-  QString s = sg->value("OUTPUT");
-  QString name;
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandArithmetic::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandArithmetic::runScript: parse error");
+    return;
   }
 
-  // verify INPUT_1
-  s = sg->value("INPUT_1");
-  Data *in = vdi.toCurve(script, s);
+  int offset = 0;
+  ScriptVerifyCurve svc;
+  QString s = _values.value(_ParmTypeInput)->toString();
+  Data *in = svc.toCurve(script, s, offset);
   if (! in)
   {
-    qDebug() << "CommandArithmetic::runScript: invalid INPUT_1" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  int offset = 0;
-  Data *set = in->toData(CurveData::_OFFSET);
-  if (set)
-    offset = set->toInteger();
+    DataFactory dfac;
+    in = dfac.data(DataFactory::_DOUBLE);
+    if (! in)
+    {
+      Command::error("CommandArithmetic::runScript: error creating DataDouble Input");
+      return;
+    }
 
-  // verify INPUT_2
-  s = sg->value("INPUT_2");
-  Data *in2 = vdi.toCurve(script, s);
+    Command::setTData(in);
+
+    if (in->set(s))
+    {
+      Command::error("CommandArithmetic::runScript: invalid Input");
+      return;
+    }
+  }
+
+  int offset2 = 0;
+  s = _values.value(_ParmTypeInput2)->toString();
+  Data *in2 = svc.toCurve(script, s, offset2);
   if (! in2)
   {
-    qDebug() << "CommandArithmetic::runScript: invalid INPUT_2" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-  int offset2 = 0;
-  set = in2->toData(CurveData::_OFFSET);
-  if (set)
-    offset2 = set->toInteger();
+    DataFactory dfac;
+    in2 = dfac.data(DataFactory::_DOUBLE);
+    if (! in2)
+    {
+      Command::error("CommandArithmetic::runScript: error creating DataDouble Input2");
+      return;
+    }
 
-  s = sg->value("METHOD");
-  int method = _method.indexOf(s);
-  if (method == -1)
-  {
-    qDebug() << "CommandArithmetic::runScript: invalid METHOD" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::setTData(in2);
+
+    if (in2->set(s))
+    {
+      Command::error("CommandArithmetic::runScript: invalid Input2");
+      return;
+    }
   }
 
-  Data *line = getArithmetic(in, offset, in2, offset2, method);
+  Data *line = getArithmetic(in, offset, in2, offset2, _values.value(_ParmTypeMethod)->toInteger());
   if (! line)
   {
-    qDebug() << "CommandArithmetic::runScript: getArithmetic error " << name;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandArithmetic::runScript: getArithmetic error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandArithmetic::getArithmetic (Data *in, int offset, Data *in2, int offset2, int method)
@@ -106,24 +116,25 @@ Data * CommandArithmetic::getArithmetic (Data *in, int offset, Data *in2, int of
   QList<Data *> list;
   list << in << in2;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
   {
     qDebug() << "CommandArithmetic::runScript: getArithmetic invalid keys";
     return 0;
   }
 
+  ScriptVerifyCurveValue svcv;
   Data *line = new CurveData;
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
     double v = 0;
-    if (vdi.curveValue(in, keys, loop, offset, v))
+    if (svcv.getValue(in, keys, loop, offset, v))
       continue;
 
     double v2 = 0;
-    if (vdi.curveValue(in2, keys, loop, offset2, v2))
+    if (svcv.getValue(in2, keys, loop, offset2, v2))
       continue;
 
     switch (method)

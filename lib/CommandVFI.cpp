@@ -22,8 +22,11 @@
 #include "CommandVFI.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "DataDouble.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -31,88 +34,66 @@
 CommandVFI::CommandVFI (QObject *p) : Command (p)
 {
   _name = "VFI";
+
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+  _values.insert(_ParmTypeVolume, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(10));
 }
 
-int CommandVFI::runScript (Message *sg, Script *script)
+void CommandVFI::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandVFI::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVFI::runScript: parse error");
+    return;
   }
 
-  // HIGH
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandVFI::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVFI::runScript: invalid High");
+    return;
   }
 
-  // LOW
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandVFI::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVFI::runScript: invalid Low");
+    return;
   }
 
-  // CLOSE
-  s = sg->value("CLOSE");
-  Data *iclose = vdi.toCurve(script, s);
+  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
   if (! iclose)
   {
-    qDebug() << "CommandVFI::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVFI::runScript: invalid Close");
+    return;
   }
 
-  // VOLUME
-  s = sg->value("VOLUME");
-  Data *ivol = vdi.toCurve(script, s);
+  Data *ivol = svc.toCurve(script, _values.value(_ParmTypeVolume)->toString(), toffset);
   if (! ivol)
   {
-    qDebug() << "CommandVFI::runScript: invalid VOLUME" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PERIOD
-  int period = 10;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandVFI::runScript: invalid PERIOD, using default" << s;
-    period = 10;
+    Command::error("CommandVFI::runScript: invalid Volume");
+    return;
   }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose << ivol;
 
-  Data *line = getVFI(list, period);
+  Data *line = getVFI(list, _values.value(_ParmTypePeriod)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandVFI::runScript: getVFI");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandVFI::getVFI (QList<Data *> &list, int period)
@@ -120,9 +101,9 @@ Data * CommandVFI::getVFI (QList<Data *> &list, int period)
   if (list.count() != 4)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   Data *vfi = new CurveData;

@@ -23,9 +23,12 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataDouble.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,80 +36,56 @@ CommandSAR::CommandSAR (QObject *p) : Command (p)
 {
   _name = "SAR";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeStepInit, new DataDouble(0.02));
+  _values.insert(_ParmTypeStepMax, new DataDouble(0.2));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandSAR::CommandSAR: error on TA_Initialize");
 }
 
-int CommandSAR::runScript (Message *sg, Script *script)
+void CommandSAR::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandSAR::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSAR::runScript: parse error");
+    return;
   }
 
-  // HIGH
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandSAR::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSAR::runScript: invalid High");
+    return;
   }
 
-  // LOW
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandSAR::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // STEP_INITIAL
-  double init = 0.02;
-  s = sg->value("STEP_INITIAL");
-  if (vdi.toDouble(script, s, init))
-  {
-    qDebug() << "CommandSAR::runScript: invalid STEP_INITIAL, using default" << s;
-    init = 0.02;
-  }
-
-  // STEP_MAX
-  double max = 0.02;
-  s = sg->value("STEP_MAX");
-  if (vdi.toDouble(script, s, max))
-  {
-    qDebug() << "CommandSAR::runScript: invalid STEP_INITIAL, using default" << s;
-    max = 0.2;
+    Command::error("CommandSAR::runScript: invalid Low");
+    return;
   }
 
   QList<Data *> list;
   list << ihigh << ilow;
 
-  Data *line = getSAR(list, init, max);
+  Data *line = getSAR(list,
+		      _values.value(_ParmTypeStepInit)->toDouble(),
+		      _values.value(_ParmTypeStepMax)->toDouble());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandSAR::runScript: getSAR error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandSAR::getSAR (QList<Data *> &list, double init, double max)
@@ -114,9 +93,9 @@ Data * CommandSAR::getSAR (QList<Data *> &list, double init, double max)
   if (list.count() != 2)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int size = keys.count();

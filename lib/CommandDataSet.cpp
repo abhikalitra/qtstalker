@@ -21,84 +21,60 @@
 
 #include "CommandDataSet.h"
 #include "DataFactory.h"
-#include "VerifyDataInput.h"
+#include "DataString.h"
 
 #include <QtDebug>
 
 CommandDataSet::CommandDataSet (QObject *p) : Command (p)
 {
   _name = "DATA_SET";
+
+  _values.insert(_ParmTypeKey, new DataString());
+  _values.insert(_ParmTypeValue, new DataString());
 }
 
-int CommandDataSet::runScript (Message *sg, Script *script)
+void CommandDataSet::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // KEY
-  QString key;
-  QString s = sg->value("KEY");
-  if (vdi.toString(script, s, key))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandDataSet::runScript: invalid KEY";
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandDataSet::runScript: parse error");
+    return;
   }
 
-  // TYPE
-  DataFactory fac;
-  s = sg->value("TYPE");
-  int type = fac.stringToType(s);
-  if (type == -1)
-  {
-    qDebug() << "CommandDataSet::runScript: invalid TYPE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
+  QString key = _values.value(_ParmTypeKey)->toString();
 
-  // VALUE
-  QString value;
-  s = sg->value("VALUE");
-  vdi.toString(script, s, value);
-
-  // TAB
-  int tab = 0;
-  s = sg->value("TAB");
-  if (vdi.toInteger(script, s, tab))
-    tab = 0;
-
-  int insertFlag = 0;
   Data *d = script->data(key);
   if (! d)
   {
-    d = fac.data(type);
-    insertFlag++;
+    Command::error("CommandDataSet::runScript: invalid value pos 0 " + key);
+    return;
   }
 
-  d->setTab(tab);
-  d->setLabel(key);
+  QString s = _values.value(_ParmTypeValue)->toString();
 
-  // LIST
-  s = sg->value("LIST");
-  QStringList list = s.split(",");
-  d->set(list);
-
-  if (! value.isEmpty())
+  switch ((DataFactory::Type) d->type())
   {
-    if (d->set(value))
-    {
-      qDebug() << "CommandDataSet::runScript: invalid VALUE" << value;
-      delete d;
-      emit signalResume((void *) this);
-      return _ERROR;
-    }
+    case DataFactory::_BAR_LENGTH:
+    case DataFactory::_BOOL:
+    case DataFactory::_COLOR:
+    case DataFactory::_CURVE:
+    case DataFactory::_DATE_RANGE:
+    case DataFactory::_DATETIME:
+    case DataFactory::_DOUBLE:
+    case DataFactory::_FILE:
+    case DataFactory::_INTEGER:
+    case DataFactory::_LIST:
+    case DataFactory::_STRING:
+    case DataFactory::_SYMBOL:
+      if (d->set(s))
+      {
+        Command::error("CommandDataSet::runScript: invalid value pos 1 " + s);
+        return;
+      }
+      break;
+    default:
+      break;
   }
 
-  if (insertFlag)
-    script->setData(key, d);
-
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }

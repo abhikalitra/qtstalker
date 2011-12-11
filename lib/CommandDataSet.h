@@ -29,8 +29,14 @@ class CommandDataSet : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeKey,
+      _ParmTypeValue
+    };
+
     CommandDataSet (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

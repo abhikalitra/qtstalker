@@ -25,10 +25,14 @@
 #include "CurveBar.h"
 #include "Symbol.h"
 #include "QuoteDataBase.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
 #include "DataDouble.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataSymbol.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -36,80 +40,58 @@ CommandBETA::CommandBETA (QObject *p) : Command (p)
 {
   _name = "BETA";
 
+  _values.insert(_ParmTypeOutput, new DataString());
+  _values.insert(_ParmTypeInput, new DataString());
+
+  QStringList tl;
+  tl << "YAHOO:^GSP500";
+  _values.insert(_ParmTypeIndex, new DataSymbol(tl));
+
+  _values.insert(_ParmTypePeriod, new DataInteger(10));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandBETA::CommandBETA: error on TA_Initialize");
 }
 
-int CommandBETA::runScript (Message *sg, Script *script)
+void CommandBETA::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("OUTPUT");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandBETA::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBETA::runScript: parse error");
+    return;
   }
 
-  // INPUT
-  s = sg->value("INPUT");
-  Data *in = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
   if (! in)
   {
-    qDebug() << "CommandBETA::runScript: invalid INPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBETA::runScript: invalid Input");
+    return;
   }
 
-  // INDEX
-  QString index;
-  s = sg->value("INDEX");
-  if (vdi.toString(script, s, index))
-  {
-    qDebug() << "CommandBETA::runScript: invalid INDEX" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  Data *in2 = getIndex(index, script);
+  Data *in2 = getIndex(_values.value(_ParmTypeIndex)->toString(), script);
   if (! in2)
   {
-    qDebug() << "CommandBETA::runScript: invalid INDEX " << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBETA::runScript: invalid Index");
+    return;
   }
-  script->setTData(in2);
-
-  // PERIOD
-  int period = 10;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandBETA::runScript: invalid PERIOD, using default" << s;
-    period = 10;
-  }
+  Command::setTData(in2);
 
   QList<Data *> list;
   list << in << in2;
 
-  Data *line = getBETA(list, period);
+  Data *line = getBETA(list, _values.value(_ParmTypePeriod)->toInteger());
   if (! line)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandBETA::runScript: getBETA error");
+    return;
   }
 
-  script->setData(name, line);
+  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 Data * CommandBETA::getBETA (QList<Data *> &list, int period)
@@ -117,9 +99,9 @@ Data * CommandBETA::getBETA (QList<Data *> &list, int period)
   if (list.count() != 2)
     return 0;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return 0;
 
   int size = keys.count();

@@ -72,7 +72,6 @@ class ScriptPage : public QWidget
     void launchButtonCols ();
     void launchButtonCols2 (int);
     void setupScriptTimers ();
-    void shutDown ();
     void newScriptTimer ();
     void editScriptTimer ();
     void editScriptTimer (QString);

@@ -29,8 +29,18 @@ class CommandADX : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeHigh,
+      _ParmTypeLow,
+      _ParmTypeClose,
+      _ParmTypePeriod,
+      _ParmTypeMethod
+    };
+
     CommandADX (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getADX (QList<Data *> &, int period, int method);
 
   private:

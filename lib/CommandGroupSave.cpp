@@ -21,51 +21,37 @@
 
 #include "CommandGroupSave.h"
 #include "GroupDataBase.h"
-#include "VerifyDataInput.h"
+#include "DataString.h"
+#include "DataSymbol.h"
 
 #include <QtDebug>
 
 CommandGroupSave::CommandGroupSave (QObject *p) : Command (p)
 {
   _name = "GROUP_SAVE";
+
+  _values.insert(_ParmTypeGroup, new DataString);
+  _values.insert(_ParmTypeSymbol, new DataSymbol);
 }
 
-int CommandGroupSave::runScript (Message *sg, Script *script)
+void CommandGroupSave::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT
-  QString name;
-  QString s = sg->value("NAME");
-  if (vdi.toString(script, s, name))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandGroupSave::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandGroupSave::runScript: parse error");
+    return;
   }
 
-  // SYMBOLS
-  QStringList symbols;
-  s = sg->value("SYMBOLS");
-  if (vdi.toSymbol(script, s, symbols))
-  {
-    qDebug() << "CommandGroupSave::runScript: invalid OUTPUT" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
+  QStringList symbols = _values.value(_ParmTypeSymbol)->toString().split(";", QString::SkipEmptyParts);
 
   GroupDataBase db;
   db.transaction();
-  if (db.save(name, symbols))
+  if (db.save(_values.value(_ParmTypeGroup)->toString(), symbols))
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandGroupSave::runScript: GroupDataBase error");
+    return;
   }
   db.commit();
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }

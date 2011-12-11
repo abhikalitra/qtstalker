@@ -20,19 +20,23 @@
  */
 
 #include "CommandThread.h"
+#include "Script.h"
+#include "Command.h"
 
 #include <QDebug>
 
-CommandThread::CommandThread (QObject *p, Message message, Command *com, Script *script) : QThread (p)
+CommandThread::CommandThread (QObject *p, void *script, CommandParse cp, void *command) : QThread (p)
 {
-  _message = message;
-  _command = com;
+  _cp = cp;
   _script = script;
+  _command = command;
 
   connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void CommandThread::run ()
 {
-  _command->runScript(&_message, _script);
+  Script *script = (Script *) _script;
+  Command *command = (Command *) _command;
+  command->runScript(_cp, script);
 }

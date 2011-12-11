@@ -23,9 +23,12 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,92 +36,64 @@ CommandAROON::CommandAROON (QObject *p) : Command (p)
 {
   _name = "AROON";
 
+  _values.insert(_ParmTypeUpper, new DataString());
+  _values.insert(_ParmTypeLower, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+  _values.insert(_ParmTypePeriod, new DataInteger(10));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandAROON::CommandAROON: error on TA_Initialize");
 }
 
-int CommandAROON::runScript (Message *sg, Script *script)
+void CommandAROON::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT_UPPER
-  QString uname;
-  QString s = sg->value("OUTPUT_UPPER");
-  if (vdi.toString(script, s, uname))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandAROON::runScript: invalid OUTPUT_UPPER" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandAROON::runScript: parse error");
+    return;
   }
 
-  // OUTPUT_LOWER
-  QString lname;
-  s = sg->value("OUTPUT_LOWER");
-  if (vdi.toString(script, s, lname))
-  {
-    qDebug() << "CommandAROON::runScript: invalid OUTPUT_LOWER" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // HIGH
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandAROON::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandAROON::runScript: invalid High");
+    return;
   }
 
-  // LOW
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandAROON::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PERIOD
-  int period = 10;
-  s = sg->value("PERIOD");
-  if (vdi.toInteger(script, s, period))
-  {
-    qDebug() << "CommandAROON::runScript: invalid PERIOD, using default" << s;
-    period = 10;
+    Command::error("CommandAROON::runScript: invalid Low");
+    return;
   }
 
   QList<Data *> list;
   list << ihigh << ilow;
 
-  QList<Data *> lines = getAROON(list, period);
-  if (! lines.count())
+  QList<Data *> lines = getAROON(list, _values.value(_ParmTypePeriod)->toInteger());
+  if (lines.count() != 2)
   {
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandAROON::runScript: getAROON error");
+    return;
   }
 
-  script->setData(uname, lines.at(0));
+  script->setData(_values.value(_ParmTypeUpper)->toString(), lines.at(0));
+  script->setData(_values.value(_ParmTypeLower)->toString(), lines.at(1));
 
-  if (lines.count() == 2)
-    script->setData(lname, lines.at(1));
-
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 QList<Data *> CommandAROON::getAROON (QList<Data *> &list, int period)
 {
-  VerifyDataInput vdi;
   QList<Data *> lines;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  ScriptVerifyCurveKeys svck;
+  if (svck.keys(list, keys))
     return lines;
 
   int size = keys.count();

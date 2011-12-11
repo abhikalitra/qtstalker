@@ -23,9 +23,13 @@
 #include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "VerifyDataInput.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
+#include "DataString.h"
+#include "DataInteger.h"
+#include "DataMA.h"
+#include "ScriptVerifyCurve.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -33,129 +37,73 @@ CommandStochSlow::CommandStochSlow (QObject *p) : Command (p)
 {
   _name = "STOCH_SLOW";
 
+  _values.insert(_ParmTypeK, new DataString());
+  _values.insert(_ParmTypeD, new DataString());
+  _values.insert(_ParmTypeHigh, new DataString());
+  _values.insert(_ParmTypeLow, new DataString());
+  _values.insert(_ParmTypeClose, new DataString());
+  _values.insert(_ParmTypePeriodFastK, new DataInteger(5));
+  _values.insert(_ParmTypePeriodSlowK, new DataInteger(3));
+  _values.insert(_ParmTypePeriodSlowD, new DataInteger(3));
+  _values.insert(_ParmTypeMAK, new DataMA("EMA"));
+  _values.insert(_ParmTypeMAD, new DataMA("EMA"));
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandStochSlow::CommandStochSlow: error on TA_Initialize");
 }
 
-int CommandStochSlow::runScript (Message *sg, Script *script)
+void CommandStochSlow::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // OUTPUT_SLOWK
-  QString kname;
-  QString s = sg->value("OUTPUT_SLOWK");
-  if (vdi.toString(script, s, kname))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandStochSlow::runScript: invalid OUTPUT_SLOWK" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandStochSlow::runScript: parse error");
+    return;
   }
 
-  // OUTPUT_SLOWD
-  QString dname;
-  s = sg->value("OUTPUT_SLOWD");
-  if (vdi.toString(script, s, dname))
-  {
-    qDebug() << "CommandStochSlow::runScript: invalid OUTPUT_SLOWD" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // HIGH
-  s = sg->value("HIGH");
-  Data *ihigh = vdi.toCurve(script, s);
+  int toffset = 0;
+  ScriptVerifyCurve svc;
+  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
   if (! ihigh)
   {
-    qDebug() << "CommandStochSlow::runScript: invalid HIGH" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandStochSlow::runScript: invalid High");
+    return;
   }
 
-  // LOW
-  s = sg->value("LOW");
-  Data *ilow = vdi.toCurve(script, s);
+  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
   if (! ilow)
   {
-    qDebug() << "CommandStochSlow::runScript: invalid LOW" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandStochSlow::runScript: invalid Low");
+    return;
   }
 
-  // CLOSE
-  s = sg->value("CLOSE");
-  Data *iclose = vdi.toCurve(script, s);
+  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
   if (! iclose)
   {
-    qDebug() << "CommandStochSlow::runScript: invalid CLOSE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // PERIOD_FASTK
-  int fkperiod = 5;
-  s = sg->value("PERIOD_FASTK");
-  if (vdi.toInteger(script, s, fkperiod))
-  {
-    qDebug() << "CommandStochSlow::runScript: invalid PERIOD_FASTK, using default" << s;
-    fkperiod = 5;
-  }
-
-  // PERIOD_SLOWK
-  int skperiod = 3;
-  s = sg->value("PERIOD_SLOWK");
-  if (vdi.toInteger(script, s, skperiod))
-  {
-    qDebug() << "CommandStochSlow::runScript: invalid PERIOD_SLOWK, using default" << s;
-    skperiod = 3;
-  }
-
-  // MA_TYPE_SLOWK
-  int kma = 0;
-  s = sg->value("MA_TYPE_SLOWK");
-  if (vdi.toMA(script, s, kma))
-  {
-    qDebug() << "CommandStochSlow::runScript: invalid MA_TYPE_SLOWK, using default" << s;
-    kma = 0;
-  }
-
-  // PERIOD_SLOWD
-  int sdperiod = 3;
-  s = sg->value("PERIOD_SLOWD");
-  if (vdi.toInteger(script, s, sdperiod))
-  {
-    qDebug() << "CommandStochSlow::runScript: invalid PERIOD_SLOWD, using default" << s;
-    sdperiod = 3;
-  }
-
-  // MA_TYPE_SLOWD
-  int dma = 0;
-  s = sg->value("MA_TYPE_SLOWD");
-  if (vdi.toMA(script, s, dma))
-  {
-    qDebug() << "CommandStochSlow::runScript: invalid MA_TYPE_SLOWD, using default" << s;
-    dma = 0;
+    Command::error("CommandStochSlow::runScript: invalid Close");
+    return;
   }
 
   QList<Data *> list;
   list << ihigh << ilow << iclose;
 
-  QList<Data *> lines = getSTOCHS(list, fkperiod, skperiod, sdperiod, kma, dma);
+  QList<Data *> lines = getSTOCHS(list,
+				  _values.value(_ParmTypePeriodFastK)->toInteger(),
+				  _values.value(_ParmTypePeriodSlowK)->toInteger(),
+				  _values.value(_ParmTypePeriodSlowD)->toInteger(),
+				  _values.value(_ParmTypeMAK)->toInteger(),
+				  _values.value(_ParmTypeMAD)->toInteger());
   if (lines.count() != 2)
   {
     qDeleteAll(lines);
-    emit signalResume((void *) this);
-    return _ERROR;
+    Command::error("CommandStochSlow::runScript: getSTOCHS error");
+    return;
   }
 
-  script->setData(kname, lines.at(0));
-  script->setData(dname, lines.at(1));
+  script->setData(_values.value(_ParmTypeK)->toString(), lines.at(0));
+  script->setData(_values.value(_ParmTypeD)->toString(), lines.at(1));
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }
 
 QList<Data *> CommandStochSlow::getSTOCHS (QList<Data *> &list, int fkperiod, int skperiod, int sdperiod, int kma, int dma)
@@ -164,9 +112,9 @@ QList<Data *> CommandStochSlow::getSTOCHS (QList<Data *> &list, int fkperiod, in
   if (! list.count())
     return lines;
 
-  VerifyDataInput vdi;
+  ScriptVerifyCurveKeys svck;
   QList<int> keys;
-  if (vdi.curveKeys(list, keys))
+  if (svck.keys(list, keys))
     return lines;
 
   int size = keys.count();

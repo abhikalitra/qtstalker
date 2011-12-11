@@ -37,7 +37,7 @@ DataOp::DataOp (QString d)
 DataOp::DataOp ()
 {
   _type = DataFactory::_OP;
-  _value = "EQ";
+  _value = "=";
 
   Operator top;
   _list = top.list();

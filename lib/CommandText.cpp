@@ -26,7 +26,6 @@
 #include "DataString.h"
 #include "DataBool.h"
 #include "DataInteger.h"
-#include "VerifyDataInput.h"
 #include "DataDateTime.h"
 
 #include <QtDebug>
@@ -34,86 +33,39 @@
 CommandText::CommandText (QObject *p) : Command (p)
 {
   _name = "CHART_OBJECT_TEXT";
+
+  _values.insert(_ParmTypeChart, new DataString());
+  _values.insert(_ParmTypeColor, new DataColor(QColor(Qt::green)));
+  _values.insert(_ParmTypeDate, new DataDateTime(QDateTime::currentDateTime()));
+  _values.insert(_ParmTypePrice, new DataDouble(0));
+  _values.insert(_ParmTypeText, new DataString("Text"));
+  _values.insert(_ParmTypeZ, new DataInteger(0));
+  _values.insert(_ParmTypePen, new DataInteger(1));
 }
 
-int CommandText::runScript (Message *sg, Script *script)
+void CommandText::runScript (CommandParse sg, Script *script)
 {
-  VerifyDataInput vdi;
-
-  // COLOR
-  QColor color;
-  QString s = sg->value("COLOR");
-  if (vdi.toColor(script, s, color))
+  if (Command::parse(sg, script))
   {
-    qDebug() << "CommandText::runScript: invalid COLOR, using default" << s;
-    color = QColor(Qt::red);
-  }
-
-  // START_DATE
-  QDateTime date;
-  s = sg->value("DATE");
-  if (vdi.toDateTime(script, s, date))
-  {
-    qDebug() << "CommandText::runScript: invalid DATE, using default" << s;
-    date = QDateTime::currentDateTime();
-  }
-
-  // PRICE
-  double price = 0;
-  s = sg->value("PRICE");
-  if (vdi.toDouble(script, s, price))
-  {
-    qDebug() << "CommandText::runScript: invalid PRICE" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // CHART
-  QString chart;
-  s = sg->value("CHART");
-  if (vdi.toString(script, s, chart))
-  {
-    qDebug() << "CommandText::runScript: invalid CHART" << s;
-    emit signalResume((void *) this);
-    return _ERROR;
-  }
-
-  // Z
-  int z = 0;
-  s = sg->value("Z");
-  if (vdi.toInteger(script, s, z))
-  {
-    qDebug() << "CommandText::runScript: invalid Z, using default" << s;
-    z = 0;
-  }
-
-  // TEXT
-  QString text;
-  s = sg->value("TEXT");
-  if (vdi.toString(script, s, text))
-  {
-    qDebug() << "CommandText::runScript: invalid TEXT, using default" << s;
-    text = tr("Text");
+    Command::error("CommandText::runScript: parse error");
+    return;
   }
 
   int id = script->nextROID();
 
   Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_COLOR, new DataColor(color));
-  co->set(ChartObjectData::_DATE, new DataDateTime(date));
-  co->set(ChartObjectData::_PRICE, new DataDouble(price));
-  co->set(ChartObjectData::_TEXT, new DataString(text));
-  co->set(ChartObjectData::_CHART, new DataString(chart));
-  co->set(ChartObjectData::_Z, new DataInteger(z));
+  co->set(ChartObjectData::_COLOR, new DataColor(_values.value(_ParmTypeColor)->toColor()));
+  co->set(ChartObjectData::_DATE, new DataDateTime(_values.value(_ParmTypeDate)->toDateTime()));
+  co->set(ChartObjectData::_PRICE, new DataDouble(_values.value(_ParmTypePrice)->toDouble()));
+  co->set(ChartObjectData::_CHART, new DataString(_values.value(_ParmTypeChart)->toString()));
+  co->set(ChartObjectData::_TEXT, new DataString(_values.value(_ParmTypeText)->toString()));
+  co->set(ChartObjectData::_Z, new DataInteger(_values.value(_ParmTypeZ)->toInteger()));
+  co->set(ChartObjectData::_PEN, new DataInteger(_values.value(_ParmTypePen)->toInteger()));
   co->set(ChartObjectData::_ID, new DataInteger(id));
   co->set(ChartObjectData::_RO, new DataBool(TRUE));
-  co->set(ChartObjectData::_TYPE, new DataString(QString("Text")));
+  co->set(ChartObjectData::_TYPE, new DataString("Text"));
 
   script->setData(QString::number(id), co);
 
-  _returnString = "OK";
-
-  emit signalResume((void *) this);
-
-  return _OK;
+  Command::done(QString());
 }

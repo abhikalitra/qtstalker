@@ -29,8 +29,16 @@ class CommandVIDYA : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeInput,
+      _ParmTypePeriod,
+      _ParmTypePeriodV
+    };
+
     CommandVIDYA (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getVIDYA (QList<Data *> &, int, int);
     Data * getCMO (QList<Data *> &list, int);
 };

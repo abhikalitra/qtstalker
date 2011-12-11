@@ -31,8 +31,19 @@ class CommandSymbolCurrent : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeDate,
+      _ParmTypeOpen,
+      _ParmTypeHigh,
+      _ParmTypeLow,
+      _ParmTypeClose,
+      _ParmTypeVolume,
+      _ParmTypeOI
+    };
+
     CommandSymbolCurrent (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
 };
 
 #endif

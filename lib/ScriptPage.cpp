@@ -298,19 +298,6 @@ void ScriptPage::setupScriptTimers ()
   }
 }
 
-void ScriptPage::shutDown ()
-{
-  // try to kill any hanging script processes
-  QHashIterator<QString, Script *> it(_scripts);
-  while (it.hasNext())
-  {
-    it.next();
-    Script *script = it.value();
-    script->stopScript();
-    delete script;
-  }
-}
-
 QListWidget * ScriptPage::list ()
 {
   return _queList;

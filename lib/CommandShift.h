@@ -29,8 +29,15 @@ class CommandShift : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeInput,
+      _ParmTypePeriod
+    };
+
     CommandShift (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getShift (Data *, int);
 };
 

@@ -29,8 +29,18 @@ class CommandMFI : public Command
   Q_OBJECT
 
   public:
+    enum ParmType
+    {
+      _ParmTypeOutput,
+      _ParmTypeHigh,
+      _ParmTypeLow,
+      _ParmTypeClose,
+      _ParmTypeVolume,
+      _ParmTypePeriod
+    };
+
     CommandMFI (QObject *);
-    int runScript (Message *, Script *);
+    void runScript (CommandParse, Script *);
     Data * getMFI (QList<Data *> &, int);
 };
 
