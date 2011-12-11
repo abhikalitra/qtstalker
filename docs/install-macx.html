@@ -23,7 +23,7 @@
 <h1>Qtstalker: Installing on Mac OS X</h1>
 <h2 id="requirements">Requirements and dependencies</h2>
 <ul>
-  <li>Mac OS X Leopard (10.5) or Snow Leopard (10.6) or newer</li>
+  <li>Mac OS X (Leopard 10.5 or Snow Leopard 10.6 or Lion 10.7).</li>
   <li>Apple Xcode Tools. To build Qtstalker from sources.</li>
   <li>Dependencies: Qt and Qwt and TA-Lib</li>
 </ul>
@@ -53,10 +53,10 @@ important <a href="install.html#source">notes</a> about ensuring
 proper installation and configuration if at a non-standard location. </p>
 <h3 id="qt">Install Qt</h3>
 <p> Install Qt 4.6 or newer from source. </p>
-<p> For Leopard use this configuration: </p>
+<p> For Lion and Leopard use the default configuration: </p>
 <pre>./configure
 </pre>
-<p> For Snow Leopard use this configuration: </p>
+<p> For Snow Leopard (or perhaps it was Qt-4.6 on SL) this configuration was needed: </p>
 <pre>./configure -cocoa -arch x86_64
 </pre>
 <p> See important <a href="install.html#source">notes</a> about
@@ -82,7 +82,10 @@ LIBS += -L/usr/local/Trolltech/Qt-4.6.3/lib
 INCLUDEPATH += /usr/local/qwt-5.2.1/include
 LIBS += -L/usr/local/qwt-5.2.1/lib</pre>
 <p> For Snow Leopard, edit our "<code>configure</code>" file to tweak the "qmake"
-invocation to include "CONFIG += qt x86_64" </p>
+invocation to include "CONFIG += qt x86_64".
+See the Qt <a href="#qt">notes</a> above, perhaps this was just with Qt4.6 on SL.
+For Lion, no changes are needed.
+</p>
 <p> Now compile Qtstalker: </p>
 <pre>./configure
 make
@@ -90,12 +93,11 @@ sudo make install
 </pre>
 <h3 id="symlink">Post-install steps</h3>
 <p>
-At runtime, the "<code>qtstalker</code>" program will need to find its companion program
-"<code>QtStalkerScript</code>", so create symbolic links:
+At runtime, the "<code>qtstalker</code>" program will need to be discoverable,
+so create symbolic links:
 </p>
 <pre>cd /usr/local/bin
 sudo ln -s qtstalker.app/Contents/MacOS/qtstalker qtstalker
-sudo ln -s QtStalkerScript.app/Contents/MacOS/QtStalkerScript QtStalkerScript
 </pre>
 <h2 id="start">Start Qtstalker</h2>
 <p>In a Terminal window, as a normal user, do this:</p>
