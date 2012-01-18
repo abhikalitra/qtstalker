@@ -22,9 +22,9 @@
 #ifndef CURVE_TYPE_HPP
 #define CURVE_TYPE_HPP
 
-#include <QStringList>
+#include "Keys.h"
 
-class CurveType
+class CurveType : public Keys
 {
   public:
     enum Type
@@ -35,11 +35,6 @@ class CurveType
     };
 
     CurveType ();
-    QStringList list ();
-    int stringToType (QString);
-
-  protected:
-    QStringList _types;
 };
 
 #endif

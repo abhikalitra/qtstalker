@@ -110,165 +110,219 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
   {
     case TALibFunctionKey::_2CROWS:
       tarc = TA_CDL2CROWS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_3BLACKCROWS:
       tarc = TA_CDL3BLACKCROWS(0,  size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_3INSIDE:
       tarc = TA_CDL3INSIDE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_3LINESTRIKE:
       tarc = TA_CDL3LINESTRIKE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_3OUTSIDE:
       tarc = TA_CDL3OUTSIDE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_3STARSINSOUTH:
       tarc = TA_CDL3STARSINSOUTH(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_3WHITESOLDIERS:
       tarc = TA_CDL3WHITESOLDIERS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_ADVANCEBLOCK:
       tarc = TA_CDLADVANCEBLOCK(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_BELTHOLD:
       tarc = TA_CDLBELTHOLD(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_BREAKAWAY:
       tarc = TA_CDLBREAKAWAY(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_CLOSINGMARUBOZU:
       tarc = TA_CDLCLOSINGMARUBOZU(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_CONCEALBABYSWALL:
       tarc = TA_CDLCONCEALBABYSWALL(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_COUNTERATTACK:
       tarc = TA_CDLCOUNTERATTACK(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_DOJI:
       tarc = TA_CDLDOJI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_DOJISTAR:
       tarc = TA_CDLDOJISTAR(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_DRAGONFLYDOJI:
       tarc = TA_CDLDRAGONFLYDOJI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_ENGULFING:
       tarc = TA_CDLENGULFING(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_GAPSIDESIDEWHITE:
       tarc = TA_CDLGAPSIDESIDEWHITE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_GRAVESTONEDOJI:
       tarc = TA_CDLGRAVESTONEDOJI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_HAMMER:
       tarc = TA_CDLHAMMER(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_HANGINGMAN:
       tarc = TA_CDLHANGINGMAN(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_HARAMI:
       tarc = TA_CDLHARAMI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_HARAMICROSS:
       tarc = TA_CDLHARAMICROSS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_HIGHWAVE:
       tarc = TA_CDLHIGHWAVE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_HIKKAKE:
       tarc = TA_CDLHIKKAKE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_HIKKAKEMOD:
       tarc = TA_CDLHIKKAKEMOD(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_HOMINGPIGEON:
       tarc = TA_CDLHOMINGPIGEON(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_IDENTICAL3CROWS:
       tarc = TA_CDLIDENTICAL3CROWS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_INNECK:
       tarc = TA_CDLINNECK(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_INVERTEDHAMMER:
       tarc = TA_CDLINVERTEDHAMMER(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_KICKING:
       tarc = TA_CDLKICKING(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_KICKINGBYLENGTH:
       tarc = TA_CDLKICKINGBYLENGTH(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_LADDERBOTTOM:
       tarc = TA_CDLLADDERBOTTOM(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_LONGLEGGEDDOJI:
       tarc = TA_CDLLONGLEGGEDDOJI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_LONGLINE:
       tarc = TA_CDLLONGLINE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_MARUBOZU:
       tarc = TA_CDLMARUBOZU(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_MATCHINGLOW:
       tarc = TA_CDLMATCHINGLOW(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_ONNECK:
       tarc = TA_CDLONNECK(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_PIERCING:
       tarc = TA_CDLPIERCING(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_RICKSHAWMAN:
       tarc = TA_CDLRICKSHAWMAN(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_RISEFALL3METHODS:
       tarc = TA_CDLRISEFALL3METHODS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_SEPARATINGLINES:
       tarc = TA_CDLSEPARATINGLINES(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_SHOOTINGSTAR:
       tarc = TA_CDLSHOOTINGSTAR(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_SHORTLINE:
       tarc = TA_CDLSHORTLINE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_SPINNINGTOP:
       tarc = TA_CDLSPINNINGTOP(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_STALLEDPATTERN:
       tarc = TA_CDLSTALLEDPATTERN(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_STICKSANDWICH:
       tarc = TA_CDLSTICKSANDWICH(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_TAKURI:
       tarc = TA_CDLTAKURI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_TASUKIGAP:
       tarc = TA_CDLTASUKIGAP(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_THRUSTING:
       tarc = TA_CDLTHRUSTING(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_TRISTAR:
       tarc = TA_CDLTRISTAR(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_UNIQUE3RIVER:
       tarc = TA_CDLUNIQUE3RIVER(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_UPSIDEGAP2CROWS:
       tarc = TA_CDLUPSIDEGAP2CROWS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_XSIDEGAP3METHODS:
       tarc = TA_CDLXSIDEGAP3METHODS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
+      ioutFlag++;
       break;
     case TALibFunctionKey::_ABANDONEDBABY:
       tarc = TA_CDLABANDONEDBABY(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], pen.toInteger(), &outBeg, &outNb, &iout[0]);

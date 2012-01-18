@@ -44,6 +44,10 @@ qtstalker.sourceforge.net</source>
         <source>Add Indicator</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>New indicator name</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>BarLengthButton</name>
@@ -76,33 +80,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Decrease space between bars</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>BuyDialog</name>
-    <message>
-        <source>Editing Buy Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z Level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -153,32 +130,6 @@ qtstalker.sourceforge.net</source>
     </message>
     <message>
         <source>Unselect All</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CommandCSV</name>
-    <message>
-        <source>Comma</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Semicolon</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>CommandYahooHistory</name>
-    <message>
-        <source>line</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source># of bar fields, record skipped</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>invalid adjusted close, record skipped</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -394,38 +345,6 @@ App restart required to take effect</source>
     </message>
 </context>
 <context>
-    <name>ExchangeSearchDialog</name>
-    <message>
-        <source>Exchange Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Exchange</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Country</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>City</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Perform Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Invalid search pattern
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No items found</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>FileButton</name>
     <message>
         <source>Select Files</source>
@@ -558,29 +477,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>&amp;Delete Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>HLineDialog</name>
-    <message>
-        <source>Editing HLine Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z Level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -845,6 +741,386 @@ App restart required to take effect</source>
         <source>Bars</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date End</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Extend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price Start</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Price End</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>SP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>EP</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input High</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input Low</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output Upper</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output Lower</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input 2 Offset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output Middle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deviation Upper</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deviation Lower</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CSV File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Format</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delimiter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Filename As Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exchange Override</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Penetration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Chart Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Log Scaling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab Row</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab Column</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Op</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output MACD</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output Histogram</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period Fast</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period Slow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type Fast</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type Slow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MA Type Signal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output MAMA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output FAMA</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limit Fast</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limit Slow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output Phase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output Quad</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Step Initial</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Step Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output Sine</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output Lead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Deviation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No Decline Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Coefficient</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output %K</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Output %D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period K</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period D</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period Fast K</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%K MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%D MA Type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bar Length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>High Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Low Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>OI Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Volume Factor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period Short</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period Medium</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period Long</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Period V</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Adjusted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbol File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source># of bar fields, record skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>invalid adjusted close, record skipped</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -864,73 +1140,6 @@ App restart required to take effect</source>
     <name>RemoveIndicator</name>
     <message>
         <source>Confirm indicator removal</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>RetracementDialog</name>
-    <message>
-        <source>Editing Retracement Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>High</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Low</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z Level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 4</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 5</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Level 6</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Levels</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1124,33 +1333,6 @@ App restart required to take effect</source>
     </message>
 </context>
 <context>
-    <name>SellDialog</name>
-    <message>
-        <source>Editing Sell Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z Level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>SidePanel</name>
     <message>
         <source>Charts</source>
@@ -1239,45 +1421,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Remove selected from symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TLineDialog</name>
-    <message>
-        <source>Editing TLine Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>End Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Extend</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z Level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1477,64 +1620,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Enter new rule</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TextDialog</name>
-    <message>
-        <source>Editing Text Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Price</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Text</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z Level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>VLineDialog</name>
-    <message>
-        <source>Editing VLine Object</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Z Level</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

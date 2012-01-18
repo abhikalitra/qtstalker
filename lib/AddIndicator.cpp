@@ -89,7 +89,7 @@ void AddIndicator::addIndicator3 (QString command, QString file)
   i.set(keys.indexToString(IndicatorDataBaseKey::_COMMAND), Data(command));
 
   EAVDataBase db("indicators");
-  if (db.set(&i))
+  if (db.set(i))
   {
     done();
     return;

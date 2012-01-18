@@ -51,7 +51,7 @@ QString CommandGroupSave::run (CommandParse &, void *)
   
   EAVDataBase db("groups");
   db.transaction();
-  if (db.set(&i))
+  if (db.set(i))
   {
     qDebug() << "CommandGroupSave::run: EAVDataBase error";
     return _returnCode;

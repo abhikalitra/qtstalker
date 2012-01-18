@@ -238,7 +238,7 @@ void GroupPage::updateList ()
     Symbol bd;
     bd.set(symkeys.indexToString(SymbolKey::_SYMBOL), Data(l.at(loop)));
 
-    qdb.getSymbol(&bd);
+    qdb.getSymbol(bd);
 
     QListWidgetItem *item = new QListWidgetItem;
     item->setText(l.at(loop));

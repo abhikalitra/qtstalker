@@ -126,7 +126,7 @@ int CommandCORREL::getIndex (QString d, Entity &line)
 
   // load quotes
   QuoteDataBase db;
-  if (db.getBars(&bd))
+  if (db.getBars(bd))
   {
     qDebug() << "CommandCORREL::getIndex: QuoteDataBase error";
     return 1;

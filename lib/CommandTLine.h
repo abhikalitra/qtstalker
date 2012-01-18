@@ -26,23 +26,9 @@
 
 class CommandTLine : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeChart,
-      _ParmTypeColor,
-      _ParmTypeDateStart,
-      _ParmTypeDateEnd,
-      _ParmTypePriceStart,
-      _ParmTypePriceEnd,
-      _ParmTypeZ,
-      _ParmTypePen
-    };
-
-    CommandTLine (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandTLine ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

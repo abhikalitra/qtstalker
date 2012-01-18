@@ -49,7 +49,7 @@ GroupEditDialog::GroupEditDialog (QWidget *p, QString n) : Dialog (p)
   g.setName(_name);
   
   EAVDataBase db("groups");
-  db.get(&g);
+  db.get(g);
 
   GroupDataBaseKey gkeys;
   Data td;
@@ -141,7 +141,7 @@ void GroupEditDialog::done ()
   
   EAVDataBase db("groups");
   db.transaction();
-  if (db.set(&g))
+  if (db.set(g))
   {
     qDebug() << "GroupEditDialog::done: GroupDataBase error";
     cancel();

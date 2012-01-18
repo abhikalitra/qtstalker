@@ -26,22 +26,9 @@
 
 class CommandText : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeChart,
-      _ParmTypeColor,
-      _ParmTypeDate,
-      _ParmTypePrice,
-      _ParmTypeText,
-      _ParmTypeZ,
-      _ParmTypePen
-    };
-
-    CommandText (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandText ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

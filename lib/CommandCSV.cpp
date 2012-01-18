@@ -122,7 +122,7 @@ QString CommandCSV::run (CommandParse &, void *)
   SymbolKey symkeys;
   
   // away we go
-  QHash<QString, Symbol *> symbols;
+  QHash<QString, Symbol> symbols;
   for (loop = 0; loop < files.size(); loop++)
   {
     QFile f(files.at(loop));
@@ -236,7 +236,7 @@ QString CommandCSV::run (CommandParse &, void *)
           }
           default:
           {
-            qDeleteAll(symbols);
+//            qDeleteAll(symbols);
             qDebug() << "CommandCSV::runScript: invalid format";
             return _returnCode;
             break;
@@ -263,7 +263,17 @@ QString CommandCSV::run (CommandParse &, void *)
       }
 
       QString key = texchange + ":" + symbol;
-      Symbol *bd = symbols.value(key);
+      if (! symbols.contains(key))
+      {
+        Symbol tbd;
+        tbd.set(symkeys.indexToString(SymbolKey::_SYMBOL), Data(key));
+	tbd.set(symkeys.indexToString(SymbolKey::_TYPE), Data(type));
+	tbd.set(symkeys.indexToString(SymbolKey::_NAME), Data(name));
+        symbols.insert(key, tbd);
+      }
+      
+      Symbol bd = symbols.value(key);
+/*      
       if (! bd)
       {
         bd = new Symbol;
@@ -272,27 +282,28 @@ QString CommandCSV::run (CommandParse &, void *)
 	bd->set(symkeys.indexToString(SymbolKey::_NAME), Data(name));
         symbols.insert(key, bd);
       }
+*/
 
-      QString ts = QString::number(bd->ekeyCount() + 1);
-      bd->setEntity(ts, bar);
+      QString ts = QString::number(bd.ekeyCount() + 1);
+      bd.setEntity(ts, bar);
     }
 
     f.close();
   }
 
   QuoteDataBase db;
-  QHashIterator<QString, Symbol *> it(symbols);
+  QHashIterator<QString, Symbol> it(symbols);
   while (it.hasNext())
   {
     it.next();
-    Symbol *bd = it.value();
+    Symbol bd = it.value();
 
     db.transaction();
     db.setBars(bd);
     db.commit();
   }
 
-  qDeleteAll(symbols);
+//  qDeleteAll(symbols);
 
   _returnCode = "OK";
   return _returnCode;

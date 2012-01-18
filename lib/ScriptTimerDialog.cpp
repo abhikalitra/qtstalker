@@ -88,7 +88,7 @@ void ScriptTimerDialog::done ()
   data.set(skeys.indexToString(ScriptDataBaseKey::_STARTUP), Data(_startup->isChecked()));
   data.set(skeys.indexToString(ScriptDataBaseKey::_RUN_INTERVAL), Data(_interval->value()));
   data.set(skeys.indexToString(ScriptDataBaseKey::_COMMAND), Data(_command->text()));
-  if (db.set(&data))
+  if (db.set(data))
   {
     qDebug() << "ScriptTimerDialog::done: error saving timer" << _name;
     return;
@@ -108,7 +108,7 @@ void ScriptTimerDialog::setGUI ()
   EAVDataBase db("scripts");
   Entity data;
   data.setName(_name);
-  if (db.get(&data))
+  if (db.get(data))
   {
     qDebug() << "ScriptTimerDialog::setGUI: error loading timer" << _name;
     return;

@@ -22,9 +22,9 @@
 #ifndef CHART_OBJECT_TYPE_HPP
 #define CHART_OBJECT_TYPE_HPP
 
-#include <QStringList>
+#include "Keys.h"
 
-class ChartObjectType
+class ChartObjectType : public Keys
 {
   public:
     enum Type
@@ -39,11 +39,6 @@ class ChartObjectType
     };
 
     ChartObjectType ();
-    QStringList list ();
-    int stringToType (QString);
-
-  protected:
-    QStringList _types;
 };
 
 #endif

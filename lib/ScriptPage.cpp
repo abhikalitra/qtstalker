@@ -303,7 +303,7 @@ void ScriptPage::setupScriptTimers ()
     Entity st;
     st.setName(l.at(loop));
 
-    if (db.get(&st))
+    if (db.get(st))
       continue;
 
     Data interval;
@@ -443,7 +443,7 @@ void ScriptPage::editScriptTimer3 (QString d)
     Entity data;
     data.setName(d);
 
-    if (db.get(&data))
+    if (db.get(data))
       return;
 
     Data interval;
@@ -466,7 +466,7 @@ void ScriptPage::editScriptTimer3 (QString d)
   Entity data;
   data.setName(d);
 
-  if (db.get(&data))
+  if (db.get(data))
     return;
 
   Data interval;
@@ -544,7 +544,7 @@ void ScriptPage::runStartupScripts ()
     Entity data;
     data.setName(l.at(loop));
 
-    if (db.get(&data))
+    if (db.get(data))
       continue;
 
     Data td;

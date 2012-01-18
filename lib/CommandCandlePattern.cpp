@@ -35,16 +35,20 @@ CommandCandlePattern::CommandCandlePattern ()
   Data td;
   td.setLabel(QObject::tr("Output"));
   Entity::set(QString("OUTPUT"), td);
-  
+
+  td = Data(QString("open"));
   td.setLabel(QObject::tr("Input Open"));
   Entity::set(QString("OPEN"), td);
   
+  td = Data(QString("high"));
   td.setLabel(QObject::tr("Input High"));
   Entity::set(QString("HIGH"), td);
   
+  td = Data(QString("low"));
   td.setLabel(QObject::tr("Input Low"));
   Entity::set(QString("LOW"), td);
   
+  td = Data(QString("close"));
   td.setLabel(QObject::tr("Input Close"));
   Entity::set(QString("CLOSE"), td);
 

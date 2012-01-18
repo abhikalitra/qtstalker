@@ -77,7 +77,7 @@ void GroupAdd::add2 (QStringList gl)
   g.setName(gl.at(0));
   
   EAVDataBase db("groups");
-  if (db.get(&g))
+  if (db.get(g))
   {
     done();
     return;
@@ -99,7 +99,7 @@ void GroupAdd::add2 (QStringList gl)
   g.set(gkeys.indexToString(GroupDataBaseKey::_LIST), dl);
 
   db.transaction();
-  if (db.set(&g))
+  if (db.set(g))
   {
     done();
     return;

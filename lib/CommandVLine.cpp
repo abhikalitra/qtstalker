@@ -20,47 +20,39 @@
  */
 
 #include "CommandVLine.h"
-#include "ChartObjectData.h"
-#include "DataColor.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataDateTime.h"
-#include "DataBool.h"
+#include "ChartObjectVLine.h"
+#include "EntityType.h"
+#include "ChartObjectKey.h"
+#include "Script.h"
 
 #include <QtDebug>
 
-CommandVLine::CommandVLine (QObject *p) : Command (p)
+CommandVLine::CommandVLine ()
 {
   _name = "CHART_OBJECT_VLINE";
 
-  _values.insert(_ParmTypeChart, new DataString());
-  _values.insert(_ParmTypeColor, new DataColor(QColor(Qt::green)));
-  _values.insert(_ParmTypeDate, new DataDateTime(QDateTime::currentDateTime()));
-  _values.insert(_ParmTypeZ, new DataInteger(0));
-  _values.insert(_ParmTypePen, new DataInteger(1));
+  ChartObjectVLine co;
+  Entity settings = co.settings();
+  
+  Data td;
+  settings.set(QString("CHART"), td);
+  
+  Entity::set(settings.data());
 }
 
-void CommandVLine::runScript (CommandParse sg, Script *script)
+QString CommandVLine::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandVLine::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
 
-  int id = script->nextROID();
+  Entity co;
+  co.set(Entity::data());
+  co.setType(EntityType::_CHART_OBJECT);
+  
+  ChartObjectKey keys;
+  co.set(keys.indexToString(ChartObjectKey::_RO), Data(TRUE));
 
-  Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_COLOR, new DataColor(_values.value(_ParmTypeColor)->toColor()));
-  co->set(ChartObjectData::_DATE, new DataDateTime(_values.value(_ParmTypeDate)->toDateTime()));
-  co->set(ChartObjectData::_CHART, new DataString(_values.value(_ParmTypeChart)->toString()));
-  co->set(ChartObjectData::_Z, new DataInteger(_values.value(_ParmTypeZ)->toInteger()));
-  co->set(ChartObjectData::_PEN, new DataInteger(_values.value(_ParmTypePen)->toInteger()));
-  co->set(ChartObjectData::_ID, new DataInteger(id));
-  co->set(ChartObjectData::_RO, new DataBool(TRUE));
-  co->set(ChartObjectData::_TYPE, new DataString(QString("VLine")));
+  script->setData(co.name(), co);
 
-  script->setData(QString::number(id), co);
-
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }

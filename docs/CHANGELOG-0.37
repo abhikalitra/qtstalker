@@ -1295,3 +1295,26 @@
 
            BUG FIX: old D-Bus configuration prevents building - ID: 3456847
 
+**************************************************************************************************************************
+
+20120117:  Lots of changes. Changed the script format again to allow a simpler yet more powerful syntax format.
+           Commands become objects that are modified by a small group of commands. Docs will explain in detail
+           once the syntax is stable.
+
+           Unified data structure almost complete. Still working out the last few issues.
+
+           Overhauled the code to minimize pointer use to reduce memory leak issues. The code is a little
+           slower but much safer from bugs now.
+
+           Had issues with previous update with threading and memory leaks. Instead of each command running
+           in a thread each script will run inside a thread. Better performance and simpler code.
+
+           Scripts have been updated with new syntax.
+
+           So far happy with code right now. Looks good to continue to build on. Hopefully after more testing
+           and refining, we can start to encourage beta support.
+
+           Database structure has been changed to an EAV format. This allows more flexibility for future
+           changes without requiring users to export/import data to fit changing structures.
+
+

@@ -83,14 +83,23 @@ void Script::run ()
     // wait until we have some input from _process
     _proc.waitForReadyRead(-1);
     QByteArray ba = _proc.readAllStandardOutput();
-    qDebug() << _file << ba;
+//    qDebug() << _file << ba;
 
-    // parse command
+    // check for end of script
     QString s(ba);
+    s = s.trimmed();
+    if (! s.length())
+    {
+      _proc.kill();
+      break;
+    }
+    
+    // parse command
     CommandParse cp;
     if (cp.parse(s))
     {
       qDebug() << "Script::run: verb parse error";
+      qDebug() << "Script::run:" << s;
 //      emit signalDone(_file);
       _proc.kill();
       break;
@@ -121,6 +130,7 @@ void Script::run ()
     if (rc == "ERROR")
     {
       qDebug() << "Script::run: command error" << cp.command() << rc;
+      qDebug() << "Script::run:" << s;
       _proc.kill();
       break;
     }

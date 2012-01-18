@@ -26,21 +26,9 @@
 
 class CommandSell : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeChart,
-      _ParmTypeColor,
-      _ParmTypeDate,
-      _ParmTypePrice,
-      _ParmTypeZ,
-      _ParmTypePen
-    };
-
-    CommandSell (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandSell ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

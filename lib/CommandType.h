@@ -22,9 +22,9 @@
 #ifndef COMMAND_TYPE_HPP
 #define COMMAND_TYPE_HPP
 
-#include <QStringList>
+#include "Keys.h"
 
-class CommandType
+class CommandType : public Keys
 {
   public:
     enum Type
@@ -107,11 +107,6 @@ class CommandType
     };
 
     CommandType ();
-    QStringList list ();
-    int stringToType (QString);
-
-  protected:
-    QStringList _list;
 };
 
 #endif

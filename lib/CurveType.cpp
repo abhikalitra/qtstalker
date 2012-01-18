@@ -25,15 +25,7 @@
 
 CurveType::CurveType ()
 {
-  _types << "Line" << "Histogram" << "OHLC";
-}
-
-QStringList CurveType::list ()
-{
-  return _types;
-}
-
-int CurveType::stringToType (QString d)
-{
-  return _types.indexOf(d);
+  _list << "Line";
+  _list << "Histogram";
+  _list << "OHLC";
 }

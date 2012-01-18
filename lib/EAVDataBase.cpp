@@ -50,9 +50,9 @@ void EAVDataBase::init ()
   }
 }
 
-int EAVDataBase::get (Entity *data)
+int EAVDataBase::get (Entity &data)
 {
-  QString name = data->name();
+  QString name = data.name();
   if (name.isEmpty())
   {
     qDebug() << "EAVDataBase::init: invalid name" << name;
@@ -74,15 +74,15 @@ int EAVDataBase::get (Entity *data)
     if (d.set(q.value(1).toString(), q.value(2).toInt()))
       continue;
 
-    data->set(q.value(0).toString(), d);
+    data.set(q.value(0).toString(), d);
   }
 
   return 0;
 }
 
-int EAVDataBase::set (Entity *data)
+int EAVDataBase::set (Entity &data)
 {
-  QString name = data->name();
+  QString name = data.name();
   if (name.isEmpty())
   {
     qDebug() << "EAVDataBase::init: invalid name" << name;
@@ -99,13 +99,13 @@ int EAVDataBase::set (Entity *data)
 
   QSqlQuery q(_db);
 
-  QList<QString> keys = data->dkeys();
+  QList<QString> keys = data.dkeys();
 
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
     Data d;
-    if (data->toData(keys.at(loop), d))
+    if (data.toData(keys.at(loop), d))
       continue;
 
     QString s = "INSERT INTO " + _table + " VALUES (";

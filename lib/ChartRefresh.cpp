@@ -70,7 +70,7 @@ int ChartRefresh::run ()
   {
     Entity i;
     i.setName(il.at(loop));
-    if (db.get(&i))
+    if (db.get(i))
       continue;
     
     Script *script = new Script(g_parent);

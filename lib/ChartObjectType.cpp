@@ -25,15 +25,11 @@
 
 ChartObjectType::ChartObjectType ()
 {
-  _types << "Buy" << "HLine" << "Retracement" << "Sell" << "Text" << "TLine" << "VLine";
-}
-
-QStringList ChartObjectType::list ()
-{
-  return _types;
-}
-
-int ChartObjectType::stringToType (QString d)
-{
-  return _types.indexOf(d);
+  _list << "Buy";
+  _list << "HLine";
+  _list << "Retracement";
+  _list << "Sell";
+  _list << "Text";
+  _list << "TLine";
+  _list << "VLine";
 }

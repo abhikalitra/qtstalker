@@ -32,7 +32,7 @@
 #include "CommandBETA.h"
 #include "CommandBOP.h"
 #include "CommandBreakout.h"
-//#include "CommandBuy.h"
+#include "CommandBuy.h"
 #include "CommandCandlePattern.h"
 #include "CommandCCI.h"
 #include "CommandChart.h"
@@ -47,7 +47,7 @@
 #include "CommandGet.h"
 #include "CommandGroupPanelRefresh.h"
 #include "CommandGroupSave.h"
-//#include "CommandHLine.h"
+#include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandLINEARREG.h"
 #include "CommandMA.h"
@@ -65,12 +65,12 @@
 #include "CommandPlotOHLC.h"
 #include "CommandPlotLine.h"
 #include "CommandPlotHistogram.h"
-//#include "CommandRetracement.h"
+#include "CommandRetracement.h"
 #include "CommandROC.h"
 #include "CommandRSI.h"
 #include "CommandRun.h"
 #include "CommandSAR.h"
-//#include "CommandSell.h"
+#include "CommandSell.h"
 #include "CommandSet.h"
 #include "CommandShift.h"
 #include "CommandSINE.h"
@@ -83,9 +83,9 @@
 #include "CommandSymbolCurrent.h"
 #include "CommandT3.h"
 //#include "CommandTest.h"
-//#include "CommandText.h"
+#include "CommandText.h"
 #include "CommandTHERM.h"
-//#include "CommandTLine.h"
+#include "CommandTLine.h"
 #include "CommandTRIX.h"
 #include "CommandTypicalPrice.h"
 #include "CommandULTOSC.h"
@@ -93,7 +93,7 @@
 //#include "CommandVBP.h"
 #include "CommandVFI.h"
 #include "CommandVIDYA.h"
-//#include "CommandVLine.h"
+#include "CommandVLine.h"
 #include "CommandWeightedClose.h"
 #include "CommandWILLR.h"
 #include "CommandYahooHistory.h"
@@ -109,7 +109,7 @@ Command * CommandFactory::command (QString type)
   Command *c = 0;
   CommandType ct;
 
-  switch ((CommandType::Type) ct.stringToType(type))
+  switch ((CommandType::Type) ct.stringToIndex(type))
   {
     case CommandType::_AD:
       c = new CommandAD;
@@ -151,25 +151,25 @@ Command * CommandFactory::command (QString type)
       c = new CommandChart;
       break;
     case CommandType::_CHART_OBJECT_BUY:
-//      c = new CommandBuy;
+      c = new CommandBuy;
       break;
     case CommandType::_CHART_OBJECT_HLINE:
-//      c = new CommandHLine;
+      c = new CommandHLine;
       break;
     case CommandType::_CHART_OBJECT_RETRACEMENT:
-//      c = new CommandRetracement;
+      c = new CommandRetracement;
       break;
     case CommandType::_CHART_OBJECT_SELL:
-//      c = new CommandSell;
+      c = new CommandSell;
       break;
     case CommandType::_CHART_OBJECT_TEXT:
-//      c = new CommandText;
+      c = new CommandText;
       break;
     case CommandType::_CHART_OBJECT_TLINE:
-//      c = new CommandTLine;
+      c = new CommandTLine;
       break;
     case CommandType::_CHART_OBJECT_VLINE:
-//      c = new CommandVLine;
+      c = new CommandVLine;
       break;
     case CommandType::_CHART_PANEL_REFRESH:
       c = new CommandChartPanelRefresh;

@@ -2,8 +2,7 @@ Lurking in the shadows and corners.
 
 FIX:
 
-segfault after running Volume_Dialog.pl script completes. need to trace
-
+unexposed chart tabs do not update properly. once exposed everything works. 
 
 
 

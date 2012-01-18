@@ -53,7 +53,7 @@ void SymbolLoad::run ()
   g_currentSymbol.set(skeys.indexToString(SymbolKey::_RANGE), Data(settings.value("date_range").toInt()));
 
   QuoteDataBase db;
-  if (db.getBars(&g_currentSymbol))
+  if (db.getBars(g_currentSymbol))
   {
     qDebug() << "SymbolLoad::run: QuoteDataBase error";
     emit signalError();

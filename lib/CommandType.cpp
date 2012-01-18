@@ -101,13 +101,3 @@ CommandType::CommandType ()
   _list << "WILLR";
   _list << "YAHOO_HISTORY";
 }
-
-QStringList CommandType::list ()
-{
-  return _list;
-}
-
-int CommandType::stringToType (QString d)
-{
-  return _list.indexOf(d);
-}

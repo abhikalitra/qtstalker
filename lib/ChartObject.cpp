@@ -40,7 +40,7 @@ ChartObject::ChartObject ()
   ChartObjectKey keys;
   _settings.setType(EntityType::_CHART_OBJECT);
   _settings.set(keys.indexToString(ChartObjectKey::_RO), Data(FALSE));
-  _settings.set(keys.indexToString(ChartObjectKey::_Z), Data(1));
+  _settings.set(keys.indexToString(ChartObjectKey::_Z), Data(0));
   _settings.set(keys.indexToString(ChartObjectKey::_PEN), Data(1));
   
   QString id;
@@ -261,7 +261,7 @@ int ChartObject::save ()
 
   EAVDataBase db("chartObjects");
   db.transaction();
-  if (db.set(&_settings))
+  if (db.set(_settings))
     return 1;
   db.commit();
 

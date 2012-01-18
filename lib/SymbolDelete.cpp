@@ -65,7 +65,7 @@ void SymbolDelete::remove2 ()
   {
     Symbol bd;
     bd.set(keys.indexToString(SymbolKey::_SYMBOL), Data(_symbols.at(loop)));
-    db.deleteSymbol(&bd);
+    db.deleteSymbol(bd);
   }
 
   db.commit();

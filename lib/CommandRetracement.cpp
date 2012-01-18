@@ -20,65 +20,39 @@
  */
 
 #include "CommandRetracement.h"
-#include "ChartObjectData.h"
-#include "DataColor.h"
-#include "DataDouble.h"
-#include "DataString.h"
-#include "DataBool.h"
-#include "DataInteger.h"
-#include "DataDateTime.h"
+#include "ChartObjectRetracement.h"
+#include "EntityType.h"
+#include "ChartObjectKey.h"
+#include "Script.h"
 
 #include <QtDebug>
 
-CommandRetracement::CommandRetracement (QObject *p) : Command (p)
+CommandRetracement::CommandRetracement ()
 {
   _name = "CHART_OBJECT_RETRACEMENT";
 
-  _values.insert(_ParmTypeChart, new DataString);
-  _values.insert(_ParmTypeColor, new DataColor(QColor(Qt::red)));
-  _values.insert(_ParmTypeDateStart, new DataDateTime(QDateTime::currentDateTime()));
-  _values.insert(_ParmTypeDateEnd, new DataDateTime(QDateTime::currentDateTime()));
-  _values.insert(_ParmTypeHigh, new DataDouble(0));
-  _values.insert(_ParmTypeLow, new DataDouble(0));
-  _values.insert(_ParmTypeZ, new DataInteger(0));
-  _values.insert(_ParmTypePen, new DataInteger(1));
-  _values.insert(_ParmTypeLevel1, new DataDouble(23.6));
-  _values.insert(_ParmTypeLevel2, new DataDouble(38.2));
-  _values.insert(_ParmTypeLevel3, new DataDouble(50));
-  _values.insert(_ParmTypeLevel4, new DataDouble(61.8));
-  _values.insert(_ParmTypeLevel5, new DataDouble(78.6));
+  ChartObjectRetracement co;
+  Entity settings = co.settings();
+  
+  Data td;
+  settings.set(QString("CHART"), td);
+  
+  Entity::set(settings.data());
 }
 
-void CommandRetracement::runScript (CommandParse sg, Script *script)
+QString CommandRetracement::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandRetracement::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
 
-  int id = script->nextROID();
+  Entity co;
+  co.set(Entity::data());
+  co.setType(EntityType::_CHART_OBJECT);
+  
+  ChartObjectKey keys;
+  co.set(keys.indexToString(ChartObjectKey::_RO), Data(TRUE));
 
-  Data *co = new ChartObjectData;
-  co->set(ChartObjectData::_COLOR, new DataColor(_values.value(_ParmTypeColor)->toColor()));
-  co->set(ChartObjectData::_DATE, new DataDateTime(_values.value(_ParmTypeDateStart)->toDateTime()));
-  co->set(ChartObjectData::_DATE_2, new DataDateTime(_values.value(_ParmTypeDateEnd)->toDateTime()));
-  co->set(ChartObjectData::_HIGH, new DataDouble(_values.value(_ParmTypeHigh)->toDouble()));
-  co->set(ChartObjectData::_LOW, new DataDouble(_values.value(_ParmTypeLow)->toDouble()));
-  co->set(ChartObjectData::_CHART, new DataString(_values.value(_ParmTypeChart)->toString()));
-  co->set(ChartObjectData::_Z, new DataInteger(_values.value(_ParmTypeZ)->toInteger()));
-  co->set(ChartObjectData::_PEN, new DataInteger(_values.value(_ParmTypePen)->toInteger()));
-  co->set(ChartObjectData::_ID, new DataInteger(id));
-  co->set(ChartObjectData::_RO, new DataBool(TRUE));
-  co->set(ChartObjectData::_TYPE, new DataString(QString("Retracement")));
+  script->setData(co.name(), co);
 
-  co->set(ChartObjectData::_LEVEL_1, new DataDouble(_values.value(_ParmTypeLevel1)->toDouble()));
-  co->set(ChartObjectData::_LEVEL_2, new DataDouble(_values.value(_ParmTypeLevel2)->toDouble()));
-  co->set(ChartObjectData::_LEVEL_3, new DataDouble(_values.value(_ParmTypeLevel3)->toDouble()));
-  co->set(ChartObjectData::_LEVEL_4, new DataDouble(_values.value(_ParmTypeLevel4)->toDouble()));
-  co->set(ChartObjectData::_LEVEL_5, new DataDouble(_values.value(_ParmTypeLevel5)->toDouble()));
-
-  script->setData(QString::number(id), co);
-
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }

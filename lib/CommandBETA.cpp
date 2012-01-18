@@ -126,7 +126,7 @@ int CommandBETA::getIndex (QString d, Entity &line)
 
   // load quotes
   QuoteDataBase db;
-  if (db.getBars(&bd))
+  if (db.getBars(bd))
   {
     qDebug() << "CommandBETA::getIndex: QuoteDataBase error";
     return 1;

@@ -95,7 +95,7 @@ void DataWindow::setPlot (Plot *p)
 
       Entity dwBar = _bars.value(keys.at(loop));
 
-      switch ((CurveType::Type) ct.stringToType(curveType.toString()))
+      switch ((CurveType::Type) ct.stringToIndex(curveType.toString()))
       {
         case CurveType::_OHLC:
         {

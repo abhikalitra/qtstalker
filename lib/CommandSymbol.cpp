@@ -111,7 +111,7 @@ QString CommandSymbol::run (CommandParse &, void *d)
   bd.set(symkeys.indexToString(SymbolKey::_RANGE), Data(td.toInteger()));
 
   QuoteDataBase db;
-  if (db.getBars(&bd))
+  if (db.getBars(bd))
   {
     qDebug() << "CommandSymbol::run: QuoteDataBase error";
     return _returnCode;

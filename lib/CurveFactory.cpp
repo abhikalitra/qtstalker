@@ -36,7 +36,7 @@ Curve * CurveFactory::curve (QString type)
   Curve *curve = 0;
   CurveType ct;
 
-  switch ((CurveType::Type) ct.stringToType(type))
+  switch ((CurveType::Type) ct.stringToIndex(type))
   {
     case CurveType::_LINE:
       curve = new CurveLine;

@@ -40,7 +40,7 @@ ChartObject * ChartObjectFactory::chartObject (QString type)
   ChartObject *co = 0;
   ChartObjectType cot;
 
-  switch ((ChartObjectType::Type) cot.stringToType(type))
+  switch ((ChartObjectType::Type) cot.stringToIndex(type))
   {
     case ChartObjectType::_BUY:
       co = new ChartObjectBuy;

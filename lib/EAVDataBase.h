@@ -36,8 +36,8 @@ class EAVDataBase : public DataBase
     EAVDataBase (QString);
     void init ();
     int remove (QStringList);
-    int set (Entity *);
-    int get (Entity *);
+    int set (Entity &);
+    int get (Entity &);
     int search (EAVSearch &, QStringList &);
     int names (QStringList &);
 };

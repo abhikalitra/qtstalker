@@ -147,7 +147,7 @@ int ChartUpdate::loadObjects (Entity &e)
   {
     Entity osettings;
     osettings.setName(names.at(loop));
-    if (codb.get(&osettings))
+    if (codb.get(osettings))
       continue;
 
     Data type;
