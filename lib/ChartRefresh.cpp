@@ -73,6 +73,14 @@ int ChartRefresh::run ()
     if (db.get(i))
       continue;
     
+    Data command, file;
+    i.toData(keys.indexToString(IndicatorDataBaseKey::_COMMAND), command);
+    i.toData(keys.indexToString(IndicatorDataBaseKey::_FILE), file);
+
+    // launch indicator
+    g_sidePanel->scriptPanel()->runScript(command.toString(), file.toString());
+    
+/*
     Script *script = new Script(g_parent);
     connect(script, SIGNAL(signalMessage(QString)), g_sidePanel->scriptPanel(), SLOT(scriptThreadMessage(QString)));
 //qDebug() << "ChartRefresh::run:" << il.at(loop);
@@ -87,6 +95,7 @@ int ChartRefresh::run ()
     script->setSymbol(g_currentSymbol);
     
     script->start();
+*/
   }
 
   deleteLater();

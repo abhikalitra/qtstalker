@@ -25,9 +25,9 @@
 #include "GlobalSymbol.h"
 #include "EAVDataBase.h"
 #include "ScriptRunDialog.h"
-#include "Script.h"
 #include "IndicatorDataBaseKey.h"
 #include "NewDialog.h"
+#include "GlobalSidePanel.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -89,11 +89,13 @@ void AddIndicator::addIndicator3 (QString command, QString file)
   i.set(keys.indexToString(IndicatorDataBaseKey::_COMMAND), Data(command));
 
   EAVDataBase db("indicators");
+  db.transaction();
   if (db.set(i))
   {
     done();
     return;
   }
+  db.commit();
   
   QSettings settings(g_localSettings);
   settings.setValue("add_indicator_last_script", file);
@@ -101,11 +103,7 @@ void AddIndicator::addIndicator3 (QString command, QString file)
   settings.sync();
 
   // launch indicator
-  Script *script = new Script(g_parent);
-  script->setFile(file);
-  script->setCommand(command);
-  script->setSymbol(g_currentSymbol);
-  script->run();
+  g_sidePanel->scriptPanel()->runScript(command, file);
 
   done();
 }

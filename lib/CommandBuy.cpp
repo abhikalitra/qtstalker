@@ -51,6 +51,13 @@ QString CommandBuy::run (CommandParse &, void *d)
   ChartObjectKey keys;
   co.set(keys.indexToString(ChartObjectKey::_RO), Data(TRUE));
 
+  // update with new ID
+  ChartObjectBuy buy;
+  QString s;
+  buy.newID(s);
+  co.setName(s);
+  co.set(keys.indexToString(ChartObjectKey::_ID), Data(s));
+
   script->setData(co.name(), co);
 
   _returnCode = "OK";

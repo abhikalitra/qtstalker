@@ -51,6 +51,13 @@ QString CommandHLine::run (CommandParse &, void *d)
   ChartObjectKey keys;
   co.set(keys.indexToString(ChartObjectKey::_RO), Data(TRUE));
 
+  // update with new ID
+  ChartObjectHLine hline;
+  QString s;
+  hline.newID(s);
+  co.setName(s);
+  co.set(keys.indexToString(ChartObjectKey::_ID), Data(s));
+  
   script->setData(co.name(), co);
 
   _returnCode = "OK";

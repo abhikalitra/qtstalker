@@ -63,6 +63,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # set the NAME, COL values
 $command = "SET(chart, NAME, $chartName,
+                chart, ROW, 0,
                 chart, COL, 0)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
@@ -101,6 +102,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 $command = "SET(plot_ohlc, OUTPUT, $ohlcName,
                 plot_ohlc, CHART, $chartName,
                 plot_ohlc, LABEL, $ohlcLabel,
+                plot_ohlc, Z, $ohlcZ,
                 plot_ohlc, COLOR, $ohlcColor)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }

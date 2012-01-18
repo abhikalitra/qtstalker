@@ -156,13 +156,13 @@ void Script::done (int, QProcess::ExitStatus)
   if (_killFlag)
   {
     l << tr("cancelled");
-    qDebug() << l.join(" ");
+//    qDebug() << l.join(" ");
     emit signalStopped(_file);
   }
   else
   {
     l << tr("completed");
-    qDebug() << l.join(" ");
+//    qDebug() << l.join(" ");
     emit signalDone(_file);
   }
 }

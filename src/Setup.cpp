@@ -123,7 +123,7 @@ void Setup::setupDefaultIndicators ()
 
   EAVDataBase db("indicators");
   db.transaction();
-  if (db.set(&i))
+  if (db.set(i))
   {
     qDebug() << "Setup::setupDefaultIndicators: error saving OHLC";
     return;
@@ -134,7 +134,7 @@ void Setup::setupDefaultIndicators ()
   i.set(keys.indexToString(IndicatorDataBaseKey::_FILE), Data(base + "Volume.pl"));
   i.set(keys.indexToString(IndicatorDataBaseKey::_COMMAND), Data(QString("perl")));
 
-  if (db.set(&i))
+  if (db.set(i))
     qDebug() << "Setup::setupDefaultIndicators: error saving Volume";
 
   db.commit();
