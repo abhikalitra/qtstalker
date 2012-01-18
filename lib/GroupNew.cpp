@@ -22,7 +22,7 @@
 #include "GroupNew.h"
 #include "NewDialog.h"
 #include "Global.h"
-#include "GroupDataBase.h"
+#include "EAVDataBase.h"
 #include "GroupEditDialog.h"
 
 #include <QtDebug>
@@ -40,7 +40,7 @@ void GroupNew::run ()
 
 void GroupNew::run2 ()
 {
-  GroupDataBase db;
+  EAVDataBase db("groups");
   QStringList l;
   db.names(l);
 

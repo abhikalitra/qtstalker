@@ -23,11 +23,7 @@
 #include "ChartObjectHLine.h"
 #include "GlobalParent.h"
 #include "Strip.h"
-#include "ChartObjectData.h"
-#include "DataDouble.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataColor.h"
+#include "ChartObjectKey.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -36,21 +32,35 @@
 
 ChartObjectHLine::ChartObjectHLine ()
 {
-  _settings->set(ChartObjectData::_TYPE, new DataString(QString("HLine")));
-  _settings->set(ChartObjectData::_PRICE, new DataDouble(0));
-  _settings->set(ChartObjectData::_COLOR, new DataColor(QColor(Qt::red)));
+  ChartObjectKey keys;
+
+  Data td(QString("HLine"));
+  _settings.set(keys.indexToString(ChartObjectKey::_TYPE), td);
+  
+  td = Data(0.0);
+  td.setLabel(QObject::tr("Price"));
+  _settings.set(keys.indexToString(ChartObjectKey::_PRICE), td);
+
+  td = Data(QColor(Qt::red));
+  td.setLabel(QObject::tr("Color"));
+  _settings.set(keys.indexToString(ChartObjectKey::_COLOR), td);
 }
 
 void ChartObjectHLine::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap &yMap, const QRect &) const
 {
-  p->setPen(_settings->toData(ChartObjectData::_COLOR)->toColor());
+  ChartObjectKey keys;
+  Data color, price;
+  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+  _settings.toData(keys.indexToString(ChartObjectKey::_COLOR), color);
+  
+  p->setPen(color.toColor());
 
-  int y = yMap.transform(_settings->toData(ChartObjectData::_PRICE)->toDouble());
+  int y = yMap.transform(price.toDouble());
 
   // test start
   Strip strip;
   QString ts;
-  strip.strip(_settings->toData(ChartObjectData::_PRICE)->toDouble(), 4, ts);
+  strip.strip(price.toDouble(), 4, ts);
   QString s = " " + ts; // prepend space so we can clearly read text
   QFontMetrics fm = p->fontMetrics();
   QRect rc = p->boundingRect(0, y - (fm.height() / 2), 1, 1, 0, s);
@@ -94,15 +104,21 @@ void ChartObjectHLine::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap
                   y - (_handleWidth / 2),
                   _handleWidth,
                   _handleWidth,
-                  _settings->toData(ChartObjectData::_COLOR)->toColor());
+                  color.toColor());
     }
   }
 }
 
-int ChartObjectHLine::info (Message &info)
+int ChartObjectHLine::info (Entity &info)
 {
-  info.insert(QObject::tr("Type"), _settings->toData(ChartObjectData::_TYPE)->toString());
-  info.insert(QObject::tr("Price"), _settings->toData(ChartObjectData::_PRICE)->toString());
+  ChartObjectKey keys;
+  Data type, price;
+  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+  _settings.toData(keys.indexToString(ChartObjectKey::_TYPE), type);
+
+  info.set(QObject::tr("Type"), type);
+  info.set(QObject::tr("Price"), price);
+  
   return 0;
 }
 
@@ -112,14 +128,19 @@ void ChartObjectHLine::move (QPoint p)
   {
     case _MOVE:
     {
+      ChartObjectKey keys;
+      Data price;
+      _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+      
       QwtScaleMap map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_PRICE, new DataDouble(map.invTransform((double) p.y())));
+      price.set(map.invTransform((double) p.y()));
+      _settings.set(keys.indexToString(ChartObjectKey::_PRICE), price);
 
       plot()->replot();
 
       Strip strip;
       QString s;
-      strip.strip(_settings->toData(ChartObjectData::_PRICE)->toDouble(), 4, s);
+      strip.strip(price.toDouble(), 4, s);
       g_parent->statusBar()->showMessage(s);
 
       _modified++;
@@ -140,8 +161,12 @@ int ChartObjectHLine::create ()
 
 int ChartObjectHLine::highLow (int, int, double &high, double &low)
 {
-  double d = _settings->toData(ChartObjectData::_PRICE)->toDouble();
-  high = d;
-  low = d;
+  ChartObjectKey keys;
+  Data price;
+  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+
+  high = price.toDouble();
+  low = price.toDouble();
+  
   return 0;
 }

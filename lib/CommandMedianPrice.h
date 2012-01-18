@@ -26,19 +26,10 @@
 
 class CommandMedianPrice : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypeInput2
-    };
-
-    CommandMedianPrice (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getMP (QList<Data *> &);
+    CommandMedianPrice ();
+    QString run (CommandParse &, void *);
+    int getMP (Entity &in, Entity &in2, Entity &line);
 };
 
 #endif

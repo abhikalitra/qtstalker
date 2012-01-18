@@ -26,11 +26,9 @@
 
 class CommandGroupPanelRefresh : public Command
 {
-  Q_OBJECT
-
   public:
-    CommandGroupPanelRefresh (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandGroupPanelRefresh ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

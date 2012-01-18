@@ -26,21 +26,9 @@
 
 class CommandSAR : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeStepInit,
-      _ParmTypeStepMax
-    };
-
-    CommandSAR (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getSAR (QList<Data *> &, double, double);
+    CommandSAR ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

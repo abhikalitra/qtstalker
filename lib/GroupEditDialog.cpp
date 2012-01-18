@@ -20,8 +20,9 @@
  */
 
 #include "GroupEditDialog.h"
-#include "GroupDataBase.h"
+#include "EAVDataBase.h"
 #include "SymbolDialog.h"
+#include "GroupDataBaseKey.h"
 
 #include "../pics/add.xpm"
 #include "../pics/delete.xpm"
@@ -44,11 +45,18 @@ GroupEditDialog::GroupEditDialog (QWidget *p, QString n) : Dialog (p)
 
   createGUI();
 
-  GroupDataBase db;
-  db.load(_name, l);
+  Entity g;
+  g.setName(_name);
+  
+  EAVDataBase db("groups");
+  db.get(&g);
+
+  GroupDataBaseKey gkeys;
+  Data td;
+  g.toData(gkeys.indexToString(GroupDataBaseKey::_LIST), td);
 
   _list->clear();
-  _list->addItems(l);
+  _list->addItems(td.toList());
 
   loadSettings();
 
@@ -123,15 +131,22 @@ void GroupEditDialog::done ()
   for (; loop < _list->count(); loop++)
     l << _list->item(loop)->text();
 
-  GroupDataBase db;
+  Entity g;
+  g.setName(_name);
+
+  GroupDataBaseKey gkeys;
+  Data dl;
+  dl.set(l);
+  g.set(gkeys.indexToString(GroupDataBaseKey::_LIST), dl);
+  
+  EAVDataBase db("groups");
   db.transaction();
-  if (db.save(_name, l))
+  if (db.set(&g))
   {
     qDebug() << "GroupEditDialog::done: GroupDataBase error";
     cancel();
     return;
   }
-
   db.commit();
 
   saveSettings();

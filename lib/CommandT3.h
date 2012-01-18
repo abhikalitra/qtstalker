@@ -26,20 +26,9 @@
 
 class CommandT3 : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypePeriod,
-      _ParmTypeVFactor
-    };
-
-    CommandT3 (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getT3 (QList<Data *> &, int, double);
+    CommandT3 ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

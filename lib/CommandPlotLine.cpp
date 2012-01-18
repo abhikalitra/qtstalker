@@ -23,87 +23,98 @@
 #include "LineStyle.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataColor.h"
-#include "DataDouble.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
-#include "DataList.h"
+#include "CurveDataKey.h"
+#include "CurveBarKey.h"
+#include "Script.h"
 
 #include <QtDebug>
 
-CommandPlotLine::CommandPlotLine (QObject *p) : Command (p)
+CommandPlotLine::CommandPlotLine ()
 {
   _name = "PLOT_LINE";
-  _type = _WAIT;
 
-  _values.insert(_ParmTypeName, new DataString());
-  _values.insert(_ParmTypeChart, new DataString());
-  _values.insert(_ParmTypeLabel, new DataString());
+  Entity::set(QString("OUTPUT"), Data(QString("plot_line")));
+  Entity::set(QString("CHART"), Data(QString("chart")));
+  Entity::set(QString("LABEL"), Data(QString("line")));
+  Entity::set(QString("COLOR"), Data(QColor(Qt::red)));
+  Entity::set(QString("Z"), Data(0));
+  Entity::set(QString("PEN"), Data(1));
+  Entity::set(QString("INPUT"), Data(QString("close")));
 
-  DataList *dl = new DataList("Line");
   LineStyle ls;
-  QStringList tl = ls.list();
-  dl->set(tl);
-  _values.insert(_ParmTypeStyle, dl);
-
-  _values.insert(_ParmTypeColor, new DataColor());
-  _values.insert(_ParmTypeZ, new DataInteger(0));
-  _values.insert(_ParmTypePen, new DataInteger(1));
-  _values.insert(_ParmTypeInput, new DataString());
+  Data td(ls.list(), QString("Line"));
+  Entity::set(QString("STYLE"), td);
 }
 
-void CommandPlotLine::runScript (CommandParse sg, Script *script)
+QString CommandPlotLine::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandPlotLine::runScript: parse error");
-    return;
-  }
-
-  int toffset = 0;
+  Script *script = (Script *) d;
+  
+  Data input;
+  Entity::toData(QString("INPUT"), input);
+  
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, input.toString(), in))
   {
-    Command::error("CommandPlotLine::runScript: invalid Input");
-    return;
+    qDebug() << "CommandPlotLine::run: invalid Input" << input.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << in;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
+  if (svck.keys1(in, keys))
   {
-    Command::error("CommandPlotLine::runScript: invalid keys");
-    return;
+    qDebug() << "CommandPlotLine::run: invalid keys";
+    return _returnCode;
   }
 
-  Data *line = new CurveData;
-  line->set(CurveData::_TYPE, new DataString(QString("Line")));
-  line->set(CurveData::_Z, new DataInteger(_values.value(_ParmTypeZ)->toInteger()));
-  line->set(CurveData::_PEN, new DataInteger(_values.value(_ParmTypePen)->toInteger()));
-  line->set(CurveData::_LABEL, new DataString(_values.value(_ParmTypeLabel)->toString()));
-  line->set(CurveData::_CHART, new DataString(_values.value(_ParmTypeChart)->toString()));
-  line->set(CurveData::_STYLE, new DataString(_values.value(_ParmTypeStyle)->toString()));
+  CurveDataKey cdkeys;
+  CurveData line;
+  line.set(cdkeys.indexToString(CurveDataKey::_TYPE), Data(QString("Line")));
+  
+  Data td;
+  Entity::toData(QString("Z"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_Z), td);
+  
+  Entity::toData(QString("PEN"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_PEN), td);
+  
+  Entity::toData(QString("LABEL"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_LABEL), td);
+  
+  Entity::toData(QString("CHART"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_CHART), td);
+  
+  Entity::toData(QString("STYLE"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_STYLE), td);
 
+  CurveBarKey cbkeys;
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
-    Data *ibar = in->toData(keys.at(loop));
-    if (! ibar)
+    Entity ibar;
+    if (in.toEntity(keys.at(loop), ibar))
+      continue;
+    
+    Data value;
+    if (ibar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), value))
       continue;
 
-    Data *bar = new CurveBar;
-    bar->set(CurveBar::_VALUE, new DataDouble(ibar->toData(CurveBar::_VALUE)->toDouble()));
-    bar->set(CurveBar::_COLOR, new DataColor(_values.value(_ParmTypeColor)->toColor()));
-    line->set(keys.at(loop), bar);
+    CurveBar bar;
+    bar.set(cbkeys.indexToString(CurveBarKey::_VALUE), value);
+    
+    Entity::toData(QString("COLOR"), td);
+    bar.set(cbkeys.indexToString(CurveBarKey::_COLOR), td);
+    
+    line.setEntity(keys.at(loop), bar);
   }
 
-  script->setData(_values.value(_ParmTypeName)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }

@@ -22,100 +22,105 @@
 #include "CommandNewHighLow.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBar.h"
-#include "DataString.h"
-#include "DataList.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
-CommandNewHighLow::CommandNewHighLow (QObject *p) : Command (p)
+CommandNewHighLow::CommandNewHighLow ()
 {
   _name = "NEW_HIGH_LOW";
   _method << "HIGH" << "LOW";
 
-  _values.insert(_ParmTypeInput, new DataString());
-
-  DataList *dl = new DataList(_method.at(0));
-  dl->set(_method);
-  _values.insert(_ParmTypeMethod, dl);
+  Data td(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td = Data(_method, _method.at(0));
+  td.setLabel(QObject::tr("Method"));
+  Entity::set(QString("METHOD"), td);
 }
 
-void CommandNewHighLow::runScript (CommandParse sg, Script *script)
+QString CommandNewHighLow::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
+
+  ScriptVerifyCurve svc;
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandNewHighLow::runScript: parse error");
-    return;
+    qDebug() << "CommandNewHighLow::run: invalid INPUT" << td.toString();
+    return _returnCode;
   }
 
-  int toffset = 0;
-  ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
-  {
-    Command::error("CommandNewHighLow::runScript: invalid Input");
-    return;
-  }
+  Data method;
+  Entity::toData(QString("METHOD"), method);
 
   int flag = 0;
-  int rc = getNewHighLow(in, _values.value(_ParmTypeMethod)->toInteger(), flag);
-  if (rc)
+  if (getNewHighLow(in, method.toInteger(), flag))
   {
-    Command::error("CommandNewHighLow::runScript: getNewHighLow error");
-    return;
+    qDebug() << "CommandNewHighLow::run: getNewHighLow error";
+    return _returnCode;
   }
 
-  Command::done(QString::number(flag));
+  _returnCode = QString::number(flag);
+  return _returnCode;
 }
 
-int CommandNewHighLow::getNewHighLow (Data *in, int method, int &flag)
+int CommandNewHighLow::getNewHighLow (Entity &in, int method, int &flag)
 {
   flag = 0;
 
-  QList<Data *> list;
-  list << in;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
+  if (svck.keys1(in, keys))
     return 1;
 
+  CurveBarKey cbkeys;
   int loop = 0;
-  Data *bar = in->toData(keys.at(loop++));
-  double v = bar->toData(CurveBar::_VALUE)->toDouble();
+  Entity bar;
+  in.toEntity(keys.at(loop++), bar);
+  Data val;
+  bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), val);
+  double v = val.toDouble();
 
   if (method == 0) // highest
   {
-    for (; loop < keys.count() - 2; loop++)
+    for (; loop < keys.size() - 2; loop++)
     {
-      bar = in->toData(keys.at(loop));
-      double tv = bar->toData(CurveBar::_VALUE)->toDouble();
+      in.toEntity(keys.at(loop), bar);
+      bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), val);
+      double tv = val.toDouble();
       if (tv > v)
         v = tv;
     }
   }
   else // lowest
   {
-    for (; loop < keys.count() - 2; loop++)
+    for (; loop < keys.size() - 2; loop++)
     {
-      bar = in->toData(keys.at(loop));
-      double tv = bar->toData(CurveBar::_VALUE)->toDouble();
+      in.toEntity(keys.at(loop), bar);
+      bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), val);
+      double tv = val.toDouble();
       if (tv < v)
         v = tv;
     }
   }
 
-  bar = in->toData(keys.at(keys.count() - 1));
+  in.toEntity(keys.at(keys.size() - 1), bar);
+  bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), val);
   if (method == 0)
   {
-    if (bar->toData(CurveBar::_VALUE)->toDouble() > v)
+    if (val.toDouble() > v)
       flag = 1;
   }
   else
   {
-    if (bar->toData(CurveBar::_VALUE)->toDouble() < v)
+    if (val.toDouble() < v)
       flag = 1;
   }
 

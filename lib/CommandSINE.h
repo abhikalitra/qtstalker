@@ -26,19 +26,9 @@
 
 class CommandSINE : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeSine,
-      _ParmTypeLead,
-      _ParmTypeInput
-    };
-
-    CommandSINE (QObject *);
-    void runScript (CommandParse, Script *);
-    QList<Data *> getSINE (QList<Data *> &);
+    CommandSINE ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

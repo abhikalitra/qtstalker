@@ -5,6 +5,7 @@
 
 #include "Symbol.h"
 
-extern Symbol *g_currentSymbol;
-extern QMutex g_symbolMutex;
+extern Symbol g_currentSymbol;
+extern QMutex g_currentSymbolMutex;
+
 #endif

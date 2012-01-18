@@ -23,133 +23,172 @@
 #include "Symbol.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataDouble.h"
-#include "DataDateTime.h"
 #include "QuoteDataBase.h"
-#include "DataSymbol.h"
-#include "DataBarLength.h"
-#include "DataDateRange.h"
+#include "BarLength.h"
+#include "DateRange.h"
+#include "Script.h"
+#include "SymbolKey.h"
+#include "CurveBarKey.h"
 
 #include <QtDebug>
 
-CommandSymbol::CommandSymbol (QObject *p) : Command (p)
+CommandSymbol::CommandSymbol ()
 {
   _name = "SYMBOL";
 
-  _values.insert(_ParmTypeSymbol, new DataSymbol);
-  _values.insert(_ParmTypeLength, new DataBarLength);
-  _values.insert(_ParmTypeRange, new DataDateRange);
-  _values.insert(_ParmTypeDate, new DataString);
-  _values.insert(_ParmTypeOpen, new DataString);
-  _values.insert(_ParmTypeHigh, new DataString);
-  _values.insert(_ParmTypeLow, new DataString);
-  _values.insert(_ParmTypeClose, new DataString);
-  _values.insert(_ParmTypeVolume, new DataString);
-  _values.insert(_ParmTypeOI, new DataString);
+  Data td;
+  td.setLabel(QObject::tr("Symbol"));
+  Entity::set(QString("SYMBOL"), td);
+  
+  BarLength bl;
+  QStringList l = bl.list();
+  td = Data(l, l.at(0));
+  td.setLabel(QObject::tr("Bar Length"));
+  Entity::set(QString("LENGTH"), td);
+  
+  DateRange dr;
+  l = dr.list();
+  td = Data(l, l.at(0));
+  td.setLabel(QObject::tr("Date Range"));
+  Entity::set(QString("RANGE"), td);
+  
+  td = Data(QString("date"));
+  td.setLabel(QObject::tr("Date Input"));
+  Entity::set(QString("DATE"), td);
+  
+  td = Data(QString("open"));
+  td.setLabel(QObject::tr("Open Input"));
+  Entity::set(QString("OPEN"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("High Input"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Low Input"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Close Input"));
+  Entity::set(QString("CLOSE"), td);
+  
+  td = Data(QString("volume"));
+  td.setLabel(QObject::tr("Volume Input"));
+  Entity::set(QString("VOLUME"), td);
+  
+  td = Data(QString("oi"));
+  td.setLabel(QObject::tr("OI Input"));
+  Entity::set(QString("OI"), td);
 }
 
-void CommandSymbol::runScript (CommandParse sg, Script *script)
+QString CommandSymbol::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
+  // verify SYMBOL
+  Data tsymbol;
+  Entity::toData(QString("SYMBOL"), tsymbol);
+  QStringList tl = tsymbol.toString().split(":");
+  if (tl.count() != 2)
   {
-    Command::error("CommandSymbol::runScript: parse error");
-    return;
+    qDebug() << "CommandSymbol::run: invalid Symbol" << tsymbol.toString();
+    return _returnCode;
   }
-
-  QStringList tl = _values.value(_ParmTypeSymbol)->toList();
-  if (! tl.count())
-  {
-    Command::error("CommandSymbol::runScript: invalid Symbol");
-    return;
-  }
-
-  // SYMBOL
-  QStringList tl2 = tl.at(0).split(":");
-  QString exchange = tl2.at(0);
-  QString symbol = tl2.at(1);
-
-  Symbol bd;
-  bd.setExchange(exchange);
-  bd.setSymbol(symbol);
-  bd.setLength(_values.value(_ParmTypeLength)->toInteger());
-  bd.setStartDate(QDateTime());
-  bd.setEndDate(QDateTime());
-  bd.setRange(_values.value(_ParmTypeRange)->toInteger());
-
+  QString exchange = tl.at(0);
+  QString symbol = tl.at(1);
+  
   // load quotes
+  SymbolKey symkeys;
+  Symbol bd;
+  bd.set(symkeys.indexToString(SymbolKey::_SYMBOL), Data(tsymbol.toString()));
+  
+  Data td;
+  Entity::toData(QString("LENGTH"), td);
+  bd.set(symkeys.indexToString(SymbolKey::_LENGTH), Data(td.toInteger()));
+  
+  bd.set(symkeys.indexToString(SymbolKey::_START_DATE), Data(QDateTime()));
+  bd.set(symkeys.indexToString(SymbolKey::_END_DATE), Data(QDateTime()));
+  
+  Entity::toData(QString("RANGE"), td);
+  bd.set(symkeys.indexToString(SymbolKey::_RANGE), Data(td.toInteger()));
+
   QuoteDataBase db;
   if (db.getBars(&bd))
   {
-    qDebug() << "CommandSymbol::runScript: QuoteDataBase error" << "EXCHANGE=" << exchange << "SYMBOL=" << symbol;
-    qDebug() << "CommandSymbol::runScript: LENGTH=" <<_values.value(_ParmTypeLength)->toString() << "RANGE=" << _values.value(_ParmTypeRange)->toString();
-    Command::error("CommandSymbol::runScript: QuoteDataBase error");
-    return;
+    qDebug() << "CommandSymbol::run: QuoteDataBase error";
+    return _returnCode;
   }
-
-  // date
-  Data *dline = new CurveData;
-  script->setData(_values.value(_ParmTypeDate)->toString(), dline);
-
-  // open
-  Data *oline = new CurveData;
-  script->setData(_values.value(_ParmTypeOpen)->toString(), oline);
-
-  // high
-  Data *hline = new CurveData;
-  script->setData(_values.value(_ParmTypeHigh)->toString(), hline);
-
-  // low
-  Data *lline = new CurveData;
-  script->setData(_values.value(_ParmTypeLow)->toString(), lline);
-
-  // close
-  Data *cline = new CurveData;
-  script->setData(_values.value(_ParmTypeClose)->toString(), cline);
-
-  // volume
-  Data *vline = new CurveData;
-  script->setData(_values.value(_ParmTypeVolume)->toString(), vline);
-
-  // oi
-  Data *iline = new CurveData;
-  script->setData(_values.value(_ParmTypeOI)->toString(), iline);
-
+  
+  Data date, open, high, low, close, volume, oi;
+  Entity::toData(QString("DATE"), date);
+  Entity::toData(QString("OPEN"), open);
+  Entity::toData(QString("HIGH"), high);
+  Entity::toData(QString("LOW"), low);
+  Entity::toData(QString("CLOSE"), close);
+  Entity::toData(QString("VOLUME"), volume);
+  Entity::toData(QString("OI"), oi);
+  
+  CurveData dline;
+  CurveData oline;
+  CurveData hline;
+  CurveData lline;
+  CurveData cline;
+  CurveData vline;
+  CurveData iline;
+  CurveBarKey cbkeys;
   int loop = 0;
-  QList<int> barKeys = bd.barKeys();
-  for (; loop < barKeys.count(); loop++)
+  QList<QString> keys = bd.ekeys();
+  for (; loop < keys.size(); loop++)
   {
-    Data *b = bd.getData(barKeys.at(loop));
+    Entity b;
+    bd.toEntity(keys.at(loop), b);
+    
+    // date
+    Data td;
+    b.toData(cbkeys.indexToString(CurveBarKey::_DATE), td);
 
-    Data *db = new CurveBar;
-    db->set(CurveBar::_DATE, new DataDateTime(b->toData(CurveBar::_DATE)->toDateTime()));
-    dline->set(loop, db);
+    CurveBar db;
+    db.set(cbkeys.indexToString(CurveBarKey::_DATE), td);
+    dline.setEntity(keys.at(loop), db);
 
-    db = new CurveBar;
-    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_OPEN)->toDouble()));
-    oline->set(loop, db);
+    // open
+    b.toData(cbkeys.indexToString(CurveBarKey::_OPEN), td);
+    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    oline.setEntity(keys.at(loop), db);
 
-    db = new CurveBar;
-    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_HIGH)->toDouble()));
-    hline->set(loop, db);
+    // high
+    b.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td);
+    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    hline.setEntity(keys.at(loop), db);
 
-    db = new CurveBar;
-    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_LOW)->toDouble()));
-    lline->set(loop, db);
+    // low
+    b.toData(cbkeys.indexToString(CurveBarKey::_LOW), td);
+    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    lline.setEntity(keys.at(loop), db);
 
-    db = new CurveBar;
-    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_CLOSE)->toDouble()));
-    cline->set(loop, db);
+    // close
+    b.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), td);
+    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    cline.setEntity(keys.at(loop), db);
 
-    db = new CurveBar;
-    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_VOLUME)->toDouble()));
-    vline->set(loop, db);
+    // volume
+    b.toData(cbkeys.indexToString(CurveBarKey::_VOLUME), td);
+    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    vline.setEntity(keys.at(loop), db);
 
-    db = new CurveBar;
-    db->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_OI)->toDouble()));
-    iline->set(loop, db);
+    // oi
+    b.toData(cbkeys.indexToString(CurveBarKey::_OI), td);
+    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    iline.setEntity(keys.at(loop), db);
   }
 
-  Command::done(QString());
+  Script *script = (Script *) d;
+  script->setData(date.toString(), dline);
+  script->setData(open.toString(), oline);
+  script->setData(high.toString(), hline);
+  script->setData(low.toString(), lline);
+  script->setData(close.toString(), cline);
+  script->setData(volume.toString(), vline);
+  script->setData(oi.toString(), iline);
+  
+  _returnCode = "OK";
+  return _returnCode;
 }

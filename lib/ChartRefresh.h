@@ -41,7 +41,7 @@ class ChartRefresh : public QObject
     int run ();
 
   public slots:
-    void scriptDone (QString);
+//    void scriptDone (QString);
 
   private:
     QHash<QString, Script *> _scripts;

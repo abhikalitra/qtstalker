@@ -43,7 +43,7 @@ class QtstalkerApp : public QMainWindow
     void statusMessage (QString);
     void wakeup ();
     void commandLineAsset ();
-//    void fixDockTabs ();
+    void fixDockTabs ();
     void shutDown ();
     void afterStartup ();
 

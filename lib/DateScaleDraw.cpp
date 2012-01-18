@@ -24,6 +24,8 @@
 #include "GlobalSymbol.h"
 #include "DateRange.h"
 #include "CurveBar.h"
+#include "CurveBarKey.h"
+#include "SymbolKey.h"
 
 #include <QString>
 #include <QDebug>
@@ -40,26 +42,32 @@ void DateScaleDraw::clear ()
   _dates.clear();
 }
 
-void DateScaleDraw::setDates (Data *d)
+void DateScaleDraw::setDates (Entity &d)
 {
-  QList<int> keys = d->keys();
+  QList<QString> keys = d.ekeys();
+  
+  CurveBarKey cbkeys;
+  SymbolKey symkeys;
+  Data length;
+  g_currentSymbol.toData(symkeys.indexToString(SymbolKey::_LENGTH), length);
 
   DateRange dr;
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *cb = d->toData(keys.at(loop));
+    Entity cb;
+    d.toEntity(keys.at(loop), cb);
+    
+    Data td;
+    cb.toData(cbkeys.indexToString(CurveBarKey::_DATE), td);
 
     QDateTime tsd, ted;
-    dr.dateInterval(cb->toData(CurveBar::_DATE)->toDateTime(),
-                    (BarLength::Length) g_currentSymbol->length(),
-                    tsd,
-                    ted);
+    dr.dateInterval(td.toDateTime(), (BarLength::Length) length.toInteger(), tsd, ted);
     QString s = dr.rangeKey(tsd, ted);
 
-    _data.insert(s, keys.at(loop));
+    _data.insert(s, keys.at(loop).toInt());
 
-    _dates.insert(keys.at(loop), cb->toData(CurveBar::_DATE)->toDateTime());
+    _dates.insert(keys.at(loop).toInt(), td.toDateTime());
   }
 }
 
@@ -70,10 +78,13 @@ void DateScaleDraw::setDates ()
 
   _dateList.clear();
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
     _dateList << _dates.value(keys.at(loop));
 
-  _barLength = g_currentSymbol->length();
+  SymbolKey symkeys;
+  Data length;
+  g_currentSymbol.toData(symkeys.indexToString(SymbolKey::_LENGTH), length);
+  _barLength = length.toInteger();
 }
 
 int DateScaleDraw::count ()
@@ -147,14 +158,14 @@ int DateScaleDraw::x (QDateTime d)
   return x;
 }
 
-void DateScaleDraw::info (int index, Message &set)
+void DateScaleDraw::info (int index, Entity &set)
 {
   QDateTime dt;
   date(index, dt);
   if (dt.isValid())
   {
-    set.insert("D", dt.toString("yyyy-MM-dd"));
-    set.insert("T", dt.toString("HH:mm:ss"));
+    set.set(QString("D"), dt.toString("yyyy-MM-dd"));
+    set.set(QString("T"), dt.toString("HH:mm:ss"));
   }
 }
 

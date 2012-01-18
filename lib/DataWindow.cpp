@@ -26,11 +26,16 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "CurveType.h"
+#include "SymbolKey.h"
+#include "CurveDataKey.h"
+#include "CurveBarKey.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
 DataWindow::DataWindow (QWidget *p) : QDialog (p, 0)
 {
+  _dateFlag = 0;
   setAttribute(Qt::WA_DeleteOnClose);
 
   QVBoxLayout *vbox = new QVBoxLayout;
@@ -46,34 +51,28 @@ DataWindow::DataWindow (QWidget *p) : QDialog (p, 0)
 
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 
+  SymbolKey symkeys;
+  Data symbol;
+  g_currentSymbol.toData(symkeys.indexToString(SymbolKey::_SYMBOL), symbol);
+  
+  Data name;
+  g_currentSymbol.toData(symkeys.indexToString(SymbolKey::_NAME), name);
+
   QStringList l;
-  l << "QtStalker" + g_session << ":" << g_currentSymbol->exchange();
-  l << ":" << g_currentSymbol->symbol();
-  l << "(" + g_currentSymbol->name() + ")";
+  l << "QtStalker" + g_session << ":" << symbol.toString();
+  l << "(" + name.toString() + ")";
   l << "-" << tr("Indicators");
   setWindowTitle(l.join(" "));
 }
 
 void DataWindow::setPlot (Plot *p)
 {
-  // get dates first
-  QList<QDateTime> dates;
-  p->dates(dates);
-  int loop = 0;
-  for (; loop < dates.count(); loop++)
-  {
-    Message *bar = _bars.value(loop);
-    if (! bar)
-    {
-      bar = new Message;
-      _bars.insert(loop, bar);
-    }
-
-    bar->insert("Date", dates.at(loop).toString(Qt::ISODate));
-  }
-
+  setDates(p);
+  
   QHash<QString, Curve *> curves = p->curves();
 
+  CurveDataKey cdkeys;
+  CurveBarKey cbkeys;
   CurveType ct;
   Strip strip;
   QHashIterator<QString, Curve *> it(curves);
@@ -81,71 +80,85 @@ void DataWindow::setPlot (Plot *p)
   {
     it.next();
     Curve *line = it.value();
-    Data *d = line->settings();
+    Entity settings = line->settings();
 
-    QList<int> keys = d->keys();
+    Data curveType;
+    settings.toData(cdkeys.indexToString(CurveDataKey::_TYPE), curveType);
+      
+    QList<QString> keys = settings.ekeys();
 
     int loop = 0;
-    for (; loop < keys.count(); loop++)
+    for (; loop < keys.size(); loop++)
     {
-      Data *cb = d->toData(keys.at(loop));
+      Entity cbar;
+      settings.toEntity(keys.at(loop), cbar);
 
-      Message *bar = _bars.value(keys.at(loop));
-      if (! bar)
-      {
-        bar = new Message;
-        _bars.insert(keys.at(loop), bar);
-      }
+      Entity dwBar = _bars.value(keys.at(loop));
 
-      switch ((CurveType::Type) ct.stringToType(d->toData(CurveData::_TYPE)->toString()))
+      switch ((CurveType::Type) ct.stringToType(curveType.toString()))
       {
         case CurveType::_OHLC:
         {
-          _headers.insert(tr("Open"), tr("Open"));
-          _headers.insert(tr("High"), tr("High"));
-          _headers.insert(tr("Low"), tr("Low"));
-          _headers.insert(tr("Close"), tr("Close"));
+          _headers.set(tr("Open"), Data(tr("Open")));
+          _headers.set(tr("High"), Data(tr("High")));
+          _headers.set(tr("Low"), Data(tr("Low")));
+          _headers.set(tr("Close"), Data(tr("Close")));
 
           QString s;
-          strip.strip(cb->toData(CurveBar::_OPEN)->toDouble(), 4, s);
-          bar->insert(tr("Open"), s);
+	  Data td;
+	  cbar.toData(cbkeys.indexToString(CurveBarKey::_OPEN), td);
+          strip.strip(td.toDouble(), 4, s);
+          dwBar.set(tr("Open"), Data(s));
 
-          strip.strip(cb->toData(CurveBar::_HIGH)->toDouble(), 4, s);
-          bar->insert(tr("High"), s);
+	  cbar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td);
+          strip.strip(td.toDouble(), 4, s);
+          dwBar.set(tr("High"), Data(s));
 
-          strip.strip(cb->toData(CurveBar::_LOW)->toDouble(), 4, s);
-          bar->insert(tr("Low"), s);
+	  cbar.toData(cbkeys.indexToString(CurveBarKey::_LOW), td);
+          strip.strip(td.toDouble(), 4, s);
+          dwBar.set(tr("Low"), Data(s));
 
-          strip.strip(cb->toData(CurveBar::_CLOSE)->toDouble(), 4, s);
-          bar->insert(tr("Close"), s);
+	  cbar.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), td);
+          strip.strip(td.toDouble(), 4, s);
+          dwBar.set(tr("Close"), Data(s));
           break;
         }
         case CurveType::_HISTOGRAM:
         {
-          _headers.insert(d->toData(CurveData::_LABEL)->toString(), d->toData(CurveData::_LABEL)->toString());
+	  Data label;
+	  settings.toData(cdkeys.indexToString(CurveDataKey::_LABEL), label);
+          _headers.set(label.toString(), label);
 
           QString s;
-          strip.strip(cb->toData(CurveBar::_HIGH)->toDouble(), 4, s);
-          bar->insert(d->toData(CurveData::_LABEL)->toString(), s);
+	  Data td;
+	  cbar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td);
+          strip.strip(td.toDouble(), 4, s);
+          dwBar.set(label.toString(), Data(s));
           break;
         }
         default:
         {
-          _headers.insert(d->toData(CurveData::_LABEL)->toString(), d->toData(CurveData::_LABEL)->toString());
+	  Data label;
+	  settings.toData(cdkeys.indexToString(CurveDataKey::_LABEL), label);
+          _headers.set(label.toString(), label);
 
           QString s;
-          strip.strip(cb->toData(CurveBar::_VALUE)->toDouble(), 4, s);
-          bar->insert(d->toData(CurveData::_LABEL)->toString(), s);
+	  Data td;
+	  cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+          strip.strip(td.toDouble(), 4, s);
+          dwBar.set(label.toString(), Data(s));
           break;
         }
       }
+      
+      _bars.insert(keys.at(loop), dwBar);
     }
   }
 }
 
 void DataWindow::scrollToBottom ()
 {
-  QList<QString> hkeys = _headers.keys();
+  QList<QString> hkeys = _headers.dkeys();
   qSort(hkeys);
   hkeys.removeAll("Date");
   hkeys.prepend("Date");
@@ -158,26 +171,49 @@ void DataWindow::scrollToBottom ()
     _table->setHorizontalHeaderItem(_table->columnCount() - 1, item);
   }
 
-  QList<int> keys = _bars.keys();
-  qSort(keys);
+  ScriptVerifyCurveKeys svck;
+  QList<QString> tkeys = _bars.keys();
+  QList<QString> keys;
+  svck.sortKeys(tkeys, keys);
 
-  _table->setRowCount(keys.count());
+  _table->setRowCount(keys.size());
 
-  for (loop = 0; loop < keys.count(); loop++)
+  for (loop = 0; loop < keys.size(); loop++)
   {
-     Message *bar = _bars.value(keys.at(loop));
+    Entity bar = _bars.value(keys.at(loop));
 
-     int loop2 = 0;
-     for (; loop2 < hkeys.count(); loop2++)
-     {
-        QTableWidgetItem *item = new QTableWidgetItem(bar->value(hkeys.at(loop2)));
-        _table->setItem(keys.at(loop), loop2, item);
-     }
+    int loop2 = 0;
+    for (; loop2 < hkeys.size(); loop2++)
+    {
+      Data td;
+      bar.toData(hkeys.at(loop2), td);
+       
+      QTableWidgetItem *item = new QTableWidgetItem(td.toString());
+      _table->setItem(keys.at(loop).toInt(), loop2, item);
+    }
   }
 
-  qDeleteAll(_bars);
   _bars.clear();
 
   _table->scrollToBottom();
   _table->resizeColumnsToContents();
+}
+
+void DataWindow::setDates (Plot *p)
+{
+  if (_dateFlag)
+    return;
+  
+  QList<QDateTime> dates;
+  p->dates(dates);
+  
+  int loop = 0;
+  for (; loop < dates.size(); loop++)
+  {
+    Entity bar;
+    bar.set(QString("Date"), dates.at(loop));
+    _bars.insert(QString::number(loop), bar);
+  }
+    
+  _dateFlag++;
 }

@@ -29,7 +29,7 @@ class ChartObjectVLine : public ChartObject
   public:
     ChartObjectVLine ();
     void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
-    int info (Message &);
+    int info (Entity &);
     void move (QPoint);
     int create ();
 };

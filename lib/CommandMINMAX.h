@@ -26,20 +26,9 @@
 
 class CommandMINMAX : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypePeriod,
-      _ParmTypeMethod
-    };
-
-    CommandMINMAX (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getMINMAX (Data *, int, int);
+    CommandMINMAX ();
+    QString run (CommandParse &, void *);
 
   protected:
     QStringList _method;

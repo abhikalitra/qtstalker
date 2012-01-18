@@ -21,119 +21,134 @@
 
 #include "CommandAveragePrice.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataString.h"
-#include "DataInteger.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
+#include "CurveBar.h"
+#include "CurveBarKey.h"
 
 #include <QtDebug>
 
-CommandAveragePrice::CommandAveragePrice (QObject *p) : Command (p)
+CommandAveragePrice::CommandAveragePrice ()
 {
   _name = "AVERAGE_PRICE";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeOpen, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("open"));
+  td.setLabel(QObject::tr("Input Open"));
+  Entity::set(QString("OPEN"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input Close"));
+  Entity::set(QString("CLOSE"), td);
 }
 
-void CommandAveragePrice::runScript (CommandParse sg, Script *script)
+QString CommandAveragePrice::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandAveragePrice::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("OPEN"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *iopen = svc.toCurve(script, _values.value(_ParmTypeOpen)->toString(), toffset);
-  if (! iopen)
+  Entity iopen;
+  if (svc.curve(script, td.toString(), iopen))
   {
-    Command::error("CommandAveragePrice::runScript: invalid Open");
-    return;
+    qDebug() << "CommandAveragePrice::run: invalid OPEN" << td.toString();
+    return _returnCode;
+  }
+  
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
+  {
+    qDebug() << "CommandAveragePrice::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandAveragePrice::runScript: invalid High");
-    return;
+    qDebug() << "CommandAveragePrice::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity iclose;
+  if (svc.curve(script, td.toString(), iclose))
   {
-    Command::error("CommandAveragePrice::runScript: invalid Low");
-    return;
+    qDebug() << "CommandAveragePrice::run: invalid CLOSE" << td.toString();
+    return _returnCode;
   }
 
-  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
-  if (! iclose)
+  CurveData line;
+  if (getAP(iopen, ihigh, ilow, iclose, line))
   {
-    Command::error("CommandAveragePrice::runScript: invalid Close");
-    return;
+    qDebug() << "CommandAveragePrice::run: getAP error";
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << iopen << ihigh << ilow << iclose;
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Data *line = getAP(list);
-  if (! line)
-  {
-    Command::error("CommandAveragePrice::runScript: getAveragePrice error");
-    return;
-  }
-
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
-
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandAveragePrice::getAP (QList<Data *> &list)
+int CommandAveragePrice::getAP (Entity &iopen, Entity &ihigh, Entity &ilow, Entity &iclose, Entity &line)
 {
-  if (list.count() != 4)
-    return 0;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys4(iopen, ihigh, ilow, iclose, keys))
+    return 1;
 
-  Data *line = new CurveData;
+  CurveBarKey cbkeys;
   int loop = 0;
-  Data *iopen = list.at(loop++);
-  Data *ihigh = list.at(loop++);
-  Data *ilow = list.at(loop++);
-  Data *iclose = list.at(loop++);
-  for (loop = 0; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *obar = iopen->toData(keys.at(loop));
-    if (! obar)
+    Entity obar;
+    if (iopen.toEntity(keys.at(loop), obar))
+      continue;
+    Data open;
+    if (obar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), open))
       continue;
 
-    Data *hbar = ihigh->toData(keys.at(loop));
-    if (! hbar)
+    Entity hbar;
+    if (ihigh.toEntity(keys.at(loop), hbar))
+      continue;
+    Data high;
+    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), high))
       continue;
 
-    Data *lbar = ilow->toData(keys.at(loop));
-    if (! lbar)
+    Entity lbar;
+    if (ilow.toEntity(keys.at(loop), lbar))
+      continue;
+    Data low;
+    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), low))
       continue;
 
-    Data *cbar = iclose->toData(keys.at(loop));
-    if (! cbar)
+    Entity cbar;
+    if (iclose.toEntity(keys.at(loop), cbar))
+      continue;
+    Data close;
+    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), close))
       continue;
 
-    double t = (obar->toData(CurveBar::_VALUE)->toDouble() + hbar->toData(CurveBar::_VALUE)->toDouble()
-                + lbar->toData(CurveBar::_VALUE)->toDouble() + cbar->toData(CurveBar::_VALUE)->toDouble()) / 4.0;
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(t));
-    line->set(keys.at(loop), b);
+    double t = (open.toDouble() + high.toDouble() + low.toDouble() + close.toDouble()) / 4.0;
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    line.setEntity(keys.at(loop), b);
   }
 
-  return line;
+  return 0;
 }

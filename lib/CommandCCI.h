@@ -26,21 +26,9 @@
 
 class CommandCCI : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose,
-      _ParmTypePeriod
-    };
-
-    CommandCCI (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getCCI (QList<Data *> &, int period);
+    CommandCCI ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

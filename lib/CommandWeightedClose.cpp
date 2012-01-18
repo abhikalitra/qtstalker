@@ -22,106 +22,116 @@
 #include "CommandWeightedClose.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataString.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
-CommandWeightedClose::CommandWeightedClose (QObject *p) : Command (p)
+CommandWeightedClose::CommandWeightedClose ()
 {
-  _name = "AVERAGE_PRICE";
+  _name = "WEIGHTED_CLOSE";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input Close"));
+  Entity::set(QString("CLOSE"), td);
 }
 
-void CommandWeightedClose::runScript (CommandParse sg, Script *script)
+QString CommandWeightedClose::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandWeightedClose::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandWeightedClose::runScript: invalid High");
-    return;
+    qDebug() << "CommandWeightedClose::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandWeightedClose::runScript: invalid Low");
-    return;
+    qDebug() << "CommandWeightedClose::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
-  if (! iclose)
+  Entity::toData(QString("CLOSE"), td);
+  Entity iclose;
+  if (svc.curve(script, td.toString(), iclose))
   {
-    Command::error("CommandWeightedClose::runScript: invalid Close");
-    return;
+    qDebug() << "CommandWeightedClose::run: invalid CLOSE" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow << iclose;
-
-  Data *line = getWC(list);
-  if (! line)
+  CurveData line;
+  if (getWC(ihigh, ilow, iclose, line))
   {
-    Command::error("CommandWeightedClose::runScript: getWC error");
-    return;
+    qDebug() << "CommandWeightedClose::runScript: getWC error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandWeightedClose::getWC (QList<Data *> &list)
+int CommandWeightedClose::getWC (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &line)
 {
-  if (list.count() != 3)
-    return 0;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys3(ihigh, ilow, iclose, keys))
+    return 1;
 
-  Data *line = new CurveData;
+  CurveBarKey cbkeys;
   int loop = 0;
-  Data *ihigh = list.at(loop++);
-  Data *ilow = list.at(loop++);
-  Data *iclose = list.at(loop++);
-  for (loop = 0; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *hbar = ihigh->toData(keys.at(loop));
-    if (! hbar)
+    Entity hbar;
+    if (ihigh.toEntity(keys.at(loop), hbar))
+      continue;
+    Data high;
+    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), high))
+      continue;
+    
+    Entity lbar;
+    if (ilow.toEntity(keys.at(loop), lbar))
+      continue;
+    Data low;
+    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), low))
       continue;
 
-    Data *lbar = ilow->toData(keys.at(loop));
-    if (! lbar)
+    Entity cbar;
+    if (iclose.toEntity(keys.at(loop), cbar))
+      continue;
+    Data close;
+    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), close))
       continue;
 
-    Data *cbar = iclose->toData(keys.at(loop));
-    if (! cbar)
-      continue;
+    double t = (high.toDouble() + low.toDouble() + (close.toDouble() * 2)) / 4.0;
 
-    double t = (hbar->toData(CurveBar::_VALUE)->toDouble()
-                + lbar->toData(CurveBar::_VALUE)->toDouble()
-                + (cbar->toData(CurveBar::_VALUE)->toDouble() * 2)) / 4.0;
-
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(t));
-    line->set(keys.at(loop), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    line.setEntity(keys.at(loop), b);
   }
 
-  return line;
+  return 0;
 }

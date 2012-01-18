@@ -21,7 +21,9 @@
 
 #include "CurveHistogram.h"
 #include "CurveData.h"
+#include "CurveDataKey.h"
 #include "CurveBar.h"
+#include "CurveBarKey.h"
 #include "Strip.h"
 
 #include <qwt_plot.h>
@@ -43,108 +45,103 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
 
 //  int zero = yMap.transform(0);
 
-  if (_settings->toData(CurveData::_STYLE)->toString() == "Histogram")
+  CurveDataKey cdkeys;
+  CurveBarKey cbkeys;
+  Data style;
+  _settings.toData(cdkeys.indexToString(CurveDataKey::_STYLE), style);
+  if (style.toString() == "Histogram")
   {
     for (; loop < size; loop++)
     {
-      Data *yb = _settings->toData(loop - 1);
-      if (! yb)
+      Entity yb;
+      if (_settings.toEntity(QString::number(loop - 1), yb))
         continue;
 
-      Data *b = _settings->toData(loop);
-      if (! b)
+      Entity b;
+      if (_settings.toEntity(QString::number(loop), b))
         continue;
 
       QPolygon poly;
 
       // bottom left
+      Data td;
+      if (yb.toData(cbkeys.indexToString(CurveBarKey::_LOW), td))
+	continue;
       int x = xMap.transform(loop - 1);
-      int y = yMap.transform(yb->toData(CurveBar::_LOW)->toDouble());
+      int y = yMap.transform(td.toDouble());
       poly << QPoint(x, y);
 
       // top left
-      y = yMap.transform(yb->toData(CurveBar::_HIGH)->toDouble());
+      if (yb.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td))
+	continue;
+      y = yMap.transform(td.toDouble());
       poly << QPoint(x, y);
 
       // top right
+      if (b.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td))
+	continue;
       x = xMap.transform(loop);
-      y = yMap.transform(b->toData(CurveBar::_HIGH)->toDouble());
+      y = yMap.transform(td.toDouble());
       poly << QPoint(x, y);
 
       // bottom right
-      y = yMap.transform(b->toData(CurveBar::_LOW)->toDouble());
+      if (b.toData(cbkeys.indexToString(CurveBarKey::_LOW), td))
+	continue;
+      y = yMap.transform(td.toDouble());
       poly << QPoint(x, y);
 
-      painter->setBrush(b->toData(CurveBar::_COLOR)->toColor());
+      if (b.toData(cbkeys.indexToString(CurveBarKey::_COLOR), td))
+	continue;
+      painter->setBrush(td.toColor());
       painter->drawPolygon(poly, Qt::OddEvenFill);
     }
-
-/*
-    QPolygon poly;
-    int flag = 0;
-    int x = 0;
-    int width = 0;
-    for (; loop < size; loop++)
-    {
-      Data *b = _settings->toData(loop);
-      if (! b)
-        continue;
-
-      x = xMap.transform(loop);
-      int zero = yMap.transform(b->getDouble(CurveBar::_LOW));
-      int y = yMap.transform(b->getDouble(CurveBar::_HIGH));
-      width = xMap.transform(loop + 1) - x;
-
-      if (! flag)
-      {
-        poly << QPoint(x, zero) << QPoint(x, y);
-        flag++;
-      }
-
-      poly << QPoint(x + width, y);
-
-      painter->setBrush(b->getColor(CurveBar::_COLOR));
-    }
-
-//    poly << QPoint(x + width, zero);
-
-    painter->drawPolygon(poly, Qt::OddEvenFill);
-*/
   }
   else
   {
     // histogram bar
     for (; loop < size; loop++)
     {
-      Data *b = _settings->toData(loop);
-      if (! b)
+      Entity b;
+      if (_settings.toEntity(QString::number(loop), b))
         continue;
 
-      if (b->toData(CurveBar::_LOW)->toDouble() > b->toData(CurveBar::_HIGH)->toDouble())
+      Data high;
+      if (b.toData(cbkeys.indexToString(CurveBarKey::_HIGH), high))
+        continue;
+      
+      Data low;
+      if (b.toData(cbkeys.indexToString(CurveBarKey::_LOW), low))
+        continue;
+      
+      if (low.toDouble() > high.toDouble())
       {
         QPolygon poly;
 
         // bottom left
         int x = xMap.transform(loop);
-        int y = yMap.transform(b->toData(CurveBar::_HIGH)->toDouble());
+        int y = yMap.transform(high.toDouble());
         poly << QPoint(x, y);
 
         // top left
-        y = yMap.transform(b->toData(CurveBar::_LOW)->toDouble());
+        y = yMap.transform(low.toDouble());
         poly << QPoint(x, y);
 
         int width = xMap.transform(loop + 1) - x;
 
         // top right
         x += width;
-        y = yMap.transform(b->toData(CurveBar::_LOW)->toDouble());
+        y = yMap.transform(low.toDouble());
         poly << QPoint(x, y);
 
         // bottom right
-        y = yMap.transform(b->toData(CurveBar::_HIGH)->toDouble());
+        y = yMap.transform(high.toDouble());
         poly << QPoint(x, y);
 
-        painter->setBrush(b->toData(CurveBar::_COLOR)->toColor());
+        Data color;
+        if (b.toData(cbkeys.indexToString(CurveBarKey::_COLOR), color))
+          continue;
+	
+        painter->setBrush(color.toColor());
         painter->drawPolygon(poly, Qt::OddEvenFill);
       }
       else
@@ -153,54 +150,75 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
 
         // bottom left
         int x = xMap.transform(loop);
-        int y = yMap.transform(b->toData(CurveBar::_LOW)->toDouble());
+        int y = yMap.transform(low.toDouble());
         poly << QPoint(x, y);
 
         // top left
-        y = yMap.transform(b->toData(CurveBar::_HIGH)->toDouble());
+        y = yMap.transform(high.toDouble());
         poly << QPoint(x, y);
 
         int width = xMap.transform(loop + 1) - x;
 
         // top right
         x += width;
-        y = yMap.transform(b->toData(CurveBar::_HIGH)->toDouble());
+        y = yMap.transform(high.toDouble());
         poly << QPoint(x, y);
 
         // bottom right
-        y = yMap.transform(b->toData(CurveBar::_LOW)->toDouble());
+        y = yMap.transform(low.toDouble());
         poly << QPoint(x, y);
 
-        painter->setBrush(b->toData(CurveBar::_COLOR)->toColor());
+        Data color;
+        if (b.toData(cbkeys.indexToString(CurveBarKey::_COLOR), color))
+          continue;
+	
+        painter->setBrush(color.toColor());
         painter->drawPolygon(poly, Qt::OddEvenFill);
       }
     }
   }
 }
 
-int CurveHistogram::info (int index, Message *data)
+int CurveHistogram::info (int index, Entity &data)
 {
-  Data *b = _settings->toData(index);
-  if (! b)
+  Entity bar;
+  if (_settings.toEntity(QString::number(index), bar))
     return 1;
 
+  CurveBarKey cbkeys;
+  Data high;
+  if (bar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), high))
+    return 1;
+
+  CurveDataKey cdkeys;
+  Data label;
+  if (_settings.toData(cdkeys.indexToString(CurveDataKey::_LABEL), label))
+    return 1;
+  
   Strip strip;
   QString s;
-  strip.strip(b->toData(CurveBar::_HIGH)->toDouble(), 4, s);
+  strip.strip(high.toDouble(), 4, s);
 
-  data->insert(_settings->toData(CurveData::_LABEL)->toString(), s);
+  data.set(label.toString(), Data(s));
 
   return 0;
 }
 
 int CurveHistogram::scalePoint (int i, QColor &color, double &v)
 {
-  Data *bar = _settings->toData(i);
-  if (! bar)
+  Entity bar;
+  if (_settings.toEntity(QString::number(i), bar))
     return 1;
 
-  color = bar->toData(CurveBar::_COLOR)->toColor();
-  v = bar->toData(CurveBar::_HIGH)->toDouble();
+  CurveBarKey cbkeys;
+  Data td;
+  if (bar.toData(cbkeys.indexToString(CurveBarKey::_COLOR), td))
+    return 1;
+  color = td.toColor();
+  
+  if (bar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td))
+    return 1;
+  v = td.toDouble();
 
   return 0;
 }

@@ -31,8 +31,7 @@
 #include <QHash>
 #include <qwt_scale_draw.h>
 
-#include "Message.h"
-#include "Data.h"
+#include "Entity.h"
 
 class DateScaleDraw : public QwtScaleDraw
 {
@@ -40,12 +39,12 @@ class DateScaleDraw : public QwtScaleDraw
     DateScaleDraw ();
     void clear ();
     void setDates ();
-    void setDates (Data *);
+    void setDates (Entity &);
     int count ();
     virtual QwtText label (double) const;
     void date (int, QDateTime &);
     int x (QDateTime d);
-    void info (int index, Message &);
+    void info (int index, Entity &);
     QList<QDateTime> & dates ();
     virtual void draw (QPainter *, const QPalette &) const;
 

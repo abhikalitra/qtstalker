@@ -21,6 +21,7 @@
 
 #include "SymbolDialog.h"
 #include "QuoteDataBase.h"
+#include "SymbolKey.h"
 
 #include "../pics/search.xpm"
 #include "../pics/select_all.xpm"
@@ -220,12 +221,18 @@ void SymbolDialog::deleteButtonPressed ()
 
 void SymbolDialog::searchButtonPressed ()
 {
-  Symbol symbol;
-  symbol.setExchange(_exchanges->currentText());
+  QStringList tl;
+  tl << _exchanges->currentText();
+  
   QString s = _search->text();
   if (s.isEmpty())
-    s = "*";
-  symbol.setSymbol(s);
+    tl << "*";
+  else
+    tl << s;
+
+  SymbolKey keys;
+  Symbol symbol;
+  symbol.set(keys.indexToString(SymbolKey::_SYMBOL), Data(tl.join(":")));
 
   QuoteDataBase db;
   QList<Symbol> l;
@@ -234,12 +241,17 @@ void SymbolDialog::searchButtonPressed ()
   _searchList->clear();
 
   int loop = 0;
-  for (; loop < l.count(); loop++)
+  for (; loop < l.size(); loop++)
   {
     Symbol bd = l.at(loop);
     QTreeWidgetItem *item = new QTreeWidgetItem(_searchList);
-    item->setText(0, bd.exchange() + ":" + bd.symbol());
-    item->setText(1, bd.name());
+    
+    Data td;
+    bd.toData(keys.indexToString(SymbolKey::_SYMBOL), td);
+    item->setText(0, td.toString());
+    
+    bd.toData(keys.indexToString(SymbolKey::_NAME), td);
+    item->setText(1, td.toString());
   }
 
   for (loop = 0; loop < _searchList->columnCount(); loop++)

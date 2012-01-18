@@ -21,117 +21,98 @@
 
 #include "CommandPlotHistogram.h"
 #include "CurveData.h"
-#include "CurveBar.h"
+#include "CurveDataKey.h"
+#include "CurveBarKey.h"
 #include "HistogramStyle.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataDouble.h"
-#include "DataColor.h"
-#include "DataFactory.h"
-#include "DataList.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 #include "ScriptVerifyCurveValue.h"
+#include "Script.h"
 
 #include <QtDebug>
 
-CommandPlotHistogram::CommandPlotHistogram (QObject *p) : Command (p)
+CommandPlotHistogram::CommandPlotHistogram ()
 {
   _name = "PLOT_HISTOGRAM";
-  _type = _WAIT;
 
-  _values.insert(_ParmTypeName, new DataString());
-  _values.insert(_ParmTypeChart, new DataString());
-  _values.insert(_ParmTypeLabel, new DataString());
-
-  DataList *dl = new DataList("Histogram Bar");
-  HistogramStyle ls;
-  QStringList tl = ls.list();
-  dl->set(tl);
-  _values.insert(_ParmTypeStyle, dl);
-
-  _values.insert(_ParmTypeColor, new DataColor(QColor(Qt::red)));
-  _values.insert(_ParmTypeZ, new DataInteger(0));
-  _values.insert(_ParmTypePen, new DataInteger(1));
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
+  Entity::set(QString("OUTPUT"), Data(QString("histogram")));
+  Entity::set(QString("CHART"), Data(QString("chart")));
+  Entity::set(QString("LABEL"), Data(QString("histogram")));
+  Entity::set(QString("COLOR"), Data(QColor(Qt::red)));
+  Entity::set(QString("Z"), Data(0));
+  Entity::set(QString("PEN"), Data(1));
+  Entity::set(QString("HIGH"), Data(QString("high")));
+  Entity::set(QString("LOW"), Data(QString("low")));
+  
+  HistogramStyle st;
+  Data td(st.list(), QString("Histogram Bar"));
+  Entity::set(QString("STYLE"), td);
 }
 
-void CommandPlotHistogram::runScript (CommandParse sg, Script *script)
+QString CommandPlotHistogram::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandPlotHistogram::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  QString s = _values.value(_ParmTypeHigh)->toString();
-  Data *ihigh = svc.toCurve(script, s, toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    DataFactory dfac;
-    ihigh = dfac.data(DataFactory::_DOUBLE);
-    if (! ihigh)
+    if (svc.entity(td.toString(), ihigh))
     {
-      Command::error("CommandPlotHistogram::runScript: error creating DataDouble High");
-      return;
-    }
-
-    Command::setTData(ihigh);
-
-    if (ihigh->set(s))
-    {
-      Command::error("CommandPlotHistogram::runScript: invalid High");
-      return;
+      qDebug() << "CommandPlotHistogram::run: invalid High";
+      return _returnCode;
     }
   }
 
-  s = _values.value(_ParmTypeLow)->toString();
-  Data *ilow = svc.toCurve(script, s, toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    DataFactory dfac;
-    ilow = dfac.data(DataFactory::_DOUBLE);
-    if (! ilow)
+    if (svc.entity(td.toString(), ilow))
     {
-      Command::error("CommandPlotHistogram::runScript: error creating DataDouble Low");
-      return;
-    }
-
-    Command::setTData(ilow);
-
-    if (ilow->set(s))
-    {
-      Command::error("CommandPlotHistogram::runScript: invalid Low");
-      return;
+      qDebug() << "CommandPlotHistogram::run: invalid Low";
+      return _returnCode;
     }
   }
 
   // keys
-  QList<Data *> list;
-  list << ihigh << ilow;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
+  if (svck.keys2(ihigh, ilow, keys))
   {
-    Command::error("CommandPlotHistogram::runScript: invalid keys");
-    return;
+    qDebug() << "CommandPlotHistogram::run: invalid keys";
+    return _returnCode;
   }
+  
+  CurveDataKey cdkeys;
+  CurveData line;
+  line.set(cdkeys.indexToString(CurveDataKey::_TYPE), Data(QString("Histogram")));
+  
+  Entity::toData(QString("Z"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_Z), td);
+  
+  Entity::toData(QString("PEN"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_PEN), td);
+  
+  Entity::toData(QString("LABEL"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_LABEL), td);
+  
+  Entity::toData(QString("CHART"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_CHART), td);
+  
+  Entity::toData(QString("STYLE"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_STYLE), td);
 
-  Data *line = new CurveData;
-  line->set(CurveData::_TYPE, new DataString(QString("Histogram")));
-  line->set(CurveData::_Z, new DataInteger(_values.value(_ParmTypeZ)->toInteger()));
-  line->set(CurveData::_PEN, new DataInteger(_values.value(_ParmTypePen)->toInteger()));
-  line->set(CurveData::_LABEL, new DataString(_values.value(_ParmTypeLabel)->toString()));
-  line->set(CurveData::_CHART, new DataString(_values.value(_ParmTypeChart)->toString()));
-  line->set(CurveData::_STYLE, new DataString(_values.value(_ParmTypeStyle)->toString()));
-
+  Data color;
+  Entity::toData(QString("COLOR"), color);
+  
+  CurveBarKey cbkeys;
   ScriptVerifyCurveValue svcv;
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
     double v = 0;
     if (svcv.getValue(ihigh, keys, loop, 0, v))
@@ -141,14 +122,17 @@ void CommandPlotHistogram::runScript (CommandParse sg, Script *script)
     if (svcv.getValue(ilow, keys, loop, 0, v2))
       continue;
 
-    Data *bar = new CurveBar;
-    bar->set(CurveBar::_HIGH, new DataDouble(v));
-    bar->set(CurveBar::_LOW, new DataDouble(v2));
-    bar->set(CurveBar::_COLOR, new DataColor(_values.value(_ParmTypeColor)->toColor()));
-    line->set(keys.at(loop), bar);
+    Entity bar;
+    bar.set(cbkeys.indexToString(CurveBarKey::_HIGH), Data(v));
+    bar.set(cbkeys.indexToString(CurveBarKey::_LOW), Data(v2));
+    bar.set(cbkeys.indexToString(CurveBarKey::_COLOR), color);
+    
+    line.setEntity(keys.at(loop), bar);
   }
 
-  script->setData(_values.value(_ParmTypeName)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }

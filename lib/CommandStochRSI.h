@@ -26,19 +26,9 @@
 
 class CommandStochRSI : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypePeriod
-    };
-
-    CommandStochRSI (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getSR (QList<Data *> &, int);
+    CommandStochRSI ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

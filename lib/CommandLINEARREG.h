@@ -26,29 +26,9 @@
 
 class CommandLINEARREG : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypePeriod,
-      _ParmTypeMethod
-    };
-
-    enum Method
-    {
-      _LINEARREG,
-      _ANGLE,
-      _INTERCEPT,
-      _SLOPE,
-      _TSF
-    };
-
-    CommandLINEARREG (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getLR (QList<Data *> &, int, int);
+    CommandLINEARREG ();
+    QString run (CommandParse &, void *);
 
   protected:
     QStringList _method;

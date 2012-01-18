@@ -26,21 +26,9 @@
 
 class CommandMAMA : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeMAMA,
-      _ParmTypeFAMA,
-      _ParmTypeInput,
-      _ParmTypeLimitFast,
-      _ParmTypeLimitSlow
-    };
-
-    CommandMAMA (QObject *);
-    void runScript (CommandParse, Script *);
-    QList<Data *> getMAMA (QList<Data *> &, double fast, double slow);
+    CommandMAMA ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

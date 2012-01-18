@@ -22,7 +22,7 @@
 #ifndef SCRIPT_VERIFY_CURVE_VALUE_HPP
 #define SCRIPT_VERIFY_CURVE_VALUE_HPP
 
-#include "Data.h"
+#include "Entity.h"
 
 #include <QList>
 
@@ -30,8 +30,8 @@ class ScriptVerifyCurveValue
 {
   public:
     ScriptVerifyCurveValue ();
-    int getValue (Data *in, QList<int> &keys, int index, int offset, double &v);
-    int setValue (Data *out, Data *out2, Data *bar, int pos);
+    int getValue (Entity &in, QList<QString> &keys, int index, int offset, double &v);
+    int setValue (Entity &out, Entity &bar, QString pos);
 };
 
 #endif

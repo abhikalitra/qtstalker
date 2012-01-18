@@ -36,6 +36,7 @@
 #include "GlobalSymbol.h"
 #include "DockWidget.h"
 #include "ChartLoad.h"
+#include "SymbolKey.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -64,6 +65,7 @@ QtstalkerApp::QtstalkerApp (QString session, QString asset)
 
   QTimer::singleShot(100, this, SLOT(afterStartup()));
 }
+
 
 void QtstalkerApp::shutDown ()
 {
@@ -179,11 +181,10 @@ void QtstalkerApp::save()
   settings.setValue("main_window_size", size());
   settings.setValue("main_window_position", pos());
 
-  if (g_currentSymbol)
-  {
-    QString s = g_currentSymbol->exchange() + ":" + g_currentSymbol->symbol();
-    settings.setValue("current_symbol", s);
-  }
+  SymbolKey keys;
+  Data td;
+  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), td);
+  settings.setValue("current_symbol", td.toString());
 
   settings.sync();
 }
@@ -220,7 +221,6 @@ void QtstalkerApp::commandLineAsset ()
   cl->run();
 }
 
-/*
 void QtstalkerApp::fixDockTabs ()
 {
   // we have to expose the non-visible docked tabs before we can draw plots
@@ -244,7 +244,6 @@ void QtstalkerApp::fixDockTabs ()
     tabBar->setCurrentIndex(currentIndex);
   }
 }
-*/
 
 void QtstalkerApp::afterStartup ()
 {

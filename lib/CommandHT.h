@@ -26,27 +26,9 @@
 
 class CommandHT : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypeMethod
-    };
-
-    enum Method
-    {
-      _DCPERIOD,
-      _DCPHASE,
-      _TRENDLINE,
-      _TRENDMODE
-    };
-
-    CommandHT (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getHT (QList<Data *> &, int);
+    CommandHT ();
+    QString run (CommandParse &, void *);
 
   protected:
     QStringList _method;

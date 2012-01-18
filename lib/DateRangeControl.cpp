@@ -25,6 +25,7 @@
 #include "GlobalSymbol.h"
 #include "DateRange.h"
 #include "ChartLoad.h"
+#include "SymbolKey.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -92,11 +93,13 @@ void DateRangeControl::rangeChanged (QAction *d)
 
   setText(_shortList.at(_dateRange));
 
-  // reload chart
-  if (! g_currentSymbol)
+  SymbolKey keys;
+  Data symbol;
+  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), symbol);
+  if (symbol.toString().isEmpty())
     return;
 
-  ChartLoad *cl = new ChartLoad(this, g_currentSymbol->symbolFull());
+  ChartLoad *cl = new ChartLoad(this, symbol.toString());
   cl->run();
 
 //  emit signalDateRangeChanged();

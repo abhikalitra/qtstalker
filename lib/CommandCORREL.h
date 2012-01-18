@@ -26,21 +26,10 @@
 
 class CommandCORREL : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypeIndex,
-      _ParmTypePeriod
-    };
-
-    CommandCORREL (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getCORREL (QList<Data *> &, int period);
-    Data * getIndex (QString, Script *);
+    CommandCORREL ();
+    QString run (CommandParse &, void *);
+    int getIndex (QString, Entity &line);
 };
 
 #endif

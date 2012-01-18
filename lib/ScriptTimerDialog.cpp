@@ -20,8 +20,9 @@
  */
 
 #include "ScriptTimerDialog.h"
-#include "ScriptDataBase.h"
+#include "EAVDataBase.h"
 #include "Global.h"
+#include "ScriptDataBaseKey.h"
 
 #include <QtDebug>
 
@@ -77,9 +78,22 @@ void ScriptTimerDialog::done ()
     return;
   }
 
-  ScriptDataBase db;
+  EAVDataBase db("scripts");
   db.transaction();
-  db.save(_name, file, startup, interval, _command->text());
+
+  ScriptDataBaseKey skeys;
+  Entity data;
+  data.setName(_name);
+  data.set(skeys.indexToString(ScriptDataBaseKey::_FILE), Data(file));
+  data.set(skeys.indexToString(ScriptDataBaseKey::_STARTUP), Data(_startup->isChecked()));
+  data.set(skeys.indexToString(ScriptDataBaseKey::_RUN_INTERVAL), Data(_interval->value()));
+  data.set(skeys.indexToString(ScriptDataBaseKey::_COMMAND), Data(_command->text()));
+  if (db.set(&data))
+  {
+    qDebug() << "ScriptTimerDialog::done: error saving timer" << _name;
+    return;
+  }
+
   db.commit();
 
   saveSettings();
@@ -91,21 +105,28 @@ void ScriptTimerDialog::done ()
 
 void ScriptTimerDialog::setGUI ()
 {
-  ScriptDataBase db;
-  QString file, startup, interval, command;
-  if (db.load(_name, file, startup, interval, command))
+  EAVDataBase db("scripts");
+  Entity data;
+  data.setName(_name);
+  if (db.get(&data))
+  {
+    qDebug() << "ScriptTimerDialog::setGUI: error loading timer" << _name;
     return;
+  }
 
-  bool b = FALSE;
-  if (startup.toInt() > 0)
-    b = TRUE;
-  _startup->setChecked(b);
+  ScriptDataBaseKey skeys;
+  Data td;
+  data.toData(skeys.indexToString(ScriptDataBaseKey::_STARTUP), td);
+  _startup->setChecked(td.toBool());
 
-  _interval->setValue(interval.toInt());
+  data.toData(skeys.indexToString(ScriptDataBaseKey::_RUN_INTERVAL), td);
+  _interval->setValue(td.toInteger());
 
   QStringList l;
-  l << file;
+  data.toData(skeys.indexToString(ScriptDataBaseKey::_FILE), td);
+  l << td.toString();
   _file->setFiles(l);
 
-  _command->setText(command);
+  data.toData(skeys.indexToString(ScriptDataBaseKey::_COMMAND), td);
+  _command->setText(td.toString());
 }

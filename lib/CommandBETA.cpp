@@ -20,178 +20,134 @@
  */
 
 #include "CommandBETA.h"
-#include "ta_libc.h"
+#include "Symbol.h"
+#include "SymbolKey.h"
+#include "QuoteDataBase.h"
+#include "ScriptVerifyCurve.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "Symbol.h"
-#include "QuoteDataBase.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataDouble.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataSymbol.h"
-#include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "CurveBarKey.h"
+#include "GlobalSymbol.h"
 
 #include <QtDebug>
 
-CommandBETA::CommandBETA (QObject *p) : Command (p)
+CommandBETA::CommandBETA ()
 {
   _name = "BETA";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
 
-  QStringList tl;
-  tl << "YAHOO:^GSP500";
-  _values.insert(_ParmTypeIndex, new DataSymbol(tl));
+  td = Data(QString("YAHOO:^GSP500"));
+  td.setLabel(QObject::tr("Index Symbol"));
+  Entity::set(QString("INDEX"), td);
 
-  _values.insert(_ParmTypePeriod, new DataInteger(10));
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandBETA::CommandBETA: error on TA_Initialize");
+  td = Data(10);
+  td.setLabel(QObject::tr("Period"));
+  Entity::set(QString("PERIOD"), td);
 }
 
-void CommandBETA::runScript (CommandParse sg, Script *script)
+QString CommandBETA::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandBETA::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandBETA::runScript: invalid Input");
-    return;
+    qDebug() << "CommandBETA::run: invalid INPUT" << td.toString();
+    return _returnCode;
   }
 
-  Data *in2 = getIndex(_values.value(_ParmTypeIndex)->toString(), script);
-  if (! in2)
+  CurveData in2;
+  Entity::toData(QString("INDEX"), td);
+  if (getIndex(td.toString(), in2))
   {
-    Command::error("CommandBETA::runScript: invalid Index");
-    return;
-  }
-  Command::setTData(in2);
-
-  QList<Data *> list;
-  list << in << in2;
-
-  Data *line = getBETA(list, _values.value(_ParmTypePeriod)->toInteger());
-  if (! line)
-  {
-    Command::error("CommandBETA::runScript: getBETA error");
-    return;
+    qDebug() << "CommandBETA::run: invalid Index";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Data period;
+  Entity::toData(QString("PERIOD"), period);
+  
+  Entity parms;
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_BETA));
+  parms.set(QString("PERIOD"), period);
+  
+  CurveData line;
+  TALibFunction func;
+  if (func.run(parms, 2, in, in2, in2, in2, 1, line, line, line))
+  {
+    qDebug() << "CommandBETA::run: TALibFunction error";
+    return _returnCode;
+  }
 
-  Command::done(QString());
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
+
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandBETA::getBETA (QList<Data *> &list, int period)
+int CommandBETA::getIndex (QString d, Entity &line)
 {
-  if (list.count() != 2)
-    return 0;
-
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
-
-  int size = keys.count();
-  TA_Real input[size];
-  TA_Real input2[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill2(list, keys, &input[0], &input2[0]);
-  if (! size)
-    return 0;
-
-  TA_RetCode rc = TA_BETA(0,
-                          size - 1,
-                          &input[0],
-                          &input2[0],
-                          period,
-                          &outBeg,
-                          &outNb,
-                          &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getBETA: TA-Lib error" << rc;
-    return 0;
-  }
-
-  QList<Data *> outs;
-  Data *c = new CurveData;
-  outs.append(c);
-
-  TALibOutput tao;
-  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
-  {
-    delete c;
-    return 0;
-  }
-
-  return c;
-}
-
-Data * CommandBETA::getIndex (QString d, Script *script)
-{
-  if (d.isEmpty())
-    return 0;
-
   QStringList tl = d.split(":");
   if (tl.count() != 2)
-    return 0;
-
-  Symbol *symbol = script->symbol();
-  if (! symbol)
   {
-    qDebug() << "CommandBETA::getIndex: invalid symbol";
-    return 0;
+    qDebug() << "CommandBETA::getIndex: invalid index symbol" << d;
+    return 1;
   }
 
-  Symbol *bd = new Symbol;
-  bd->setExchange(tl.at(0));
-  bd->setSymbol(tl.at(1));
-  bd->setLength(symbol->length());
-  bd->setStartDate(QDateTime());
-  bd->setEndDate(QDateTime());
-  bd->setRange(symbol->range());
+  SymbolKey skeys;
+  Symbol bd;
+  bd.set(skeys.indexToString(SymbolKey::_SYMBOL), Data(d));
+  
+  g_currentSymbolMutex.lock();
+  Data td;
+  g_currentSymbol.toData(skeys.indexToString(SymbolKey::_LENGTH), td);
+  bd.set(skeys.indexToString(SymbolKey::_LENGTH), td);
+  
+  g_currentSymbol.toData(skeys.indexToString(SymbolKey::_RANGE), td);
+  bd.set(skeys.indexToString(SymbolKey::_RANGE), td);
+  g_currentSymbolMutex.unlock();
+
+  bd.set(skeys.indexToString(SymbolKey::_START_DATE), Data(QDateTime()));
+  bd.set(skeys.indexToString(SymbolKey::_END_DATE), Data(QDateTime()));
 
   // load quotes
   QuoteDataBase db;
-  if (db.getBars(bd))
+  if (db.getBars(&bd))
   {
-    qDebug() << _type << "::getIndex: QuoteDataBase error";
-    delete bd;
-    return 0;
+    qDebug() << "CommandBETA::getIndex: QuoteDataBase error";
+    return 1;
   }
 
-  Data *line = new CurveData;
-
+  CurveBarKey cbkeys;
   int loop = 0;
-  QList<int> barKeys = bd->barKeys();
-  for (; loop < barKeys.count(); loop++)
+  QList<QString> barKeys = bd.ekeys();
+  for (; loop < barKeys.size(); loop++)
   {
-    Data *b = bd->getData(barKeys.at(loop));
+    Entity b;
+    bd.toEntity(barKeys.at(loop), b);
+    
+    Data close;
+    if (b.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), close))
+      continue;
 
-    Data *cb = new CurveBar;
-    cb->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_CLOSE)->toDouble()));
-    line->set(loop, cb);
+    CurveBar cb;
+    cb.set(cbkeys.indexToString(CurveBarKey::_VALUE), close);
+    line.setEntity(barKeys.at(loop), cb);
   }
 
-  delete bd;
-
-  return line;
+  return 0;
 }

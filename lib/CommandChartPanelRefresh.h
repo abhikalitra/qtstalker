@@ -26,11 +26,9 @@
 
 class CommandChartPanelRefresh : public Command
 {
-  Q_OBJECT
-
   public:
-    CommandChartPanelRefresh (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandChartPanelRefresh ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

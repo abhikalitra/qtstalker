@@ -26,26 +26,9 @@
 
 class CommandStochSlow : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeK,
-      _ParmTypeD,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose,
-      _ParmTypePeriodFastK,
-      _ParmTypePeriodSlowK,
-      _ParmTypePeriodSlowD,
-      _ParmTypeMAK,
-      _ParmTypeMAD
-    };
-
-    CommandStochSlow (QObject *);
-    void runScript (CommandParse, Script *);
-    QList<Data *> getSTOCHS (QList<Data *> &, int fkperiod, int skperiod, int sdperiod, int kma, int dma);
+    CommandStochSlow ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

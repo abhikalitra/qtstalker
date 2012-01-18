@@ -39,7 +39,7 @@ class Operator
     
     Operator ();
     QStringList & list ();
-    Operator::Type stringToOperator (QString);
+    int stringToOperator (QString);
     int test (double val, Operator::Type, double val2);
 
   private:

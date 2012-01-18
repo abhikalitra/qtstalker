@@ -22,45 +22,19 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-#include <QObject>
-#include <QStringList>
-#include <QHash>
+//#include <QObject>
 
 #include "CommandParse.h"
-#include "Script.h"
-#include "Data.h"
+#include "Entity.h"
 
-class Command : public QObject
+class Command : public Entity
 {
-  Q_OBJECT
-
-  signals:
-    void signalDone (QString);
-
   public:
-    enum Type
-    {
-      _WAIT,
-      _THREAD
-    };
-
-    Command (QObject *);
-    ~Command ();
-    virtual void runScript (CommandParse, Script *);
-
-    QString name ();
-    int type ();
-    int parse (CommandParse, Script *);
-    int parse1 (Script *, QString, int);
-    void setTData (Data *);
-    void done (QString);
-    void error (QString);
-
+    Command ();
+    virtual QString run (CommandParse &, void *);
+    
   protected:
-    QHash<int, Data *> _values;
-    QList<Data *> _tdata;
-    int _type;
-    QString _name;
+    QString _returnCode;
 };
 
 #endif

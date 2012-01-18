@@ -27,7 +27,7 @@
 #include <QHash>
 
 #include "Plot.h"
-#include "Message.h"
+#include "Entity.h"
 
 class DataWindow : public QDialog
 {
@@ -37,11 +37,13 @@ class DataWindow : public QDialog
     DataWindow (QWidget *);
     void setPlot (Plot *);
     void scrollToBottom ();
+    void setDates (Plot *);
 
   private:
     QTableWidget *_table;
-    QHash<int, Message *> _bars;
-    Message _headers;
+    QHash<QString, Entity> _bars;
+    Entity _headers;
+    int _dateFlag;
 };
 
 #endif

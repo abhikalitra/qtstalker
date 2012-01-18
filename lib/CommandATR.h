@@ -26,22 +26,9 @@
 
 class CommandATR : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose,
-      _ParmTypePeriod,
-      _ParmTypeMethod
-    };
-
-    CommandATR (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getATR (QList<Data *> &, int);
+    CommandATR ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

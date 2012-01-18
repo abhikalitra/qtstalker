@@ -21,51 +21,56 @@
 
 #include "CommandMA.h"
 #include "MAType.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataMA.h"
 #include "ScriptVerifyCurve.h"
+#include "Script.h"
+#include "CurveData.h"
+#include "MA.h"
 
 #include <QtDebug>
 
-CommandMA::CommandMA (QObject *p) : Command (p)
+CommandMA::CommandMA ()
 {
   _name = "MA";
 
-  _values.insert(_ParmTypeName, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypePeriod, new DataInteger(10));
-  _values.insert(_ParmTypeType, new DataMA("EMA"));
-}
-
-void CommandMA::runScript (CommandParse sg, Script *script)
-{
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandMA::runScript: parse error");
-    return;
-  }
-
-  int toffset = 0;
-  ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
-  {
-    Command::error("CommandMA::runScript: invalid Input");
-    return;
-  }
+  Entity::set(QString("OUTPUT"), Data(QString("ma")));
+  Entity::set(QString("INPUT"), Data(QString("close")));
+  Entity::set(QString("PERIOD"), Data(10));
 
   MAType mat;
-  Data *line = mat.getMA(in,
-			 _values.value(_ParmTypePeriod)->toInteger(),
-			 _values.value(_ParmTypeType)->toInteger());
-  if (! line)
+  Data td(mat.list(), QString("EMA"));
+  Entity::set(QString("TYPE"), td);
+}
+
+QString CommandMA::run (CommandParse &, void *d)
+{
+  Script *script = (Script *) d;
+
+  Data td;
+  Entity::toData(QString("INPUT"), td);
+  
+  ScriptVerifyCurve svc;
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error(QString());
-    return;
+    qDebug() << "CommandMA::run: invalid Input";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeName)->toString(), line);
+  Data period, type;
+  Entity::toData(QString("PERIOD"), period);
+  Entity::toData(QString("TYPE"), type);
+  
+  MA ma;
+  CurveData line;
+  if (ma.getMA(in, period.toInteger(), type.toInteger(), line))
+  {
+    qDebug() << "CommandMA::run: MAType error";
+    return _returnCode;
+  }
 
-  Command::done(QString());
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
+
+  _returnCode = "OK";
+  return _returnCode;
 }

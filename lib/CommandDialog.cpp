@@ -20,38 +20,93 @@
  */
 
 #include "CommandDialog.h"
-#include "DataDialog.h"
-#include "GlobalParent.h"
-#include "Global.h"
-#include "DataString.h"
+#include "Script.h"
+#include "GlobalMutex.h"
+#include "GlobalData.h"
+#include "ThreadMessageType.h"
 
 #include <QtDebug>
-#include <QDialog>
+#include <QUuid>
 
-CommandDialog::CommandDialog (QObject *p) : Command (p)
+CommandDialog::CommandDialog ()
 {
   _name = "DIALOG";
-  _type = _WAIT;
-
-  _values.insert(_ParmTypeKey, new DataString());
-  _values.insert(_ParmTypeTitle, new DataString());
 }
 
-void CommandDialog::runScript (CommandParse sg, Script *script)
+QString CommandDialog::run (CommandParse &sg, void *scr)
 {
-  if (Command::parse(sg, script))
+  if (sg.values() != 1)
   {
-    Command::error("CommandDialog::runScript: parse error");
-    return;
+    qDebug() << "CommandDialog::run: invalid number of values";
+    return _returnCode;
+  }
+  
+  Script *script = (Script *) scr;
+  
+  int pos = 0;
+  QString name = sg.value(pos++);
+  Command *c = script->scriptCommand(name);
+  if (! c)
+  {
+    qDebug() << "CommandDialog::run: invalid entity" << name;
+    return _returnCode;
   }
 
-  DataDialog *dialog = new DataDialog(g_parent);
+  Entity dialog;
+  dialog.set(QString("MESSAGE"), Data(ThreadMessageType::_DIALOG));
+  
+  QList<QString> keys = c->dkeys();
+  int loop = 0;
+  for (; loop < keys.size(); loop++)
+  {
+    Data td;
+    c->toData(keys.at(loop), td);
+    dialog.set(keys.at(loop), td);
+  }
+  
+  QString id = QUuid::createUuid().toString();
+  
+  // create new mutex
+  QMutex *mutex = new QMutex;
+  mutex->lock();
+  
+  g_mutex.lock();
+  g_mutexList.insert(id, mutex);
+  g_mutex.unlock();
+  
+  // put data into global area
+  g_dataMutex.lock();
+  g_dataList.insert(id, dialog);
+  g_dataMutex.unlock();
 
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << _values.value(_ParmTypeTitle)->toString();
-  dialog->setWindowTitle(l.join(" "));
+  // emit the message signal
+  script->threadMessage(id);
 
-  script->setDialog(_values.value(_ParmTypeKey)->toString(), dialog);
-
-  Command::done(QString());
+  // pause thread until main app releases the mutex
+  // remove the mutex
+//qDebug() << "CommandDialog::run: thread paused" << id;  
+  mutex->lock();
+//qDebug() << "CommandDialog::run: thread resumed" << id;  
+  mutex->unlock();
+  g_mutex.lock();
+  delete mutex;
+  g_mutexList.remove(id);
+  g_mutex.unlock();
+  
+  // remove data from global area
+  g_dataMutex.lock();
+  dialog = g_dataList.value(id);
+  g_dataList.remove(id);
+  g_dataMutex.unlock();
+  
+  // copy new data into entity
+  for (loop = 0; loop < keys.size(); loop++)
+  {
+    Data td;
+    dialog.toData(keys.at(loop), td);
+    c->set(keys.at(loop), td);
+  }
+  
+  _returnCode = "OK";
+  return _returnCode;
 }

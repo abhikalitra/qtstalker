@@ -25,16 +25,17 @@
 #include <QList>
 
 #include "ta_libc.h"
-#include "Data.h"
+#include "Entity.h"
 
 class TALibOutput
 {
   public:
     TALibOutput ();
-    int fillDouble1 (QList<Data *> &list, QList<int> &keys, int outNb, TA_Real out[]);
-    int fillDouble2 (QList<Data *> &list, QList<int> &keys, int outNb, TA_Real out[], TA_Real out2[]);
-    int fillDouble3 (QList<Data *> &list, QList<int> &keys, int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[]);
-    int fillInteger1 (QList<Data *> &list, QList<int> &keys, int outNb, TA_Integer out[]);
+    int fillOutputDouble1 (Entity &, QList<QString> &keys, int outNb, TA_Real out[]);
+    int fillOutputDouble2 (Entity &, Entity &, QList<QString> &keys, int outNb, TA_Real out[], TA_Real out2[]);
+    int fillOutputDouble3 (Entity &, Entity &, Entity &, QList<QString> &keys,
+		           int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[]);
+    int fillOutputInteger1 (Entity &, QList<QString> &keys, int outNb, TA_Integer out[]);
 };
 
 #endif

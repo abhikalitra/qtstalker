@@ -25,7 +25,11 @@
 #include "GlobalPlotGroup.h"
 #include "GlobalSymbol.h"
 #include "QuoteDataBase.h"
-#include "IndicatorDataBase.h"
+#include "EAVDataBase.h"
+#include "EAVSearch.h"
+#include "IndicatorDataBaseKey.h"
+#include "GlobalParent.h"
+#include "GlobalSidePanel.h"
 
 #include <QStringList>
 
@@ -41,21 +45,19 @@ ChartRefresh::~ChartRefresh ()
 int ChartRefresh::run ()
 {
   // do all the stuff we need to do to load a chart
-
-  if (! g_chartRefreshMutex.tryLock())
-  {
-    deleteLater();
-    return 1;
-  }
-
-  IndicatorDataBase i;
-  QStringList il = i.indicators();
+  IndicatorDataBaseKey keys;
+  EAVSearch search;
+  search.append(keys.indexToString(IndicatorDataBaseKey::_SESSION), "=", g_session);
+  
+  EAVDataBase db("indicators");
+  QStringList il;
+  db.search(search, il);
 
   // move displayed plots to the top of the list
   // so they update first for user speed
   QStringList ft = g_plotGroup->frontTabs();
   int loop = 0;
-  for (; loop < ft.count(); loop++)
+  for (; loop < ft.size(); loop++)
   {
     int i = il.indexOf(ft.at(loop));
     if (i == -1)
@@ -64,33 +66,30 @@ int ChartRefresh::run ()
     il.move(i, 0);
   }
 
-  for (loop = 0; loop < il.count(); loop++)
+  for (loop = 0; loop < il.size(); loop++)
   {
-    QString command;
-    if (i.indicator(il.at(loop), command))
+    Entity i;
+    i.setName(il.at(loop));
+    if (db.get(&i))
       continue;
+    
+    Script *script = new Script(g_parent);
+    connect(script, SIGNAL(signalMessage(QString)), g_sidePanel->scriptPanel(), SLOT(scriptThreadMessage(QString)));
+//qDebug() << "ChartRefresh::run:" << il.at(loop);
 
-    Script *script = new Script(this);
-    connect(script, SIGNAL(signalDeleted(QString)), this, SLOT(scriptDone(QString)));
-    script->setFile(il.at(loop));
-    script->setCommand(command);
+    Data td;
+    i.toData(keys.indexToString(IndicatorDataBaseKey::_FILE), td);
+    script->setFile(td.toString());
+    
+    i.toData(keys.indexToString(IndicatorDataBaseKey::_COMMAND), td);
+    script->setCommand(td.toString());
+    
     script->setSymbol(g_currentSymbol);
-    script->run();
-
-    _scripts.insert(script->id(), script);
+    
+    script->start();
   }
 
-  return 0;
-}
-
-void ChartRefresh::scriptDone (QString d)
-{
-  _scripts.remove(d);
-
-  if (_scripts.count())
-    return;
-
-  g_chartRefreshMutex.unlock();
-
   deleteLater();
+
+  return 0;
 }

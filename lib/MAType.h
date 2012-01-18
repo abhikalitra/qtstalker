@@ -22,11 +22,9 @@
 #ifndef MA_TYPE_HPP
 #define MA_TYPE_HPP
 
-#include <QStringList>
+#include "Keys.h"
 
-#include "Data.h"
-
-class MAType
+class MAType : public Keys
 {
   public:
     enum Type
@@ -42,13 +40,6 @@ class MAType
     };
 
     MAType ();
-    QStringList & list ();
-    MAType::Type fromString (QString);
-    Data * getMA (Data *, int period, int method);
-    Data * getWilder (Data *, int period);
-
-  private:
-    QStringList _list;
 };
 
 #endif

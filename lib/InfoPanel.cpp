@@ -45,7 +45,7 @@ InfoPanel::InfoPanel ()
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
 }
 
-void InfoPanel::showInfo (Message d)
+void InfoPanel::showInfo (Entity d)
 {
   // list bar values first
   QStringList l;
@@ -56,26 +56,26 @@ void InfoPanel::showInfo (Message d)
   int loop;
   for (loop = 0; loop < (int) l.count(); loop++)
   {
-    s = d.value(l.at(loop));
-    if (s.length())
-    {
-      vl << l.at(loop) + " " + s;
-      d.remove(l.at(loop));
-    }
+    Data td;
+    if (d.toData(l.at(loop), td))
+      continue;
+    
+    vl << l.at(loop) + " " + td.toString();
+    d.remove(l.at(loop));
   }
 
-  QList<QString> kl = d.keys();
+  QList<QString> kl = d.dkeys();
   qSort(kl);
 
   Strip strip;
   for (loop = 0; loop < (int) kl.count(); loop++)
   {
-    s = d.value(kl.at(loop));
-
-    bool ok;
-    double sn = s.toDouble(&ok);
-    if (ok)
-      strip.strip(sn, _precision, s);
+    Data td;
+    d.toData(kl.at(loop), td);
+    double sn = td.toDouble();
+    
+    QString s;
+    strip.strip(sn, _precision, s);
 
     vl << kl.at(loop) + " " + s;
   }

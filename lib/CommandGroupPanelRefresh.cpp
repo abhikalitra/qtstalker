@@ -20,18 +20,26 @@
  */
 
 #include "CommandGroupPanelRefresh.h"
-#include "GlobalSidePanel.h"
+#include "ThreadMessage.h"
+#include "ThreadMessageType.h"
 
 #include <QtDebug>
 
-CommandGroupPanelRefresh::CommandGroupPanelRefresh (QObject *p) : Command (p)
+CommandGroupPanelRefresh::CommandGroupPanelRefresh ()
 {
   _name = "GROUP_PANEL_REFRESH";
-  _type = _WAIT;
 }
 
-void CommandGroupPanelRefresh::runScript (CommandParse, Script *)
+QString CommandGroupPanelRefresh::run (CommandParse &, void *d)
 {
-  g_sidePanel->groupPanel()->updateList();
-  Command::done(QString());
+  Script *script = (Script *) d;
+  
+  Entity e;
+  e.set(QString("MESSAGE"), Data(ThreadMessageType::_GROUP_PANEL_REFRESH));
+  
+  ThreadMessage tm;
+  tm.sendMessage(e, script);
+  
+  _returnCode = "OK";
+  return _returnCode;
 }

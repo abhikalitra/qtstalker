@@ -20,16 +20,13 @@
  */
 
 #include "CommandVIDYA.h"
-#include "ta_libc.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataDouble.h"
-#include "DataString.h"
-#include "DataInteger.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -37,166 +34,132 @@
 
 #define PI 3.14159265
 
-CommandVIDYA::CommandVIDYA (QObject *p) : Command (p)
+CommandVIDYA::CommandVIDYA ()
 {
   _name = "VIDYA";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypePeriod, new DataInteger(14));
-  _values.insert(_ParmTypePeriodV, new DataInteger(10));
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td = Data(14);
+  td.setLabel(QObject::tr("Period"));
+  Entity::set(QString("PERIOD"), td);
+  
+  td = Data(10);
+  td.setLabel(QObject::tr("Period V"));
+  Entity::set(QString("PERIODV"), td);
 
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug("CommandVIDYA::CommandVIDYA: error on TA_Initialize");
 }
 
-void CommandVIDYA::runScript (CommandParse sg, Script *script)
+QString CommandVIDYA::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandVIDYA::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandVIDYA::runScript: invalid Input");
-    return;
+    qDebug() << "CommandVIDYA::run: invalid INPUT" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << in;
-
-  Data *line = getVIDYA(list,
-			_values.value(_ParmTypePeriod)->toInteger(),
-			_values.value(_ParmTypePeriodV)->toInteger());
-  if (! line)
+  Data p, pv;
+  Entity::toData(QString("PERIOD"), p);
+  Entity::toData(QString("PERIODV"), pv);
+  
+  CurveData line;
+  if (getVIDYA(in, p.toInteger(), pv.toInteger(), line))
   {
-    Command::error("CommandVIDYA::runScript: getVIDYA error");
-    return;
+    qDebug() << "CommandVIDYA::run: getVIDYA error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandVIDYA::getVIDYA (QList<Data *> &list, int period, int vperiod)
+int CommandVIDYA::getVIDYA (Entity &in, int period, int vperiod, Entity &out)
 {
-  if (! list.count())
-    return 0;
-
-  Data *cmo = getCMO(list, vperiod);
-  if (! cmo)
-    return 0;
-
+  Entity cmoParms;
+  cmoParms.set(QString("FUNCTION"), Data(TALibFunctionKey::_CMO));
+  cmoParms.set(QString("PERIOD"), vperiod);
+  
+  CurveBar cmo;
+  TALibFunction func;
+  if (func.run(cmoParms, 1, in, in, in, in, 1, cmo, cmo, cmo))
+  {
+    qDebug() << "CommandVIDYA::getVIDYA: TALibFunction error for CMO";
+    return 1;
+  }
+  
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys1(in, keys))
+    return 1;
 
-  int size = keys.count();
+  int size = keys.size();
 
-  Data *out = new CurveData;
-
-  QVector<double> *inSeries = new QVector<double>(size);
-  inSeries->fill(0.0);
-  QVector<double> *offset = new QVector<double>(size);
-  offset->fill(0.0);
-  QVector<double> *absCmo = new QVector<double>(size);
-  absCmo->fill(0.0);
-  QVector<double> *vidya = new QVector<double>(size);
-  vidya->fill(0.0);
+  QVector<double> inSeries(size);
+  inSeries.fill(0.0);
+  QVector<double> offset(size);
+  offset.fill(0.0);
+  QVector<double> absCmo(size);
+  absCmo.fill(0.0);
+  QVector<double> vidya(size);
+  vidya.fill(0.0);
 
   double c = 2 / (double) period + 1;
 
+  CurveBarKey cbkeys;
   int loop = 0;
-  Data *in = list.at(0);
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *bar = in->toData(keys.at(loop));
-    (*inSeries)[loop] = bar->toData(CurveBar::_VALUE)->toDouble();
+    Entity bar;
+    in.toEntity(keys.at(loop), bar);
+    Data tv;
+    if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv))
+      continue;
+    inSeries[loop] = tv.toDouble();
   }
 
-  keys = cmo->keys();
+  keys = cmo.ekeys();
 
-  int index = inSeries->size() -1;
-  loop = keys.count() - 1;
+  int index = inSeries.size() -1;
+  loop = keys.size() - 1;
   for (; loop > -1; loop--)
   {
-    Data *bar = cmo->toData(keys.at(loop));
-    (*absCmo)[index] = fabs(bar->toData(CurveBar::_VALUE)->toDouble() / 100);
+    Entity bar;
+    cmo.toEntity(keys.at(loop), bar);
+    Data tv;
+    if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv))
+      continue;
+    absCmo[index] = fabs(tv.toDouble() / 100);
     index--;
   }
 
   loop = vperiod + period;
-  for (; loop < (int) inSeries->size(); loop++)         // period safty
+  for (; loop < (int) inSeries.size(); loop++)         // period safety
   {
-    (*vidya)[loop] = (inSeries->at(loop) * c * absCmo->at(loop)) + ((1 - absCmo->at(loop) * c) * vidya->at(loop - 1));
+    vidya[loop] = (inSeries.at(loop) * c * absCmo.at(loop)) + ((1 - absCmo.at(loop) * c) * vidya.at(loop - 1));
 
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(vidya->at(loop)));
-    out->set(loop, b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(vidya.at(loop)));
+    out.setEntity(QString::number(loop), b);
   }
 
-  delete inSeries;
-  delete offset;
-  delete absCmo;
-  delete vidya;
-  delete cmo;
-
-  return out;
-}
-
-Data * CommandVIDYA::getCMO (QList<Data *> &list, int period)
-{
-  if (! list.count())
-    return 0;
-
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
-
-  int size = keys.count();
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill1(list, keys, &input[0]);
-  if (! size)
-    return 0;
-
-  TA_RetCode rc = TA_CMO(0,
-                         size - 1,
-                         &input[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getCMO: TA-Lib error" << rc;
-    return 0;
-  }
-
-  QList<Data *> outs;
-  Data *c = new CurveData;
-  outs.append(c);
-
-  TALibOutput tao;
-  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
-  {
-    delete c;
-    return 0;
-  }
-
-  return c;
+  return 0;
 }

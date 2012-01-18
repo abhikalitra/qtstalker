@@ -22,187 +22,234 @@
 #include "CommandVFI.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataString.h"
-#include "DataInteger.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 #include <cmath>
 
-CommandVFI::CommandVFI (QObject *p) : Command (p)
+CommandVFI::CommandVFI ()
 {
   _name = "VFI";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
-  _values.insert(_ParmTypeVolume, new DataString());
-  _values.insert(_ParmTypePeriod, new DataInteger(10));
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input Close"));
+  Entity::set(QString("CLOSE"), td);
+  
+  td = Data(QString("volume"));
+  td.setLabel(QObject::tr("Input Volume"));
+  Entity::set(QString("VOLUME"), td);
+  
+  td = Data(10);
+  td.setLabel(QObject::tr("Period"));
+  Entity::set(QString("PERIOD"), td);
 }
 
-void CommandVFI::runScript (CommandParse sg, Script *script)
+QString CommandVFI::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandVFI::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandVFI::runScript: invalid High");
-    return;
+    qDebug() << "CommandVFI::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandVFI::runScript: invalid Low");
-    return;
+    qDebug() << "CommandVFI::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
-  if (! iclose)
+  Entity::toData(QString("CLOSE"), td);
+  Entity iclose;
+  if (svc.curve(script, td.toString(), iclose))
   {
-    Command::error("CommandVFI::runScript: invalid Close");
-    return;
+    qDebug() << "CommandVFI::run: invalid CLOSE" << td.toString();
+    return _returnCode;
   }
 
-  Data *ivol = svc.toCurve(script, _values.value(_ParmTypeVolume)->toString(), toffset);
-  if (! ivol)
+  Entity::toData(QString("VOLUME"), td);
+  Entity ivol;
+  if (svc.curve(script, td.toString(), ivol))
   {
-    Command::error("CommandVFI::runScript: invalid Volume");
-    return;
+    qDebug() << "CommandVFI::run: invalid CLOSE" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow << iclose << ivol;
-
-  Data *line = getVFI(list, _values.value(_ParmTypePeriod)->toInteger());
-  if (! line)
+  Data period;
+  Entity::toData(QString("PERIOD"), period);
+  
+  CurveData line;
+  if (getVFI(ihigh, ilow, iclose, ivol, period.toInteger(), line))
   {
-    Command::error("CommandVFI::runScript: getVFI");
-    return;
+    qDebug() << "CommandVFI::runScript: getVFI";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandVFI::getVFI (QList<Data *> &list, int period)
+int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivol, int period, Entity &line)
 {
-  if (list.count() != 4)
-    return 0;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys4(ihigh, ilow, iclose, ivol, keys))
+    return 1;
 
-  Data *vfi = new CurveData;
-  Data *ihigh = list.at(0);
-  Data *ilow = list.at(1);
-  Data *iclose = list.at(2);
-  Data *ivol = list.at(3);
+  CurveBarKey cbkeys;
   int loop = period;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *hbar = ihigh->toData(keys.at(loop - period));
-    if (! hbar)
+    Entity hbar;
+    if (ihigh.toEntity(keys.at(loop - period), hbar))
+      continue;
+    Data thigh;
+    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), thigh))
+      continue;
+    
+    Entity lbar;
+    if (ilow.toEntity(keys.at(loop - period), lbar))
+      continue;
+    Data tlow;
+    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tlow))
       continue;
 
-    Data *lbar = ilow->toData(keys.at(loop - period));
-    if (! lbar)
+    Entity cbar;
+    if (iclose.toEntity(keys.at(loop - period), cbar))
       continue;
-
-    Data *cbar = iclose->toData(keys.at(loop - period));
-    if (! cbar)
+    Data tclose;
+    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tclose))
       continue;
-
+    
     double inter = 0.0;
     double sma_vol = 0.0;
     int i;
-    double close = cbar->toData(CurveBar::_VALUE)->toDouble();
-    double high = hbar->toData(CurveBar::_VALUE)->toDouble();
-    double low = lbar->toData(CurveBar::_VALUE)->toDouble();
+    double close = tclose.toDouble();
+    double high = thigh.toDouble();
+    double low = tlow.toDouble();
     double typical = (high + low + close) / 3.0;
     for (i = loop - period + 1; i <= loop; i++)
     {
-      hbar = ihigh->toData(keys.at(i));
-      if (! hbar)
+      Entity hbar;
+      if (ihigh.toEntity(keys.at(i), hbar))
+        continue;
+      Data thigh;
+      if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), thigh))
+        continue;
+    
+      Entity lbar;
+      if (ilow.toEntity(keys.at(i), lbar))
+        continue;
+      Data tlow;
+      if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tlow))
         continue;
 
-      lbar = ilow->toData(keys.at(i));
-      if (! lbar)
+      Entity cbar;
+      if (iclose.toEntity(keys.at(i), cbar))
+        continue;
+      Data tclose;
+      if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tclose))
         continue;
 
-      cbar = iclose->toData(keys.at(i));
-      if (! cbar)
+      Entity vbar;
+      if (ivol.toEntity(keys.at(i), vbar))
         continue;
-
-      Data *vbar = ivol->toData(keys.at(i));
-      if (! vbar)
+      Data tvol;
+      if (vbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tvol))
         continue;
-
+      
       double ytypical = typical;
-      close = cbar->toData(CurveBar::_VALUE)->toDouble();
-      high = hbar->toData(CurveBar::_VALUE)->toDouble();
-      low = lbar->toData(CurveBar::_VALUE)->toDouble();
+      close = tclose.toDouble();
+      high = thigh.toDouble();
+      low = tlow.toDouble();
       typical = (high + low + close) / 3.0;
       double delta = (log(typical) - log(ytypical));
       inter += delta * delta;
-      sma_vol += vbar->toData(CurveBar::_VALUE)->toDouble();
+      sma_vol += tvol.toDouble();
     }
     inter = 0.2 * sqrt(inter / (double) period) * typical;
     sma_vol /= (double) period;
 
-    hbar = ihigh->toData(keys.at(loop - period));
-    if (! hbar)
+    if (ihigh.toEntity(keys.at(loop - period), hbar))
+      continue;
+    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), thigh))
+      continue;
+    
+    if (ilow.toEntity(keys.at(loop - period), lbar))
+      continue;
+    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tlow))
       continue;
 
-    lbar = ilow->toData(keys.at(loop - period));
-    if (! lbar)
+    if (iclose.toEntity(keys.at(loop - period), cbar))
       continue;
-
-    cbar = iclose->toData(keys.at(loop - period));
-    if (! cbar)
+    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tclose))
       continue;
-
-    close = cbar->toData(CurveBar::_VALUE)->toDouble();
-    high = hbar->toData(CurveBar::_VALUE)->toDouble();
-    low = lbar->toData(CurveBar::_VALUE)->toDouble();
+    
+    close = tclose.toDouble();
+    high = thigh.toDouble();
+    low = tlow.toDouble();
     typical = (high + low + close) / 3.0;
     double t = 0;
     for (i = loop - period + 1; i <= loop; i++)
     {
-      hbar = ihigh->toData(keys.at(i));
-      if (! hbar)
+      Entity hbar;
+      if (ihigh.toEntity(keys.at(i), hbar))
+        continue;
+      Data thigh;
+      if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), thigh))
+        continue;
+    
+      Entity lbar;
+      if (ilow.toEntity(keys.at(i), lbar))
+        continue;
+      Data tlow;
+      if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tlow))
         continue;
 
-      lbar = ilow->toData(keys.at(i));
-      if (! lbar)
+      Entity cbar;
+      if (iclose.toEntity(keys.at(i), cbar))
+        continue;
+      Data tclose;
+      if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tclose))
         continue;
 
-      cbar = iclose->toData(keys.at(i));
-      if (! cbar)
+      Entity vbar;
+      if (ivol.toEntity(keys.at(i), vbar))
         continue;
-
-      Data *vbar = ivol->toData(keys.at(i));
-      if (! vbar)
+      Data tvol;
+      if (vbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tvol))
         continue;
-
+      
       double ytypical = typical;
-      double volume = vbar->toData(CurveBar::_VALUE)->toDouble();
-      close = cbar->toData(CurveBar::_VALUE)->toDouble();
-      high = hbar->toData(CurveBar::_VALUE)->toDouble();
-      low = lbar->toData(CurveBar::_VALUE)->toDouble();
+      double volume = tvol.toDouble();
+      close = tclose.toDouble();
+      high = thigh.toDouble();
+      low = tlow.toDouble();
       typical = (high + low + close) / 3.0;
 
       if (typical > ytypical + inter)
@@ -214,10 +261,10 @@ Data * CommandVFI::getVFI (QList<Data *> &list, int period)
       }
     }
 
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(t));
-    vfi->set(keys.at(loop), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    line.setEntity(keys.at(loop), b);
   }
 
-  return vfi;
+  return 0;
 }

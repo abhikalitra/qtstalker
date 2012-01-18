@@ -25,7 +25,7 @@
 #include <QTextEdit>
 #include <QMenu>
 
-#include "Message.h"
+#include "Entity.h"
 
 class InfoPanel : public QTextEdit
 {
@@ -38,7 +38,7 @@ class InfoPanel : public QTextEdit
     InfoPanel ();
     
   public slots:
-    void showInfo (Message);
+    void showInfo (Entity);
     void setLockStatus (bool);
     void loadSettings ();
     void saveSettings ();

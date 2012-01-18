@@ -26,17 +26,9 @@
 
 class CommandDialog : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeKey,
-      _ParmTypeTitle
-    };
-
-    CommandDialog (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandDialog ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

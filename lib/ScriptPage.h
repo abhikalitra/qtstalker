@@ -81,6 +81,7 @@ class ScriptPage : public QWidget
     void deleteScriptTimer2 (QStringList);
     void runStartupScripts ();
     void addScriptTimer (QString name, QString file, QString interval, QString command);
+    void scriptThreadMessage (QString);
 
   protected:
     QListWidget *_queList;

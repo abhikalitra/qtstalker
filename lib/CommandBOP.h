@@ -26,21 +26,9 @@
 
 class CommandBOP : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeOpen,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose
-    };
-
-    CommandBOP (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getBOP (QList<Data *> &);
+    CommandBOP ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

@@ -20,123 +20,71 @@
  */
 
 #include "CommandMINMAX.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataList.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "Script.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 
 #include <QtDebug>
 
-CommandMINMAX::CommandMINMAX (QObject *p) : Command (p)
+CommandMINMAX::CommandMINMAX ()
 {
   _name = "MINMAX";
   _method << "MIN" << "MAX";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypePeriod, new DataInteger(10));
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("close"));  
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td = Data(10);  
+  td.setLabel(QObject::tr("Period"));
+  Entity::set(QString("PERIOD"), td);
 
-  DataList *dl = new DataList(_method.at(0));
-  dl->set(_method);
-  _values.insert(_ParmTypeMethod, dl);
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandMINMAX::CommandMINMAX: error on TA_Initialize");
+  td = Data(_method, _method.at(0));
+  td.setLabel(QObject::tr("Method"));
+  Entity::set(QString("METHOD"), td);
 }
 
-void CommandMINMAX::runScript (CommandParse sg, Script *script)
+QString CommandMINMAX::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandMINMAX::runScript: parse error");
-    return;
-  }
-
-  int toffset = 0;
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
+  
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandMINMAX::runScript: invalid Input");
-    return;
+    qDebug() << "CommandMINMAX::run: invalid INPUT";
+    return _returnCode;
   }
 
-  Data *line = getMINMAX(in,
-			 _values.value(_ParmTypePeriod)->toInteger(),
-			 _values.value(_ParmTypeMethod)->toInteger());
-  if (! line)
+  Entity parms;
+  Data period, method;
+  Entity::toData(QString("PERIOD"), period);
+  parms.set(QString("PERIOD"), period);
+  
+  Entity::toData(QString("METHOD"), method);
+  TALibFunctionKey fkeys;
+  parms.set(QString("FUNCTION"), Data(fkeys.stringToIndex(method.toString())));
+  
+  CurveData line;
+  TALibFunction func;
+  if (func.run(parms, 1, in, in, in, in, 1, line, line, line))
   {
-    Command::error("CommandMINMAX::runScript: getMINMAX error");
-    return;
+    qDebug() << "CommandMINMAX::run: getMINMAX error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
-}
-
-Data * CommandMINMAX::getMINMAX (Data *in, int tperiod, int method)
-{
-  QList<Data *> list;
-  list << in;
-
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
-
-  int period = tperiod;
-  if (period == 0)
-    period = keys.count();
-
-  int size = keys.count();
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill1(list, keys, &input[0]);
-  if (! size)
-    return 0;
-
-  TA_RetCode rc = TA_SUCCESS;
-
-  switch (method)
-  {
-    case 0: // MIN
-      rc = TA_MIN(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 1: // MAX
-      rc = TA_MAX(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      return 0;
-  }
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getMINMAX: TA-Lib error" << rc;
-    return 0;
-  }
-
-  QList<Data *> outs;
-  Data *c = new CurveData;
-  outs.append(c);
-
-  TALibOutput tao;
-  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
-  {
-    delete c;
-    return 0;
-  }
-
-  return c;
+  _returnCode = "OK";
+  return _returnCode;
 }

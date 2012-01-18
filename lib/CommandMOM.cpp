@@ -20,108 +20,63 @@
  */
 
 #include "CommandMOM.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataInteger.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 
 #include <QtDebug>
 
-CommandMOM::CommandMOM (QObject *p) : Command (p)
+CommandMOM::CommandMOM ()
 {
   _name = "MOM";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypePeriod, new DataInteger(14));
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandMOM::CommandMOM: error on TA_Initialize");
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td = Data(14);
+  td.setLabel(QObject::tr("Period"));
+  Entity::set(QString("PERIOD"), td);
 }
 
-void CommandMOM::runScript (CommandParse sg, Script *script)
+QString CommandMOM::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandMOM::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandMOM::runScript: invalid Input");
-    return;
+    qDebug() << "CommandMOM::run: invalid INPUT" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << in;
-
-  Data *line = getMOM(list, _values.value(_ParmTypePeriod)->toInteger());
-  if (! line)
+  Data period;
+  Entity::toData(QString("PERIOD"), period);
+  
+  Entity parms;
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_MOM));
+  parms.set(QString("PERIOD"), period);
+  
+  CurveData line;
+  TALibFunction func;
+  if (func.run(parms, 1, in, in, in, in, 1, line, line, line))
   {
-    Command::error("CommandMOM::runScript: getMOM error");
-    return;
+    qDebug() << "CommandMOM::run: TALibFunction error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
-}
-
-Data * CommandMOM::getMOM (QList<Data *> &list, int period)
-{
-  if (! list.count())
-    return 0;
-
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
-
-  int size = keys.count();
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill1(list, keys, &input[0]);
-  if (! size)
-    return 0;
-
-  TA_RetCode rc = TA_MOM(0,
-                         size - 1,
-                         &input[0],
-                         period,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getMOM: TA-Lib error" << rc;
-    return 0;
-  }
-
-  QList<Data *> outs;
-  Data *c = new CurveData;
-  outs.append(c);
-
-  TALibOutput tao;
-  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
-  {
-    delete c;
-    return 0;
-  }
-
-  return c;
+  _returnCode = "OK";
+  return _returnCode;
 }

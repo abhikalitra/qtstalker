@@ -26,8 +26,6 @@
 
 class CommandCSV : public Command
 {
-  Q_OBJECT
-
   public:
     enum FormatType
     {
@@ -49,23 +47,13 @@ class CommandCSV : public Command
       _SEMICOLON
     };
 
-    enum ParmType
-    {
-      _ParmTypeCSVFile,
-      _ParmTypeFormat,
-      _ParmTypeDateFormat,
-      _ParmTypeDelimiter,
-      _ParmTypeType,
-      _ParmTypeFilenameAsSymbol,
-      _ParmTypeExchange
-    };
-
-    CommandCSV (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandCSV ();
+    QString run (CommandParse &, void *);
 
   private:
     QStringList _formatType;
     QStringList _delimiterType;
+    QStringList _quoteType;
 };
 
 #endif

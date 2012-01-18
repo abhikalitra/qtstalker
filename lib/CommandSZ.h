@@ -26,29 +26,10 @@
 
 class CommandSZ : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypePeriod,
-      _ParmTypeMethod,
-      _ParmTypeNoDecline,
-      _ParmTypeCoeff
-    };
-
-    enum Method
-    {
-      _LONG,
-      _SHORT
-    };
-
-    CommandSZ (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getSZ (QList<Data *> &, int type, int period, int ndp, double coeff);
+    CommandSZ ();
+    QString run (CommandParse &, void *);
+    int getSZ (Entity &high, Entity &low, int type, int period, int ndp, double coeff, Entity &line);
 
   private:
     QStringList _method;

@@ -28,19 +28,306 @@ Data::Data ()
   clear();
 }
 
+Data::Data (DataType::Type type)
+{
+  clear();
+  _type = type;
+}
+
+Data::Data (QString d)
+{
+  clear();
+  _type = DataType::_STRING;
+  set(d);
+}
+
+Data::Data (QStringList d)
+{
+  clear();
+  _type = DataType::_LIST;
+  set(d);
+}
+
+Data::Data (QStringList l, QString d)
+{
+  clear();
+  _type = DataType::_LIST;
+  set(d);
+  set(l);
+}
+
+Data::Data (int d)
+{
+  clear();
+  _type = DataType::_INTEGER;
+  set(d);
+}
+
+Data::Data (double d)
+{
+  clear();
+  _type = DataType::_DOUBLE;
+  set(d);
+}
+
+Data::Data (bool d)
+{
+  clear();
+  _type = DataType::_BOOL;
+  set(d);
+}
+
+Data::Data (QColor d)
+{
+  clear();
+  _type = DataType::_COLOR;
+  set(d);
+}
+
+Data::Data (QFont d)
+{
+  clear();
+  _type = DataType::_FONT;
+  set(d);
+}
+
+Data::Data (QDateTime d)
+{
+  clear();
+  _type = DataType::_DATETIME;
+  set(d);
+}
+
+void Data::clear ()
+{
+  _type = DataType::_STRING;
+  _tab = 0;
+}
+
 int Data::type ()
 {
   return _type;
 }
 
-void Data::setDeleteFlag (int d)
+void Data::setType (int d)
 {
-  _delFlag = d;
+  _type = d;
 }
 
-int Data::deleteFlag ()
+int Data::set (QString d)
 {
-  return _delFlag;
+//  _type = DataType::_STRING;
+  _value = QVariant(d);
+  return 0;
+}
+
+int Data::set (QStringList d)
+{
+  _list = d;
+  return 0;
+}
+
+int Data::set (QStringList l, QString d)
+{
+  set(d);
+  set(l);
+  return 0;
+}
+
+int Data::set (int d)
+{
+//  _type = DataType::_INTEGER;
+  _value = QVariant(d);
+  return 0;
+}
+
+int Data::set (double d)
+{
+//  _type = DataType::_DOUBLE;
+  _value = QVariant(d);
+  return 0;
+}
+
+int Data::set (bool d)
+{
+//  _type = DataType::_BOOL;
+  _value = QVariant(d);
+  return 0;
+}
+
+int Data::set (QColor d)
+{
+//  _type = DataType::_COLOR;
+  _value = QVariant(d.name());
+  return 0;
+}
+
+int Data::set (QFont d)
+{
+//  _type = DataType::_FONT;
+  _value = QVariant(d.toString());
+  return 0;
+}
+
+int Data::set (QDateTime d)
+{
+//  _type = DataType::_DATETIME;
+  _value = QVariant(d);
+  return 0;
+}
+
+int Data::set (QString d, int type)
+{
+  int rc = 0;
+  
+  switch ((DataType::Type) type)
+  {
+    case DataType::_BOOL:
+    {
+      if (d == "true" || d == "TRUE" || d == "1")
+	set(TRUE);
+      else
+      {
+        if (d == "false" || d == "FALSE" || d == "0")
+	  set(FALSE);
+	else
+	  rc++;
+      }
+      break;
+    }
+    case DataType::_COLOR:
+    {
+      QColor c(d);
+      if (c.isValid())
+	set(c);
+      else
+        rc++;
+      break;
+    }
+    case DataType::_DATETIME:
+    {
+      QDateTime tdt = QDateTime::fromString(d, Qt::ISODate);
+      if (tdt.isValid())
+	set(tdt);
+      else
+        rc++;
+      break;
+    }
+    case DataType::_DOUBLE:
+    {
+      bool ok;
+      double td = d.toDouble(&ok);
+      if (ok)
+        set(td);
+      else
+        rc++;
+      break;
+    }
+    case DataType::_FONT:
+    {
+      QFont f;
+      if (f.fromString(d))
+	set(f);
+      else
+        rc++;
+      break;
+    }
+    case DataType::_INTEGER:
+    {
+      bool ok;
+      int ti = d.toInt(&ok);
+      if (ok)
+        set(ti);
+      else
+        rc++;
+      break;
+    }
+    case DataType::_LIST:
+      if (_list.indexOf(d) != -1)
+	set(d);
+      else
+        rc++;
+      break;
+    case DataType::_STRING:
+      set(d);
+      break;
+    case DataType::_FILE:
+    {
+      QStringList tl = d.split(";");
+      if (tl.size())
+      {
+        _type = DataType::_FILE;
+	_list = tl;
+      }
+      else
+        rc++;
+      break;
+    }
+    default:
+      rc = 1;
+      break;
+  }
+  
+  return rc;
+}
+
+QString Data::toString ()
+{
+  QString s;
+  
+  switch ((DataType::Type) _type)
+  {
+    case DataType::_FILE:
+      s = _list.join(";");
+      break;
+    default:
+      s = _value.toString();
+      break;
+  }
+  
+  return s;
+}
+
+QStringList Data::toList ()
+{
+  return _list;
+}
+
+int Data::toInteger ()
+{
+  int d = _value.toInt();
+  
+  if (_type == (DataType::_LIST))
+    d = _list.indexOf(_value.toString());
+  
+  return d;
+}
+
+double Data::toDouble ()
+{
+  return _value.toDouble();
+}
+
+bool Data::toBool ()
+{
+  return _value.toBool();
+}
+
+QColor Data::toColor ()
+{
+  return QColor(_value.toString());
+}
+
+QFont Data::toFont ()
+{
+  QFont f;
+  f.fromString(_value.toString());
+  return f;
+}
+
+QDateTime Data::toDateTime ()
+{
+  return _value.toDateTime();
 }
 
 void Data::setTab (int d)
@@ -62,188 +349,3 @@ QString Data::label ()
 {
   return _label;
 }
-
-// virtual functions
-
-void Data::clear ()
-{
-  _delFlag = 1;
-  _tab = 0;
-}
-
-int Data::set (int, Data *)
-{
-  return 0;
-}
-
-int Data::set (QString)
-{
-  return 0;
-}
-
-int Data::set (QStringList)
-{
-  return 0;
-}
-
-int Data::set (int)
-{
-  return 0;
-}
-
-int Data::set (double)
-{
-  return 0;
-}
-
-int Data::set (bool)
-{
-  return 0;
-}
-
-int Data::set (QColor)
-{
-  return 0;
-}
-
-int Data::set (QFont)
-{
-  return 0;
-}
-
-int Data::set (QDateTime)
-{
-  return 0;
-}
-
-QString Data::toString ()
-{
-  return QString();
-}
-
-QStringList Data::toList ()
-{
-  return QStringList();
-}
-
-int Data::toInteger ()
-{
-  return 0;
-}
-
-double Data::toDouble ()
-{
-  return 0;
-}
-
-bool Data::toBool ()
-{
-  return FALSE;
-}
-
-QColor Data::toColor ()
-{
-  return QColor();
-}
-
-QFont Data::toFont ()
-{
-  return QFont();
-}
-
-QDateTime Data::toDateTime ()
-{
-  return QDateTime();
-}
-
-Data * Data::toData (int)
-{
-  return 0;
-}
-
-int Data::highLow (double &, double &)
-{
-  return 0;
-}
-
-QList<int> Data::keys ()
-{
-  return QList<int>();
-}
-
-int Data::keyCount ()
-{
-  return 0;
-}
-
-void Data::keyRange (int &, int &)
-{
-}
-
-void Data::append (Data *)
-{
-}
-
-QString Data::toSaveString ()
-{
-  return QString();
-}
-
-int Data::fromSaveString (QString)
-{
-  return 0;
-}
-
-/*
-QString Data::toString ()
-{
-  QStringList l;
-
-  QHashIterator<QString, Setting *> it(_data);
-  while (it.hasNext())
-  {
-    it.next();
-    if (! it.value()->toString().isEmpty())
-      l << it.key() + ";" + QString::number(it.value()->type()) + ";" + it.value()->toString();
-  }
-
-  return l.join("\n");
-}
-
-int Data::fromString (QString d)
-{
-  _data.clear();
-
-  QStringList l = d.split("\n");
-
-  SettingFactory fac;
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-  {
-    QStringList tl = l.at(loop).split(";");
-    if (tl.count() != 3)
-    {
-      qDebug() << "Data::fromString: " << l.at(loop);
-      continue;
-    }
-
-    Setting *setting = fac.setting(tl.at(1));
-    if (! setting)
-    {
-      qDebug() << "Data::fromString: invalid Setting::Type" << tl.at(1);
-      continue;
-    }
-
-    if (setting->set(tl.at(2)))
-    {
-      qDebug() << "Data::fromString: Setting::fromString error" << tl.at(2);
-      delete setting;
-      continue;
-    }
-
-    set(tl.at(0), setting);
-  }
-
-  return 0;
-}
-*/

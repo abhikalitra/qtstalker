@@ -20,144 +20,107 @@
  */
 
 #include "CommandStochFast.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataMA.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "MAType.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 
 #include <QtDebug>
 
-CommandStochFast::CommandStochFast (QObject *p) : Command (p)
+CommandStochFast::CommandStochFast ()
 {
   _name = "STOCH_FAST";
 
-  _values.insert(_ParmTypeK, new DataString());
-  _values.insert(_ParmTypeD, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
-  _values.insert(_ParmTypePeriodK, new DataInteger(5));
-  _values.insert(_ParmTypePeriodD, new DataInteger(3));
-  _values.insert(_ParmTypeMA, new DataMA("EMA"));
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandStochFast::CommandStochFast: error on TA_Initialize");
+  Data td;
+  td.setLabel(QObject::tr("Output %K"));
+  Entity::set(QString("K"), td);
+  
+  td.setLabel(QObject::tr("Output %D"));
+  Entity::set(QString("D"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input Close"));
+  Entity::set(QString("CLOSE"), td);
+  
+  td = Data(5);
+  td.setLabel(QObject::tr("Period K"));
+  Entity::set(QString("PERIOD_K"), td);
+  
+  td = Data(3);
+  td.setLabel(QObject::tr("Period D"));
+  Entity::set(QString("PERIOD_D"), td);
+  
+  MAType mat;
+  td = Data(mat.list(), QString("EMA"));
+  td.setLabel(QObject::tr("MA Type"));
+  Entity::set(QString("MA"), td);
 }
 
-void CommandStochFast::runScript (CommandParse sg, Script *script)
+QString CommandStochFast::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandStochFast::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandStochFast::runScript: invalid High");
-    return;
+    qDebug() << "CommandStochFast::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandStochFast::runScript: invalid Low");
-    return;
+    qDebug() << "CommandStochFast::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
-  if (! iclose)
+  Entity::toData(QString("CLOSE"), td);
+  Entity iclose;
+  if (svc.curve(script, td.toString(), iclose))
   {
-    Command::error("CommandStochFast::runScript: invalid Close");
-    return;
+    qDebug() << "CommandStochFast::run: invalid CLOSE" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow << iclose;
-
-  QList<Data *> lines = getSTOCHF(list,
-				  _values.value(_ParmTypePeriodK)->toInteger(),
-				  _values.value(_ParmTypePeriodD)->toInteger(),
-				  _values.value(_ParmTypeMA)->toInteger());
-  if (lines.count() != 2)
+  Data pk, pd, ma;
+  Entity::toData(QString("PERIOD_K"), pk);
+  Entity::toData(QString("PERIOD_D"), pd);
+  Entity::toData(QString("MA"), ma);
+  
+  Entity parms;
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_STOCHF));
+  parms.set(QString("PERIOD_K"), pk);
+  parms.set(QString("PERIOD_D"), pd);
+  parms.set(QString("MA"), ma);
+  
+  CurveData kl, dl;
+  TALibFunction func;
+  if (func.run(parms, 3, ihigh, ilow, iclose, iclose, 2, kl, dl, dl))
   {
-    qDeleteAll(lines);
-    Command::error("CommandStochFast::runScript: getSTOCHF error");
-    return;
+    qDebug() << "CommandStochFast::run: TALibFunction error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeK)->toString(), lines.at(0));
-  script->setData(_values.value(_ParmTypeD)->toString(), lines.at(1));
+  Entity::toData(QString("K"), td);
+  script->setData(td.toString(), kl);
 
-  Command::done(QString());
-}
+  Entity::toData(QString("D"), td);
+  script->setData(td.toString(), dl);
 
-QList<Data *> CommandStochFast::getSTOCHF (QList<Data *> &list, int kperiod, int dperiod, int type)
-{
-  QList<Data *> lines;
-  if (! list.count())
-    return lines;
-
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return lines;
-
-  int size = keys.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill3(list, keys, &high[0], &low[0], &close[0]);
-  if (! size)
-    return lines;
-
-  TA_RetCode rc = TA_STOCHF(0,
-                            size - 1,
-                            &high[0],
-                            &low[0],
-                            &close[0],
-                            kperiod,
-                            dperiod,
-                            (TA_MAType) type,
-                            &outBeg,
-                            &outNb,
-                            &out[0],
-                            &out2[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getSTOCHF: TA-Lib error" << rc;
-    return lines;
-  }
-
-  lines.clear();
-  Data *c = new CurveData;
-  lines << c;
-  c = new CurveData;
-  lines << c;
-
-  TALibOutput tao;
-  if (tao.fillDouble2(lines, keys, outNb, &out[0], &out2[0]))
-  {
-    qDeleteAll(lines);
-    lines.clear();
-    return lines;
-  }
-
-  return lines;
+  _returnCode = "OK";
+  return _returnCode;
 }

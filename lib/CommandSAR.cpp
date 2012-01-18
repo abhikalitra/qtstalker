@@ -20,122 +20,81 @@
  */
 
 #include "CommandSAR.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataDouble.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 
 #include <QtDebug>
 
-CommandSAR::CommandSAR (QObject *p) : Command (p)
+CommandSAR::CommandSAR ()
 {
   _name = "SAR";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeStepInit, new DataDouble(0.02));
-  _values.insert(_ParmTypeStepMax, new DataDouble(0.2));
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandSAR::CommandSAR: error on TA_Initialize");
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(0.02);
+  td.setLabel(QObject::tr("Step Initial"));
+  Entity::set(QString("STEP_INIT"), td);
+  
+  td = Data(0.2);
+  td.setLabel(QObject::tr("Step Max"));
+  Entity::set(QString("STEP_MAX"), td);
 }
 
-void CommandSAR::runScript (CommandParse sg, Script *script)
+QString CommandSAR::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandSAR::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandSAR::runScript: invalid High");
-    return;
+    qDebug() << "CommandSAR::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandSAR::runScript: invalid Low");
-    return;
+    qDebug() << "CommandSAR::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow;
-
-  Data *line = getSAR(list,
-		      _values.value(_ParmTypeStepInit)->toDouble(),
-		      _values.value(_ParmTypeStepMax)->toDouble());
-  if (! line)
+  Data si, sm;
+  Entity::toData(QString("STEP_INIT"), si);
+  Entity::toData(QString("STEP_MAX"), sm);
+  
+  Entity parms;
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_SAR));
+  parms.set(QString("STEP_INIT"), si);
+  parms.set(QString("STEP_MAX"), sm);
+  
+  CurveData line;
+  TALibFunction func;
+  if (func.run(parms, 2, ihigh, ilow, ilow, ilow, 1, line, line, line))
   {
-    Command::error("CommandSAR::runScript: getSAR error");
-    return;
+    qDebug() << "CommandSAR::run: TALibFunction error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
-}
-
-Data * CommandSAR::getSAR (QList<Data *> &list, double init, double max)
-{
-  if (list.count() != 2)
-    return 0;
-
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
-
-  int size = keys.count();
-  TA_Real out[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill2(list, keys, &high[0], &low[0]);
-  if (! size)
-    return 0;
-
-  TA_RetCode rc = TA_SAR(0,
-                         size - 1,
-                         &high[0],
-                         &low[0],
-			 init,
-			 max,
-                         &outBeg,
-                         &outNb,
-                         &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getSAR: TA-Lib error" << rc;
-    return 0;
-  }
-
-  QList<Data *> outs;
-  Data *c = new CurveData;
-  outs.append(c);
-
-  TALibOutput tao;
-  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
-  {
-    delete c;
-    return 0;
-  }
-
-  return c;
+  _returnCode = "OK";
+  return _returnCode;
 }

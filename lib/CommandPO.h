@@ -26,28 +26,9 @@
 
 class CommandPO : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypePeriodFast,
-      _ParmTypePeriodSlow,
-      _ParmTypeMA,
-      _ParmTypeMethod
-    };
-
-    enum Method
-    {
-      _APO,
-      _PPO
-    };
-
-    CommandPO (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getPO (QList<Data *> &, int, int, int, int);
+    CommandPO ();
+    QString run (CommandParse &, void *);
 
   private:
     QStringList _method;

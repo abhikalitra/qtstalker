@@ -26,20 +26,9 @@
 
 class CommandSTDDEV : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypePeriod,
-      _ParmTypeDev
-    };
-
-    CommandSTDDEV (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getSTDDEV (QList<Data *> &, int, double);
+    CommandSTDDEV ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

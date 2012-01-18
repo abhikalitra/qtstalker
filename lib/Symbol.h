@@ -25,61 +25,12 @@
 #ifndef SYMBOL_HPP
 #define SYMBOL_HPP
 
-#include <QString>
-#include <QDateTime>
-#include <QMetaType>
-#include <QHash>
+#include "Entity.h"
 
-#include "Data.h"
-
-class Symbol
+class Symbol : public Entity
 {
   public:
     Symbol ();
-    ~Symbol ();
-    void clear ();
-    int set (int, Data *);
-    Data * getData (int);
-    QList<int> barKeys ();
-    int barKeyCount ();
-    void append (Data *);
-    void setSymbol (QString);
-    QString symbol ();
-    void setExchange (QString);
-    QString exchange ();
-    void setName (QString);
-    QString name ();
-    void setLength (int);
-    int length ();
-    void setRange (int);
-    int range ();
-    void setStartDate (QDateTime);
-    QDateTime startDate ();
-    void setEndDate (QDateTime);
-    QDateTime endDate ();
-    void setTable (QString);
-    QString table ();
-    void setType (QString);
-    QString type ();
-    void copy (Symbol *);
-    QString symbolFull ();
-    int setSymbolFull (QString);
-
-  private:
-    QHash<int, Data *> _bars;
-    int _startIndex;
-    int _endIndex;
-    QString _symbol;
-    QString _exchange;
-    QString _name;
-    int _length;
-    int _range;
-    QDateTime _startDate;
-    QDateTime _endDate;
-    QString _table;
-    QString _type;
 };
-
-Q_DECLARE_METATYPE(Symbol)
 
 #endif

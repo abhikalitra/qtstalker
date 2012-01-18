@@ -26,19 +26,9 @@
 
 class CommandMA : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeName,
-      _ParmTypeInput,
-      _ParmTypePeriod,
-      _ParmTypeType
-    };
-
-    CommandMA (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandMA ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

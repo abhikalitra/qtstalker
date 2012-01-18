@@ -22,7 +22,8 @@
 #include "GroupAdd.h"
 #include "SelectDialog.h"
 #include "Global.h"
-#include "GroupDataBase.h"
+#include "EAVDataBase.h"
+#include "GroupDataBaseKey.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -47,7 +48,7 @@ void GroupAdd::add ()
   }
 
   QStringList l;
-  GroupDataBase db;
+  EAVDataBase db("groups");
   db.names(l);
 
   SelectDialog *dialog = new SelectDialog(0);
@@ -72,23 +73,37 @@ void GroupAdd::add2 (QStringList gl)
     return;
   }
 
-  GroupDataBase db;
-  QStringList g;
-  db.load(gl.at(0), g);
+  Entity g;
+  g.setName(gl.at(0));
+  
+  EAVDataBase db("groups");
+  if (db.get(&g))
+  {
+    done();
+    return;
+  }
+
+  GroupDataBaseKey gkeys;
+  Data td;
+  g.toData(gkeys.indexToString(GroupDataBaseKey::_LIST), td);
+  QStringList l = td.toList();
 
   int loop = 0;
-  for (; loop < _symbols.count(); loop++)
-    g << _symbols.at(loop);
+  for (; loop < _symbols.size(); loop++)
+    l << _symbols.at(loop);
 
-  g.removeDuplicates();
+  l.removeDuplicates();
+
+  Data dl;
+  dl.set(l);
+  g.set(gkeys.indexToString(GroupDataBaseKey::_LIST), dl);
 
   db.transaction();
-
-  QStringList tl;
-  tl << gl.at(0);
-  db.remove(tl);
-
-  db.save(gl.at(0), g);
+  if (db.set(&g))
+  {
+    done();
+    return;
+  }
   db.commit();
 
   emit signalDone();

@@ -22,97 +22,106 @@
 #include "CommandFI.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataString.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
-CommandFI::CommandFI (QObject *p) : Command (p)
+CommandFI::CommandFI ()
 {
   _name = "FI";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
-  _values.insert(_ParmTypeVolume, new DataString());
+  Data td(QString("adx"));
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input Close"));
+  Entity::set(QString("CLOSE"), td);
+  
+  td = Data(QString("volume"));
+  td.setLabel(QObject::tr("Input Volume"));
+  Entity::set(QString("VOLUME"), td);
 }
 
-void CommandFI::runScript (CommandParse sg, Script *script)
+QString CommandFI::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandFI::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("CLOSE"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
-  if (! iclose)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandFI::runScript: invalid Close");
-    return;
+    qDebug() << "CommandFI::run: invalid CLOSE" << td.toString();
+    return _returnCode;
   }
 
-  Data *ivol = svc.toCurve(script, _values.value(_ParmTypeVolume)->toString(), toffset);
-  if (! ivol)
+  Entity::toData(QString("VOLUME"), td);
+  Entity in2;
+  if (svc.curve(script, td.toString(), in2))
   {
-    Command::error("CommandFI::runScript: invalid Volume");
-    return;
+    qDebug() << "CommandFI::run: invalid VOLUME" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << iclose << ivol;
-
-  Data *line = getFI(list);
-  if (! line)
+  CurveData line;
+  if (getFI(in, in2, line))
   {
-    Command::error("CommandFI::runScript: getFI error");
-    return;
+    qDebug() << "CommandFI::run: getFI error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandFI::getFI (QList<Data *> &list)
+int CommandFI::getFI (Entity &in, Entity &in2, Entity &line)
 {
-  if (list.count() != 2)
-    return 0;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys2(in, in2, keys))
+    return 1;
 
-  Data *line = new CurveData;
-  Data *close = list.at(0);
-  Data *vol = list.at(1);
+  CurveBarKey cbkeys;
   int loop = 1;
   double force = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *cbar = close->toData(keys.at(loop));
-    if (! cbar)
+    Entity cbar;
+    if (in.toEntity(keys.at(loop), cbar))
+      continue;
+    Data close;
+    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), close))
       continue;
 
-    Data *ycbar = close->toData(keys.at(loop - 1));
-    if (! ycbar)
+    Entity ycbar;
+    if (in.toEntity(keys.at(loop - 1), ycbar))
+      continue;
+    Data yclose;
+    if (ycbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), yclose))
       continue;
 
-    Data *vbar = vol->toData(keys.at(loop));
-    if (! vbar)
+    Entity vbar;
+    if (in2.toEntity(keys.at(loop), vbar))
+      continue;
+    Data vol;
+    if (vbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), vol))
       continue;
 
-    double cdiff = cbar->toData(CurveBar::_VALUE)->toDouble() - ycbar->toData(CurveBar::_VALUE)->toDouble();
-    force = vbar->toData(CurveBar::_VALUE)->toDouble() * cdiff;
+    double cdiff = close.toDouble() - yclose.toDouble();
+    force = vol.toDouble() * cdiff;
 
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(force));
-    line->set(keys.at(loop), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(force));
+    line.setEntity(keys.at(loop), b);
   }
 
-  return line;
+  return 0;
 }

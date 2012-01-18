@@ -21,13 +21,14 @@
 
 #include "GroupPage.h"
 #include "Global.h"
-#include "GroupDataBase.h"
+#include "EAVDataBase.h"
 #include "QuoteDataBase.h"
 #include "GroupEditDialog.h"
 #include "GroupAdd.h"
 #include "GroupNew.h"
 #include "GroupDelete.h"
 #include "ChartLoad.h"
+#include "SymbolKey.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -170,7 +171,7 @@ void GroupPage::loadGroups ()
 {
   _groups->clear();
 
-  GroupDataBase db;
+  EAVDataBase db("groups");
   QStringList l;
   db.names(l);
 
@@ -225,28 +226,29 @@ void GroupPage::updateList ()
   if (! _groups->count())
     return;
 
-  GroupDataBase db;
+  EAVDataBase db("groups");
   QStringList l;
-  db.load(_groups->currentText(), l);
+  db.names(l);
 
   QuoteDataBase qdb;
-
-  Symbol *bd = new Symbol;
+  SymbolKey symkeys;
   int loop = 0;
   for (; loop < l.count(); loop++)
   {
-    if (bd->setSymbolFull(l.at(loop)))
-      continue;
+    Symbol bd;
+    bd.set(symkeys.indexToString(SymbolKey::_SYMBOL), Data(l.at(loop)));
 
-    qdb.getSymbol(bd);
+    qdb.getSymbol(&bd);
 
     QListWidgetItem *item = new QListWidgetItem;
     item->setText(l.at(loop));
-    item->setToolTip(bd->name());
+    
+    Data name;
+    bd.toData(symkeys.indexToString(SymbolKey::_SYMBOL), name);
+    item->setToolTip(name.toString());
+    
     _nav->addItem(item);
   }
-
-  delete bd;
 }
 
 void GroupPage::selectionChanged ()
@@ -263,13 +265,6 @@ void GroupPage::selectionChanged ()
   _actions.value(_EDIT_GROUP)->setEnabled(status);
   _actions.value(_DELETE_GROUP)->setEnabled(status);
 }
-
-/*
-void GroupPage::setBusyFlag (int)
-{
-  _nav->setBusyFlag(d);
-}
-*/
 
 void GroupPage::itemClicked (QListWidgetItem *d)
 {

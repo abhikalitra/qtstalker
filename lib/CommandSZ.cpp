@@ -25,85 +25,96 @@
 #include "CommandSZ.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataInteger.h"
-#include "DataString.h"
-#include "DataList.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
-CommandSZ::CommandSZ (QObject *p) : Command (p)
+CommandSZ::CommandSZ ()
 {
   _name = "SZ";
   _method << "LONG" << "SHORT";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypePeriod, new DataInteger(10));
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(10);
+  td.setLabel(QObject::tr("Period"));
+  Entity::set(QString("PERIOD"), td);
 
-  DataList *dl = new DataList(_method.at(0));
-  dl->set(_method);
-  _values.insert(_ParmTypeMethod, dl);
-
-  _values.insert(_ParmTypeNoDecline, new DataInteger(2));
-  _values.insert(_ParmTypeCoeff, new DataDouble(2));
+  td = Data(_method, _method.at(0));
+  td.setLabel(QObject::tr("Method"));
+  Entity::set(QString("METHOD"), td);
+  
+  td = Data(2);
+  td.setLabel(QObject::tr("No Decline Period"));
+  Entity::set(QString("PERIOD_ND"), td);
+  
+  td = Data(2.0);
+  td.setLabel(QObject::tr("Coefficient"));
+  Entity::set(QString("COEFF"), td);
 }
 
-void CommandSZ::runScript (CommandParse sg, Script *script)
+QString CommandSZ::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandSZ::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandSZ::runScript: invalid High");
-    return;
+    qDebug() << "CommandSZ::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandSZ::runScript: invalid Low");
-    return;
+    qDebug() << "CommandSZ::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow;
-
-  Data *line = getSZ(list,
-		     _values.value(_ParmTypeMethod)->toInteger(),
-		     _values.value(_ParmTypePeriod)->toInteger(),
-		     _values.value(_ParmTypeNoDecline)->toInteger(),
-	             _values.value(_ParmTypeCoeff)->toDouble());
-  if (! line)
+  Data period, ndp, coeff, method;
+  Entity::toData(QString("PERIOD"), period);
+  Entity::toData(QString("PERIOD_ND"), ndp);
+  Entity::toData(QString("COEFF"), coeff);
+  Entity::toData(QString("METHOD"), method);
+  
+  CurveData line;
+  if (getSZ(ihigh, ilow, method.toInteger(), period.toInteger(), ndp.toInteger(), coeff.toDouble(), line))
   {
-    Command::error("CommandSZ::runScript: getSZ error");
-    return;
+    qDebug() << "CommandSZ::runScript: getSZ error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_decline_period, double coefficient)
+int CommandSZ::getSZ (Entity &ihigh, Entity &ilow, int method, int period, int no_decline_period,
+		      double coefficient, Entity &line)
 {
-  if (list.count() != 2)
-    return 0;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys2(ihigh, ilow, keys))
+    return 1;
 
   int display_uptrend = 0;
   int display_dntrend = 0;
@@ -115,9 +126,8 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
   if (position & 2) // short
     display_dntrend = 1;
 
-  Data *sz_uptrend = new CurveData;
-  Data *sz_dntrend = new CurveData;
-
+  CurveData sz_uptrend;
+  CurveData sz_dntrend;
   double uptrend_stop = 0;
   double dntrend_stop = 0;
 
@@ -136,11 +146,10 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     old_dntrend_stops[loop] = 0;
   }
 
-  Data *ihigh = list.at(0);
-  Data *ilow = list.at(1);
+  CurveBarKey cbkeys;
   int ipos = period + 1;
   int start = ipos;
-  for (; ipos < keys.count(); ipos++)
+  for (; ipos < keys.size(); ipos++)
   {
     // calculate downside/upside penetration for lookback period
     int lbloop;
@@ -153,26 +162,38 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     double dntrend_noise_cnt = 0;
     for (lbloop = lbstart; lbloop < ipos; lbloop++)
     {
-      Data *hbar = ihigh->toData(keys.at(lbloop));
-      if (! hbar)
+      Entity hbar;
+      if (ihigh.toEntity(keys.at(lbloop), hbar))
+        continue;
+      Data high;
+      if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), high))
+        continue;
+      
+      Entity phbar;
+      if (ihigh.toEntity(keys.at(lbloop - 1), phbar))
+        continue;
+      Data phigh;
+      if (phbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), phigh))
         continue;
 
-      Data *phbar = ihigh->toData(keys.at(lbloop - 1));
-      if (! phbar)
+      Entity lbar;
+      if (ilow.toEntity(keys.at(lbloop), lbar))
+        continue;
+      Data low;
+      if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), low))
+        continue;
+      
+      Entity plbar;
+      if (ilow.toEntity(keys.at(lbloop - 1), plbar))
+        continue;
+      Data plow;
+      if (plbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), plow))
         continue;
 
-      Data *lbar = ilow->toData(keys.at(lbloop));
-      if (! lbar)
-        continue;
-
-      Data *plbar = ilow->toData(keys.at(lbloop - 1));
-      if (! plbar)
-        continue;
-
-      double lo_curr = lbar->toData(CurveBar::_VALUE)->toDouble();
-      double lo_last = plbar->toData(CurveBar::_VALUE)->toDouble();
-      double hi_curr = hbar->toData(CurveBar::_VALUE)->toDouble();
-      double hi_last = phbar->toData(CurveBar::_VALUE)->toDouble();
+      double lo_curr = low.toDouble();
+      double lo_last = plow.toDouble();
+      double hi_curr = high.toDouble();
+      double hi_last = phigh.toDouble();
       if (lo_last > lo_curr)
       {
         uptrend_noise_avg += lo_last - lo_curr;
@@ -190,16 +211,22 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     if (dntrend_noise_cnt > 0)
       dntrend_noise_avg /= dntrend_noise_cnt;
 
-    Data *phbar = ihigh->toData(keys.at(ipos - 1));
-    if (! phbar)
+    Entity phbar;
+    if (ihigh.toEntity(keys.at(ipos - 1), phbar))
+      continue;
+    Data phigh;
+    if (phbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), phigh))
       continue;
 
-    Data *plbar = ilow->toData(keys.at(ipos - 1));
-    if (! plbar)
+    Entity plbar;
+    if (ilow.toEntity(keys.at(ipos - 1), plbar))
+      continue;
+    Data plow;
+    if (plbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), plow))
       continue;
 
-    double lo_last = plbar->toData(CurveBar::_VALUE)->toDouble();
-    double hi_last = phbar->toData(CurveBar::_VALUE)->toDouble();
+    double lo_last = plow.toDouble();
+    double hi_last = phigh.toDouble();
     uptrend_stop = lo_last - coefficient * uptrend_noise_avg;
     dntrend_stop = hi_last + coefficient * dntrend_noise_avg;
 
@@ -226,27 +253,19 @@ Data * CommandSZ::getSZ (QList<Data *> &list, int method, int period, int no_dec
     old_uptrend_stops[0] = uptrend_stop;
     old_dntrend_stops[0] = dntrend_stop;
 
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(adjusted_uptrend_stop));
-    sz_uptrend->set(keys.at(ipos), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(adjusted_uptrend_stop));
+    sz_uptrend.setEntity(keys.at(ipos), b);
 
-    b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(adjusted_dntrend_stop));
-    sz_dntrend->set(keys.at(ipos), b);
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(adjusted_dntrend_stop));
+    sz_dntrend.setEntity(keys.at(ipos), b);
   }
 
-  Data *pl = 0;
   if (display_uptrend)
-  {
-    pl = sz_uptrend;
-    delete sz_dntrend;
-  }
+    line = sz_uptrend;
 
   if (display_dntrend)
-  {
-    pl = sz_dntrend;
-    delete sz_uptrend;
-  }
+    line = sz_dntrend;
 
-  return pl;
+  return 0;
 }

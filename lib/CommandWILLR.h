@@ -26,21 +26,9 @@
 
 class CommandWILLR : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose,
-      _ParmTypePeriod
-    };
-
-    CommandWILLR (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getWILLR (QList<Data *> &, int);
+    CommandWILLR ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

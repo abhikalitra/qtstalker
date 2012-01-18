@@ -20,6 +20,8 @@
  */
 
 #include "CommandFactory.h"
+#include "CommandType.h"
+
 #include "CommandAD.h"
 #include "CommandADX.h"
 #include "CommandArithmetic.h"
@@ -30,7 +32,7 @@
 #include "CommandBETA.h"
 #include "CommandBOP.h"
 #include "CommandBreakout.h"
-#include "CommandBuy.h"
+//#include "CommandBuy.h"
 #include "CommandCandlePattern.h"
 #include "CommandCCI.h"
 #include "CommandChart.h"
@@ -40,29 +42,12 @@
 #include "CommandCompare.h"
 #include "CommandCORREL.h"
 #include "CommandCSV.h"
-#include "CommandDataBarLength.cpp"
-#include "CommandDataBool.cpp"
-#include "CommandDataColor.cpp"
-#include "CommandDataDateRange.cpp"
-#include "CommandDataDateTime.cpp"
-#include "CommandDataDouble.cpp"
-#include "CommandDataFile.cpp"
-#include "CommandDataFont.cpp"
-#include "CommandDataGet.h"
-#include "CommandDataInteger.cpp"
-#include "CommandDataList.cpp"
-#include "CommandDataMA.cpp"
-#include "CommandDataOp.cpp"
-#include "CommandDataSet.h"
-#include "CommandDataString.cpp"
-#include "CommandDataSymbol.cpp"
 #include "CommandDialog.h"
-#include "CommandDialogRun.h"
-#include "CommandDialogSet.h"
 #include "CommandFI.h"
+#include "CommandGet.h"
 #include "CommandGroupPanelRefresh.h"
 #include "CommandGroupSave.h"
-#include "CommandHLine.h"
+//#include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandLINEARREG.h"
 #include "CommandMA.h"
@@ -72,6 +57,7 @@
 #include "CommandMINMAX.h"
 #include "CommandMFI.h"
 #include "CommandMOM.h"
+#include "CommandNew.h"
 #include "CommandNewHighLow.h"
 #include "CommandNormalize.h"
 #include "CommandPHASOR.h"
@@ -79,11 +65,13 @@
 #include "CommandPlotOHLC.h"
 #include "CommandPlotLine.h"
 #include "CommandPlotHistogram.h"
-#include "CommandRetracement.h"
+//#include "CommandRetracement.h"
 #include "CommandROC.h"
 #include "CommandRSI.h"
+#include "CommandRun.h"
 #include "CommandSAR.h"
-#include "CommandSell.h"
+//#include "CommandSell.h"
+#include "CommandSet.h"
 #include "CommandShift.h"
 #include "CommandSINE.h"
 #include "CommandSTDDEV.h"
@@ -95,17 +83,17 @@
 #include "CommandSymbolCurrent.h"
 #include "CommandT3.h"
 //#include "CommandTest.h"
-#include "CommandText.h"
+//#include "CommandText.h"
 #include "CommandTHERM.h"
-#include "CommandTLine.h"
+//#include "CommandTLine.h"
 #include "CommandTRIX.h"
 #include "CommandTypicalPrice.h"
 #include "CommandULTOSC.h"
 #include "CommandVAR.h"
-#include "CommandVBP.h"
+//#include "CommandVBP.h"
 #include "CommandVFI.h"
 #include "CommandVIDYA.h"
-#include "CommandVLine.h"
+//#include "CommandVLine.h"
 #include "CommandWeightedClose.h"
 #include "CommandWILLR.h"
 #include "CommandYahooHistory.h"
@@ -114,323 +102,243 @@
 
 CommandFactory::CommandFactory ()
 {
-  _types << "AD" << "ADX" << "ARITHMETIC" << "AROON" << "ATR" << "AVERAGE_PRICE";
-  _types << "BBANDS" << "BETA" << "BOP" << "BREAKOUT";
-  _types << "CANDLE_PATTERN" << "CCI" << "CHART";
-  _types << "CHART_OBJECT_BUY" << "CHART_OBJECT_HLINE" << "CHART_OBJECT_RETRACEMENT" << "CHART_OBJECT_SELL";
-  _types << "CHART_OBJECT_TEXT" << "CHART_OBJECT_TLINE" << "CHART_OBJECT_VLINE";
-  _types << "CHART_PANEL_REFRESH" << "CHART_UPDATE";
-  _types << "CMO" << "COMPARE" << "CORREL" << "CSV";
-  _types << "DATA_BAR_LENGTH" << "DATA_BOOL" << "DATA_COLOR" << "DATA_DATE_RANGE";
-  _types << "DATA_DATE_TIME" << "DATA_DOUBLE" << "DATA_FILE" << "DATA_FONT";
-  _types << "DATA_GET" << "DATA_INTEGER" << "DATA_LIST" << "DATA_MA" << "DATA_OP";
-  _types << "DATA_SET" << "DATA_STRING" << "DATA_SYMBOL";
-  _types << "DIALOG" << "DIALOG_RUN" << "DIALOG_SET";
-  _types << "FI";
-  _types << "GROUP_PANEL_REFRESH" << "GROUP_SAVE";
-  _types << "HT" << "HT_PHASOR" << "HT_SINE";
-  _types << "LINEARREG";
-  _types << "MA" << "MACD" << "MAMA" << "MEDIAN_PRICE" << "MINMAX" << "MFI" << "MOM";
-  _types << "NEW_HIGH_LOW" << "NORMALIZE";
-  _types << "PO" << "PLOT_LINE" << "PLOT_HISTOGRAM" << "PLOT_OHLC";
-  _types << "ROC" << "RSI";
-  _types << "SAR";
-  _types << "SHIFT" << "STDDEV";
-  _types << "STOCH_FAST" << "STOCH_RSI" << "STOCH_SLOW" << "SZ";
-  _types << "SYMBOL" << "SYMBOL_CURRENT";
-  _types << "T3" << "TEST" << "THERM" << "TRIX" << "TYPICAL_PRICE";
-  _types << "ULTOSC";
-  _types << "VAR" << "VBP" << "VFI" << "VIDYA";
-  _types << "WEIGHTED_CLOSE" << "WILLR";
-  _types << "YAHOO_HISTORY";
 }
 
-Command * CommandFactory::command (QObject *p, QString type)
+Command * CommandFactory::command (QString type)
 {
   Command *c = 0;
+  CommandType ct;
 
-  switch ((Type) _types.indexOf(type))
+  switch ((CommandType::Type) ct.stringToType(type))
   {
-    case _AD:
-      c = new CommandAD(p);
+    case CommandType::_AD:
+      c = new CommandAD;
       break;
-    case _ADX:
-      c = new CommandADX(p);
+    case CommandType::_ADX:
+      c = new CommandADX;
       break;
-    case _ARITHMETIC:
-      c = new CommandArithmetic(p);
+    case CommandType::_ARITHMETIC:
+      c = new CommandArithmetic;
       break;
-    case _AROON:
-      c = new CommandAROON(p);
+    case CommandType::_AROON:
+      c = new CommandAROON;
       break;
-    case _ATR:
-      c = new CommandATR(p);
+    case CommandType::_ATR:
+      c = new CommandATR;
       break;
-    case _AVERAGE_PRICE:
-      c = new CommandAveragePrice(p);
+    case CommandType::_AVERAGE_PRICE:
+      c = new CommandAveragePrice;
       break;
-    case _BBANDS:
-      c = new CommandBBANDS(p);
+    case CommandType::_BBANDS:
+      c = new CommandBBANDS;
       break;
-    case _BETA:
-      c = new CommandBETA(p);
+    case CommandType::_BETA:
+      c = new CommandBETA;
       break;
-    case _BOP:
-      c = new CommandBOP(p);
+    case CommandType::_BOP:
+      c = new CommandBOP;
       break;
-    case _BREAKOUT:
-      c = new CommandBreakout(p);
+    case CommandType::_BREAKOUT:
+      c = new CommandBreakout;
       break;
-    case _CANDLE_PATTERN:
-      c = new CommandCandlePattern(p);
+    case CommandType::_CANDLE_PATTERN:
+      c = new CommandCandlePattern;
       break;
-    case _CCI:
-      c = new CommandCCI(p);
+    case CommandType::_CCI:
+      c = new CommandCCI;
       break;
-    case _CHART:
-      c = new CommandChart(p);
+    case CommandType::_CHART:
+      c = new CommandChart;
       break;
-    case _CHART_OBJECT_BUY:
-      c = new CommandBuy(p);
+    case CommandType::_CHART_OBJECT_BUY:
+//      c = new CommandBuy;
       break;
-    case _CHART_OBJECT_HLINE:
-      c = new CommandHLine(p);
+    case CommandType::_CHART_OBJECT_HLINE:
+//      c = new CommandHLine;
       break;
-    case _CHART_OBJECT_RETRACEMENT:
-      c = new CommandRetracement(p);
+    case CommandType::_CHART_OBJECT_RETRACEMENT:
+//      c = new CommandRetracement;
       break;
-    case _CHART_OBJECT_SELL:
-      c = new CommandSell(p);
+    case CommandType::_CHART_OBJECT_SELL:
+//      c = new CommandSell;
       break;
-    case _CHART_OBJECT_TEXT:
-      c = new CommandText(p);
+    case CommandType::_CHART_OBJECT_TEXT:
+//      c = new CommandText;
       break;
-    case _CHART_OBJECT_TLINE:
-      c = new CommandTLine(p);
+    case CommandType::_CHART_OBJECT_TLINE:
+//      c = new CommandTLine;
       break;
-    case _CHART_OBJECT_VLINE:
-      c = new CommandVLine(p);
+    case CommandType::_CHART_OBJECT_VLINE:
+//      c = new CommandVLine;
       break;
-    case _CHART_PANEL_REFRESH:
-      c = new CommandChartPanelRefresh(p);
+    case CommandType::_CHART_PANEL_REFRESH:
+      c = new CommandChartPanelRefresh;
       break;
-    case _CHART_UPDATE:
-      c = new CommandChartUpdate(p);
+    case CommandType::_CHART_UPDATE:
+      c = new CommandChartUpdate;
       break;
-    case _CMO:
-      c = new CommandCMO(p);
+    case CommandType::_CMO:
+      c = new CommandCMO;
       break;
-    case _COMPARE:
-      c = new CommandCompare(p);
+    case CommandType::_COMPARE:
+      c = new CommandCompare;
       break;
-    case _CORREL:
-      c = new CommandCORREL(p);
+    case CommandType::_CORREL:
+      c = new CommandCORREL;
       break;
-    case _CSV:
-      c = new CommandCSV(p);
+    case CommandType::_CSV:
+      c = new CommandCSV;
       break;
-    case _DATA_BAR_LENGTH:
-      c = new CommandDataBarLength(p);
+    case CommandType::_DIALOG:
+      c = new CommandDialog;
       break;
-    case _DATA_BOOL:
-      c = new CommandDataBool(p);
+    case CommandType::_FI:
+      c = new CommandFI;
       break;
-    case _DATA_COLOR:
-      c = new CommandDataColor(p);
+    case CommandType::_GET:
+      c = new CommandGet;
       break;
-    case _DATA_DATE_RANGE:
-      c = new CommandDataDateRange(p);
+    case CommandType::_GROUP_PANEL_REFRESH:
+      c = new CommandGroupPanelRefresh;
       break;
-    case _DATA_DATE_TIME:
-      c = new CommandDataDateTime(p);
+    case CommandType::_GROUP_SAVE:
+      c = new CommandGroupSave;
       break;
-    case _DATA_DOUBLE:
-      c = new CommandDataDouble(p);
+    case CommandType::_HT:
+      c = new CommandHT;
       break;
-    case _DATA_FILE:
-      c = new CommandDataFile(p);
+    case CommandType::_HT_PHASOR:
+      c = new CommandPHASOR;
       break;
-    case _DATA_FONT:
-      c = new CommandDataFont(p);
+    case CommandType::_HT_SINE:
+      c = new CommandSINE;
       break;
-    case _DATA_GET:
-      c = new CommandDataGet(p);
+    case CommandType::_LINEARREG:
+      c = new CommandLINEARREG;
       break;
-    case _DATA_INTEGER:
-      c = new CommandDataInteger(p);
+    case CommandType::_MA:
+      c = new CommandMA;
       break;
-    case _DATA_LIST:
-      c = new CommandDataList(p);
+    case CommandType::_MACD:
+      c = new CommandMACD;
       break;
-    case _DATA_MA:
-      c = new CommandDataMA(p);
+    case CommandType::_MAMA:
+      c = new CommandMAMA;
       break;
-    case _DATA_OP:
-      c = new CommandDataOp(p);
+    case CommandType::_MEDIAN_PRICE:
+      c = new CommandMedianPrice;
       break;
-    case _DATA_SET:
-      c = new CommandDataSet(p);
+    case CommandType::_MINMAX:
+      c = new CommandMINMAX;
       break;
-    case _DATA_STRING:
-      c = new CommandDataString(p);
+    case CommandType::_MFI:
+      c = new CommandMFI;
       break;
-    case _DATA_SYMBOL:
-      c = new CommandDataSymbol(p);
+    case CommandType::_MOM:
+      c = new CommandMOM;
       break;
-    case _DIALOG:
-      c = new CommandDialog(p);
+    case CommandType::__NEW:
+      c = new CommandNew;
       break;
-    case _DIALOG_RUN:
-      c = new CommandDialogRun(p);
+    case CommandType::_NEW_HIGH_LOW:
+      c = new CommandNewHighLow;
       break;
-    case _DIALOG_SET:
-      c = new CommandDialogSet(p);
+    case CommandType::_NORMALIZE:
+      c = new CommandNormalize;
       break;
-    case _FI:
-      c = new CommandFI(p);
+    case CommandType::_PO:
+      c = new CommandPO;
       break;
-    case _GROUP_PANEL_REFRESH:
-      c = new CommandGroupPanelRefresh(p);
+    case CommandType::_PLOT_LINE:
+      c = new CommandPlotLine;
       break;
-    case _GROUP_SAVE:
-      c = new CommandGroupSave(p);
+    case CommandType::_PLOT_HISTOGRAM:
+      c = new CommandPlotHistogram;
       break;
-    case _HT:
-      c = new CommandHT(p);
+    case CommandType::_PLOT_OHLC:
+      c = new CommandPlotOHLC;
       break;
-    case _HT_PHASOR:
-      c = new CommandPHASOR(p);
+    case CommandType::_ROC:
+      c = new CommandROC;
       break;
-    case _HT_SINE:
-      c = new CommandSINE(p);
+    case CommandType::_RSI:
+      c = new CommandRSI;
       break;
-    case _LINEARREG:
-      c = new CommandLINEARREG(p);
+    case CommandType::_RUN:
+      c = new CommandRun;
       break;
-    case _MA:
-      c = new CommandMA(p);
+    case CommandType::_SAR:
+      c = new CommandSAR;
       break;
-    case _MACD:
-      c = new CommandMACD(p);
+    case CommandType::_SET:
+      c = new CommandSet;
       break;
-    case _MAMA:
-      c = new CommandMAMA(p);
+    case CommandType::_SHIFT:
+      c = new CommandShift;
       break;
-    case _MEDIAN_PRICE:
-      c = new CommandMedianPrice(p);
+    case CommandType::_STDDEV:
+      c = new CommandSTDDEV;
       break;
-    case _MINMAX:
-      c = new CommandMINMAX(p);
+    case CommandType::_STOCH_FAST:
+      c = new CommandStochFast;
       break;
-    case _MFI:
-      c = new CommandMFI(p);
+    case CommandType::_STOCH_RSI:
+      c = new CommandStochRSI;
       break;
-    case _MOM:
-      c = new CommandMOM(p);
+    case CommandType::_STOCH_SLOW:
+      c = new CommandStochSlow;
       break;
-    case _NEW_HIGH_LOW:
-      c = new CommandNewHighLow(p);
+    case CommandType::_SZ:
+      c = new CommandSZ;
       break;
-    case _NORMALIZE:
-      c = new CommandNormalize(p);
+    case CommandType::_SYMBOL:
+      c = new CommandSymbol;
       break;
-    case _PO:
-      c = new CommandPO(p);
+    case CommandType::_SYMBOL_CURRENT:
+      c = new CommandSymbolCurrent;
       break;
-    case _PLOT_LINE:
-      c = new CommandPlotLine(p);
+    case CommandType::_T3:
+      c = new CommandT3;
       break;
-    case _PLOT_HISTOGRAM:
-      c = new CommandPlotHistogram(p);
+    case CommandType::_TEST:
+//      c = new CommandTest;
       break;
-    case _PLOT_OHLC:
-      c = new CommandPlotOHLC(p);
+    case CommandType::_THERM:
+      c = new CommandTHERM;
       break;
-    case _ROC:
-      c = new CommandROC(p);
+    case CommandType::_TRIX:
+      c = new CommandTRIX;
       break;
-    case _RSI:
-      c = new CommandRSI(p);
+    case CommandType::_TYPICAL_PRICE:
+      c = new CommandTypicalPrice;
       break;
-    case _SAR:
-      c = new CommandSAR(p);
+    case CommandType::_ULTOSC:
+      c = new CommandULTOSC;
       break;
-    case _SHIFT:
-      c = new CommandShift(p);
+    case CommandType::_VAR:
+      c = new CommandVAR;
       break;
-    case _STDDEV:
-      c = new CommandSTDDEV(p);
+    case CommandType::_VBP:
+//      c = new CommandVBP;
       break;
-    case _STOCH_FAST:
-      c = new CommandStochFast(p);
+    case CommandType::_VFI:
+      c = new CommandVFI;
       break;
-    case _STOCH_RSI:
-      c = new CommandStochRSI(p);
+    case CommandType::_VIDYA:
+      c = new CommandVIDYA;
       break;
-    case _STOCH_SLOW:
-      c = new CommandStochSlow(p);
+    case CommandType::_WEIGHTED_CLOSE:
+      c = new CommandWeightedClose;
       break;
-    case _SZ:
-      c = new CommandSZ(p);
+    case CommandType::_WILLR:
+      c = new CommandWILLR;
       break;
-    case _SYMBOL:
-      c = new CommandSymbol(p);
-      break;
-    case _SYMBOL_CURRENT:
-      c = new CommandSymbolCurrent(p);
-      break;
-    case _T3:
-      c = new CommandT3(p);
-      break;
-    case _TEST:
-//      c = new CommandTest(p);
-      break;
-    case _THERM:
-      c = new CommandTHERM(p);
-      break;
-    case _TRIX:
-      c = new CommandTRIX(p);
-      break;
-    case _TYPICAL_PRICE:
-      c = new CommandTypicalPrice(p);
-      break;
-    case _ULTOSC:
-      c = new CommandULTOSC(p);
-      break;
-    case _VAR:
-      c = new CommandVAR(p);
-      break;
-    case _VBP:
-      c = new CommandVBP(p);
-      break;
-    case _VFI:
-      c = new CommandVFI(p);
-      break;
-    case _VIDYA:
-      c = new CommandVIDYA(p);
-      break;
-    case _WEIGHTED_CLOSE:
-      c = new CommandWeightedClose(p);
-      break;
-    case _WILLR:
-      c = new CommandWILLR(p);
-      break;
-    case _YAHOO_HISTORY:
-      c = new CommandYahooHistory(p);
+    case CommandType::_YAHOO_HISTORY:
+      c = new CommandYahooHistory;
       break;
     default:
       break;
   }
 
   return c;
-}
-
-QStringList CommandFactory::list ()
-{
-  return _types;
-}
-
-int CommandFactory::stringToType (QString d)
-{
-  return _types.indexOf(d);
 }

@@ -26,19 +26,9 @@
 
 class CommandMOM : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypePeriod
-    };
-
-    CommandMOM (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getMOM (QList<Data *> &, int);
+    CommandMOM ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

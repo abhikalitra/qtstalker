@@ -58,7 +58,7 @@ class ChartPage : public QWidget
     void chartOpened (QString);
     void addToGroup ();
     void symbolSearch ();
-    void setSearch (QString exchange, QString symbol);
+    void setSearch (QString symbol);
     void allButtonPressed ();
     void buttonStatus ();
     void deleteSymbol ();
@@ -67,7 +67,6 @@ class ChartPage : public QWidget
 
   protected:
     QString _searchString;
-    QString _searchExchange;
     QListWidget *_nav;
     QMenu *_menu;
     QHash<int, QAction *> _actions;

@@ -26,19 +26,10 @@
 
 class CommandShift : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypePeriod
-    };
-
-    CommandShift (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getShift (Data *, int);
+    CommandShift ();
+    QString run (CommandParse &, void *);
+    int getShift (Entity &in, int period, Entity &line);
 };
 
 #endif

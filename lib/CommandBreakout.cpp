@@ -22,93 +22,101 @@
 #include "CommandBreakout.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataString.h"
-#include "DataList.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
-CommandBreakout::CommandBreakout (QObject *p) : Command (p)
+CommandBreakout::CommandBreakout ()
 {
   _name = "BREAKOUT";
   _method << "ABOVE" << "BELOW";
 
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypeInput2, new DataString());
+  Data td(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td.setLabel(QObject::tr("Input 2"));
+  Entity::set(QString("INPUT2"), td);
 
-  DataList *dl = new DataList(_method.at(0));
-  dl->set(_method);
-  _values.insert(_ParmTypeMethod, dl);
+  td = Data(_method, _method.at(0));
+  td.setLabel(QObject::tr("Method"));
+  Entity::set(QString("METHOD"), td);
 }
 
-void CommandBreakout::runScript (CommandParse sg, Script *script)
+QString CommandBreakout::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandBreakout::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandBreakout::runScript: invalid Input");
-    return;
+    qDebug() << "CommandBreakout::run: invalid INPUT" << td.toString();
+    return _returnCode;
   }
 
-  Data *in2 = svc.toCurve(script, _values.value(_ParmTypeInput2)->toString(), toffset);
-  if (! in2)
+  Entity::toData(QString("INPUT2"), td);
+  Entity in2;
+  if (svc.curve(script, td.toString(), in2))
   {
-    Command::error("CommandBreakout::runScript: invalid Input2");
-    return;
+    qDebug() << "CommandBreakout::run: invalid INPUT2" << td.toString();
+    return _returnCode;
   }
 
+  Data method;
+  Entity::toData(QString("METHOD"), method);
+  
   int flag = 0;
-  int rc = breakout(in, in2, _values.value(_ParmTypeMethod)->toInteger(), flag);
-  if (rc)
+  if (breakout(in, in2, method.toInteger(), flag))
   {
-    Command::error("CommandBreakout::runScript: breakout error");
-    return;
+    qDebug() << "CommandBreakout::runScript: breakout error";
+    return _returnCode;
   }
 
-  Command::done(QString::number(flag));
+  _returnCode = QString::number(flag);
+  return _returnCode;
 }
 
-int CommandBreakout::breakout (Data *in, Data *in2, int method, int &flag)
+int CommandBreakout::breakout (Entity &in, Entity &in2, int method, int &flag)
 {
   flag = 0;
 
-  QList<Data *> list;
-  list << in << in2;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys2(in, in2, keys))
+    return 1;
 
-  int end = keys.count() - 1;
+  int end = keys.size() - 1;
   if (end < 0)
     return 1;
 
+  CurveBarKey cbkeys;
   int loop = 0;
-
   if (method == 0)
   {
     for (; loop < end - 1; loop++)
     {
-      Data *bar = in->toData(keys.at(loop));
-      if (! bar)
+      Entity bar;
+      if (in.toEntity(keys.at(loop), bar))
+        continue;
+      Data tv;
+      if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv))
         continue;
 
-      Data *bar2 = in2->toData(keys.at(loop));
-      if (! bar2)
+      Entity bar2;
+      if (in2.toEntity(keys.at(loop), bar2))
+        continue;
+      Data tv2;
+      if (bar2.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv2))
         continue;
 
-      double v = bar->toData(CurveBar::_VALUE)->toDouble();
-      double v2 = bar2->toData(CurveBar::_VALUE)->toDouble();
+      double v = tv.toDouble();
+      double v2 = tv2.toDouble();
       if (v > v2)
         return 0;
     }
@@ -117,33 +125,45 @@ int CommandBreakout::breakout (Data *in, Data *in2, int method, int &flag)
   {
     for (; loop < end - 1; loop++)
     {
-      Data *bar = in->toData(keys.at(loop));
-      if (! bar)
+      Entity bar;
+      if (in.toEntity(keys.at(loop), bar))
+        continue;
+      Data tv;
+      if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv))
         continue;
 
-      Data *bar2 = in2->toData(keys.at(loop));
-      if (! bar2)
+      Entity bar2;
+      if (in2.toEntity(keys.at(loop), bar2))
+        continue;
+      Data tv2;
+      if (bar2.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv2))
         continue;
 
-      double v = bar->toData(CurveBar::_VALUE)->toDouble();
-      double v2 = bar2->toData(CurveBar::_VALUE)->toDouble();
+      double v = tv.toDouble();
+      double v2 = tv2.toDouble();
       if (v < v2)
         return 0;
     }
   }
 
   // compare last bar to confirm breakout
-  Data *bar = in->toData(keys.at(end));
-  if (! bar)
+  Entity bar;
+  if (in.toEntity(keys.at(end), bar))
+    return 0;
+  Data tv;
+  if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv))
     return 0;
 
-  Data *bar2 = in2->toData(keys.at(end));
-  if (! bar2)
+  Entity bar2;
+  if (in2.toEntity(keys.at(end), bar2))
+    return 0;
+  Data tv2;
+  if (bar2.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv2))
     return 0;
 
-  double v = bar->toData(CurveBar::_VALUE)->toDouble();
-  double v2 = bar2->toData(CurveBar::_VALUE)->toDouble();
-
+  double v = tv.toDouble();
+  double v2 = tv2.toDouble();
+  
   if (method == 0)
   {
     if (v <= v2)

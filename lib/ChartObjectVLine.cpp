@@ -23,11 +23,7 @@
 #include "ChartObjectVLine.h"
 #include "GlobalParent.h"
 #include "DateScaleDraw.h"
-#include "ChartObjectData.h"
-#include "DataDateTime.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataColor.h"
+#include "ChartObjectKey.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -36,17 +32,31 @@
 
 ChartObjectVLine::ChartObjectVLine ()
 {
-  _settings->set(ChartObjectData::_TYPE, new DataString(QString("VLine")));
-  _settings->set(ChartObjectData::_DATE, new DataDateTime(QDateTime::currentDateTime()));
-  _settings->set(ChartObjectData::_COLOR, new DataColor(QColor(Qt::red)));
+  ChartObjectKey keys;
+  
+  Data td(QString("VLine"));
+  _settings.set(keys.indexToString(ChartObjectKey::_TYPE), td);
+  
+  td = Data(QDateTime::currentDateTime());
+  td.setLabel(QObject::tr("Date"));
+  _settings.set(keys.indexToString(ChartObjectKey::_DATE), td);
+  
+  td = Data(QColor(Qt::red));
+  td.setLabel(QObject::tr("Color"));
+  _settings.set(keys.indexToString(ChartObjectKey::_COLOR), td);
 }
 
 void ChartObjectVLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &, const QRect &) const
 {
-  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->toData(ChartObjectData::_DATE)->toDateTime()));
+  ChartObjectKey keys;
+  Data date, color;
+  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
+  _settings.toData(keys.indexToString(ChartObjectKey::_COLOR), color);
 
-  p->setPen(_settings->toData(ChartObjectData::_COLOR)->toColor());
+  DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
+  int x = xMap.transform(dsd->x(date.toDateTime()));
+
+  p->setPen(color.toColor());
 
   p->drawLine (x, 0, x, p->window().height());
 
@@ -80,18 +90,23 @@ void ChartObjectVLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScal
 		  t * loop,
 		  _handleWidth,
 		  _handleWidth,
-		  _settings->toData(ChartObjectData::_COLOR)->toColor());
+		  color.toColor());
     }
   }
 }
 
-int ChartObjectVLine::info (Message &info)
+int ChartObjectVLine::info (Entity &info)
 {
-  info.insert(QObject::tr("Type"), _settings->toData(ChartObjectData::_TYPE)->toString());
+  ChartObjectKey keys;
+  Data type, date;
+  _settings.toData(keys.indexToString(ChartObjectKey::_TYPE), type);
+  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
+  
+  info.set(QObject::tr("Type"), type);
 
-  QDateTime dt = _settings->toData(ChartObjectData::_DATE)->toDateTime();
-  info.insert("D", dt.toString("yyyy-MM-dd"));
-  info.insert("T", dt.toString("HH:mm:ss"));
+  QDateTime dt = date.toDateTime();
+  info.set(QString("D"), Data(dt.toString("yyyy-MM-dd")));
+  info.set(QString("T"), Data(dt.toString("HH:mm:ss")));
 
   return 0;
 }
@@ -102,18 +117,22 @@ void ChartObjectVLine::move (QPoint p)
   {
     case _MOVE:
     {
+      ChartObjectKey keys;
+      Data date;
+      _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
+      
       QwtScaleMap map = plot()->canvasMap(QwtPlot::xBottom);
       int x = map.invTransform((double) p.x());
 
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE, new DataDateTime(dt));
+      date.set(dt);
+      _settings.set(keys.indexToString(ChartObjectKey::_DATE), date);
 
       plot()->replot();
 
-      QString s = _settings->toData(ChartObjectData::_DATE)->toString();
-      g_parent->statusBar()->showMessage(s);
+      g_parent->statusBar()->showMessage(date.toString());
 
       _modified++;
       break;

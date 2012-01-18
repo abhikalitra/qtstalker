@@ -20,185 +20,111 @@
  */
 
 #include "CommandChartUpdate.h"
-#include "CurveData.h"
-#include "ChartObjectData.h"
-#include "DataFactory.h"
-#include "CurveFactory.h"
-#include "ChartObjectFactory.h"
-#include "ChartObjectDataBase.h"
-#include "GlobalPlotGroup.h"
-#include "GlobalSymbol.h"
-#include "DataString.h"
 #include "ScriptVerifyCurve.h"
+#include "EntityType.h"
+#include "CurveDataKey.h"
+#include "ChartObjectKey.h"
+#include "SymbolKey.h"
+#include "Script.h"
+#include "ThreadMessageType.h"
+#include "ThreadMessage.h"
 
 #include <QtDebug>
-#include <QTime>
-#include <QHash>
 
-CommandChartUpdate::CommandChartUpdate (QObject *p) : Command (p)
+CommandChartUpdate::CommandChartUpdate ()
 {
   _name = "CHART_UPDATE";
-  _type = _WAIT;
 
-  _values.insert(_ParmTypeChart, new DataString());
-  _values.insert(_ParmTypeDate, new DataString());
+  Data td;
+  td.setLabel(QObject::tr("Chart Name"));
+  Entity::set(QString("CHART"), td);
+
+  td = Data(QString("date"));
+  td.setLabel(QObject::tr("Date Data"));
+  Entity::set(QString("DATE"), td);
 }
 
-void CommandChartUpdate::runScript (CommandParse sg, Script *script)
+QString CommandChartUpdate::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandChartUpdate::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  Data chartName, dateName;
+  Entity::toData(QString("CHART"), chartName);
+  Entity::toData(QString("DATE"), dateName);
 
-  if (chartUpdate(script,
-	          _values.value(_ParmTypeChart)->toString(),
-	          _values.value(_ParmTypeDate)->toString()))
-  {
-    Command::error(QString());
-    return;
-  }
-
-  Command::done(QString());
-}
-
-int CommandChartUpdate::chartUpdate (Script *script, QString name, QString ds)
-{
-  Plot *plot = g_plotGroup->plot(name);
-  if (! plot)
-  {
-    qDebug() << "CommandChartUpdate::chartUpdate: chart not found" << name;
-    return 1;
-  }
-
-  int offset = 0;
+  // send chart date data
+  Entity date;
   ScriptVerifyCurve svc;
-  Data *date = svc.toCurve(script, ds, offset);
-  if (! date)
+  if (svc.curve(script, dateName.toString(), date))
   {
-    qDebug() << "CommandChartUpdate::chartUpdate: date not found" << ds;
-    return 1;
+    qDebug() << "CommandChartUpdate::chartUpdate: date not found" << dateName.toString();
+    return _returnCode;
   }
+  date.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_DATE));
+  date.set(QString("CHART"), chartName);
 
-  plot->clear();
-  plot->setDates(date);
-
+  // send chart date
+  ThreadMessage tm;
+  tm.sendMessage(date, script);
+  
   QList<QString> keys = script->dataKeys();
 
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *dg = script->data(keys.at(loop));
+    Entity dg;
+    script->data(keys.at(loop), dg);
 
-    switch ((DataFactory::Type) dg->type())
+    switch ((EntityType::Type) dg.type())
     {
-      case DataFactory::_CURVE:
-        curve(dg, name, plot);
+      case EntityType::_CURVE:
+      {
+        CurveDataKey keys;
+        Data setting;
+        if (dg.toData(keys.indexToString(CurveDataKey::_Z), setting))
+          break;
+        if (setting.toInteger() < 0)
+          break;
+        if (dg.toData(keys.indexToString(CurveDataKey::_CHART), setting))
+          break;
+        if (setting.toString() != chartName.toString())
+          break;
+        dg.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_CURVE));
+        dg.set(QString("CHART"), chartName);
+        tm.sendMessage(dg, script);
         break;
-      case DataFactory::_CHART_OBJECT:
-        chartObject(dg, name, plot);
+      }
+      case EntityType::_CHART_OBJECT:
+      {
+        ChartObjectKey keys;
+        Data setting;
+        if (dg.toData(keys.indexToString(ChartObjectKey::_Z), setting))
+          break;
+        if (setting.toInteger() < 0)
+          break;
+        if (dg.toData(keys.indexToString(ChartObjectKey::_CHART), setting))
+          break;
+        if (setting.toString() != chartName.toString())
+          break;
+        dg.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_OBJECT));
+        dg.set(QString("CHART"), chartName);
+        tm.sendMessage(dg, script);
         break;
+      }
       default:
         break;
     }
   }
 
-  update(name, plot);
+  // load chart objects
+  Entity e;
+  e.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_LOAD_OBJECT));
+  e.set(QString("CHART"), chartName);
+  tm.sendMessage(e, script);
+  
+  // update chart
+  e.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_UPDATE));
+  tm.sendMessage(e, script);
 
-  return 0;
-}
-
-void CommandChartUpdate::curve (Data *dg, QString name, Plot *plot)
-{
-  Data *setting = dg->toData(CurveData::_Z);
-  if (! setting)
-    return;
-
-  if (setting->toInteger() < 0)
-    return;
-
-  setting = dg->toData(CurveData::_CHART);
-  if (! setting)
-    return;
-
-  if (setting->toString() != name)
-    return;
-
-  dg->setDeleteFlag(0);
-
-  QString type = dg->toData(CurveData::_TYPE)->toString();
-
-  CurveFactory fac;
-  Curve *curve = fac.curve(type);
-  if (! curve)
-  {
-    qDebug() << "CommandChartUpdate::curve: no curve type" << type;
-    return;
-  }
-
-  curve->setSettings(dg);
-
-  plot->setCurve(curve);
-}
-
-void CommandChartUpdate::chartObject (Data *dg, QString name, Plot *plot)
-{
-  Data *setting = dg->toData(ChartObjectData::_Z);
-  if (! setting)
-    return;
-
-  if (setting->toInteger() < 0)
-    return;
-
-  setting = dg->toData(ChartObjectData::_CHART);
-  if (! setting)
-    return;
-
-  if (setting->toString() != name)
-    return;
-
-  dg->setDeleteFlag(0);
-
-  QString type = dg->toData(ChartObjectData::_TYPE)->toString();
-
-  ChartObjectFactory fac;
-  ChartObject *co = fac.chartObject(type);
-  if (! co)
-  {
-    qDebug() << "CommandChartUpdate::chartObject: no chart object type" << type;
-    return;
-  }
-
-  co->setSettings(dg);
-
-  plot->addChartObject(co);
-}
-
-void CommandChartUpdate::update (QString chart, Plot *plot)
-{
-  // load chart objects from database
-  QString symbol = g_currentSymbol->exchange() + ":" + g_currentSymbol->symbol();
-
-  ChartObjectDataBase codb;
-  QHash<QString, Data *> chartObjects;
-  if (! codb.load(chart, symbol, chartObjects))
-  {
-    ChartObjectFactory fac;
-    QHashIterator<QString, Data *> it(chartObjects);
-    while (it.hasNext())
-    {
-      it.next();
-      Data *tdg = it.value();
-      ChartObject *co = fac.chartObject(tdg->toData(ChartObjectData::_TYPE)->toString());
-      if (! co)
-        continue;
-
-      co->setSettings(tdg);
-
-      plot->addChartObject(co);
-    }
-  }
-
-  plot->updatePlot();
+  _returnCode = "OK";
+  return _returnCode;
 }

@@ -24,16 +24,15 @@
 
 #include <QStringList>
 #include <QHash>
-#include <QObject>
-#include <QProcess>
+#include <QThread>
 #include <QList>
+#include <QProcess>
 
-#include "Data.h"
+#include "Entity.h"
 #include "Symbol.h"
-#include "DataDialog.h"
-#include "CommandThread.h"
+#include "Command.h"
 
-class Script : public QObject
+class Script : public QThread
 {
   Q_OBJECT
 
@@ -42,13 +41,16 @@ class Script : public QObject
     void signalStopped (QString);
     void signalKill ();
     void signalDeleted (QString);
+    
+    void signalMessage (QString);
 
   public:
     Script (QObject *);
     ~Script ();
-    void clear ();
-    void setData (QString, Data *);
-    Data * data (QString);
+    void setData (QString, Entity &);
+    int data (QString, Entity &);
+    void setScriptCommand (QString, Command *);
+    Command * scriptCommand (QString);
     void setName (QString);
     QString name ();
     void setFile (QString);
@@ -58,32 +60,30 @@ class Script : public QObject
     int nextROID ();
     void setCommand (QString);
     QString command ();
-    void setSymbol (Symbol *);
-    Symbol * symbol ();
-    void deleteData ();
+    void setSymbol (Symbol &);
+    Symbol & symbol ();
     QString id ();
-    void setDialog (QString, DataDialog *);
-    DataDialog * dialog (QString);
+    void run ();
+    int run2 ();
+    void threadMessage (QString);
 
   public slots:
-    int run ();
-    void readFromStdout ();
     void readFromStderr ();
     void done (int, QProcess::ExitStatus);
     void stopScript ();
-    void resume (QString);
     void error (QProcess::ProcessError);
 
   protected:
+    QProcess *_proc;
     QString _name;
     QString _file;
     QString _command;
-    QHash<QString, Data *> _data;
-    QHash<QString, DataDialog *> _dialog;
-    QProcess *_proc;
+    QHash<QString, Entity> _data;
+    QHash<QString, Command *> _commands;
     int _killFlag;
-    Symbol *_symbol;
+    Symbol _symbol;
     QString _id;
+    QStringList _verbList;
 };
 
 #endif

@@ -20,136 +20,95 @@
  */
 
 #include "CommandBBANDS.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataMA.h"
-#include "DataDouble.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
+#include "MAType.h"
 
 #include <QtDebug>
 
-CommandBBANDS::CommandBBANDS (QObject *p) : Command (p)
+CommandBBANDS::CommandBBANDS ()
 {
   _name = "BBANDS";
 
-  _values.insert(_ParmTypeUpper, new DataString());
-  _values.insert(_ParmTypeMiddle, new DataString());
-  _values.insert(_ParmTypeLower, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypePeriod, new DataInteger(20));
-  _values.insert(_ParmTypeMAType, new DataMA("EMA"));
-  _values.insert(_ParmTypeDevUp, new DataDouble(2));
-  _values.insert(_ParmTypeDevDown, new DataDouble(2));
+  Data td;
+  td.setLabel(QObject::tr("Output Upper"));
+  Entity::set(QString("UPPER"), td);
 
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandBBANDS::CommandBBANDS: error on TA_Initialize");
+  td.setLabel(QObject::tr("Output Middle"));
+  Entity::set(QString("MIDDLE"), td);
+
+  td.setLabel(QObject::tr("Output Lower"));
+  Entity::set(QString("LOWER"), td);
+
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td = Data(20);
+  td.setLabel(QObject::tr("Period"));
+  Entity::set(QString("PERIOD"), td);
+  
+  MAType mat;
+  td = Data(mat.list(), QString("EMA"));
+  td.setLabel(QObject::tr("MA Type"));
+  Entity::set(QString("MA_TYPE"), td);
+  
+  td = Data(2.0);
+  td.setLabel(QObject::tr("Deviation Upper"));
+  Entity::set(QString("DEV_UP"), td);
+  
+  td = Data(2.0);
+  td.setLabel(QObject::tr("Deviation Lower"));
+  Entity::set(QString("DEV_DOWN"), td);
 }
 
-void CommandBBANDS::runScript (CommandParse sg, Script *script)
+QString CommandBBANDS::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandBBANDS::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandBBANDS::runScript: invalid Input");
-    return;
+    qDebug() << "CommandBBANDS::run: invalid Input";
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << in;
-
-  QList<Data *> lines = getBBANDS(list,
-				  _values.value(_ParmTypePeriod)->toInteger(),
-				  _values.value(_ParmTypeDevUp)->toDouble(),
-				  _values.value(_ParmTypeDevDown)->toDouble(),
-				  _values.value(_ParmTypeMAType)->toInteger());
-  if (lines.count() != 3)
+  Data period, maType, devUp, devDown;
+  Entity::toData(QString("PERIOD"), period);
+  Entity::toData(QString("MA_TYPE"), maType);
+  Entity::toData(QString("DEV_UP"), devUp);
+  Entity::toData(QString("DEV_DOWN"), devDown);
+  
+  Entity parms;
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_BBANDS));
+  parms.set(QString("PERIOD"), period);
+  parms.set(QString("MA_TYPE"), maType);
+  parms.set(QString("DEV_UP"), devUp);
+  parms.set(QString("DEV_DOWN"), devDown);
+  
+  CurveData upper, middle, lower;
+  TALibFunction func;
+  if (func.run(parms, 1, in, in, in, in, 3, upper, middle, lower))
   {
-    qDeleteAll(lines);
-    Command::error("CommandBBANDS::runScript: getBBANDS error");
-    return;
+    qDebug() << "CommandBBANDS::run: TALibFunction error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeUpper)->toString(), lines.at(0));
-  script->setData(_values.value(_ParmTypeMiddle)->toString(), lines.at(1));
-  script->setData(_values.value(_ParmTypeLower)->toString(), lines.at(2));
+  Entity::toData(QString("UPPER"), td);
+  script->setData(td.toString(), upper);
 
-  Command::done(QString());
-}
+  Entity::toData(QString("MIDDLE"), td);
+  script->setData(td.toString(), middle);
 
-QList<Data *> CommandBBANDS::getBBANDS (QList<Data *> &list, int period, double udev, double ldev, int type)
-{
-  QList<Data *> lines;
-  if (! list.count())
-    return lines;
+  Entity::toData(QString("LOWER"), td);
+  script->setData(td.toString(), lower);
 
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return lines;
-
-  int size = keys.count();
-  TA_Real in[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Real out3[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill1(list, keys, &in[0]);
-  if (! size)
-    return lines;
-
-  TA_RetCode rc = TA_BBANDS(0,
-                            size - 1,
-                            &in[0],
-                            period,
-                            udev,
-                            ldev,
-                            (TA_MAType) type,
-                            &outBeg,
-                            &outNb,
-                            &out[0],
-                            &out2[0],
-			    &out3[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getBBANDS: TA-Lib error" << rc;
-    return lines;
-  }
-
-  lines.clear();
-
-  Data *c = new CurveData;
-  lines << c;
-  c = new CurveData;
-  lines << c;
-  c = new CurveData;
-  lines << c;
-
-  TALibOutput tao;
-  if (tao.fillDouble3(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
-  {
-    qDeleteAll(lines);
-    lines.clear();
-    return lines;
-  }
-
-  return lines;
+  _returnCode = "OK";
+  return _returnCode;
 }

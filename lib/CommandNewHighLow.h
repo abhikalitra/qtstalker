@@ -26,18 +26,10 @@
 
 class CommandNewHighLow : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeInput,
-      _ParmTypeMethod
-    };
-
-    CommandNewHighLow (QObject *);
-    void runScript (CommandParse, Script *);
-    int getNewHighLow (Data *, int method, int &flag);
+    CommandNewHighLow ();
+    QString run (CommandParse &, void *);
+    int getNewHighLow (Entity &, int method, int &flag);
 
   protected:
     QStringList _method;

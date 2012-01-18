@@ -22,127 +22,149 @@
 #include "CommandPlotOHLC.h"
 #include "OHLCStyle.h"
 #include "CurveData.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataDouble.h"
-#include "DataColor.h"
+#include "CurveDataKey.h"
 #include "CurveBar.h"
-#include "DataList.h"
-#include "ScriptVerifyCurve.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurveKeys.h"
+#include "Script.h"
+#include "ScriptVerifyCurve.h"
 
 #include <QtDebug>
 
-CommandPlotOHLC::CommandPlotOHLC (QObject *p) : Command (p)
+CommandPlotOHLC::CommandPlotOHLC ()
 {
   _name = "PLOT_OHLC";
-  _type = _WAIT;
 
-  _values.insert(_ParmTypeName, new DataString());
-  _values.insert(_ParmTypeChart, new DataString());
-  _values.insert(_ParmTypeLabel, new DataString());
+  Entity::set(QString("OUTPUT"), Data(QString("ohlc")));
+  Entity::set(QString("CHART"), Data(QString("OHLC")));
+  Entity::set(QString("LABEL"), Data(QString("OHLC")));
+  Entity::set(QString("COLOR"), Data(QColor(Qt::red)));
+  Entity::set(QString("Z"), Data(0));
+  Entity::set(QString("PEN"), Data(1));
+  Entity::set(QString("OPEN"), Data(QString("open")));
+  Entity::set(QString("HIGH"), Data(QString("high")));
+  Entity::set(QString("LOW"), Data(QString("low")));
+  Entity::set(QString("CLOSE"), Data(QString("close")));
 
-  DataList *dl = new DataList("OHLC");
-  QStringList tl;
-  tl << "OHLC" << "Candle";
-  dl->set(tl);
-  _values.insert(_ParmTypeStyle, dl);
-
-  _values.insert(_ParmTypeColor, new DataColor());
-  _values.insert(_ParmTypeZ, new DataInteger(0));
-  _values.insert(_ParmTypePen, new DataInteger(1));
-  _values.insert(_ParmTypeOpen, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
+  OHLCStyle st;
+  Data td(st.list(), QString("OHLC"));
+  Entity::set(QString("STYLE"), td);
 }
 
-void CommandPlotOHLC::runScript (CommandParse sg, Script *script)
+QString CommandPlotOHLC::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandPlotOHLC::runScript: parse error");
-    return;
-  }
-
-  int toffset = 0;
+  Script *script = (Script *) d;
+  
   ScriptVerifyCurve svc;
-  Data *iopen = svc.toCurve(script, _values.value(_ParmTypeOpen)->toString(), toffset);
-  if (! iopen)
+  Data td;
+  Entity::toData(QString("OPEN"), td);
+  Entity iopen;
+  if (svc.curve(script, td.toString(), iopen))
   {
-    Command::error("CommandPlotOHLC::runScript invalid OPEN");
-    return;
+    qDebug() << "CommandPlotOHLC::run invalid OPEN";
+    return _returnCode;
   }
 
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity::toData(QString("HIGH"), td);
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandPlotOHLC::runScript invalid HIGH");
-    return;
+    qDebug() << "CommandPlotOHLC::run invalid HIGH";
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandPlotOHLC::runScript invalid LOW");
-    return;
+    qDebug() << "CommandPlotOHLC::run invalid LOW";
+    return _returnCode;
   }
 
-  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
-  if (! iclose)
+  Entity::toData(QString("CLOSE"), td);
+  Entity iclose;
+  if (svc.curve(script, td.toString(), iclose))
   {
-    Command::error("CommandPlotOHLC::runScript invalid CLOSE");
-    return;
+    qDebug() << "CommandPlotOHLC::run invalid CLOSE";
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << iopen << ihigh << ilow << iclose;
-
+  // keys
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
+  if (svck.keys4(iopen, ihigh, ilow, iclose, keys))
   {
-    Command::error("CommandPlotOHLC::runScript invalid keys");
-    return;
+    qDebug() << "CommandPlotOHLC::run invalid keys";
+    return _returnCode;
   }
 
-  Data *line = new CurveData;
-  line->set(CurveData::_TYPE, new DataString(QString("OHLC")));
-  line->set(CurveData::_Z, new DataInteger(_values.value(_ParmTypeZ)->toInteger()));
-  line->set(CurveData::_PEN, new DataInteger(_values.value(_ParmTypePen)->toInteger()));
-  line->set(CurveData::_LABEL, new DataString(_values.value(_ParmTypeLabel)->toString()));
-  line->set(CurveData::_CHART, new DataString(_values.value(_ParmTypeChart)->toString()));
-  line->set(CurveData::_STYLE, new DataString(_values.value(_ParmTypeStyle)->toString()));
+  CurveDataKey cdkeys;
+  CurveData line;
+  line.set(cdkeys.indexToString(CurveDataKey::_TYPE), Data(QString("OHLC")));
+  
+  Entity::toData(QString("Z"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_Z), td);
+  
+  Entity::toData(QString("PEN"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_PEN), td);
+  
+  Entity::toData(QString("LABEL"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_LABEL), td);
+  
+  Entity::toData(QString("CHART"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_CHART), td);
+  
+  Entity::toData(QString("STYLE"), td);
+  line.set(cdkeys.indexToString(CurveDataKey::_STYLE), td);
 
+  Data color;
+  Entity::toData(QString("COLOR"), color);
+  
+  CurveBarKey cbkeys;
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *obar = iopen->toData(keys.at(loop));
-    if (! obar)
+    Entity obar;
+    if (iopen.toEntity(keys.at(loop), obar))
+      continue;
+    Data ovalue;
+    if (obar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), ovalue))
+      continue;
+    
+    Entity hbar;
+    if (ihigh.toEntity(keys.at(loop), hbar))
+      continue;
+    Data hvalue;
+    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), hvalue))
       continue;
 
-    Data *hbar = ihigh->toData(keys.at(loop));
-    if (! hbar)
+    Entity lbar;
+    if (ilow.toEntity(keys.at(loop), lbar))
+      continue;
+    Data lvalue;
+    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), lvalue))
       continue;
 
-    Data *lbar = ilow->toData(keys.at(loop));
-    if (! lbar)
+    Entity cbar;
+    if (iclose.toEntity(keys.at(loop), cbar))
+      continue;
+    Data cvalue;
+    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), cvalue))
       continue;
 
-    Data *cbar = iclose->toData(keys.at(loop));
-    if (! cbar)
-      continue;
-
-    Data *bar = new CurveBar;
-    bar->set(CurveBar::_OPEN, new DataDouble(obar->toData(CurveBar::_VALUE)->toDouble()));
-    bar->set(CurveBar::_HIGH, new DataDouble(hbar->toData(CurveBar::_VALUE)->toDouble()));
-    bar->set(CurveBar::_LOW, new DataDouble(lbar->toData(CurveBar::_VALUE)->toDouble()));
-    bar->set(CurveBar::_CLOSE, new DataDouble(cbar->toData(CurveBar::_VALUE)->toDouble()));
-    bar->set(CurveBar::_COLOR, new DataColor(_values.value(_ParmTypeColor)->toColor()));
-    line->set(keys.at(loop), bar);
+    Entity bar;
+    bar.set(cbkeys.indexToString(CurveBarKey::_OPEN), ovalue);
+    bar.set(cbkeys.indexToString(CurveBarKey::_HIGH), hvalue);
+    bar.set(cbkeys.indexToString(CurveBarKey::_LOW), lvalue);
+    bar.set(cbkeys.indexToString(CurveBarKey::_CLOSE), cvalue);
+    bar.set(cbkeys.indexToString(CurveBarKey::_COLOR), color);
+    
+    line.setEntity(keys.at(loop), bar);
   }
+  
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  script->setData(_values.value(_ParmTypeName)->toString(), line);
-
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }

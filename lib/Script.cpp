@@ -20,67 +20,48 @@
  */
 
 #include "Script.h"
-#include "ChartObjectData.h"
-#include "DataFactory.h"
-#include "CommandFactory.h"
+#include "ChartObjectKey.h"
+#include "EntityType.h"
 #include "CommandParse.h"
+#include "CommandFactory.h"
 
 #include <QDebug>
 #include <QUuid>
 
-Script::Script (QObject *p) : QObject (p)
+Script::Script (QObject *p) : QThread (p)
 {
-  clear();
-
-  _proc = new QProcess(this);
-  connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-  connect(_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
-  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
-  connect(_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
-  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
-//  connect(_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(error(QProcess::ProcessError)));
-
+  _killFlag = 0;
+  _verbList << "DIALOG" << "GET" << "NEW" << "RUN" << "SET";
   _id = QUuid::createUuid().toString();
 }
 
 Script::~Script ()
 {
-  clear();
-  _proc->terminate();
-  _proc->waitForFinished();
+  qDeleteAll(_commands);
   emit signalDeleted(_id);
 //qDebug() << "Script::~Script:" << _file << "deleted";
 }
 
-void Script::clear ()
+void Script::run ()
 {
-  _killFlag = 0;
-  _symbol = 0;
+  QProcess _proc(0);
+//  connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
+//  connect(&_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+//  connect(&_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
+//  connect(&_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
+//  connect(&_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
+//  connect(&_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(error(QProcess::ProcessError)));
 
-  deleteData();
-  _data.clear();
-
-  _dialog.clear();
-
-  _name.clear();
-  _command.clear();
-}
-
-int Script::run ()
-{
-  _killFlag = 0;
   QString command = _command + " " + _file;
 
-  // start the process
-  _proc->start(command, QIODevice::ReadWrite);
+  // start the _process
+  _proc.start(command, QIODevice::ReadWrite);
 
-  // make sure process starts error free
-  if (! _proc->waitForStarted())
+  // make sure _process starts error free
+  if (! _proc.waitForStarted())
   {
     qDebug() << "Script::run: error timed out" << _file;
-    clear();
-    emit signalDone(_file);
-    return 1;
+    return;
   }
 
   QStringList l;
@@ -89,7 +70,70 @@ int Script::run ()
   l << tr("started");
   qDebug() << l.join(" ");
 
-  return 0;
+  while (_proc.state() == QProcess::Running)
+  {
+    if (_killFlag)
+    {
+      qDebug() << "Script::run: script terminated";
+//      emit signalDone(_file);
+      _proc.kill();
+      break;
+    }
+
+    // wait until we have some input from _process
+    _proc.waitForReadyRead(-1);
+    QByteArray ba = _proc.readAllStandardOutput();
+    qDebug() << _file << ba;
+
+    // parse command
+    QString s(ba);
+    CommandParse cp;
+    if (cp.parse(s))
+    {
+      qDebug() << "Script::run: verb parse error";
+//      emit signalDone(_file);
+      _proc.kill();
+      break;
+    }
+
+    // check if verb
+    if (_verbList.indexOf(cp.command()) == -1)
+    {
+      qDebug() << "Script::run: invalid verb" << cp.command();
+//      emit signalDone(_file);
+      _proc.kill();
+      break;
+    }
+
+    CommandFactory fac;
+    Command *command = fac.command(cp.command());
+    if (! command)
+    {
+      qDebug() << "Script::run: invalid command" << cp.command();
+//      emit signalDone(_file);
+      _proc.kill();
+      break;
+    }
+
+    QString rc = command->run(cp, this);
+    delete command;
+    
+    if (rc == "ERROR")
+    {
+      qDebug() << "Script::run: command error" << cp.command() << rc;
+      _proc.kill();
+      break;
+    }
+
+    QByteArray rba;
+    rba.append(rc + "\n");
+    _proc.write(rba);
+    _proc.waitForBytesWritten(-1);
+  }
+  
+  done(0, _proc.exitStatus());
+  
+  deleteLater();
 }
 
 void Script::done (int, QProcess::ExitStatus)
@@ -113,76 +157,16 @@ void Script::done (int, QProcess::ExitStatus)
   }
 }
 
-void Script::readFromStdout ()
-{
-  if (_killFlag)
-  {
-    qDebug() << "Script::readFromStdout: script terminated";
-    clear();
-    return;
-  }
-
-  QByteArray ba = _proc->readAllStandardOutput();
-qDebug() << _file << ba;
-
-  // parse command
-  QString s(ba);
-  CommandParse cp;
-  if (cp.parse(s))
-  {
-    qDebug() << "Script::readFromStdout: command parse error";
-    clear();
-    return;
-  }
-
-  // check if command
-  CommandFactory fac;
-  Command *command = fac.command(this, cp.command());
-  if (! command)
-  {
-    qDebug() << "Script::readFromStdout: command parse error" << s << cp.command();
-    clear();
-    return;
-  }
-
-  connect(command, SIGNAL(signalDone(QString)), this, SLOT(resume(QString)));
-
-  switch ((Command::Type)command->type())
-  {
-    case Command::_THREAD:
-    {
-      CommandThread *ct = new CommandThread(this, this, cp, command);
-      ct->start();
-      break;
-    }
-    default: // _WAIT
-    {
-      command->runScript(cp, this);
-      break;
-    }
-  }
-}
-
 void Script::readFromStderr ()
 {
-  qDebug() << "Script::readFromStderr:" << _proc->readAllStandardError();
+//  qDebug() << "Script::readFromStderr:" << _proc->readAllStandardError();
 }
 
 void Script::stopScript ()
 {
-  if (_proc->state() == QProcess::NotRunning)
-    return;
-
   _killFlag = TRUE;
   emit signalKill();
 //qDebug() << "Script::stopScript";
-}
-
-void Script::resume (QString d)
-{
-  QByteArray ba;
-  ba.append(d);
-  _proc->write(ba);
 }
 
 int Script::count ()
@@ -197,16 +181,20 @@ QList<QString> Script::dataKeys ()
 
 int Script::nextROID ()
 {
+  ChartObjectKey cokeys;
   int low = 0;
-  QHashIterator<QString, Data *> it(_data);
+  QHashIterator<QString, Entity> it(_data);
   while (it.hasNext())
   {
     it.next();
-    Data *dg = it.value();
-    if (dg->type() != DataFactory::_CHART_OBJECT)
+
+    Entity dg = it.value();
+    if (dg.type() != EntityType::_CHART_OBJECT)
       continue;
 
-    int t = dg->toData(ChartObjectData::_ID)->toInteger();
+    Data td;
+    dg.toData(cokeys.indexToString(ChartObjectKey::_ID), td);
+    int t = td.toInteger();
     if (t < low)
       low = t;
   }
@@ -226,18 +214,19 @@ QString Script::command ()
   return _command;
 }
 
-void Script::setData (QString key, Data *d)
+void Script::setData (QString key, Entity &d)
 {
-  Data *sg = _data.value(key);
-  if (sg)
-    delete sg;
-
   _data.insert(key, d);
 }
 
-Data * Script::data (QString d)
+int Script::data (QString k, Entity &d)
 {
-  return _data.value(d);
+  if (! _data.contains(k))
+    return 1;
+  
+  d = _data.value(k);
+  
+  return 0;
 }
 
 void Script::setName (QString d)
@@ -260,30 +249,14 @@ QString & Script::file ()
   return _file;
 }
 
-void Script::setSymbol (Symbol *d)
+void Script::setSymbol (Symbol &d)
 {
   _symbol = d;
-
-//  Symbol *symbol = new Symbol;
-//  d->copy(symbol);
-//  _symbol = symbol;
 }
 
-Symbol * Script::symbol ()
+Symbol & Script::symbol ()
 {
   return _symbol;
-}
-
-void Script::deleteData ()
-{
-  QHashIterator<QString, Data *> it(_data);
-  while (it.hasNext())
-  {
-    it.next();
-    Data *d = it.value();
-    if (it.value()->deleteFlag())
-      delete d;
-  }
 }
 
 void Script::error (QProcess::ProcessError)
@@ -303,16 +276,21 @@ QString Script::id ()
   return _id;
 }
 
-void Script::setDialog (QString key, DataDialog *d)
+void Script::threadMessage (QString d)
 {
-  DataDialog *dialog = _dialog.value(key);
-  if (dialog)
-    delete dialog;
-
-  _dialog.insert(key, d);
+  emit signalMessage(d);
 }
 
-DataDialog * Script::dialog (QString d)
+void Script::setScriptCommand (QString k, Command *d)
 {
-  return _dialog.value(d);
+  Command *c = _commands.value(k);
+  if (c)
+    delete c;
+  
+  _commands.insert(k, d);
+}
+
+Command * Script::scriptCommand (QString k)
+{
+  return _commands.value(k);
 }

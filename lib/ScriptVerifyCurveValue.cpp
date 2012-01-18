@@ -20,10 +20,10 @@
  */
 
 #include "ScriptVerifyCurveValue.h"
-#include "DataFactory.h"
+#include "DataType.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataColor.h"
+#include "EntityType.h"
+#include "CurveBarKey.h"
 
 #include <QtDebug>
 
@@ -31,26 +31,37 @@ ScriptVerifyCurveValue::ScriptVerifyCurveValue ()
 {
 }
 
-int ScriptVerifyCurveValue::getValue (Data *in, QList<int> &keys, int index, int offset, double &v)
+int ScriptVerifyCurveValue::getValue (Entity &in, QList<QString> &keys, int index, int offset, double &v)
 {
-  v = 0;
-  switch ((DataFactory::Type) in->type())
+  CurveBarKey cbkeys;
+  switch ((EntityType::Type) in.type())
   {
-    case DataFactory::_DOUBLE:
-      v = in->toDouble();
+    case EntityType::_SETTING:
+    {
+      Data td;
+      if (in.toData(QString::number(0), td))
+	return 1;
+      
+      if (td.type() != DataType::_DOUBLE)
+	return 1;
+      
+      v = td.toDouble();
       break;
-    case DataFactory::_CURVE:
+    }
+    case EntityType::_CURVE:
     {
       int pos = index;
       pos -= offset;
       if (pos < 0)
         return 1;
 
-      Data *bar = in->toData(keys.at(pos));
-      if (! bar)
+      Entity bar;
+      if (in.toEntity(keys.at(pos), bar))
         return 1;
 
-      v = bar->toData(CurveBar::_VALUE)->toDouble();
+      Data td;
+      bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+      v = td.toDouble();
       break;
     }
     default:
@@ -61,23 +72,40 @@ int ScriptVerifyCurveValue::getValue (Data *in, QList<int> &keys, int index, int
   return 0;
 }
 
-int ScriptVerifyCurveValue::setValue (Data *, Data *out2, Data *bar, int pos)
+int ScriptVerifyCurveValue::setValue (Entity &out, Entity &bar, QString pos)
 {
-  switch ((DataFactory::Type) out2->type())
+  CurveBarKey keys;  
+  switch ((EntityType::Type) out.type())
   {
-    case DataFactory::_DOUBLE:
-      bar->set(CurveBar::_VALUE, new DataDouble(out2->toDouble()));
-      break;
-    case DataFactory::_COLOR:
-      bar->set(CurveBar::_COLOR, new DataColor(out2->toColor()));
-      break;
-    case DataFactory::_CURVE:
+    case EntityType::_SETTING:
     {
-      Data *b = out2->toData(pos);
-      if (! b)
+      Data td;
+      if (out.toData(QString("0"), td))
+	return 1;
+      
+      switch ((DataType::Type) td.type())
+      {
+	case DataType::_DOUBLE:
+          bar.set(keys.indexToString(CurveBarKey::_VALUE), td);
+          break;
+	case DataType::_COLOR:
+          bar.set(keys.indexToString(CurveBarKey::_COLOR), td);
+          break;
+	default:
+	  return 1;
+	  break;
+      }
+      break;
+    }
+    case EntityType::_CURVE:
+    {
+      Entity b;
+      if (out.toEntity(pos, b))
         return 1;
 
-      bar->set(CurveBar::_VALUE, new DataDouble(b->toData(CurveBar::_VALUE)->toDouble()));
+      Data td;
+      b.toData(keys.indexToString(CurveBarKey::_VALUE), td);
+      bar.set(keys.indexToString(CurveBarKey::_VALUE), td);
       break;
     }
     default:

@@ -25,36 +25,12 @@
 #ifndef CURVE_BAR_HPP
 #define CURVE_BAR_HPP
 
-#include <QHash>
+#include "Entity.h"
 
-#include "Data.h"
-
-class CurveBar : public Data
+class CurveBar : public Entity
 {
   public:
-    enum Parm
-    {
-      _DATE = -10,
-      _OPEN = -20,
-      _HIGH = -30,
-      _LOW = -40,
-      _CLOSE = -50,
-      _VOLUME = -60,
-      _OI = -70,
-      _COLOR = -80,
-      _VALUE = -90,
-      _UP = -100,
-      _DOWN = -110
-    };
-
     CurveBar ();
-    void clear ();
-    int highLow (double &, double &);
-    int set (int, Data *);
-    Data * toData (int);
-
-  private:
-    QHash<int, Data *> _data;
 };
 
 #endif

@@ -22,87 +22,97 @@
 #include "CommandMedianPrice.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataString.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
+#include "ScriptVerifyCurveValue.h"
 
 #include <QtDebug>
 
-CommandMedianPrice::CommandMedianPrice (QObject *p) : Command (p)
+CommandMedianPrice::CommandMedianPrice ()
 {
   _name = "MEDIAN_PRICE";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypeInput2, new DataString());
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td.setLabel(QObject::tr("Input 2"));
+  Entity::set(QString("INPUT2"), td);
 }
 
-void CommandMedianPrice::runScript (CommandParse sg, Script *script)
+QString CommandMedianPrice::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandMedianPrice::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandMAMA::runScript: invalid Input");
-    return;
+    if (svc.entity(td.toString(), in))
+    {
+      qDebug() << "CommandMedianPrice::run: invalid INPUT" << td.toString();
+      return _returnCode;
+    }
+  }
+  
+  Entity::toData(QString("INPUT2"), td);
+  Entity in2;
+  if (svc.curve(script, td.toString(), in2))
+  {
+    if (svc.entity(td.toString(), in2))
+    {
+      qDebug() << "CommandMedianPrice::run: invalid INPUT2" << td.toString();
+      return _returnCode;
+    }
+  }
+  
+  CurveData line;
+  if (getMP(in, in2, line))
+  {
+    qDebug() << "CommandMedianPrice::run: getMP error";
+    return _returnCode;
   }
 
-  Data *in2 = svc.toCurve(script, _values.value(_ParmTypeInput2)->toString(), toffset);
-  if (! in2)
-  {
-    Command::error("CommandMAMA::runScript: invalid Input2");
-    return;
-  }
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  QList<Data *> list;
-  list << in << in2;
-
-  Data *line = getMP(list);
-  if (! line)
-  {
-    Command::error("CommandMAMA::runScript: getMP error");
-    return;
-  }
-
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
-
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandMedianPrice::getMP (QList<Data *> &list)
+int CommandMedianPrice::getMP (Entity &in, Entity &in2, Entity &line)
 {
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys2(in, in2, keys))
+    return 1;
 
-  Data *line = new CurveData;
-  Data *in = list.at(0);
-  Data *in2 = list.at(1);
+  CurveBarKey cbkeys;
+  ScriptVerifyCurveValue svcv;
+  int offset = 0;
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *bar = in->toData(keys.at(loop));
-    if (! bar)
+    double v = 0;
+    if (svcv.getValue(in, keys, loop, offset, v))
       continue;
 
-    Data *bar2 = in2->toData(keys.at(loop));
-    if (! bar2)
+    double v2 = 0;
+    if (svcv.getValue(in2, keys, loop, offset, v2))
       continue;
 
-    double t = (bar->toData(CurveBar::_VALUE)->toDouble() + bar2->toData(CurveBar::_VALUE)->toDouble()) / 2.0;
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(t));
-    line->set(keys.at(loop), b);
+    double t = (v + v2) / 2.0;
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    line.setEntity(keys.at(loop), b);
   }
 
-  return line;
+  return 0;
 }

@@ -26,57 +26,59 @@
 #define DATA_HPP
 
 #include <QStringList>
-#include <QMetaType>
 #include <QColor>
 #include <QFont>
 #include <QDateTime>
+#include <QVariant>
+
+#include "DataType.h"
 
 class Data
 {
   public:
     Data ();
+    Data (DataType::Type);
+    Data (QString);
+    Data (QStringList);
+    Data (QStringList, QString);
+    Data (int);
+    Data (double);
+    Data (bool);
+    Data (QColor);
+    Data (QFont);
+    Data (QDateTime);
+    void clear ();
     int type ();
-    void setDeleteFlag (int);
-    int deleteFlag ();
+    void setType (int);
+    int set (QString);
+    int set (QString, int);
+    int set (QStringList);
+    int set (QStringList, QString);
+    int set (int);
+    int set (double);
+    int set (bool);
+    int set (QColor);
+    int set (QFont);
+    int set (QDateTime);
+    QString toString ();
+    QStringList toList ();
+    int toInteger ();
+    double toDouble ();
+    bool toBool ();
+    QColor toColor ();
+    QFont toFont ();
+    QDateTime toDateTime ();
     void setTab (int);
     int tab ();
     void setLabel (QString);
     QString label ();
 
-    virtual void clear ();
-    virtual int set (int, Data *);
-    virtual int set (QString);
-    virtual int set (QStringList);
-    virtual int set (int);
-    virtual int set (double);
-    virtual int set (bool);
-    virtual int set (QColor);
-    virtual int set (QFont);
-    virtual int set (QDateTime);
-    virtual QString toString ();
-    virtual QStringList toList ();
-    virtual int toInteger ();
-    virtual double toDouble ();
-    virtual bool toBool ();
-    virtual QColor toColor ();
-    virtual QFont toFont ();
-    virtual QDateTime toDateTime ();
-    virtual Data * toData (int);
-    virtual int highLow (double &, double &);
-    virtual QList<int> keys ();
-    virtual int keyCount ();
-    virtual void keyRange (int &, int &);
-    virtual void append (Data *);
-    virtual QString toSaveString ();
-    virtual int fromSaveString (QString);
-
   protected:
     int _type;
-    int _delFlag;
     int _tab;
     QString _label;
+    QVariant _value;
+    QStringList _list;
 };
-
-Q_DECLARE_METATYPE(Data)
 
 #endif

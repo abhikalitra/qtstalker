@@ -25,17 +25,16 @@
 #include <QList>
 
 #include "ta_libc.h"
-#include "Data.h"
+#include "Entity.h"
 
 class TALibInput
 {
   public:
     TALibInput ();
-    int fill (QList<Data *> &, QList<int> &, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[]);
-    int fill1 (QList<Data *> &list, QList<int> &keys, TA_Real out[]);
-    int fill2 (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Real out2[]);
-    int fill3 (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Real out2[], TA_Real out3[]);
-    int fill4 (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[]);
+    int fillInput (Entity &, QList<QString> &, TA_Real out[]);
+    int fillInput2 (Entity &, Entity &, QList<QString> &, TA_Real out[], TA_Real out2[]);
+    int fillInput3 (Entity &, Entity &, Entity &, QList<QString> &, TA_Real out[], TA_Real out2[], TA_Real out3[]);
+    int fillInput4 (Entity &, Entity &, Entity &, Entity &, QList<QString> &, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[]);
 };
 
 #endif

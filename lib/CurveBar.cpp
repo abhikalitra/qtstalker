@@ -20,82 +20,11 @@
  */
 
 #include "CurveBar.h"
-#include "DataFactory.h"
+#include "EntityType.h"
 
 #include <QtDebug>
 
 CurveBar::CurveBar ()
 {
-  clear();
-}
-
-void CurveBar::clear ()
-{
-  _type = DataFactory::_CURVE_BAR;
-
-  qDeleteAll(_data);
-  _data.clear();
-}
-
-int CurveBar::highLow (double &h, double &l)
-{
-  int rc = 1;
-  h = -99999999;
-  l = 99999999;
-
-  QHashIterator<int, Data *> it(_data);
-  while (it.hasNext())
-  {
-    it.next();
-
-    int k = it.key();
-
-    switch ((Parm) k)
-    {
-      case _OPEN:
-      case _HIGH:
-      case _LOW:
-      case _CLOSE:
-      case _VOLUME:
-      case _OI:
-      case _VALUE:
-      {
-        double t = it.value()->toDouble();
-
-        if (t > h)
-        {
-          h = t;
-          rc = 0;
-        }
-
-        if (t < l)
-        {
-          l = t;
-          rc = 0;
-        }
-
-        break;
-      }
-      default:
-        break;
-    }
-  }
-
-  return rc;
-}
-
-int CurveBar::set (int k, Data *d)
-{
-  Data *td = _data.value(k);
-  if (td)
-    delete td;
-
-  _data.insert(k, d);
-
-  return 0;
-}
-
-Data * CurveBar::toData (int d)
-{
-  return _data.value(d);
+  _type = EntityType::_CURVE_BAR;
 }

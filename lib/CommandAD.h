@@ -26,21 +26,9 @@
 
 class CommandAD : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose,
-      _ParmTypeVolume
-    };
-
-    CommandAD (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getAD (QList<Data *> &);
+    CommandAD ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

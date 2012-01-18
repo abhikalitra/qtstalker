@@ -21,133 +21,132 @@
 
 #include "TALibInput.h"
 #include "CurveBar.h"
+#include "CurveBarKey.h"
 
 TALibInput::TALibInput ()
 {
 }
 
-int TALibInput::fill (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[])
+int TALibInput::fillInput (Entity &in, QList<QString> &keys, TA_Real out[])
 {
-  if (! list.count())
-    return 0;
-
-  switch (list.count())
-  {
-    case 2:
-      return fill2(list, keys, &out[0], &out2[0]);
-    case 3:
-      return fill3(list, keys, &out[0], &out2[0], &out3[0]);
-    case 4:
-      return fill4(list, keys, &out[0], &out2[0], &out3[0], &out4[0]);
-    default:
-      return fill1(list, keys, &out[0]);
-  }
-
-  return 0;
-}
-
-int TALibInput::fill1 (QList<Data *> &list, QList<int> &keys, TA_Real out[])
-{
+  CurveBarKey cbkeys;
   int ipos = 0;
   int opos = 0;
-  Data *in = list.at(0);
-  for (; ipos < keys.count(); ipos++)
+  for (; ipos < keys.size(); ipos++)
   {
-    Data *bar = in->toData(keys.at(ipos));
-    if (! bar)
+    Entity bar;
+    if (in.toEntity(keys.at(ipos), bar))
       continue;
 
-    out[opos] = (TA_Real) bar->toData(CurveBar::_VALUE)->toDouble();
+    Data td;
+    bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    out[opos] = (TA_Real) td.toDouble();
     opos++;
   }
 
   return opos;
 }
 
-int TALibInput::fill2 (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Real out2[])
+int TALibInput::fillInput2 (Entity &in, Entity &in2, QList<QString> &keys, TA_Real out[], TA_Real out2[])
 {
+  CurveBarKey cbkeys;
   int ipos = 0;
   int opos = 0;
-  Data *in = list.at(0);
-  Data *in2 = list.at(1);
-  for (; ipos < keys.count(); ipos++)
+  for (; ipos < keys.size(); ipos++)
   {
-    Data *bar = in->toData(keys.at(ipos));
-    if (! bar)
+    Entity bar;
+    if (in.toEntity(keys.at(ipos), bar))
       continue;
 
-    Data *bar2 = in2->toData(keys.at(ipos));
-    if (! bar2)
+    Entity bar2;
+    if (in2.toEntity(keys.at(ipos), bar2))
       continue;
 
-    out[opos] = (TA_Real) bar->toData(CurveBar::_VALUE)->toDouble();
-    out2[opos] = (TA_Real) bar2->toData(CurveBar::_VALUE)->toDouble();
+    Data td;
+    bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    out[opos] = (TA_Real) td.toDouble();
+    
+    bar2.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    out2[opos] = (TA_Real) td.toDouble();
     opos++;
   }
 
   return opos;
 }
 
-int TALibInput::fill3 (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Real out2[], TA_Real out3[])
+int TALibInput::fillInput3 (Entity &in, Entity &in2, Entity &in3, QList<QString> &keys,
+			    TA_Real out[], TA_Real out2[], TA_Real out3[])
 {
+  CurveBarKey cbkeys;
   int ipos = 0;
   int opos = 0;
-  Data *in = list.at(0);
-  Data *in2 = list.at(1);
-  Data *in3 = list.at(2);
-  for (; ipos < keys.count(); ipos++)
+  for (; ipos < keys.size(); ipos++)
   {
-    Data *bar = in->toData(keys.at(ipos));
-    if (! bar)
+    Entity bar;
+    if (in.toEntity(keys.at(ipos), bar))
       continue;
 
-    Data *bar2 = in2->toData(keys.at(ipos));
-    if (! bar2)
+    Entity bar2;
+    if (in2.toEntity(keys.at(ipos), bar2))
       continue;
 
-    Data *bar3 = in3->toData(keys.at(ipos));
-    if (! bar3)
+    Entity bar3;
+    if (in3.toEntity(keys.at(ipos), bar3))
       continue;
 
-    out[opos] = (TA_Real) bar->toData(CurveBar::_VALUE)->toDouble();
-    out2[opos] = (TA_Real) bar2->toData(CurveBar::_VALUE)->toDouble();
-    out3[opos] = (TA_Real) bar3->toData(CurveBar::_VALUE)->toDouble();
+    Data td;
+    bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    out[opos] = (TA_Real) td.toDouble();
+    
+    bar2.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    out2[opos] = (TA_Real) td.toDouble();
+    
+    bar3.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    out3[opos] = (TA_Real) td.toDouble();
+    
     opos++;
   }
 
   return opos;
 }
 
-int TALibInput::fill4 (QList<Data *> &list, QList<int> &keys, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[])
+int TALibInput::fillInput4 (Entity &in, Entity &in2, Entity &in3, Entity &in4, QList<QString> &keys,
+			    TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[])
 {
+  CurveBarKey cbkeys;
   int ipos = 0;
   int opos = 0;
-  Data *in = list.at(0);
-  Data *in2 = list.at(1);
-  Data *in3 = list.at(2);
-  Data *in4 = list.at(3);
-  for (; ipos < keys.count(); ipos++)
+  for (; ipos < keys.size(); ipos++)
   {
-    Data *bar = in->toData(keys.at(ipos));
-    if (! bar)
+    Entity bar;
+    if (in.toEntity(keys.at(ipos), bar))
       continue;
 
-    Data *bar2 = in2->toData(keys.at(ipos));
-    if (! bar2)
+    Entity bar2;
+    if (in2.toEntity(keys.at(ipos), bar2))
       continue;
 
-    Data *bar3 = in3->toData(keys.at(ipos));
-    if (! bar3)
+    Entity bar3;
+    if (in3.toEntity(keys.at(ipos), bar3))
       continue;
 
-    Data *bar4 = in4->toData(keys.at(ipos));
-    if (! bar4)
+    Entity bar4;
+    if (in4.toEntity(keys.at(ipos), bar4))
       continue;
 
-    out[opos] = (TA_Real) bar->toData(CurveBar::_VALUE)->toDouble();
-    out2[opos] = (TA_Real) bar2->toData(CurveBar::_VALUE)->toDouble();
-    out3[opos] = (TA_Real) bar3->toData(CurveBar::_VALUE)->toDouble();
-    out4[opos] = (TA_Real) bar4->toData(CurveBar::_VALUE)->toDouble();
+    Data td;
+    bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    out[opos] = (TA_Real) td.toDouble();
+    
+    bar2.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    out2[opos] = (TA_Real) td.toDouble();
+    
+    bar3.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    out3[opos] = (TA_Real) td.toDouble();
+    
+    bar4.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    out4[opos] = (TA_Real) td.toDouble();
+    
     opos++;
   }
 

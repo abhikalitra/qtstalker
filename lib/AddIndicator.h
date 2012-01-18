@@ -34,8 +34,12 @@ class AddIndicator : public QObject
 
   public slots:
     void addIndicator ();
-    void addIndicator2 (QString command, QString file);
+    void addIndicator2 (QString);
+    void addIndicator3 (QString command, QString file);
     void done ();
+    
+  private:
+    QString _name;
 };
 
 #endif

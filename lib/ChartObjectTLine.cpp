@@ -25,13 +25,7 @@
 #include "Strip.h"
 #include "DateScaleDraw.h"
 #include "Plot.h"
-#include "ChartObjectData.h"
-#include "DataDouble.h"
-#include "DataDateTime.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataColor.h"
-#include "DataBool.h"
+#include "ChartObjectKey.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -41,27 +35,55 @@
 ChartObjectTLine::ChartObjectTLine ()
 {
   _fieldList << QObject::tr("Open") << QObject::tr("High") << QObject::tr("Low") << QObject::tr("Close");
-
-  _settings->set(ChartObjectData::_TYPE, new DataString(QString("TLine")));
-  _settings->set(ChartObjectData::_DATE, new DataDateTime(QDateTime::currentDateTime()));
-  _settings->set(ChartObjectData::_DATE_2, new DataDateTime(QDateTime::currentDateTime()));
-  _settings->set(ChartObjectData::_PRICE, new DataDouble(0));
-  _settings->set(ChartObjectData::_PRICE_2, new DataDouble(0));
-  _settings->set(ChartObjectData::_COLOR, new DataColor(QColor(Qt::red)));
-  _settings->set(ChartObjectData::_EXTEND, new DataBool(FALSE));
+  
+  ChartObjectKey keys;
+  
+  Data td(QString("TLine"));
+  _settings.set(keys.indexToString(ChartObjectKey::_TYPE), td);
+  
+  td = Data(QDateTime::currentDateTime());
+  td.setLabel(QObject::tr("Date Start"));
+  _settings.set(keys.indexToString(ChartObjectKey::_DATE), td);
+  
+  td.setLabel(QObject::tr("Date End"));
+  _settings.set(keys.indexToString(ChartObjectKey::_DATE2), td);
+  
+  td = Data(0.0);
+  td.setLabel(QObject::tr("Price Start"));
+  _settings.set(keys.indexToString(ChartObjectKey::_PRICE), td);
+  
+  td.setLabel(QObject::tr("Price End"));
+  _settings.set(keys.indexToString(ChartObjectKey::_PRICE2), td);
+  
+  td = Data(QColor(Qt::red));
+  td.setLabel(QObject::tr("Color"));
+  _settings.set(keys.indexToString(ChartObjectKey::_COLOR), td);
+  
+  td = Data(FALSE);
+  td.setLabel(QObject::tr("Extend"));
+  _settings.set(keys.indexToString(ChartObjectKey::_EXTEND), td);
 }
 
 void ChartObjectTLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
+  ChartObjectKey keys;
+  Data date, date2, price, price2, color, extend;
+  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
+  _settings.toData(keys.indexToString(ChartObjectKey::_DATE2), date2);
+  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+  _settings.toData(keys.indexToString(ChartObjectKey::_COLOR), color);
+  _settings.toData(keys.indexToString(ChartObjectKey::_EXTEND), extend);
+
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
-  int x = xMap.transform(dsd->x(_settings->toData(ChartObjectData::_DATE)->toDateTime()));
+  int x = xMap.transform(dsd->x(date.toDateTime()));
 
-  int x2 = xMap.transform(dsd->x(_settings->toData(ChartObjectData::_DATE_2)->toDateTime()));
+  int x2 = xMap.transform(dsd->x(date2.toDateTime()));
 
-  int y = yMap.transform(_settings->toData(ChartObjectData::_PRICE)->toDouble());
-  int y2 = yMap.transform(_settings->toData(ChartObjectData::_PRICE_2)->toDouble());
+  int y = yMap.transform(price.toDouble());
+  int y2 = yMap.transform(price2.toDouble());
 
-  p->setPen(_settings->toData(ChartObjectData::_COLOR)->toColor());
+  p->setPen(color.toColor());
 
   p->drawLine (x, y, x2, y2);
 
@@ -71,7 +93,7 @@ void ChartObjectTLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScal
   int tx = x;
   int ty = y;
 
-  if (_settings->toData(ChartObjectData::_EXTEND)->toBool())
+  if (extend.toBool())
   {
     int ydiff = y - y2;
     int xdiff = x2 - x;
@@ -111,7 +133,7 @@ void ChartObjectTLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScal
 		ty - (_handleWidth / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings->toData(ChartObjectData::_COLOR)->toColor());
+		color.toColor());
 
     _grabHandles.append(QRegion(tx2,
 		                ty2 - (_handleWidth / 2),
@@ -123,24 +145,33 @@ void ChartObjectTLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScal
 		ty2 - (_handleWidth / 2),
 		_handleWidth,
 		_handleWidth,
-		_settings->toData(ChartObjectData::_COLOR)->toColor());
+		color.toColor());
   }
 }
 
-int ChartObjectTLine::info (Message &info)
+int ChartObjectTLine::info (Entity &info)
 {
-  info.insert(QObject::tr("Type"), _settings->toData(ChartObjectData::_TYPE)->toString());
+  ChartObjectKey keys;
+  Data type, date, date2, price, price2;
+  _settings.toData(keys.indexToString(ChartObjectKey::_TYPE), type);
+  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
+  _settings.toData(keys.indexToString(ChartObjectKey::_DATE2), date2);
+  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+  
+  info.set(QObject::tr("Type"), type);
 
-  QDateTime dt = _settings->toData(ChartObjectData::_DATE)->toDateTime();
-  info.insert("SD", dt.toString("yyyy-MM-dd"));
-  info.insert("ST", dt.toString("HH:mm:ss"));
+  info.set(QObject::tr("SP"), price);
 
-  dt = _settings->toData(ChartObjectData::_DATE_2)->toDateTime();
-  info.insert("ED", dt.toString("yyyy-MM-dd"));
-  info.insert("ET", dt.toString("HH:mm:ss"));
-
-  info.insert("SP", _settings->toData(ChartObjectData::_PRICE)->toString());
-  info.insert("EP", _settings->toData(ChartObjectData::_PRICE_2)->toString());
+  info.set(QObject::tr("EP"), price2);
+  
+  QDateTime dt = date.toDateTime();
+  info.set(QString("SD"), Data(dt.toString("yyyy-MM-dd")));
+  info.set(QString("ST"), Data(dt.toString("HH:mm:ss")));
+  
+  dt = date2.toDateTime();
+  info.set(QString("ED"), Data(dt.toString("yyyy-MM-dd")));
+  info.set(QString("ET"), Data(dt.toString("HH:mm:ss")));
 
   return 0;
 }
@@ -151,27 +182,34 @@ int ChartObjectTLine::highLow (int start, int end, double &high, double &low)
   if (! dsd)
     return 1;
 
-  int x = dsd->x(_settings->toData(ChartObjectData::_DATE)->toDateTime());
+  ChartObjectKey keys;
+  Data date, date2, price, price2;
+  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
+  _settings.toData(keys.indexToString(ChartObjectKey::_DATE2), date2);
+  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+  
+  int x = dsd->x(date.toDateTime());
   if (x >= start && x <= end)
   {
-    high = _settings->toData(ChartObjectData::_PRICE)->toDouble();
-    double t = _settings->toData(ChartObjectData::_PRICE_2)->toDouble();
+    high = price.toDouble();
+    double t = price2.toDouble();
     if (t > high)
       high = t;
-    low = _settings->toData(ChartObjectData::_PRICE)->toDouble();
+    low = price.toDouble();
     if (t < low)
       low = t;
     return 0;
   }
 
-  int x2 = dsd->x(_settings->toData(ChartObjectData::_DATE_2)->toDateTime());
+  int x2 = dsd->x(date2.toDateTime());
   if (x2 >= start && x2 <= end)
   {
-    high = _settings->toData(ChartObjectData::_PRICE)->toDouble();
-    double t = _settings->toData(ChartObjectData::_PRICE_2)->toDouble();
+    high = price.toDouble();
+    double t = price2.toDouble();
     if (t > high)
       high = t;
-    low = _settings->toData(ChartObjectData::_PRICE)->toDouble();
+    low = price.toDouble();
     if (t < low)
       low = t;
     return 0;
@@ -186,30 +224,42 @@ void ChartObjectTLine::move (QPoint p)
   {
     case _MOVE:
     {
+      ChartObjectKey keys;
+      Data date, date2, price, price2;
+      _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
+      _settings.toData(keys.indexToString(ChartObjectKey::_DATE2), date2);
+      _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+      _settings.toData(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+      
       QwtScaleMap map = plot()->canvasMap(QwtPlot::xBottom);
       int x = map.invTransform((double) p.x());
 
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE, new DataDateTime(dt));
+      date.set(dt);
+      _settings.set(keys.indexToString(ChartObjectKey::_DATE), date);
 
       map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_PRICE, new DataDouble(map.invTransform((double) p.y())));
+      price.set(map.invTransform((double) p.y()));
+      _settings.set(keys.indexToString(ChartObjectKey::_PRICE), price);
 
       if (_createFlag)
       {
-        _settings->set(ChartObjectData::_DATE_2, new DataDateTime(dt));
-        _settings->set(ChartObjectData::_PRICE_2, new DataDouble(_settings->toData(ChartObjectData::_PRICE)->toDouble()));
+	date2.set(dt);
+        _settings.set(keys.indexToString(ChartObjectKey::_DATE2), date2);
+	
+	price2.set(price.toDouble());
+        _settings.set(keys.indexToString(ChartObjectKey::_PRICE2), price2);
       }
 
       plot()->replot();
 
       QStringList l;
-      l << _settings->toData(ChartObjectData::_DATE)->toString();
+      l << date.toString();
       Strip strip;
       QString ts;
-      strip.strip(_settings->toData(ChartObjectData::_PRICE)->toDouble(), 4, ts);
+      strip.strip(price.toDouble(), 4, ts);
       l << ts;
       g_parent->statusBar()->showMessage(l.join(" "));
 
@@ -218,24 +268,31 @@ void ChartObjectTLine::move (QPoint p)
     }
     case _MOVE2:
     {
+      ChartObjectKey keys;
+      Data date2, price2;
+      _settings.toData(keys.indexToString(ChartObjectKey::_DATE2), date2);
+      _settings.toData(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+
       QwtScaleMap map = plot()->canvasMap(QwtPlot::xBottom);
       int x = map.invTransform((double) p.x());
 
       DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
       QDateTime dt;
       dsd->date(x, dt);
-      _settings->set(ChartObjectData::_DATE_2, new DataDateTime(dt));
+      date2.set(dt);
+      _settings.set(keys.indexToString(ChartObjectKey::_DATE2), date2);
 
       map = plot()->canvasMap(QwtPlot::yRight);
-      _settings->set(ChartObjectData::_PRICE_2, new DataDouble(map.invTransform((double) p.y())));
+      price2.set(map.invTransform((double) p.y()));
+      _settings.set(keys.indexToString(ChartObjectKey::_PRICE2), price2);
 
       plot()->replot();
 
       QStringList l;
-      l << _settings->toData(ChartObjectData::_DATE_2)->toString();
+      l << date2.toString();
       Strip strip;
       QString ts;
-      strip.strip(_settings->toData(ChartObjectData::_PRICE_2)->toDouble(), 4, ts);
+      strip.strip(price2.toDouble(), 4, ts);
       l << ts;
       g_parent->statusBar()->showMessage(l.join(" "));
 
@@ -334,7 +391,11 @@ void ChartObjectTLine::click (int button, QPoint p)
             _status = _SELECTED;
             _selected = 1;
 	    Plot *tplot = (Plot *) plot();
-	    tplot->select(_settings->toData(ChartObjectData::_ID)->toString());
+	    
+	    ChartObjectKey keys;
+	    Data id;
+	    _settings.toData(keys.indexToString(ChartObjectKey::_ID), id);
+	    tplot->select(id.toString());
             plot()->replot();
             return;
           }

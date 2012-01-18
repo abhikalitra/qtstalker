@@ -23,226 +23,145 @@
 #include "Operator.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataFactory.h"
-#include "DataOp.h"
-#include "DataColor.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 #include "ScriptVerifyCurveValue.h"
+#include "Script.h"
+#include "DataType.h"
 
 #include <QtDebug>
 
-CommandCompare::CommandCompare (QObject *p) : Command (p)
+CommandCompare::CommandCompare ()
 {
   _name = "COMPARE";
+
+  Data td(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td = Data(0);
+  td.setLabel(QObject::tr("Input Offset"));
+  Entity::set(QString("INPUT_OFFSET"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input 2"));
+  Entity::set(QString("INPUT2"), td);
+  
+  td = Data(0);
+  td.setLabel(QObject::tr("Input 2 Offset"));
+  Entity::set(QString("INPUT2_OFFSET"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Output 2"));
+  Entity::set(QString("OUTPUT2"), td);
+
+  Operator op;
+  td = Data(op.list(), QString("="));
+  td.setLabel(QObject::tr("Op"));
+  Entity::set(QString("OP"), td);
 }
 
-void CommandCompare::runScript (CommandParse sg, Script *script)
+QString CommandCompare::run (CommandParse &, void *d)
 {
-  // we have to do all verifying manually here because of variable inputs
-  // format: input, op, input2, output, output2
-
-  if (sg.values() != 5)
-  {
-    Command::error("CommandCompare::runScript: invalid # of values");
-    return;
-  }
+  Script *script = (Script *) d;
 
   // verify Input
-  int pos = 0;
-  int offset = 0;
+  Data td;
+  Entity::toData(QString("INPUT"), td);
+  
   ScriptVerifyCurve svc;
-  QString s = sg.value(pos);
-  Data *in = svc.toCurve(script, s, offset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    // check if object
-    in = script->data(s);
-    if (! in)
+    if (svc.entity(td.toString(), in))
     {
-      // is it a number?
-      DataFactory dfac;
-      in = dfac.data(DataFactory::_DOUBLE);
-      if (! in)
-      {
-        Command::error("CommandCompare::runScript: error creating DataDouble pos " + QString::number(pos));
-        return;
-      }
-
-      Command::setTData(in);
-
-      if (in->set(s))
-      {
-        Command::error("CommandCompare::runScript: invalid value pos " + QString::number(pos));
-        return;
-      }
-    }
-    else
-    {
-      if (in->type() != DataFactory::_DOUBLE)
-      {
-        Command::error("CommandCompare::runScript: invalid DOUBLE object pos " + QString::number(pos));
-        return;
-      }
+      qDebug() << "CommandCompare::run: invalid INPUT" << td.toString();
+      return _returnCode;
     }
   }
 
+  // verify INPUT_OFFSET
+  Data offset;
+  Entity::toData(QString("INPUT_OFFSET"), offset);
+  
   // verify Operator
-  pos++;
-  s = sg.value(pos);
-  Data *op = script->data(s);
-  if (! op)
-  {
-    // is it a operator?
-    DataFactory dfac;
-    op = dfac.data(DataFactory::_OP);
-    if (! op)
-    {
-      Command::error("CommandCompare::runScript: error creating DataOperator");
-      return;
-    }
-
-    Command::setTData(op);
-
-    if (op->set(s))
-    {
-      Command::error("CommandCompare::runScript: invalid value pos " + QString::number(pos));
-      return;
-    }
-  }
-
+  Data op;
+  Entity::toData(QString("OP"), op);
+  
   // verify Input2
-  pos++;
-  int offset2 = 0;
-  s = sg.value(pos);
-  Data *in2 = svc.toCurve(script, s, offset2);
-  if (! in2)
+  Entity::toData(QString("INPUT2"), td);
+  Entity in2;
+  if (svc.curve(script, td.toString(), in2))
   {
-    // check if object
-    in2 = script->data(s);
-    if (! in2)
+    if (svc.entity(td.toString(), in2))
     {
-      // is it a number?
-      DataFactory dfac;
-      in2 = dfac.data(DataFactory::_DOUBLE);
-      if (! in2)
-      {
-        Command::error("CommandCompare::runScript: error creating DataDouble pos " + QString::number(pos));
-        return;
-      }
-
-      Command::setTData(in2);
-
-      if (in2->set(s))
-      {
-        Command::error("CommandCompare::runScript: invalid value pos " + QString::number(pos));
-        return;
-      }
-    }
-    else
-    {
-      if (in2->type() != DataFactory::_DOUBLE)
-      {
-        Command::error("CommandCompare::runScript: invalid DOUBLE object pos " + QString::number(pos));
-        return;
-      }
+      qDebug() << "CommandCompare::run: invalid INPUT2" << td.toString();
+      return _returnCode;
     }
   }
 
+  // verify INPUT2_OFFSET
+  Data offset2;
+  Entity::toData(QString("INPUT2_OFFSET"), offset2);
+  
   // verify Output
-  pos++;
-  s = sg.value(pos);
-  int toffset = 0;
-  Data *out = svc.toCurve(script, s, toffset);
-  if (! out)
-  {
-    // create it
-    DataFactory dfac;
-    out = dfac.data(DataFactory::_CURVE);
-    if (! out)
-    {
-      Command::error("CommandCompare::runScript: error creating Output");
-      return;
-    }
-
-    script->setData(s, out);
-  }
+  Data outName;
+  Entity::toData(QString("OUTPUT"), outName);
+  Entity out;
+  svc.curve(script, outName.toString(), out);
 
   // verify Output2
-  pos++;
-  s = sg.value(pos);
-  Data *out2 = svc.toCurve(script, s, toffset);
-  if (! out2)
+  Entity::toData(QString("OUTPUT2"), td);
+  Entity out2;
+  if (svc.curve(script, td.toString(), out2))
   {
-    // is it a number?
-    DataFactory dfac;
-    out2 = dfac.data(DataFactory::_DOUBLE);
-    if (! out2)
+    if (svc.entity(td.toString(), out2))
     {
-      Command::error("CommandCompare::runScript: error creating DataDouble Output2");
-      return;
-    }
-
-    Command::setTData(out2);
-
-    if (out2->set(s))
-    {
-      // is it a color?
-      out2 = dfac.data(DataFactory::_COLOR);
-      if (! out2)
-      {
-        Command::error("CommandCompare::runScript: error creating DataColor Output2");
-        return;
-      }
-
-      Command::setTData(out2);
-
-      if (out2->set(s))
-      {
-        Command::error("CommandCompare::runScript: invalid value pos " + QString::number(pos));
-        return;
-      }
+      qDebug() << "CommandCompare::run: invalid OUTPUT2" << td.toString();
+      return _returnCode;
     }
   }
 
-  // verify curve keys
-  QList<Data *> list;
-  list << in << in2;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
+  if (svck.keys2(in, in2, keys))
   {
-    Command::error("CommandCompare::runScript: invalid keys");
-    return;
+    qDebug() << "CommandCompare::run: invalid keys";
+    return _returnCode;
   }
 
   ScriptVerifyCurveValue svcv;
   Operator top;
+  int comp = top.stringToOperator(op.toString());
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
     double v = 0;
-    if (svcv.getValue(in, keys, loop, offset, v))
+    if (svcv.getValue(in, keys, loop, offset.toInteger(), v))
       continue;
 
     double v2 = 0;
-    if (svcv.getValue(in2, keys, loop, offset2, v2))
+    if (svcv.getValue(in2, keys, loop, offset2.toInteger(), v2))
       continue;
 
-    if (top.test(v, (Operator::Type) op->toInteger(), v2))
-    {
-      Data *b = out->toData(keys.at(loop));
-      if (! b)
-      {
-        b = new CurveBar;
-        out->set(keys.at(loop), b);
-      }
+    if (! top.test(v, (Operator::Type) comp, v2))
+      continue;
 
-      svcv.setValue(out, out2, b, keys.at(loop));
-    }
+    Entity b;
+    out.toEntity(keys.at(loop), b); // try to load existing bar if it exists
+
+    if (svcv.setValue(out2, b, keys.at(loop)))
+      continue;
+
+    out.setEntity(keys.at(loop), b);
   }
 
-  Command::done(QString());
+  script->setData(outName.toString(), out);
+  
+  _returnCode = "OK";
+  return _returnCode;
 }

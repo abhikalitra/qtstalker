@@ -20,78 +20,95 @@
  */
 
 #include "CommandYahooHistory.h"
-#include "DataDateTime.h"
-#include "DataBool.h"
-#include "DataFile.h"
+#include "DataType.h"
+#include "GlobalParent.h"
+#include "Global.h"
 
 #include <QDebug>
 #include <QtNetwork>
 #include <QFile>
+#include <QObject>
 
-CommandYahooHistory::CommandYahooHistory (QObject *p) : Command (p)
+CommandYahooHistory::CommandYahooHistory ()
 {
   _name = "YAHOO_HISTORY";
 
-  _values.insert(_ParmTypeDateStart, new DataDateTime(QDateTime::currentDateTime()));
-  _values.insert(_ParmTypeDateEnd, new DataDateTime(QDateTime::currentDateTime()));
-  _values.insert(_ParmTypeAdjusted, new DataBool(TRUE));
-
+  Data td(QDateTime::currentDateTime());
+  td.setLabel(QObject::tr("Date Start"));
+  Entity::set(QString("DATE_START"), td);
+  
+  td.setLabel(QObject::tr("Date End"));
+  Entity::set(QString("DATE_END"), td);
+  
+  td = Data(TRUE);
+  td.setLabel(QObject::tr("Adjusted"));
+  Entity::set(QString("ADJUSTED"), td);
+  
   QStringList tl;
-  tl << "/tmp/yahoo.csv";
-  _values.insert(_ParmTypeCSVFile, new DataFile(tl));
+  tl << "/tmp/yahoo_symbols";
+  td = Data(DataType::_FILE);
+  td.set(tl);
+  td.setLabel(QObject::tr("Symbol File"));
+  Entity::set(QString("SYMBOL_FILE"), td);
 
-  _values.insert(_ParmTypeSymbolFile, new DataFile);
+  tl.clear();
+  tl << "/tmp/yahoo.csv";
+  td.set(tl);
+  td.setLabel(QObject::tr("CSV File"));
+  Entity::set(QString("CSV_FILE"), td);
 }
 
-void CommandYahooHistory::runScript (CommandParse sg, Script *script)
+QString CommandYahooHistory::run (CommandParse &, void *)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandYahooHistory::runScript: parse error");
-    return;
-  }
-
   // DATE_START
-  QDateTime sd = _values.value(_ParmTypeDateStart)->toDateTime();
+  Data td;
+  Entity::toData(QString("DATE_START"), td);
+//qDebug() << "CommandYahooHistory::runScript: START_DATE" << td.toDateTime();
+  QDateTime sd = td.toDateTime();
 
   // DATE_END
-  QDateTime ed = _values.value(_ParmTypeDateEnd)->toDateTime();
+  Entity::toData(QString("DATE_END"), td);
+//qDebug() << "CommandYahooHistory::runScript: END_DATE" << td.toDateTime();
+  QDateTime ed = td.toDateTime();
 
   // ADJUSTED
-  bool adjusted = _values.value(_ParmTypeAdjusted)->toBool();
+  Data adjusted;
+  Entity::toData(QString("ADJUSTED"), adjusted);
+//qDebug() << "CommandYahooHistory::runScript: ADJUSTED" << adjusted.toBool();
 
   // CSV_FILE
-  QStringList tl = _values.value(_ParmTypeCSVFile)->toList();
-  if (! tl.count())
+  Entity::toData(QString("CSV_FILE"), td);
+//qDebug() << "CommandYahooHistory::runScript: CSV_FILE" << td.toList();
+  QStringList tl = td.toList();
+  if (! tl.size())
   {
-    Command::error("CommandYahooHistory::runScript: invalid CSV file");
-    return;
+    qDebug() << "CommandYahooHistory::runScript: invalid CSV file";
+    return _returnCode;
   }
-
-  QString outFile;
-  if (tl.count())
-    outFile = tl.at(0);
+  QString outFile = tl.at(0);
 
   // SYMBOL_FILE
-  QStringList symbolFiles = _values.value(_ParmTypeSymbolFile)->toList();
-  if (! symbolFiles.count())
+  Entity::toData(QString("SYMBOL_FILE"), td);
+//qDebug() << "CommandYahooHistory::runScript: SYMBOL_FILE" << td.toList();
+  QStringList symbolFiles = td.toList();
+  if (! symbolFiles.size())
   {
-    Command::error("CommandYahooHistory::runScript: invalid symbol file");
-    return;
+    qDebug() << "CommandYahooHistory::runScript: invalid symbol file";
+    return _returnCode;
   }
 
   QFile f2(outFile);
   if (! f2.open(QIODevice::WriteOnly | QIODevice::Text))
   {
-    Command::error("CommandYahooHistory::runScript: file error " + outFile);
-    return;
+    qDebug() << "CommandYahooHistory::runScript: file error" << outFile;
+    return _returnCode;
   }
   QTextStream out(&f2);
 
   QNetworkAccessManager manager;
 
   int loop = 0;
-  for (; loop < symbolFiles.count(); loop++)
+  for (; loop < symbolFiles.size(); loop++)
   {
     QFile f(symbolFiles.at(loop));
     if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -118,18 +135,19 @@ void CommandYahooHistory::runScript (CommandParse sg, Script *script)
       // download the data
       QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
       QEventLoop e;
-      connect(&manager, SIGNAL(finished(QNetworkReply *)), &e, SLOT(quit()));
+      QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &e, SLOT(quit()));
       e.exec();
 
       // parse the data and save quotes
       QByteArray ba = reply->readAll();
-      parse(ba, symbol, name, out, adjusted);
+      parse(ba, symbol, name, out, adjusted.toBool());
     }
 
     f.close();
   }
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
 void CommandYahooHistory::getUrl (QDateTime sd, QDateTime ed, QString symbol, QString &url)
@@ -155,7 +173,7 @@ void CommandYahooHistory::parse (QByteArray &ba, QString &symbol, QString &name,
 
   int error = 0;
   int loop = 1; // skip past first line
-  for (; loop < ll.count(); loop++)
+  for (; loop < ll.size(); loop++)
   {
     line++;
 
@@ -166,9 +184,9 @@ void CommandYahooHistory::parse (QByteArray &ba, QString &symbol, QString &name,
       continue;
 
     QStringList l = ts.split(",");
-    if (l.count() != 7)
+    if (l.size() != 7)
     {
-      qDebug() << "CommandYahooHistory::parse: symbol" << tr("line") << QString::number(line) << tr("# of bar fields, record skipped");
+      qDebug() << "CommandYahooHistory::parse: symbol" << QObject::tr("line") << QString::number(line) << QObject::tr("# of bar fields, record skipped");
       error++;
       continue;
     }
@@ -179,7 +197,7 @@ void CommandYahooHistory::parse (QByteArray &ba, QString &symbol, QString &name,
       double adjclose = l[6].toDouble(&ok);
       if (! ok)
       {
-        qDebug() << "CommandYahooHistory::parse: symbol"  << symbol << tr("line") << QString::number(line) << tr("invalid adjusted close, record skipped");
+        qDebug() << "CommandYahooHistory::parse: symbol"  << symbol << QObject::tr("line") << QString::number(line) << QObject::tr("invalid adjusted close, record skipped");
         error++;
         continue;
       }
@@ -214,7 +232,7 @@ int CommandYahooHistory::downloadName (QString symbol, QString &name)
   QNetworkAccessManager manager;
   QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(url)));
   QEventLoop e;
-  connect(&manager, SIGNAL(finished(QNetworkReply *)), &e, SLOT(quit()));
+  QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &e, SLOT(quit()));
   e.exec();
 
   // parse the data and save quotes

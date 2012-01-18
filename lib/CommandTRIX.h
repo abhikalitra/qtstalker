@@ -26,19 +26,9 @@
 
 class CommandTRIX : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypePeriod
-    };
-
-    CommandTRIX (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getTRIX (QList<Data *> &, int);
+    CommandTRIX ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

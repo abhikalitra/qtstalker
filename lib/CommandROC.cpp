@@ -20,127 +20,70 @@
  */
 
 #include "CommandROC.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataList.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 
 #include <QtDebug>
 
-CommandROC::CommandROC (QObject *p) : Command (p)
+CommandROC::CommandROC ()
 {
   _name = "ROC";
   _method << "ROC" << "ROCP" << "ROCR" << "ROCR100";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypePeriod, new DataInteger(10));
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td = Data(10);
+  td.setLabel(QObject::tr("Period"));
+  Entity::set(QString("PERIOD"), td);
 
-  DataList *dl = new DataList(_method.at(0));
-  dl->set(_method);
-  _values.insert(_ParmTypeMethod, dl);
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandROC::CommandROC: error on TA_Initialize");
+  td = Data(_method, _method.at(0));
+  td.setLabel(QObject::tr("Method"));
+  Entity::set(QString("METHOD"), td);
 }
 
-void CommandROC::runScript (CommandParse sg, Script *script)
+QString CommandROC::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandROC::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandROC::runScript: invalid Input");
-    return;
+    qDebug() << "CommandROC::run: invalid INPUT" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << in;
-
-  Data *line = getROC(list,
-		      _values.value(_ParmTypePeriod)->toInteger(),
-		      _values.value(_ParmTypeMethod)->toInteger());
-  if (! line)
+  Data period, method;
+  Entity::toData(QString("PERIOD"), period);
+  Entity::toData(QString("METHOD"), method);
+  
+  Entity parms;
+  TALibFunctionKey fkeys;
+  parms.set(QString("FUNCTION"), Data(fkeys.stringToIndex(method.toString())));
+  parms.set(QString("PERIOD"), period);
+  
+  CurveData line;
+  TALibFunction func;
+  if (func.run(parms, 1, in, in, in, in, 1, line, line, line))
   {
-    Command::error("CommandROC::runScript: getROC error");
-    return;
+    qDebug() << "CommandROC::run: TALibFunction error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
-}
-
-Data * CommandROC::getROC (QList<Data *> &list, int period, int method)
-{
-  if (! list.count())
-    return 0;
-
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
-
-  int size = keys.count();
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill1(list, keys, &input[0]);
-  if (! size)
-    return 0;
-
-  TA_RetCode rc = TA_SUCCESS;
-  switch (method)
-  {
-    case 0:
-      rc = TA_ROC(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 1:
-      rc = TA_ROCP(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 2:
-      rc = TA_ROCR(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    case 3:
-      rc = TA_ROCR100(0, size - 1, &input[0], period, &outBeg, &outNb, &out[0]);
-      break;
-    default:
-      break;
-  }
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getROC: TA-Lib error" << rc;
-    return 0;
-  }
-
-  QList<Data *> outs;
-  Data *c = new CurveData;
-  outs.append(c);
-
-  TALibOutput tao;
-  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
-  {
-    delete c;
-    return 0;
-  }
-
-  return c;
+  _returnCode = "OK";
+  return _returnCode;
 }

@@ -61,12 +61,12 @@ void SidePanel::createTabs ()
   sc->setKey(QKeySequence(Qt::CTRL + Qt::Key_1));
   connect(sc, SIGNAL(activated()), this, SLOT(setChartPanelFocus()));
 
-  // group panel
+  // group panel shortcut
   sc = new QShortcut(this);
   sc->setKey(QKeySequence(Qt::CTRL + Qt::Key_2));
   connect(sc, SIGNAL(activated()), this, SLOT(setGroupPanelFocus()));
 
-  // chart panel
+  // chart panel shortcut
   sc = new QShortcut(this);
   sc->setKey(QKeySequence(Qt::CTRL + Qt::Key_3));
   connect(sc, SIGNAL(activated()), this, SLOT(setScriptPanelFocus()));

@@ -23,6 +23,8 @@
 #include "GlobalPlotGroup.h"
 #include "GlobalSymbol.h"
 #include "DataWindow.h"
+#include "SymbolKey.h"
+#include "GlobalParent.h"
 
 #include "../pics/datawindow.xpm"
 
@@ -40,10 +42,13 @@ DataWindowButton::DataWindowButton ()
 
 void DataWindowButton::dialog ()
 {
-  if (! g_currentSymbol)
+  SymbolKey keys;
+  Data symbol;
+  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), symbol);
+  if (symbol.toString().isEmpty())
     return;
 
-  DataWindow *dw = new DataWindow(0);
+  DataWindow *dw = new DataWindow(g_parent);
 
   QList<QString> l = g_plotGroup->plots();
 

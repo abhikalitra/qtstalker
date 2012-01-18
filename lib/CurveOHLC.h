@@ -29,7 +29,7 @@ class CurveOHLC : public Curve
   public:
     CurveOHLC ();
     void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
-    int info (int, Message *);
+    int info (int, Entity &);
     int scalePoint (int, QColor &, double &);
 };
 

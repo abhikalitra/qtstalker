@@ -21,25 +21,22 @@
 
 #include "TALibOutput.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
+#include "CurveBarKey.h"
 
 TALibOutput::TALibOutput ()
 {
 }
 
-int TALibOutput::fillDouble1 (QList<Data *> &list, QList<int> &keys, int outNb, TA_Real out[])
+int TALibOutput::fillOutputDouble1 (Entity &line, QList<QString> &keys, int outNb, TA_Real out[])
 {
-  if (! list.count())
-    return 1;
-
-  Data *c = list.at(0);
-  int keyLoop = keys.count() - 1;
+  CurveBarKey cbkeys;
+  int keyLoop = keys.size() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    CurveBar *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(out[outLoop]));
-    c->set(keys.at(keyLoop), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out[outLoop]));
+    line.setEntity(keys.at(keyLoop), b);
 
     keyLoop--;
     outLoop--;
@@ -48,24 +45,19 @@ int TALibOutput::fillDouble1 (QList<Data *> &list, QList<int> &keys, int outNb, 
   return 0;
 }
 
-int TALibOutput::fillDouble2 (QList<Data *> &list, QList<int> &keys, int outNb, TA_Real out[], TA_Real out2[])
+int TALibOutput::fillOutputDouble2 (Entity &line, Entity &line2, QList<QString> &keys, int outNb, TA_Real out[], TA_Real out2[])
 {
-  if (list.count() != 2)
-    return 1;
-
-  Data *c = list.at(0);
-  Data *c2 = list.at(1);
-  int keyLoop = keys.count() - 1;
+  CurveBarKey cbkeys;
+  int keyLoop = keys.size() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    CurveBar *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(out[outLoop]));
-    c->set(keys.at(keyLoop), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out[outLoop]));
+    line.setEntity(keys.at(keyLoop), b);
 
-    b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(out2[outLoop]));
-    c2->set(keys.at(keyLoop), b);
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out2[outLoop]));
+    line2.setEntity(keys.at(keyLoop), b);
 
     keyLoop--;
     outLoop--;
@@ -74,29 +66,23 @@ int TALibOutput::fillDouble2 (QList<Data *> &list, QList<int> &keys, int outNb, 
   return 0;
 }
 
-int TALibOutput::fillDouble3 (QList<Data *> &list, QList<int> &keys, int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[])
+int TALibOutput::fillOutputDouble3 (Entity &line, Entity &line2, Entity &line3, QList<QString> &keys,
+			      int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[])
 {
-  if (list.count() != 3)
-    return 1;
-
-  Data *c = list.at(0);
-  Data *c2 = list.at(1);
-  Data *c3 = list.at(2);
-  int keyLoop = keys.count() - 1;
+  CurveBarKey cbkeys;
+  int keyLoop = keys.size() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    CurveBar *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(out[outLoop]));
-    c->set(keys.at(keyLoop), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out[outLoop]));
+    line.setEntity(keys.at(keyLoop), b);
 
-    b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(out2[outLoop]));
-    c2->set(keys.at(keyLoop), b);
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out2[outLoop]));
+    line2.setEntity(keys.at(keyLoop), b);
 
-    b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(out3[outLoop]));
-    c3->set(keys.at(keyLoop), b);
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out3[outLoop]));
+    line3.setEntity(keys.at(keyLoop), b);
 
     keyLoop--;
     outLoop--;
@@ -105,19 +91,16 @@ int TALibOutput::fillDouble3 (QList<Data *> &list, QList<int> &keys, int outNb, 
   return 0;
 }
 
-int TALibOutput::fillInteger1 (QList<Data *> &list, QList<int> &keys, int outNb, TA_Integer out[])
+int TALibOutput::fillOutputInteger1 (Entity &line, QList<QString> &keys, int outNb, TA_Integer out[])
 {
-  if (! list.count())
-    return 1;
-
-  Data *c = list.at(0);
-  int keyLoop = keys.count() - 1;
+  CurveBarKey cbkeys;
+  int keyLoop = keys.size() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
-    CurveBar *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(out[outLoop]));
-    c->set(keys.at(keyLoop), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out[outLoop]));
+    line.setEntity(keys.at(keyLoop), b);
 
     keyLoop--;
     outLoop--;

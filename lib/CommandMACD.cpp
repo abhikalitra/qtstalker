@@ -20,141 +20,107 @@
  */
 
 #include "CommandMACD.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataMA.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
+#include "MAType.h"
 
 #include <QtDebug>
 
-CommandMACD::CommandMACD (QObject *p) : Command (p)
+CommandMACD::CommandMACD ()
 {
   _name = "MACD";
 
-  _values.insert(_ParmTypeMACD, new DataString());
-  _values.insert(_ParmTypeSignal, new DataString());
-  _values.insert(_ParmTypeHist, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypePeriodFast, new DataInteger(12));
-  _values.insert(_ParmTypeMAFast, new DataMA("EMA"));
-  _values.insert(_ParmTypePeriodSlow, new DataInteger(24));
-  _values.insert(_ParmTypeMASlow, new DataMA("EMA"));
-  _values.insert(_ParmTypePeriodSignal, new DataInteger(9));
-  _values.insert(_ParmTypeMASignal, new DataMA("EMA"));
+  Data td;
+  td.setLabel(QObject::tr("Output MACD"));
+  Entity::set(QString("MACD"), td);
 
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandMACD::CommandMACD: error on TA_Initialize");
+  td.setLabel(QObject::tr("Output Signal"));
+  Entity::set(QString("SIGNAL"), td);
+
+  td.setLabel(QObject::tr("Output Histogram"));
+  Entity::set(QString("HIST"), td);
+
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td = Data(12);
+  td.setLabel(QObject::tr("Period Fast"));
+  Entity::set(QString("PERIOD_FAST"), td);
+  
+  td = Data(24);
+  td.setLabel(QObject::tr("Period Slow"));
+  Entity::set(QString("PERIOD_SLOW"), td);
+  
+  td = Data(9);
+  td.setLabel(QObject::tr("Period Signal"));
+  Entity::set(QString("PERIOD_SIG"), td);
+
+  MAType mat;
+  td = Data(mat.list(), QString("EMA"));
+  td.setLabel(QObject::tr("MA Type Fast"));
+  Entity::set(QString("MA_FAST"), td);
+  
+  td.setLabel(QObject::tr("MA Type Slow"));
+  Entity::set(QString("MA_SLOW"), td);
+  
+  td.setLabel(QObject::tr("MA Type Signal"));
+  Entity::set(QString("MA_SIG"), td);
 }
 
-void CommandMACD::runScript (CommandParse sg, Script *script)
+QString CommandMACD::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandMACD::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandMACD::runScript: invalid Input");
-    return;
+    qDebug() << "CommandMACD::run: invalid INPUT" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << in;
-
-  QList<Data *> lines = getMACD(list,
-				_values.value(_ParmTypePeriodFast)->toInteger(),
-				_values.value(_ParmTypePeriodSlow)->toInteger(),
-				_values.value(_ParmTypePeriodSignal)->toInteger(),
-				_values.value(_ParmTypeMAFast)->toInteger(),
-				_values.value(_ParmTypeMASlow)->toInteger(),
-				_values.value(_ParmTypeMASignal)->toInteger());
-  if (lines.count() != 3)
+  Data perf, pers, persig, maf, mas, masig;
+  Entity::toData(QString("PERIOD_FAST"), perf);
+  Entity::toData(QString("PERIOD_SLOW"), pers);
+  Entity::toData(QString("PERIOD_SIG"), persig);
+  Entity::toData(QString("MA_FAST"), maf);
+  Entity::toData(QString("MA_SLOW"), mas);
+  Entity::toData(QString("MA_SIG"), masig);
+  
+  Entity parms;
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_MACD));
+  parms.set(QString("PERIOD_FAST"), perf);
+  parms.set(QString("PERIOD_SLOW"), pers);
+  parms.set(QString("PERIOD_SIG"), persig);
+  parms.set(QString("MA_FAST"), maf);
+  parms.set(QString("MA_SLOW"), mas);
+  parms.set(QString("MA_SIG"), masig);
+  
+  CurveData macd;
+  CurveData signal;
+  CurveData hist;
+  TALibFunction func;
+  if (func.run(parms, 1, in, in, in, in, 3, macd, signal, hist))
   {
-    qDeleteAll(lines);
-    Command::error("CommandMACD::runScript: getMACD error");
-    return;
+    qDebug() << "CommandMACD::run: TALibFunction error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeMACD)->toString(), lines.at(0));
-  script->setData(_values.value(_ParmTypeSignal)->toString(), lines.at(1));
-  script->setData(_values.value(_ParmTypeHist)->toString(), lines.at(2));
+  Entity::toData(QString("MACD"), td);
+  script->setData(td.toString(), macd);
 
-  Command::done(QString());
-}
+  Entity::toData(QString("SIGNAL"), td);
+  script->setData(td.toString(), signal);
 
-QList<Data *> CommandMACD::getMACD (QList<Data *> &list, int fp, int sp, int sigp, int fma, int sma, int sigma)
-{
-  QList<Data *> lines;
-  if (! list.count())
-    return lines;
+  Entity::toData(QString("HIST"), td);
+  script->setData(td.toString(), hist);
 
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return lines;
-
-  int size = keys.count();
-  TA_Real in[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Real out3[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill1(list, keys, &in[0]);
-  if (! size)
-    return lines;
-
-  TA_RetCode rc = TA_MACDEXT(0,
-                             size - 1,
-                             &in[0],
-                             fp,
-                             (TA_MAType) fma,
-                             sp,
-                             (TA_MAType) sma,
-                             sigp,
-                             (TA_MAType) sigma,
-                             &outBeg,
-                             &outNb,
-                             &out[0],
-                             &out2[0],
-                             &out3[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getMACD: TA-Lib error" << rc;
-    return lines;
-  }
-
-  lines.clear();
-
-  Data *c = new CurveData;
-  lines << c;
-  c = new CurveData;
-  lines << c;
-  c = new CurveData;
-  lines << c;
-
-  TALibOutput tao;
-  if (tao.fillDouble3(lines, keys, outNb, &out[0], &out2[0], &out3[0]))
-  {
-    qDeleteAll(lines);
-    lines.clear();
-    return lines;
-  }
-
-  return lines;
+  _returnCode = "OK";
+  return _returnCode;
 }

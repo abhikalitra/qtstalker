@@ -27,6 +27,7 @@
 
 #include "Qtstalker.h"
 #include "../lib/qtstalker_defines.h"
+#include "Entity.h"
 
 int main(int argc, char *argv[])
 {
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
   tor.load(i18nFilename, i18nDir);
   a.installTranslator( &tor );
 
-//  qRegisterMetaType<Symbol>("Symbol");
+  qRegisterMetaType<Entity>("Entity");
 //  qRegisterMetaType<AppCommand>("AppCommand");
 //  qRegisterMetaType<Data>("Data");
 //  qRegisterMetaType<QList<Data *> >("QList<Data *>");

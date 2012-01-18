@@ -26,11 +26,9 @@
 
 class CommandCompare : public Command
 {
-  Q_OBJECT
-
   public:
-    CommandCompare (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandCompare ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

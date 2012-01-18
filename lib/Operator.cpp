@@ -31,9 +31,9 @@ QStringList & Operator::list ()
   return _list;
 }
 
-Operator::Type Operator::stringToOperator (QString d)
+int Operator::stringToOperator (QString d)
 {
-  return (Operator::Type) _list.indexOf(d);
+  return _list.indexOf(d);
 }
 
 int Operator::test (double val, Operator::Type op, double val2)

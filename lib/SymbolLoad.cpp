@@ -25,6 +25,7 @@
 #include "GlobalSymbol.h"
 #include "QuoteDataBase.h"
 #include "BarLength.h"
+#include "SymbolKey.h"
 
 #include <QStringList>
 #include <QSettings>
@@ -40,26 +41,19 @@ void SymbolLoad::run ()
 {
   // do all the stuff we need to do to load a chart
 
-  QMutexLocker locker(&g_symbolMutex);
+  QMutexLocker locker(&g_currentSymbolMutex);
 
-  if (! g_currentSymbol)
-    g_currentSymbol = new Symbol;
-
-  g_currentSymbol->clear();
-  if (g_currentSymbol->setSymbolFull(_symbol))
-  {
-    qDebug() << "SymbolLoad::run: invalid symbol" << _symbol;
-    emit signalError();
-    return;
-  }
+  SymbolKey skeys;
+  g_currentSymbol = Symbol();
+  g_currentSymbol.set(skeys.indexToString(SymbolKey::_SYMBOL), Data(_symbol));
 
   QSettings settings(g_localSettings);
   int length = settings.value("bar_length").toInt();
-  g_currentSymbol->setLength(length);
-  g_currentSymbol->setRange(settings.value("date_range").toInt());
+  g_currentSymbol.set(skeys.indexToString(SymbolKey::_LENGTH), Data(length));
+  g_currentSymbol.set(skeys.indexToString(SymbolKey::_RANGE), Data(settings.value("date_range").toInt()));
 
   QuoteDataBase db;
-  if (db.getBars(g_currentSymbol))
+  if (db.getBars(&g_currentSymbol))
   {
     qDebug() << "SymbolLoad::run: QuoteDataBase error";
     emit signalError();
@@ -70,7 +64,7 @@ void SymbolLoad::run ()
   settings.setValue("current_symbol", _symbol);
   settings.sync();
 
-  emit signalDone(getWindowCaption(length), g_currentSymbol->barKeyCount());
+  emit signalDone(getWindowCaption(length), g_currentSymbol.ekeyCount());
 }
 
 QString SymbolLoad::getWindowCaption (int length)
@@ -79,16 +73,16 @@ QString SymbolLoad::getWindowCaption (int length)
   QStringList l;
   l << "QtStalker" + g_session + ":";
 
-  if (! g_currentSymbol)
-    return l.join(" ");
+  SymbolKey keys;
+  Data name;
+  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), name);
+  if (! name.toString().isEmpty())
+    l << name.toString();
 
-  QString name = g_currentSymbol->name();
-  if (! name.isEmpty())
-    l << name;
-
-  QString symbol = g_currentSymbol->symbol();
-  if (! symbol.isEmpty())
-    l << "(" + symbol + ")";
+  Data symbol;
+  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), symbol);
+  if (! symbol.toString().isEmpty())
+    l << "(" + symbol.toString() + ")";
 
   QStringList bl;
   BarLength b;

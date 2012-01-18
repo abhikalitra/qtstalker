@@ -22,7 +22,7 @@
 #include "GroupDelete.h"
 #include "SelectDialog.h"
 #include "Global.h"
-#include "GroupDataBase.h"
+#include "EAVDataBase.h"
 
 #include <QtDebug>
 #include <QTimer>
@@ -39,7 +39,7 @@ void GroupDelete::run ()
 void GroupDelete::remove ()
 {
   QStringList names;
-  GroupDataBase db;
+  EAVDataBase db("groups");
   db.names(names);
 
   QStringList title;
@@ -62,7 +62,7 @@ void GroupDelete::remove2 (QStringList gl)
     return;
   }
 
-  GroupDataBase db;
+  EAVDataBase db("groups");
   db.transaction();
   db.remove(gl);
   db.commit();

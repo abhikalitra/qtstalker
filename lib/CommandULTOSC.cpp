@@ -20,135 +20,99 @@
  */
 
 #include "CommandULTOSC.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataInteger.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 
 #include <QtDebug>
 
-CommandULTOSC::CommandULTOSC (QObject *p) : Command (p)
+CommandULTOSC::CommandULTOSC ()
 {
   _name = "ULTOSC";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
-  _values.insert(_ParmTypePeriodS, new DataInteger(7));
-  _values.insert(_ParmTypePeriodM, new DataInteger(14));
-  _values.insert(_ParmTypePeriodL, new DataInteger(28));
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input Close"));
+  Entity::set(QString("CLOSE"), td);
+  
+  td = Data(7);
+  td.setLabel(QObject::tr("Period Short"));
+  Entity::set(QString("PERIOD_S"), td);
+  
+  td = Data(14);
+  td.setLabel(QObject::tr("Period Medium"));
+  Entity::set(QString("PERIOD_M"), td);
 
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandULTOSC::CommandULTOSC: error on TA_Initialize");
+  td = Data(28);
+  td.setLabel(QObject::tr("Period Long"));
+  Entity::set(QString("PERIOD_L"), td);
 }
 
-void CommandULTOSC::runScript (CommandParse sg, Script *script)
+QString CommandULTOSC::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandULTOSC::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandULTOSC::runScript: invalid High");
-    return;
+    qDebug() << "CommandULTOSC::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandULTOSC::runScript: invalid Low");
-    return;
+    qDebug() << "CommandULTOSC::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
-  if (! iclose)
+  Entity::toData(QString("CLOSE"), td);
+  Entity iclose;
+  if (svc.curve(script, td.toString(), iclose))
   {
-    Command::error("CommandULTOSC::runScript: invalid Close");
-    return;
+    qDebug() << "CommandULTOSC::run: invalid CLOSE" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow << iclose;
-
-  Data *line = getULTOSC(list,
-			 _values.value(_ParmTypePeriodS)->toInteger(),
-			 _values.value(_ParmTypePeriodM)->toInteger(),
-			 _values.value(_ParmTypePeriodL)->toInteger());
-  if (! line)
+  Data sp, mp, lp;
+  Entity::toData(QString("PERIOD_S"), sp);
+  Entity::toData(QString("PERIOD_M"), mp);
+  Entity::toData(QString("PERIOD_L"), lp);
+  
+  Entity parms;
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_ULTOSC));
+  parms.set(QString("PERIOD_S"), sp);
+  parms.set(QString("PERIOD_M"), mp);
+  parms.set(QString("PERIOD_L"), lp);
+  
+  CurveData line;
+  TALibFunction func;
+  if (func.run(parms, 3, ihigh, ilow, iclose, iclose, 1, line, line, line))
   {
-    Command::error("CommandULTOSC::runScript: getULTOSC error");
-    return;
+    qDebug() << "CommandULTOSC::run: TALibFunction error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
-}
-
-Data * CommandULTOSC::getULTOSC (QList<Data *> &list, int sp, int mp, int lp)
-{
-  if (list.count() != 3)
-    return 0;
-
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
-
-  int size = keys.count();
-  TA_Real out[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill3(list, keys, &high[0], &low[0], &close[0]);
-  if (! size)
-    return 0;
-
-  TA_RetCode rc = TA_ULTOSC(0,
-                            size - 1,
-                            &high[0],
-                            &low[0],
-                            &close[0],
-			    sp,
-			    mp,
-			    lp,
-                            &outBeg,
-                            &outNb,
-                            &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getULTOSC: TA-Lib error" << rc;
-    return 0;
-  }
-
-  QList<Data *> outs;
-  Data *c = new CurveData;
-  outs.append(c);
-
-  TALibOutput tao;
-  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
-  {
-    delete c;
-    return 0;
-  }
-
-  return c;
+  _returnCode = "OK";
+  return _returnCode;
 }

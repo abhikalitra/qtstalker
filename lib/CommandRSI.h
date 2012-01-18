@@ -26,19 +26,9 @@
 
 class CommandRSI : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypePeriod
-    };
-
-    CommandRSI (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getRSI (QList<Data *> &, int);
+    CommandRSI ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

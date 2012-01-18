@@ -20,65 +20,56 @@
  */
 
 #include "CommandChart.h"
-#include "GlobalPlotGroup.h"
-#include "GlobalControlPanel.h"
-#include "GlobalInfoPanel.h"
-#include "DataString.h"
-#include "DataBool.h"
-#include "DataInteger.h"
+#include "ThreadMessageType.h"
+#include "Script.h"
+#include "ThreadMessage.h"
 
 #include <QtDebug>
 
-CommandChart::CommandChart (QObject *p) : Command (p)
+CommandChart::CommandChart ()
 {
   _name = "CHART";
-  _type = _WAIT;
 
-  _values.insert(_ParmTypeName, new DataString());
-  _values.insert(_ParmTypeDate, new DataBool(TRUE));
-  _values.insert(_ParmTypeLog, new DataBool(FALSE));
-  _values.insert(_ParmTypeRow, new DataInteger(0));
-  _values.insert(_ParmTypeCol, new DataInteger(99));
+  Data td;
+  td.setLabel(QObject::tr("Chart Name"));
+  Entity::set(QString("NAME"), td);
+  
+  td = Data(TRUE);
+  td.setLabel(QObject::tr("Date Axis"));
+  Entity::set(QString("DATE"), td);
+
+  td = Data(FALSE);
+  td.setLabel(QObject::tr("Log Scaling"));
+  Entity::set(QString("LOG"), td);
+
+  td = Data(0);
+  td.setLabel(QObject::tr("Tab Row"));
+  Entity::set(QString("ROW"), td);
+
+  td = Data(99);
+  td.setLabel(QObject::tr("Tab Column"));
+  Entity::set(QString("COL"), td);
 }
 
-void CommandChart::runScript (CommandParse sg, Script *script)
+QString CommandChart::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
+  Script *script = (Script *) d;
+  
+  Entity e;
+  QList<QString> keys = Entity::dkeys();
+  int loop = 0;
+  for (; loop < keys.size(); loop++)
   {
-    Command::error("CommandChart::runScript: parse error");
-    return;
+    Data td;
+    Entity::toData(keys.at(loop), td);
+    e.set(keys.at(loop), td);
   }
+  e.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_NEW));
+  e.set(QString("FILE"), Data(script->file()));
 
-  chart(_values.value(_ParmTypeName)->toString(),
-	script->file(),
-	_values.value(_ParmTypeRow)->toInteger(),
-	_values.value(_ParmTypeCol)->toInteger(),
-	_values.value(_ParmTypeDate)->toBool(),
-	_values.value(_ParmTypeLog)->toBool());
-
-  Command::done(QString());
-}
-
-void CommandChart::chart (QString chart, QString script, int row, int col, bool date, bool log)
-{
-  Plot *plot = g_plotGroup->plot(chart);
-  if (! plot)
-  {
-    plot = new Plot(chart, g_plotGroup);
-    plot->setBarSpacing(g_controlPanel->barSpaceButton()->getPixelSpace());
-    plot->loadSettings();
-    plot->setScriptFile(script);
-    plot->setRow(row);
-    plot->setCol(col);
-
-    connect(plot, SIGNAL(signalInfoMessage(Message)), g_infoPanel, SLOT(showInfo(Message)));
-    connect(g_controlPanel->barSpaceButton(), SIGNAL(signalPixelSpace(int)), plot, SLOT(setBarSpacing(int)));
-    connect(g_controlPanel, SIGNAL(signalValueChanged(int)), plot, SLOT(setStartIndex(int)));
-    connect(plot, SIGNAL(signalIndex(int)), g_controlPanel, SLOT(setStartValue(int)));
-
-    g_plotGroup->setPlot(plot);
-  }
-
-  plot->showDate(date);
-  plot->setLogScaling(log);
+  ThreadMessage tm;
+  tm.sendMessage(e, script);
+  
+  _returnCode = "OK";
+  return _returnCode;
 }

@@ -26,20 +26,10 @@
 
 class CommandArithmetic : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypeInput2,
-      _ParmTypeMethod
-    };
-
-    CommandArithmetic (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getArithmetic (Data *in, int offset, Data *in2, int offset2, int method);
+    CommandArithmetic ();
+    QString run (CommandParse &, void *);
+    int getArithmetic (Entity &in, int offset, Entity &in2, int offset2, int method, Entity &line);
 
   private:
     QStringList _method;

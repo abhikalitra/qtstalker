@@ -26,21 +26,10 @@
 
 class CommandBETA : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput,
-      _ParmTypeIndex,
-      _ParmTypePeriod
-    };
-
-    CommandBETA (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getBETA (QList<Data *> &, int period);
-    Data * getIndex (QString, Script *);
+    CommandBETA ();
+    QString run (CommandParse &, void *);
+    int getIndex (QString, Entity &line);
 };
 
 #endif

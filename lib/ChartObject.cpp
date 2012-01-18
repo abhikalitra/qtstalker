@@ -20,12 +20,14 @@
  */
 
 #include "ChartObject.h"
-#include "ChartObjectDataBase.h"
+#include "EAVDataBase.h"
 #include "Plot.h"
-#include "ChartObjectData.h"
+#include "ChartObjectKey.h"
+#include "EntityType.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
+#include <QUuid>
 
 ChartObject::ChartObject ()
 {
@@ -34,15 +36,23 @@ ChartObject::ChartObject ()
   _handleWidth = 6;
   setYAxis(QwtPlot::yRight);
   _modified = 0;
-
-  _settings = new ChartObjectData;
+  
+  ChartObjectKey keys;
+  _settings.setType(EntityType::_CHART_OBJECT);
+  _settings.set(keys.indexToString(ChartObjectKey::_RO), Data(FALSE));
+  _settings.set(keys.indexToString(ChartObjectKey::_Z), Data(1));
+  _settings.set(keys.indexToString(ChartObjectKey::_PEN), Data(1));
+  
+  QString id;
+  newID(id);
+  _settings.setName(id);
+  _settings.set(keys.indexToString(ChartObjectKey::_ID), Data(id));
 }
 
 ChartObject::~ChartObject ()
 {
   detach();
   save();
-  delete _settings;
 }
 
 int ChartObject::rtti () const
@@ -81,19 +91,18 @@ void ChartObject::setSelected (int d)
   _selected = d;
 }
 
-void ChartObject::setSettings (Data *d)
+void ChartObject::setSettings (Entity d)
 {
-  delete _settings;
   _settings = d;
 }
 
-Data * ChartObject::settings ()
+Entity ChartObject::settings ()
 {
   return _settings;
 }
 
 // virtual
-int ChartObject::info (Message &)
+int ChartObject::info (Entity &)
 {
   return 0;
 }
@@ -109,12 +118,17 @@ int ChartObject::highLow (int start, int end, double &high, double &low)
   if (! dsd)
     return 1;
 
-  int x = dsd->x(_settings->toData(ChartObjectData::_DATE)->toDateTime());
+  ChartObjectKey keys;
+  Data tddt;
+  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), tddt);
+  int x = dsd->x(tddt.toDateTime());
 
   if (x < start || x > end)
     return 1;
 
-  double d = _settings->toData(ChartObjectData::_PRICE)->toDouble();
+  Data tdd;
+  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), tdd);
+  double d = tdd.toDouble();
   if (! flag)
   {
     h = d;
@@ -208,7 +222,11 @@ void ChartObject::click (int button, QPoint p)
             _selected = 1;
 
 	    Plot *tplot = (Plot *) plot();
-	    tplot->select(_settings->toData(ChartObjectData::_ID)->toString());
+	    
+	    ChartObjectKey keys;
+	    Data td;
+	    _settings.toData(keys.indexToString(ChartObjectKey::_ID), td);
+	    tplot->select(td.toString());
 
             plot()->replot();
             return;
@@ -232,15 +250,18 @@ int ChartObject::create ()
 
 int ChartObject::save ()
 {
-  if (_settings->toData(ChartObjectData::_RO)->toBool())
+  ChartObjectKey keys;
+  Data td;
+  _settings.toData(keys.indexToString(ChartObjectKey::_RO), td);
+  if (td.toBool())
     return 1;
 
   if (! _modified)
     return 1;
 
-  ChartObjectDataBase db;
+  EAVDataBase db("chartObjects");
   db.transaction();
-  if (db.save(_settings))
+  if (db.set(&_settings))
     return 1;
   db.commit();
 
@@ -267,4 +288,12 @@ void ChartObject::setModified (int d)
 int ChartObject::modified ()
 {
   return _modified;
+}
+
+void ChartObject::newID (QString &d)
+{
+  d = QUuid::createUuid().toString();
+  d.remove("-");
+  d.remove("{");
+  d.remove("}");
 }

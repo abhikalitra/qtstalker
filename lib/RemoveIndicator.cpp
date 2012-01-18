@@ -22,7 +22,7 @@
 #include "RemoveIndicator.h"
 #include "ConfirmDialog.h"
 #include "GlobalPlotGroup.h"
-#include "IndicatorDataBase.h"
+#include "EAVDataBase.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -60,8 +60,11 @@ void RemoveIndicator::remove2 ()
     return;
   }
 
-  IndicatorDataBase i;
-  if (i.remove(p->scriptFile()))
+  QStringList l;
+  l << _indicator;
+  
+  EAVDataBase db("indicators");
+  if (db.remove(l))
   {
     done();
     return;

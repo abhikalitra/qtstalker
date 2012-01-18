@@ -22,83 +22,85 @@
 #include "CommandNormalize.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataString.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 #include <cmath>
 
-CommandNormalize::CommandNormalize (QObject *p) : Command (p)
+CommandNormalize::CommandNormalize ()
 {
   _name = "NORMALIZE";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
 }
 
-void CommandNormalize::runScript (CommandParse sg, Script *script)
+QString CommandNormalize::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandNormalize::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandNormalize::runScript: invalid Input");
-    return;
+    qDebug() << "CommandNormalize::run: invalid INPUT" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << in;
-
-  Data *line = getNORM(list);
-  if (! line)
+  CurveData line;
+  if (getNORM(in, line))
   {
-    Command::error("CommandNormalize::runScript: getNORM error");
-    return;
+    qDebug() << "CommandNormalize::runScript: getNORM error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandNormalize::getNORM (QList<Data *> &list)
+int CommandNormalize::getNORM (Entity &in, Entity &line)
 {
-  if (! list.count())
-    return 0;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys1(in, keys))
+    return 1;
 
-  Data *in = list.at(0);
   double max = 0;
   double min = 0;
-  if (in->highLow(max, min))
+  if (in.highLow(max, min))
     return 0;
 
   double range = fabs(max) + fabs(min);
 
-  Data *line = new CurveData;
+  CurveBarKey cbkeys;
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *bar = in->toData(keys.at(loop));
-    double t = ((bar->toData(CurveBar::_VALUE)->toDouble() - min) / range) * 100;
+    Entity bar;
+    in.toEntity(keys.at(loop), bar);
+    Data v;
+    if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), v))
+      continue;
+    
+    double t = ((v.toDouble() - min) / range) * 100;
 
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(t));
-    line->set(keys.at(loop), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    line.setEntity(keys.at(loop), b);
   }
 
-  return line;
+  return 0;
 }

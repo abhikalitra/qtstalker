@@ -22,7 +22,7 @@
 #ifndef SCRIPT_VERIFY_CURVE_KEYS_HPP
 #define SCRIPT_VERIFY_CURVE_KEYS_HPP
 
-#include "Data.h"
+#include "Entity.h"
 
 #include <QList>
 
@@ -30,7 +30,13 @@ class ScriptVerifyCurveKeys
 {
   public:
     ScriptVerifyCurveKeys ();
-    int keys (QList<Data *> &list, QList<int> &keys);
+    int keys1 (Entity &in, QList<QString> &keys);
+    int keys2 (Entity &in, Entity &in2, QList<QString> &keys);
+    int keys3 (Entity &in, Entity &in2, Entity &in3, QList<QString> &keys);
+    int keys4 (Entity &in, Entity &in2, Entity &in3, Entity &in4, QList<QString> &keys);
+    int verifyKeys (Entity &e, int &minKey, int &pos);
+    void sortKeys (QList<QString> &inKeys, QList<QString> &outKeys);
+    
 };
 
 #endif

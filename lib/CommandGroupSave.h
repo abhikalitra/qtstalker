@@ -26,17 +26,9 @@
 
 class CommandGroupSave : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeGroup,
-      _ParmTypeSymbol
-    };
-
-    CommandGroupSave (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandGroupSave ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

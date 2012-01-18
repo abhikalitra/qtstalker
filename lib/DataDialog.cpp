@@ -20,11 +20,14 @@
  */
 
 #include "DataDialog.h"
-#include "DataFactory.h"
 #include "LineEdit.h"
 #include "ColorButton.h"
 #include "FileButton.h"
 #include "SymbolButton.h"
+#include "DataType.h"
+#include "EntityType.h"
+#include "GlobalData.h"
+#include "GlobalMutex.h"
 
 #include <QtDebug>
 #include <QComboBox>
@@ -33,12 +36,33 @@
 #include <QCheckBox>
 #include <QDateTimeEdit>
 
-DataDialog::DataDialog (QWidget *p) : Dialog (p)
+DataDialog::DataDialog (QWidget *p, QString id, Entity e) : Dialog (p)
 {
+  _id = id;
+  _settings = e;
   _keySize = "data_dialog_window_size";
   _keyPos = "data_dialog_window_position";
 
   createGUI();
+  
+  setGUI();
+}
+
+DataDialog::~DataDialog ()
+{
+  if (_id.isEmpty())
+    return;
+  
+  // save settings into global area
+  g_dataMutex.lock();
+  g_dataList.insert(_id, _settings);
+  g_dataMutex.unlock();
+  
+  g_mutex.lock();
+  QMutex *mutex = g_mutexList.value(_id);
+  g_mutex.unlock();
+//qDebug() << "DataDialog::~DataDialog: unlocking mutex";   
+  mutex->unlock();
 }
 
 void DataDialog::createGUI ()
@@ -65,59 +89,67 @@ void DataDialog::addTab (int pos)
   _tabs->insertTab(pos, w, QString::number(pos));
 }
 
-void DataDialog::set (Data *d)
+void DataDialog::setGUI ()
 {
-  int tab = d->tab();
-  QString key = d->label();
-
-  switch ((DataFactory::Type) d->type())
+  QList<QString> keys = _settings.dkeys();
+  qSort(keys);
+  
+  int loop = 0;
+  for (; loop < keys.size(); loop++)
   {
-    case DataFactory::_STRING:
-      setText(tab, key, d->toString(), QString());
-      _settings.insert(key, d);
-      break;
-    case DataFactory::_INTEGER:
-      setInteger(tab, key, d->toInteger(), 999999, -999999, QString());
-      _settings.insert(key, d);
-      break;
-    case DataFactory::_DOUBLE:
-      setDouble(tab, key, d->toDouble(), 99999999.0, -99999999.0, QString());
-      _settings.insert(key, d);
-      break;
-    case DataFactory::_LIST:
-    case DataFactory::_BAR_LENGTH:
-    case DataFactory::_DATE_RANGE:
-    case DataFactory::_MA:
-    case DataFactory::_OP:
-      setList(tab, key, d->toString(), d->toList(), QString());
-      _settings.insert(key, d);
-      break;
-    case DataFactory::_COLOR:
-      setColor(tab, key, d->toColor(), QString());
-      _settings.insert(key, d);
-      break;
-    case DataFactory::_DATETIME:
-      setDateTime(tab, key, d->toDateTime(), QString());
-      _settings.insert(key, d);
-      break;
-    case DataFactory::_BOOL:
-      setBool(tab, key, d->toBool(), QString());
-      _settings.insert(key, d);
-      break;
-    case DataFactory::_FILE:
-      setFile(tab, key, d->toList(), QString());
-      _settings.insert(key, d);
-      break;
-    case DataFactory::_SYMBOL:
-      setSymbol(tab, key, d->toList(), QString());
-      _settings.insert(key, d);
-      break;
-    default:
-      break;
+    Data d;
+    _settings.toData(keys.at(loop), d);
+
+    int tab = d.tab();
+    QString key = keys.at(loop);
+    QString label = d.label();
+    if (label.isEmpty())
+      continue;
+
+    switch ((DataType::Type) d.type())
+    {
+      case DataType::_STRING:
+        setText(tab, key, label, d.toString(), QString());
+        break;
+      case DataType::_INTEGER:
+        setInteger(tab, key, label, d.toInteger(), 999999, -999999, QString());
+        break;
+      case DataType::_DOUBLE:
+        setDouble(tab, key, label, d.toDouble(), 99999999.0, -99999999.0, QString());
+        break;
+      case DataType::_LIST:
+        setList(tab, key, label, d.toString(), d.toList(), QString());
+        break;
+      case DataType::_COLOR:
+        setColor(tab, key, label, d.toColor(), QString());
+        break;
+      case DataType::_DATETIME:
+        setDateTime(tab, key, label, d.toDateTime(), QString());
+        break;
+      case DataType::_BOOL:
+        setBool(tab, key, label, d.toBool(), QString());
+        break;
+      case DataType::_FILE:
+        setFile(tab, key, label, d.toList(), QString());
+        break;
+      default:
+        break;
+    }
   }
 }
 
-int DataDialog::setText (int tab, QString key, QString text, QString tt)
+void DataDialog::setSettings (Entity d)
+{
+  _settings = d;
+  setGUI();
+}
+
+Entity DataDialog::settings ()
+{
+  return _settings;
+}
+
+int DataDialog::setText (int tab, QString key, QString label, QString text, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -129,13 +161,13 @@ int DataDialog::setText (int tab, QString key, QString text, QString tt)
   LineEdit *w = new LineEdit(this);
   w->setText(text);
   w->setToolTip(tt);
-  form->addRow(key, w);
+  form->addRow(label, w);
   _widgets.insert(key, (void *) w);
 
   return 0;
 }
 
-int DataDialog::setColor (int tab, QString key, QColor c, QString tt)
+int DataDialog::setColor (int tab, QString key, QString label, QColor c, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -146,13 +178,13 @@ int DataDialog::setColor (int tab, QString key, QColor c, QString tt)
 
   ColorButton *w = new ColorButton(this, c);
   w->setToolTip(tt);
-  form->addRow(key, w);
+  form->addRow(label, w);
   _widgets.insert(key, (void *) w);
 
   return 0;
 }
 
-int DataDialog::setInteger (int tab, QString key, int v, int h, int l, QString tt)
+int DataDialog::setInteger (int tab, QString key, QString label, int v, int h, int l, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -165,13 +197,13 @@ int DataDialog::setInteger (int tab, QString key, int v, int h, int l, QString t
   w->setToolTip(tt);
   w->setRange(l, h);
   w->setValue(v);
-  form->addRow(key, w);
+  form->addRow(label, w);
   _widgets.insert(key, (void *) w);
 
   return 0;
 }
 
-int DataDialog::setDouble (int tab, QString key, double v, double h, double l, QString tt)
+int DataDialog::setDouble (int tab, QString key, QString label, double v, double h, double l, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -184,13 +216,13 @@ int DataDialog::setDouble (int tab, QString key, double v, double h, double l, Q
   w->setToolTip(tt);
   w->setRange(l, h);
   w->setValue(v);
-  form->addRow(key, w);
+  form->addRow(label, w);
   _widgets.insert(key, (void *) w);
 
   return 0;
 }
 
-int DataDialog::setBool (int tab, QString key, bool v, QString tt)
+int DataDialog::setBool (int tab, QString key, QString label, bool v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -202,13 +234,13 @@ int DataDialog::setBool (int tab, QString key, bool v, QString tt)
   QCheckBox *w = new QCheckBox;
   w->setChecked(v);
   w->setToolTip(tt);
-  form->addRow(key, w);
+  form->addRow(label, w);
   _widgets.insert(key, (void *) w);
 
   return 0;
 }
 
-int DataDialog::setList (int tab, QString key, QString v, QStringList l, QString tt)
+int DataDialog::setList (int tab, QString key, QString label, QString v, QStringList l, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -221,13 +253,13 @@ int DataDialog::setList (int tab, QString key, QString v, QStringList l, QString
   w->setToolTip(tt);
   w->addItems(l);
   w->setCurrentIndex(w->findText(v));
-  form->addRow(key, w);
+  form->addRow(label, w);
   _widgets.insert(key, (void *) w);
 
   return 0;
 }
 
-int DataDialog::setDateTime (int tab, QString key, QDateTime v, QString tt)
+int DataDialog::setDateTime (int tab, QString key, QString label, QDateTime v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -241,13 +273,13 @@ int DataDialog::setDateTime (int tab, QString key, QDateTime v, QString tt)
   w->setCalendarPopup(TRUE);
   w->setDisplayFormat("yyyy.MM.dd HH:mm:ss");
   w->setDateTime(v);
-  form->addRow(key, w);
+  form->addRow(label, w);
   _widgets.insert(key, (void *) w);
 
   return 0;
 }
 
-int DataDialog::setFile (int tab, QString key, QStringList v, QString tt)
+int DataDialog::setFile (int tab, QString key, QString label, QStringList v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -259,13 +291,14 @@ int DataDialog::setFile (int tab, QString key, QStringList v, QString tt)
   FileButton *w = new FileButton(this);
   w->setFiles(v);
   w->setToolTip(tt);
-  form->addRow(key, w);
+  form->addRow(label, w);
   _widgets.insert(key, (void *) w);
 
   return 0;
 }
 
-int DataDialog::setSymbol (int tab, QString key, QStringList v, QString tt)
+/*
+int DataDialog::setSymbol (int tab, QString key, QString label, QStringList v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
   if (! form)
@@ -277,85 +310,96 @@ int DataDialog::setSymbol (int tab, QString key, QStringList v, QString tt)
   SymbolButton *w = new SymbolButton(this);
   w->setSymbols(v);
   w->setToolTip(tt);
-  form->addRow(key, w);
+  form->addRow(label, w);
   _widgets.insert(key, (void *) w);
 
   return 0;
 }
+*/
 
 void DataDialog::done ()
 {
-  if (! _settings.count())
+  QList<QString> keys = _settings.dkeys();
+//qDebug() << "DataDialog::done" << keys;
+  
+  int loop = 0;
+  for (; loop < keys.size(); loop++)
   {
-    saveSettings();
-    accept();
-    return;
-  }
-
-  QHashIterator<QString, Data *> it(_settings);
-  while (it.hasNext())
-  {
-    it.next();
-    Data *d = it.value();
-
-    switch ((DataFactory::Type) d->type())
+    Data d;
+    _settings.toData(keys.at(loop), d);
+    
+    switch ((DataType::Type) d.type())
     {
-      case DataFactory::_STRING:
+      case DataType::_STRING:
       {
-        LineEdit *w = (LineEdit *) _widgets.value(it.key());
-        d->set(w->text());
+        LineEdit *w = (LineEdit *) _widgets.value(keys.at(loop));
+	if (! w)
+	  continue;
+        d.set(w->text());
+	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataFactory::_COLOR:
+      case DataType::_COLOR:
       {
-        ColorButton *w = (ColorButton *) _widgets.value(it.key());
-        d->set(w->color());
+        ColorButton *w = (ColorButton *) _widgets.value(keys.at(loop));
+	if (! w)
+	  continue;
+        d.set(w->color());
+	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataFactory::_INTEGER:
+      case DataType::_INTEGER:
       {
-        QSpinBox *w = (QSpinBox *) _widgets.value(it.key());
-        d->set(w->value());
+        QSpinBox *w = (QSpinBox *) _widgets.value(keys.at(loop));
+	if (! w)
+	  continue;
+        d.set(w->value());
+	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataFactory::_DOUBLE:
+      case DataType::_DOUBLE:
       {
-        QDoubleSpinBox *w = (QDoubleSpinBox *) _widgets.value(it.key());
-        d->set(w->value());
+        QDoubleSpinBox *w = (QDoubleSpinBox *) _widgets.value(keys.at(loop));
+	if (! w)
+	  continue;
+        d.set(w->value());
+	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataFactory::_BOOL:
+      case DataType::_BOOL:
       {
-        QCheckBox *w = (QCheckBox *) _widgets.value(it.key());
-        d->set(w->isChecked());
+        QCheckBox *w = (QCheckBox *) _widgets.value(keys.at(loop));
+	if (! w)
+	  continue;
+        d.set(w->isChecked());
+	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataFactory::_DATETIME:
+      case DataType::_DATETIME:
       {
-        QDateTimeEdit *w = (QDateTimeEdit *) _widgets.value(it.key());
-        d->set(w->dateTime());
+        QDateTimeEdit *w = (QDateTimeEdit *) _widgets.value(keys.at(loop));
+	if (! w)
+	  continue;
+        d.set(w->dateTime());
+	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataFactory::_LIST:
-      case DataFactory::_BAR_LENGTH:
-      case DataFactory::_DATE_RANGE:
-      case DataFactory::_MA:
-      case DataFactory::_OP:
+      case DataType::_LIST:
       {
-        QComboBox *w = (QComboBox *) _widgets.value(it.key());
-        d->set(w->currentText());
+        QComboBox *w = (QComboBox *) _widgets.value(keys.at(loop));
+	if (! w)
+	  continue;
+        d.set(w->currentText());
+	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataFactory::_FILE:
+      case DataType::_FILE:
       {
-        FileButton *w = (FileButton *) _widgets.value(it.key());
-        d->set(w->files());
-        break;
-      }
-      case DataFactory::_SYMBOL:
-      {
-        SymbolButton *w = (SymbolButton *) _widgets.value(it.key());
-        d->set(w->symbols());
+        FileButton *w = (FileButton *) _widgets.value(keys.at(loop));
+	if (! w)
+	  continue;
+        d.set(w->files());
+	_settings.set(keys.at(loop), d);
         break;
       }
       default:

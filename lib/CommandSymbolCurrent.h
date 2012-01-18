@@ -28,22 +28,9 @@
 
 class CommandSymbolCurrent : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeDate,
-      _ParmTypeOpen,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose,
-      _ParmTypeVolume,
-      _ParmTypeOI
-    };
-
-    CommandSymbolCurrent (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandSymbolCurrent ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

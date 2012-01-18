@@ -22,112 +22,106 @@
 #include "CommandArithmetic.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataString.h"
-#include "DataList.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveValue.h"
 #include "ScriptVerifyCurveKeys.h"
-#include "DataFactory.h"
+#include "CurveBarKey.h"
 
 #include <QtDebug>
 
-CommandArithmetic::CommandArithmetic (QObject *p) : Command (p)
+CommandArithmetic::CommandArithmetic ()
 {
   _name = "ARITHMETIC";
   _method << "ADD" << "DIV" << "MULT" << "SUB";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypeInput2, new DataString());
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
 
-  DataList *dl = new DataList("ADD");
-  dl->set(_method);
-  _values.insert(_ParmTypeMethod, dl);
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td.setLabel(QObject::tr("Input 2"));
+  Entity::set(QString("INPUT2"), td);
+
+  td = Data(0);
+  td.setLabel(QObject::tr("Input Offset"));
+  Entity::set(QString("INPUT_OFFSET"), td);
+
+  td.setLabel(QObject::tr("Input 2 Offset"));
+  Entity::set(QString("INPUT2_OFFSET"), td);
+  
+  td = Data(_method, QString("ADD"));
+  td.setLabel(QObject::tr("Method"));
+  Entity::set(QString("METHOD"), td);
 }
 
-void CommandArithmetic::runScript (CommandParse sg, Script *script)
+QString CommandArithmetic::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandArithmetic::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int offset = 0;
   ScriptVerifyCurve svc;
-  QString s = _values.value(_ParmTypeInput)->toString();
-  Data *in = svc.toCurve(script, s, offset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    DataFactory dfac;
-    in = dfac.data(DataFactory::_DOUBLE);
-    if (! in)
+    if (svc.entity(td.toString(), in))
     {
-      Command::error("CommandArithmetic::runScript: error creating DataDouble Input");
-      return;
-    }
-
-    Command::setTData(in);
-
-    if (in->set(s))
-    {
-      Command::error("CommandArithmetic::runScript: invalid Input");
-      return;
+      qDebug() << "CommandArithmetic::run: invalid INPUT" << td.toString();
+      return _returnCode;
     }
   }
-
-  int offset2 = 0;
-  s = _values.value(_ParmTypeInput2)->toString();
-  Data *in2 = svc.toCurve(script, s, offset2);
-  if (! in2)
+  
+  Data offset;
+  Entity::toData(QString("INPUT_OFFSET"), offset);
+  
+  Entity::toData(QString("INPUT2"), td);
+  Entity in2;
+  if (svc.curve(script, td.toString(), in2))
   {
-    DataFactory dfac;
-    in2 = dfac.data(DataFactory::_DOUBLE);
-    if (! in2)
+    if (svc.entity(td.toString(), in2))
     {
-      Command::error("CommandArithmetic::runScript: error creating DataDouble Input2");
-      return;
-    }
-
-    Command::setTData(in2);
-
-    if (in2->set(s))
-    {
-      Command::error("CommandArithmetic::runScript: invalid Input2");
-      return;
+      qDebug() << "CommandArithmetic::run: invalid INPUT2" << td.toString();
+      return _returnCode;
     }
   }
+  
+  Data offset2;
+  Entity::toData(QString("INPUT2_OFFSET"), offset2);
+  
+  Data method;
+  Entity::toData(QString("METHOD"), method);
 
-  Data *line = getArithmetic(in, offset, in2, offset2, _values.value(_ParmTypeMethod)->toInteger());
-  if (! line)
+  CurveData line;
+  if (getArithmetic(in, offset.toInteger(), in2, offset2.toInteger(), method.toInteger(), line))
   {
-    Command::error("CommandArithmetic::runScript: getArithmetic error");
-    return;
+    qDebug() << "CommandArithmetic::run: getArithmetic error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandArithmetic::getArithmetic (Data *in, int offset, Data *in2, int offset2, int method)
+int CommandArithmetic::getArithmetic (Entity &in, int offset, Entity &in2, int offset2, int method, Entity &line)
 {
-  QList<Data *> list;
-  list << in << in2;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
+  if (svck.keys2(in, in2, keys))
   {
-    qDebug() << "CommandArithmetic::runScript: getArithmetic invalid keys";
-    return 0;
+    qDebug() << "CommandArithmetic::getArithmetic: invalid keys";
+    return 1;
   }
 
+  CurveBarKey cbkeys;
   ScriptVerifyCurveValue svcv;
-  Data *line = new CurveData;
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
     double v = 0;
     if (svcv.getValue(in, keys, loop, offset, v))
@@ -141,30 +135,30 @@ Data * CommandArithmetic::getArithmetic (Data *in, int offset, Data *in2, int of
     {
       case 0: // add
       {
-        Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, new DataDouble(v + v2));
-        line->set(keys.at(loop), b);
+        CurveBar b;
+        b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(v + v2));
+        line.setEntity(keys.at(loop), b);
 	break;
       }
       case 1: // div
       {
-        Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, new DataDouble(v / v2));
-        line->set(keys.at(loop), b);
+        CurveBar b;
+        b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(v / v2));
+        line.setEntity(keys.at(loop), b);
 	break;
       }
       case 2: // mult
       {
-        Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, new DataDouble(v * v2));
-        line->set(keys.at(loop), b);
+        CurveBar b;
+        b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(v * v2));
+        line.setEntity(keys.at(loop), b);
 	break;
       }
       case 3: // sub
       {
-        Data *b = new CurveBar;
-        b->set(CurveBar::_VALUE, new DataDouble(v - v2));
-        line->set(keys.at(loop), b);
+        CurveBar b;
+        b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(v - v2));
+        line.setEntity(keys.at(loop), b);
 	break;
       }
       default:
@@ -172,5 +166,5 @@ Data * CommandArithmetic::getArithmetic (Data *in, int offset, Data *in2, int of
     }
   }
 
-  return line;
+  return 0;
 }

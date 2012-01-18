@@ -31,107 +31,119 @@
 #include "CommandTHERM.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataString.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 #include <cmath>
 
-CommandTHERM::CommandTHERM (QObject *p) : Command (p)
+CommandTHERM::CommandTHERM ()
 {
   _name = "THERM";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
 }
 
-void CommandTHERM::runScript (CommandParse sg, Script *script)
+QString CommandTHERM::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandTHERM::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandTHERM::runScript: invalid High");
-    return;
+    qDebug() << "CommandTHERM::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandTHERM::runScript: invalid Low");
-    return;
+    qDebug() << "CommandTHERM::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow;
-
-  Data *line = getTHERM(list);
-  if (! line)
+  CurveData line;
+  if (getTHERM(ihigh, ilow, line))
   {
-    Command::error("CommandTHERM::runScript: getTHERM error");
-    return;
+    qDebug() << "CommandTHERM::runScript: getTHERM error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandTHERM::getTHERM (QList<Data *> &list)
+int CommandTHERM::getTHERM (Entity &ihigh, Entity &ilow, Entity &line)
 {
-  if (list.count() != 2)
-    return 0;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys2(ihigh, ilow, keys))
+    return 1;
 
-  Data *line = new CurveData;
-  Data *ihigh = list.at(0);
-  Data *ilow = list.at(1);
+  CurveBarKey cbkeys;
   double thermometer = 0;
   int loop = 1;
   for (; loop < keys.count(); loop++)
   {
-    Data *hbar = ihigh->toData(keys.at(loop));
-    if (! hbar)
+    Entity hbar;
+    if (ihigh.toEntity(keys.at(loop), hbar))
+      continue;
+    Data high;
+    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), high))
       continue;
 
-    Data *phbar = ihigh->toData(keys.at(loop - 1));
-    if (! phbar)
+    Entity phbar;
+    if (ihigh.toEntity(keys.at(loop - 1), phbar))
+      continue;
+    Data phigh;
+    if (phbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), phigh))
       continue;
 
-    Data *lbar = ilow->toData(keys.at(loop));
-    if (! lbar)
+    Entity lbar;
+    if (ilow.toEntity(keys.at(loop), lbar))
+      continue;
+    Data low;
+    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), low))
       continue;
 
-    Data *plbar = ilow->toData(keys.at(loop - 1));
-    if (! plbar)
+    Entity plbar;
+    if (ilow.toEntity(keys.at(loop - 1), plbar))
+      continue;
+    Data plow;
+    if (plbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), plow))
       continue;
 
-    double high = fabs(hbar->toData(CurveBar::_VALUE)->toDouble() - phbar->toData(CurveBar::_VALUE)->toDouble());
-    double lo = fabs(plbar->toData(CurveBar::_VALUE)->toDouble() - lbar->toData(CurveBar::_VALUE)->toDouble());
+    double h = fabs(high.toDouble() - phigh.toDouble());
+    double lo = fabs(plow.toDouble() - low.toDouble());
 
-    if (high > lo)
-      thermometer = high;
+    if (h > lo)
+      thermometer = h;
     else
       thermometer = lo;
 
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(thermometer));
-    line->set(keys.at(loop), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(thermometer));
+    line.setEntity(keys.at(loop), b);
   }
 
-  return line;
+  return 0;
 }

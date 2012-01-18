@@ -20,38 +20,44 @@
  */
 
 #include "CommandGroupSave.h"
-#include "GroupDataBase.h"
-#include "DataString.h"
-#include "DataSymbol.h"
+#include "EAVDataBase.h"
+#include "GroupDataBaseKey.h"
 
 #include <QtDebug>
 
-CommandGroupSave::CommandGroupSave (QObject *p) : Command (p)
+CommandGroupSave::CommandGroupSave ()
 {
   _name = "GROUP_SAVE";
 
-  _values.insert(_ParmTypeGroup, new DataString);
-  _values.insert(_ParmTypeSymbol, new DataSymbol);
+  Data td;
+  td.setLabel(QObject::tr("Group"));
+  Entity::set(QString("GROUP"), td);
+  
+  td = Data(QStringList());
+  td.setLabel(QObject::tr("Symbols"));
+  Entity::set(QString("SYMBOLS"), td);
 }
 
-void CommandGroupSave::runScript (CommandParse sg, Script *script)
+QString CommandGroupSave::run (CommandParse &, void *)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandGroupSave::runScript: parse error");
-    return;
-  }
-
-  QStringList symbols = _values.value(_ParmTypeSymbol)->toString().split(";", QString::SkipEmptyParts);
-
-  GroupDataBase db;
+  Data group, symbols;
+  Entity::toData(QString("GROUP"), group);
+  Entity::toData(QString("SYMBOLS"), symbols);
+  
+  GroupDataBaseKey keys;
+  Entity i;
+  i.setName(group.toString());
+  i.set(keys.indexToString(GroupDataBaseKey::_LIST), symbols);
+  
+  EAVDataBase db("groups");
   db.transaction();
-  if (db.save(_values.value(_ParmTypeGroup)->toString(), symbols))
+  if (db.set(&i))
   {
-    Command::error("CommandGroupSave::runScript: GroupDataBase error");
-    return;
+    qDebug() << "CommandGroupSave::run: EAVDataBase error";
+    return _returnCode;
   }
   db.commit();
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }

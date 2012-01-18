@@ -29,6 +29,8 @@
 #include "GroupAdd.h"
 #include "SymbolDelete.h"
 #include "ChartLoad.h"
+#include "SymbolKey.h"
+#include "Symbol.h"
 
 #include "../pics/add.xpm"
 #include "../pics/search.xpm"
@@ -61,7 +63,6 @@ ChartPage::ChartPage (QWidget *p) : QWidget (p)
 
   // update to last symbol search before displaying
   QSettings settings(g_localSettings);
-  _searchExchange = settings.value("last_chart_panel_exchange_search", "*").toString();
   _searchString = settings.value("last_chart_panel_symbol_search", "*").toString();
 
   createActions();
@@ -159,23 +160,27 @@ void ChartPage::updateList ()
 
   _nav->setSortingEnabled(FALSE);
 
+  SymbolKey keys;
   Symbol bd;
-  bd.setExchange(_searchExchange);
-  bd.setSymbol(_searchString);
+  bd.set(keys.indexToString(SymbolKey::_SYMBOL), Data(_searchString));
 
   QuoteDataBase db;
   QList<Symbol> l;
   db.search(bd, l);
 
   int loop = 0;
-  for (; loop < l.count(); loop++)
+  for (; loop < l.size(); loop++)
   {
     Symbol dg = l.at(loop);
-    QString s = dg.exchange() + ":" + dg.symbol();
+    
+    Data td;
+    dg.toData(keys.indexToString(SymbolKey::_SYMBOL), td);
 
     QListWidgetItem *item = new QListWidgetItem;
-    item->setText(s);
-    item->setToolTip(dg.name());
+    item->setText(td.toString());
+    
+    dg.toData(keys.indexToString(SymbolKey::_NAME), td);
+    item->setToolTip(td.toString());
     _nav->addItem(item);
   }
 
@@ -191,14 +196,12 @@ void ChartPage::symbolSearch ()
   dialog->show();
 }
 
-void ChartPage::setSearch (QString exchange, QString symbol)
+void ChartPage::setSearch (QString symbol)
 {
-  _searchExchange = exchange;
   _searchString = symbol;
 
   QSettings settings(g_localSettings);
   settings.setValue("last_chart_panel_symbol_search", _searchString);
-  settings.setValue("last_chart_panel_exchange_search", _searchExchange);
   settings.sync();
 
   updateList();
@@ -206,12 +209,10 @@ void ChartPage::setSearch (QString exchange, QString symbol)
 
 void ChartPage::allButtonPressed ()
 {
-  _searchExchange = "*";
   _searchString = "*";
 
   QSettings settings(g_localSettings);
   settings.setValue("last_chart_panel_symbol_search", _searchString);
-  settings.setValue("last_chart_panel_exchange_search", _searchExchange);
   settings.sync();
 
   updateList();
@@ -264,12 +265,12 @@ void ChartPage::refresh ()
 {
   updateList();
 
-  if (! g_currentSymbol)
+  SymbolKey keys;
+  Data td;
+  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), td);
+  
+  if (td.toString().isEmpty())
     return;
 
-  QString s = g_currentSymbol->symbolFull();
-  if (s.isEmpty())
-    return;
-
-  chartOpened(s);
+  chartOpened(td.toString());
 }

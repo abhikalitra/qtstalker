@@ -23,9 +23,11 @@
 #include "Global.h"
 #include "GlobalParent.h"
 #include "GlobalSymbol.h"
-#include "IndicatorDataBase.h"
+#include "EAVDataBase.h"
 #include "ScriptRunDialog.h"
 #include "Script.h"
+#include "IndicatorDataBaseKey.h"
+#include "NewDialog.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -42,29 +44,57 @@ void AddIndicator::run ()
 
 void AddIndicator::addIndicator ()
 {
+  EAVDataBase db("indicators");
+  QStringList names;
+  db.names(names);
+  
+  NewDialog *dialog = new NewDialog(g_parent);
+  dialog->setTitle(tr("New indicator name"));
+  dialog->setItems(names);
+
+  QStringList wt;
+  wt << "QtStalker" + g_session + ":" << tr("Add Indicator");
+  dialog->setWindowTitle(wt.join(" "));
+  
+  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(addIndicator2(QString)));
+  connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
+  dialog->show();
+}
+
+void AddIndicator::addIndicator2 (QString name)
+{
+  _name = name;
+  
   QSettings settings(g_localSettings);
 
   QStringList wt;
   wt << "QtStalker" + g_session + ":" << tr("Add Indicator");
 
-  ScriptRunDialog *dialog = new ScriptRunDialog(0,
+  ScriptRunDialog *dialog = new ScriptRunDialog(g_parent,
                                                 settings.value("add_indicator_last_script").toString(),
                                                 settings.value("add_indicator_last_command", "perl").toString());
-  connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(addIndicator2(QString, QString)));
+  connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(addIndicator3(QString, QString)));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
   dialog->setWindowTitle(wt.join(" "));
   dialog->show();
 }
 
-void AddIndicator::addIndicator2 (QString command, QString file)
+void AddIndicator::addIndicator3 (QString command, QString file)
 {
-  IndicatorDataBase i;
-  if (i.add(command, file))
+  IndicatorDataBaseKey keys;
+  Entity i;
+  i.setName(_name);
+  i.set(keys.indexToString(IndicatorDataBaseKey::_SESSION), Data(g_session));
+  i.set(keys.indexToString(IndicatorDataBaseKey::_FILE), Data(file));
+  i.set(keys.indexToString(IndicatorDataBaseKey::_COMMAND), Data(command));
+
+  EAVDataBase db("indicators");
+  if (db.set(&i))
   {
     done();
     return;
   }
-
+  
   QSettings settings(g_localSettings);
   settings.setValue("add_indicator_last_script", file);
   settings.setValue("add_indicator_last_command", command);

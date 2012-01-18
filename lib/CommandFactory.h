@@ -22,113 +22,15 @@
 #ifndef COMMAND_FACTORY_HPP
 #define COMMAND_FACTORY_HPP
 
-#include "Command.h"
+#include <QString>
 
-#include <QStringList>
+#include "Command.h"
 
 class CommandFactory
 {
   public:
-    enum Type
-    {
-      _AD,
-      _ADX,
-      _ARITHMETIC,
-      _AROON,
-      _ATR,
-      _AVERAGE_PRICE,
-      _BBANDS,
-      _BETA,
-      _BOP,
-      _BREAKOUT,
-      _CANDLE_PATTERN,
-      _CCI,
-      _CHART,
-      _CHART_OBJECT_BUY,
-      _CHART_OBJECT_HLINE,
-      _CHART_OBJECT_RETRACEMENT,
-      _CHART_OBJECT_SELL,
-      _CHART_OBJECT_TEXT,
-      _CHART_OBJECT_TLINE,
-      _CHART_OBJECT_VLINE,
-      _CHART_PANEL_REFRESH,
-      _CHART_UPDATE,
-      _CMO,
-      _COMPARE,
-      _CORREL,
-      _CSV,
-      _DATA_BAR_LENGTH,
-      _DATA_BOOL,
-      _DATA_COLOR,
-      _DATA_DATE_RANGE,
-      _DATA_DATE_TIME,
-      _DATA_DOUBLE,
-      _DATA_FILE,
-      _DATA_FONT,
-      _DATA_GET,
-      _DATA_INTEGER,
-      _DATA_LIST,
-      _DATA_MA,
-      _DATA_OP,
-      _DATA_SET,
-      _DATA_STRING,
-      _DATA_SYMBOL,
-      _DIALOG,
-      _DIALOG_RUN,
-      _DIALOG_SET,
-      _FI,
-      _GROUP_PANEL_REFRESH,
-      _GROUP_SAVE,
-      _HT,
-      _HT_PHASOR,
-      _HT_SINE,
-      _LINEARREG,
-      _MA,
-      _MACD,
-      _MAMA,
-      _MEDIAN_PRICE,
-      _MINMAX,
-      _MFI,
-      _MOM,
-      _NEW_HIGH_LOW,
-      _NORMALIZE,
-      _PO,
-      _PLOT_LINE,
-      _PLOT_HISTOGRAM,
-      _PLOT_OHLC,
-      _ROC,
-      _RSI,
-      _SAR,
-      _SHIFT,
-      _STDDEV,
-      _STOCH_FAST,
-      _STOCH_RSI,
-      _STOCH_SLOW,
-      _SZ,
-      _SYMBOL,
-      _SYMBOL_CURRENT,
-      _T3,
-      _TEST,
-      _THERM,
-      _TRIX,
-      _TYPICAL_PRICE,
-      _ULTOSC,
-      _VAR,
-      _VBP,
-      _VFI,
-      _VIDYA,
-      _WEIGHTED_CLOSE,
-      _WILLR,
-      _YAHOO_HISTORY
-    };
-
     CommandFactory ();
-    Command * command (QObject *, QString);
-    QStringList list ();
-    int stringToType (QString);
-
-  protected:
-    QStringList _types;
+    Command * command (QString);
 };
 
 #endif

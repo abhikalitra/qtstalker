@@ -22,76 +22,87 @@
 #include "CommandShift.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataString.h"
-#include "DataInteger.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
+#include "ScriptVerifyCurveValue.h"
+#include "Script.h"
 
 #include <QtDebug>
 
-CommandShift::CommandShift (QObject *p) : Command (p)
+CommandShift::CommandShift ()
 {
   _name = "SHIFT";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-  _values.insert(_ParmTypePeriod, new DataInteger(10));
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("INPUT"), td);
+  
+  td = Data(10);
+  td.setLabel(QObject::tr("Period"));
+  Entity::set(QString("PERIOD"), td);
 }
 
-void CommandShift::runScript (CommandParse sg, Script *script)
+QString CommandShift::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandShift::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandShift::runScript: invalid Input");
-    return;
+    qDebug() << "CommandShift::run: invalid INPUT" << td.toString();
+    return _returnCode;
+  }
+  
+  Data period;
+  Entity::toData(QString("PERIOD"), period);
+
+  CurveData line;
+  if (getShift(in, period.toInteger(), line))
+  {
+    qDebug() << "CommandShift::run: getShift error";
+    return _returnCode;
   }
 
-  Data *line = getShift(in, _values.value(_ParmTypePeriod)->toInteger());
-  if (! line)
-  {
-    Command::error("CommandShift::runScript: getShift error");
-    return;
-  }
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
-
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandShift::getShift (Data *in, int period)
+int CommandShift::getShift (Entity &in, int period, Entity &line)
 {
-  QList<Data *> list;
-  list << in;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys1(in, keys))
+    return 1;
 
-  Data *line = new CurveData;
   int loop = 0;
-  for (; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *bar = in->toData(keys.at(loop));
+    Entity bar;
+    in.toEntity(keys.at(loop), bar);
 
-    int index = keys.at(loop) + period;
+    int index = loop + period;
     if (index < 0)
       continue;
+    
+    QString key;
+    if (index >= keys.size())
+      key = QString::number(index);
+    else
+      key = keys.at(index);
 
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(bar->toData(CurveBar::_VALUE)->toDouble()));
-    line->set(keys.at(loop) + period, b);
+    line.setEntity(key, bar);
   }
 
-  return line;
+  return 0;
 }

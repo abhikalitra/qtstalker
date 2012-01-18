@@ -20,9 +20,8 @@
  */
 
 #include "ScriptVerifyCurve.h"
-#include "DataInteger.h"
-#include "DataFactory.h"
-#include "CurveData.h"
+#include "EntityType.h"
+#include "DataType.h"
 
 #include <QtDebug>
 
@@ -30,47 +29,33 @@ ScriptVerifyCurve::ScriptVerifyCurve ()
 {
 }
 
-Data * ScriptVerifyCurve::toCurve (Script *script, QString key, int &offset)
+int ScriptVerifyCurve::curve (Script *script, QString d, Entity &e)
 {
-  offset = 0;
+  if (script->data(d, e))
+    return 1;
+  
+  if (e.type() != EntityType::_CURVE)
+    return 1;
+    
+  return 0;
+}
 
-  if (key.isEmpty())
-    return 0;
-
-  Data *d = script->data(key);
-  if (d)
+int ScriptVerifyCurve::entity (QString d, Entity &e)
+{
+  Data tdd(DataType::_DOUBLE);
+  if (tdd.set(d, DataType::_DOUBLE))
   {
-    switch ((DataFactory::Type) d->type())
+    Data tdc(DataType::_COLOR);
+    if (tdc.set(d, DataType::_COLOR))
     {
-      case DataFactory::_CURVE:
-	return d;
-	break;
-      case DataFactory::_STRING:
-	d = script->data(d->toString());
-	return d;
-	break;
-      default:
-	return 0;
+      qDebug() << "ScriptVerifyCurve::entity: invalid data" << d;
+      return 1;
     }
+    
+    e.set(QString("0"), tdc);
   }
-
-  // verify if a curve offset version (ma.0 or ma.1)
-  QStringList l = key.split(".");
-  if (l.count() != 2)
-    return 0;
-
-  d = script->data(l.at(0));
-  if (! d)
-    return 0;
-
-  if (d->type() != DataFactory::_CURVE)
-    return 0;
-
-  DataInteger di;
-  if (di.set(l.at(1)))
-    return 0;
-
-  offset = di.toInteger();
-
-  return d;
+  else
+    e.set(QString("0"), tdd);
+    
+  return 0;
 }

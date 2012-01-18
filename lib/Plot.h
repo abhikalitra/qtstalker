@@ -33,15 +33,14 @@
 #include <qwt_plot_grid.h>
 #include <QMenu>
 
-#include "Message.h"
-#include "Data.h"
+#include "Entity.h"
 #include "Curve.h"
 #include "PlotMenu.h"
 #include "ChartObject.h"
 #include "DateScaleDraw.h"
 #include "PlotScaleDraw.h"
 #include "PlotPicker.h"
-#include "Dialog.h"
+#include "DataDialog.h"
 #include "PlotInfo.h"
 
 class Plot : public QwtPlot
@@ -50,13 +49,13 @@ class Plot : public QwtPlot
 
   signals:
     void signalMessage (QString);
-    void signalInfoMessage (Message);
+    void signalInfoMessage (Entity);
     void signalIndex (int);
 
   public:
     Plot (QString, QWidget *);
     ~Plot ();
-    void setDates (Data *);
+    void setDates (Entity &);
     void setDates ();
     void setCurve (Curve *);
     void setHighLow ();
@@ -122,7 +121,7 @@ class Plot : public QwtPlot
     QMenu *_chartObjectMenu;
     bool _antiAlias;
     QString _name;
-    Dialog *_chartObjectDialog;
+    DataDialog *_chartObjectDialog;
     QString _scriptFile;
     int _row;
     int _col;

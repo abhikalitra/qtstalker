@@ -20,115 +20,61 @@
  */
 
 #include "CommandSINE.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataInteger.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 
 #include <QtDebug>
 
-CommandSINE::CommandSINE (QObject *p) : Command (p)
+CommandSINE::CommandSINE ()
 {
   _name = "HT_SINE";
 
-  _values.insert(_ParmTypeSine, new DataString());
-  _values.insert(_ParmTypeLead, new DataString());
-  _values.insert(_ParmTypeInput, new DataString());
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandSINE::CommandSINE: error on TA_Initialize");
+  Data td;
+  td.setLabel(QObject::tr("Output Sine"));
+  Entity::set(QString("SINE"), td);
+  
+  td.setLabel(QObject::tr("Output Lead"));
+  Entity::set(QString("LEAD"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input"));
+  Entity::set(QString("Input"), td);
 }
 
-void CommandSINE::runScript (CommandParse sg, Script *script)
+QString CommandSINE::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandSINE::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("INPUT"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *in = svc.toCurve(script, _values.value(_ParmTypeInput)->toString(), toffset);
-  if (! in)
+  Entity in;
+  if (svc.curve(script, td.toString(), in))
   {
-    Command::error("CommandSINE::runScript: invalid Input");
-    return;
+    qDebug() << "CommandSINE::run: invalid INPUT" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << in;
-
-  QList<Data *> lines = getSINE(list);
-  if (lines.count() != 2)
+  Entity parms;
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_SINE));
+  
+  CurveData sine, lead;
+  TALibFunction func;
+  if (func.run(parms, 1, in, in, in, in, 2, sine, lead, lead))
   {
-    qDeleteAll(lines);
-    Command::error("CommandSINE::runScript: getSINE error");
-    return;
+    qDebug() << "CommandSINE::run: TALibFunction error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeSine)->toString(), lines.at(0));
-  script->setData(_values.value(_ParmTypeLead)->toString(), lines.at(1));
+  Entity::toData(QString("SINE"), td);
+  script->setData(td.toString(), sine);
 
-  Command::done(QString());
-}
+  Entity::toData(QString("LEAD"), td);
+  script->setData(td.toString(), lead);
 
-QList<Data *> CommandSINE::getSINE (QList<Data *> &list)
-{
-  QList<Data *> lines;
-  if (! list.count())
-    return lines;
-
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return lines;
-
-  int size = keys.count();
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill1(list, keys, &input[0]);
-  if (! size)
-    return lines;
-
-  TA_RetCode rc = TA_HT_SINE (0,
-                              size - 1,
-                              &input[0],
-                              &outBeg,
-                              &outNb,
-                              &out[0],
-                              &out2[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getSINE: TA-Lib error" << rc;
-    return lines;
-  }
-
-  lines.clear();
-  Data *c = new CurveData;
-  lines << c;
-  c = new CurveData;
-  lines << c;
-
-  TALibOutput tao;
-  if (tao.fillDouble2(lines, keys, outNb, &out[0], &out2[0]))
-  {
-    qDeleteAll(lines);
-    lines.clear();
-    return lines;
-  }
-
-  return lines;
+  _returnCode = "OK";
+  return _returnCode;
 }

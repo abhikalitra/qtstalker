@@ -26,24 +26,9 @@
 
 class CommandStochFast : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeK,
-      _ParmTypeD,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose,
-      _ParmTypePeriodK,
-      _ParmTypePeriodD,
-      _ParmTypeMA
-    };
-
-    CommandStochFast (QObject *);
-    void runScript (CommandParse, Script *);
-    QList<Data *> getSTOCHF (QList<Data *> &, int kperiod, int dperiod, int type);
+    CommandStochFast ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

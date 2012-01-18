@@ -23,20 +23,14 @@
 #include "Global.h"
 #include "GlobalSymbol.h"
 #include "GlobalParent.h"
-#include "ChartObjectDataBase.h"
+#include "EAVDataBase.h"
 #include "ConfirmDialog.h"
 #include "ChartObjectFactory.h"
 #include "CurveData.h"
-#include "ChartObjectData.h"
+#include "CurveDataKey.h"
+#include "ChartObjectKey.h"
 #include "ChartObjectType.h"
-#include "DataString.h"
-#include "BuyDialog.h"
-#include "HLineDialog.h"
-#include "RetracementDialog.h"
-#include "SellDialog.h"
-#include "TextDialog.h"
-#include "TLineDialog.h"
-#include "VLineDialog.h"
+#include "SymbolKey.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
@@ -141,7 +135,7 @@ void Plot::clear ()
   QwtPlot::clear();
 }
 
-void Plot::setDates (Data *d)
+void Plot::setDates (Entity &d)
 {
   _dateScaleDraw->setDates(d);
 }
@@ -172,7 +166,13 @@ void Plot::setCurve (Curve *curve)
   curve->itemChanged();
   curve->setYAxis(QwtPlot::yRight);
   curve->attach(this);
-  _curves.insert(curve->settings()->toData(CurveData::_LABEL)->toString(), curve);
+  
+  Entity settings = curve->settings();
+  CurveDataKey cdkeys;
+  Data label;
+  settings.toData(cdkeys.indexToString(CurveDataKey::_LABEL), label);
+  
+  _curves.insert(label.toString(), curve);
 }
 
 void Plot::dates (QList<QDateTime> &d)
@@ -313,12 +313,13 @@ void Plot::setYPoints ()
   _plotInfo->clearData();
   _plotInfo->setName(_name);
 
+  CurveDataKey cdkeys;
   QHashIterator<QString, Curve *> it(_curves);
   while (it.hasNext())
   {
     it.next();
     Curve *curve = it.value();
-    Data *settings = curve->settings();
+    Entity settings = curve->settings();
 
     int min = 0;
     int max = 0;
@@ -332,8 +333,10 @@ void Plot::setYPoints ()
     }
 
     // fix for Y AND X axis misalignment
-    QString type = settings->toData(CurveData::_TYPE)->toString();
-    if (type == "Histogram" || type == "OHLC")
+    Data type;
+    settings.toData(cdkeys.indexToString(CurveDataKey::_TYPE), type);
+    
+    if (type.toString() == "Histogram" || type.toString() == "OHLC")
     {
       if (! flag)
         index--;
@@ -381,12 +384,17 @@ void Plot::mouseClick (int button, QPoint p)
     return;
   }
 
+  ChartObjectKey cokeys;
   QHashIterator<QString, ChartObject *> it(_chartObjects);
   while (it.hasNext())
   {
     it.next();
 
-    if (it.value()->settings()->toData(ChartObjectData::_RO)->toBool())
+    Entity settings = it.value()->settings();
+    Data ro;
+    settings.toData(cokeys.indexToString(ChartObjectKey::_RO), ro);
+    
+    if (ro.toBool())
       continue;
 
     if (! it.value()->isSelected(p))
@@ -434,7 +442,7 @@ void Plot::mouseMove (QPoint p)
 
   int index = (int) invTransform(QwtPlot::xBottom, p.x());
 
-  Message set;
+  Entity set;
   QHashIterator<QString, ChartObject *> it2(_chartObjects);
   while (it2.hasNext())
   {
@@ -457,7 +465,7 @@ void Plot::mouseMove (QPoint p)
   {
     it.next();
     Curve *curve = it.value();
-    curve->info(index, &set);
+    curve->info(index, set);
   }
 
   emit signalInfoMessage(set);
@@ -565,22 +573,25 @@ void Plot::chartObjectNew (QString type)
     return;
   }
 
-  Data *settings = _selected->settings();
+  ChartObjectKey cokeys;
+  Entity settings = _selected->settings();
 
-  ChartObjectDataBase db;
-  int t = db.lastId();
-  t++;
-  QString id = QString::number(t);
-  settings->set(ChartObjectData::_ID, new DataString(id));
+  Data id;
+  settings.toData(cokeys.indexToString(ChartObjectKey::_ID), id);
 
-  _chartObjects.insert(id, _selected);
+  _chartObjects.insert(id.toString(), _selected);
 
   _selected->setScript(_scriptFile);
 
-  QString symbol = g_currentSymbol->exchange() + ":" + g_currentSymbol->symbol();
-  settings->set(ChartObjectData::_SYMBOL, new DataString(symbol));
+  SymbolKey symkeys;
+  Data symbol;
+  g_currentSymbol.toData(symkeys.indexToString(SymbolKey::_SYMBOL), symbol);
+  
+  settings.set(cokeys.indexToString(ChartObjectKey::_SYMBOL), Data(symbol.toString()));
 
-  settings->set(ChartObjectData::_CHART, new DataString(_name));
+  settings.set(cokeys.indexToString(ChartObjectKey::_CHART), Data(_name));
+  
+  _selected->setSettings(settings);
 
   _selected->attach(this);
 
@@ -592,6 +603,7 @@ void Plot::chartObjectNew (QString type)
 
 void Plot::deleteAllChartObjects ()
 {
+  ChartObjectKey cokeys;
   QStringList l;
   QHashIterator<QString, ChartObject *> it(_chartObjects);
   while (it.hasNext())
@@ -599,7 +611,11 @@ void Plot::deleteAllChartObjects ()
     it.next();
     ChartObject *co = it.value();
 
-    if (co->settings()->toData(ChartObjectData::_RO)->toBool())
+    Entity settings = co->settings();
+    Data ro;
+    settings.toData(cokeys.indexToString(ChartObjectKey::_RO), ro);
+    
+    if (ro.toBool())
       continue;
 
     l << it.key();
@@ -614,7 +630,7 @@ void Plot::deleteAllChartObjects ()
   _selected = 0;
   _chartObjectDialog = 0;
 
-  ChartObjectDataBase db;
+  EAVDataBase db("chartObjects");
   db.transaction();
   db.remove(l);
   db.commit();
@@ -624,9 +640,13 @@ void Plot::deleteAllChartObjects ()
 
 void Plot::addChartObject (ChartObject *co)
 {
-  Data *settings = co->settings();
-  QString id = settings->toData(ChartObjectData::_ID)->toString();
-  _chartObjects.insert(id, co);
+  Entity settings = co->settings();
+  ChartObjectKey cokeys;
+  Data id;
+  settings.toData(cokeys.indexToString(ChartObjectKey::_ID), id);
+  
+  _chartObjects.insert(id.toString(), co);
+  
   co->attach(this);
 }
 
@@ -649,36 +669,7 @@ void Plot::chartObjectDialog ()
   if (_chartObjectDialog)
     return;
 
-  QString type = _selected->settings()->toData(ChartObjectData::_TYPE)->toString();
-  ChartObjectType cot;
-  switch ((ChartObjectType::Type) cot.stringToType(type))
-  {
-    case ChartObjectType::_BUY:
-      _chartObjectDialog = new BuyDialog(this, _selected->settings());
-      break;
-    case ChartObjectType::_HLINE:
-      _chartObjectDialog = new HLineDialog(this, _selected->settings());
-      break;
-    case ChartObjectType::_RETRACEMENT:
-      _chartObjectDialog = new RetracementDialog(this, _selected->settings());
-      break;
-    case ChartObjectType::_SELL:
-      _chartObjectDialog = new SellDialog(this, _selected->settings());
-      break;
-    case ChartObjectType::_TEXT:
-      _chartObjectDialog = new TextDialog(this, _selected->settings());
-      break;
-    case ChartObjectType::_TLINE:
-      _chartObjectDialog = new TLineDialog(this, _selected->settings());
-      break;
-    case ChartObjectType::_VLINE:
-      _chartObjectDialog = new VLineDialog(this, _selected->settings());
-      break;
-    default:
-      return;
-      break;
-  }
-
+  _chartObjectDialog = new DataDialog(this, QString(), _selected->settings());
   connect(_chartObjectDialog, SIGNAL(accepted()), this, SLOT(chartObjectDialog2()));
   connect(_chartObjectDialog, SIGNAL(rejected()), this, SLOT(chartObjectDialog3()));
   _chartObjectDialog->show();
@@ -689,6 +680,7 @@ void Plot::chartObjectDialog2 ()
   if (! _selected)
     return;
 
+  _selected->setSettings(_chartObjectDialog->settings());
   _selected->setModified(1);
 
   _chartObjectDialog = 0;
@@ -717,18 +709,21 @@ void Plot::deleteChartObject2 ()
   if (! _selected)
     return;
 
-  Data *settings = _selected->settings();
-  QString id = settings->toData(ChartObjectData::_ID)->toString();
+  Entity settings = _selected->settings();
+  ChartObjectKey cokeys;
+  Data id;
+  settings.toData(cokeys.indexToString(ChartObjectKey::_ID), id);
+  
   QStringList l;
-  l << id;
+  l << id.toString();
 
-  ChartObjectDataBase db;
+  EAVDataBase db("chartObjects");
   db.transaction();
   db.remove(l);
   db.commit();
 
   _selected->setModified(0);
-  _chartObjects.remove(id);
+  _chartObjects.remove(id.toString());
   delete _selected;
   _selected = 0;
 

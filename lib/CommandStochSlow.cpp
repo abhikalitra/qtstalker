@@ -20,151 +20,118 @@
  */
 
 #include "CommandStochSlow.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataInteger.h"
-#include "DataMA.h"
+#include "MAType.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 
 #include <QtDebug>
 
-CommandStochSlow::CommandStochSlow (QObject *p) : Command (p)
+CommandStochSlow::CommandStochSlow ()
 {
   _name = "STOCH_SLOW";
 
-  _values.insert(_ParmTypeK, new DataString());
-  _values.insert(_ParmTypeD, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
-  _values.insert(_ParmTypePeriodFastK, new DataInteger(5));
-  _values.insert(_ParmTypePeriodSlowK, new DataInteger(3));
-  _values.insert(_ParmTypePeriodSlowD, new DataInteger(3));
-  _values.insert(_ParmTypeMAK, new DataMA("EMA"));
-  _values.insert(_ParmTypeMAD, new DataMA("EMA"));
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandStochSlow::CommandStochSlow: error on TA_Initialize");
+  Data td;
+  td.setLabel(QObject::tr("Output %K"));
+  Entity::set(QString("K"), td);
+  
+  td.setLabel(QObject::tr("Output %D"));
+  Entity::set(QString("D"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input Close"));
+  Entity::set(QString("CLOSE"), td);
+  
+  td = Data(5);
+  td.setLabel(QObject::tr("Period Fast K"));
+  Entity::set(QString("PERIOD_FK"), td);
+  
+  td = Data(3);
+  td.setLabel(QObject::tr("Period K"));
+  Entity::set(QString("PERIOD_K"), td);
+  
+  td = Data(3);
+  td.setLabel(QObject::tr("Period D"));
+  Entity::set(QString("PERIOD_D"), td);
+  
+  MAType mat;
+  td = Data(mat.list(), QString("EMA"));
+  td.setLabel(QObject::tr("%K MA Type"));
+  Entity::set(QString("KMA"), td);
+  
+  td.setLabel(QObject::tr("%D MA Type"));
+  Entity::set(QString("DMA"), td);
 }
 
-void CommandStochSlow::runScript (CommandParse sg, Script *script)
+QString CommandStochSlow::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandStochSlow::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandStochSlow::runScript: invalid High");
-    return;
+    qDebug() << "CommandStochSlow::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandStochSlow::runScript: invalid Low");
-    return;
+    qDebug() << "CommandStochSlow::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
-  if (! iclose)
+  Entity::toData(QString("CLOSE"), td);
+  Entity iclose;
+  if (svc.curve(script, td.toString(), iclose))
   {
-    Command::error("CommandStochSlow::runScript: invalid Close");
-    return;
+    qDebug() << "CommandStochSlow::run: invalid CLOSE" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow << iclose;
-
-  QList<Data *> lines = getSTOCHS(list,
-				  _values.value(_ParmTypePeriodFastK)->toInteger(),
-				  _values.value(_ParmTypePeriodSlowK)->toInteger(),
-				  _values.value(_ParmTypePeriodSlowD)->toInteger(),
-				  _values.value(_ParmTypeMAK)->toInteger(),
-				  _values.value(_ParmTypeMAD)->toInteger());
-  if (lines.count() != 2)
+  Data fk, pk, pd, kma, dma;
+  Entity::toData(QString("PERIOD_FK"), fk);
+  Entity::toData(QString("PERIOD_K"), pk);
+  Entity::toData(QString("PERIOD_D"), pd);
+  Entity::toData(QString("KMA"), kma);
+  Entity::toData(QString("DMA"), dma);
+  
+  Entity parms;
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_STOCHS));
+  parms.set(QString("PERIOD_FK"), fk);
+  parms.set(QString("PERIOD_K"), pk);
+  parms.set(QString("PERIOD_D"), pd);
+  parms.set(QString("KMA"), kma);
+  parms.set(QString("DMA"), dma);
+  
+  CurveData kl, dl;
+  TALibFunction func;
+  if (func.run(parms, 3, ihigh, ilow, iclose, iclose, 2, kl, dl, dl))
   {
-    qDeleteAll(lines);
-    Command::error("CommandStochSlow::runScript: getSTOCHS error");
-    return;
+    qDebug() << "CommandStochSlow::run: TALibFunction error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeK)->toString(), lines.at(0));
-  script->setData(_values.value(_ParmTypeD)->toString(), lines.at(1));
+  Entity::toData(QString("K"), td);
+  script->setData(td.toString(), kl);
 
-  Command::done(QString());
-}
+  Entity::toData(QString("D"), td);
+  script->setData(td.toString(), dl);
 
-QList<Data *> CommandStochSlow::getSTOCHS (QList<Data *> &list, int fkperiod, int skperiod, int sdperiod, int kma, int dma)
-{
-  QList<Data *> lines;
-  if (! list.count())
-    return lines;
-
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return lines;
-
-  int size = keys.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill3(list, keys, &high[0], &low[0], &close[0]);
-  if (! size)
-    return lines;
-
-  TA_RetCode rc = TA_STOCH(0,
-                           size - 1,
-                           &high[0],
-                           &low[0],
-                           &close[0],
-                           fkperiod,
-                           skperiod,
-                           (TA_MAType) kma,
-                           sdperiod,
-                           (TA_MAType) dma,
-                           &outBeg,
-                           &outNb,
-                           &out[0],
-                           &out2[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getSTOCHS: TA-Lib error" << rc;
-    return lines;
-  }
-
-  lines.clear();
-  Data *c = new CurveData;
-  lines << c;
-  c = new CurveData;
-  lines << c;
-
-  TALibOutput tao;
-  if (tao.fillDouble2(lines, keys, outNb, &out[0], &out2[0]))
-  {
-    qDeleteAll(lines);
-    lines.clear();
-    return lines;
-  }
-
-  return lines;
+  _returnCode = "OK";
+  return _returnCode;
 }

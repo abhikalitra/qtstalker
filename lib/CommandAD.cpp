@@ -20,131 +20,92 @@
  */
 
 #include "CommandAD.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "Script.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
 
 #include <QtDebug>
 
-CommandAD::CommandAD (QObject *p) : Command (p)
+CommandAD::CommandAD ()
 {
   _name = "AD";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
-  _values.insert(_ParmTypeVolume, new DataString());
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandAD::CommandAD: error on TA_Initialize");
+  Data td(QString("ad"));
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input Close"));
+  Entity::set(QString("CLOSE"), td);
+  
+  td = Data(QString("volume"));
+  td.setLabel(QObject::tr("Input Volume"));
+  Entity::set(QString("VOLUME"), td);
 }
 
-void CommandAD::runScript (CommandParse sg, Script *script)
+QString CommandAD::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandAD::runScript: parse error");
-    return;
-  }
-
-  int toffset = 0;
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
+  
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandAD::runScript: invalid High");
-    return;
+    qDebug() << "CommandAD::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandAD::runScript: invalid Low");
-    return;
+    qDebug() << "CommandAD::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
-  if (! iclose)
+  Entity::toData(QString("CLOSE"), td);
+  Entity iclose;
+  if (svc.curve(script, td.toString(), iclose))
   {
-    Command::error("CommandAD::runScript: invalid Close");
-    return;
+    qDebug() << "CommandAD::run: invalid CLOSE" << td.toString();
+    return _returnCode;
   }
 
-  Data *ivol = svc.toCurve(script, _values.value(_ParmTypeVolume)->toString(), toffset);
-  if (! ivol)
+  Entity::toData(QString("VOLUME"), td);
+  Entity ivol;
+  if (svc.curve(script, td.toString(), ivol))
   {
-    Command::error("CommandAD::runScript: invalid Volume");
-    return;
+    qDebug() << "CommandAD::run: invalid VOLUME" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow << iclose << ivol;
+  Entity parms;
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_AD));
 
-  Data *line = getAD(list);
-  if (! line)
+  CurveData line;
+  TALibFunction func;
+  if (func.run(parms, 4, ihigh, ilow, iclose, ivol, 1, line, line, line))
   {
-    Command::error("CommandAD::runScript: getAD error");
-    return;
+    qDebug() << "CommandAD::run: TALibFunction error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
-}
-
-Data * CommandAD::getAD (QList<Data *> &list)
-{
-  ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
-
-  int size = keys.count();
-  TA_Real out[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real volume[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill4(list, keys, &high[0], &low[0], &close[0], &volume[0]);
-  if (! size)
-    return 0;
-
-  TA_RetCode rc = TA_AD(0,
-                        size - 1,
-                        &high[0],
-                        &low[0],
-                        &close[0],
-                        &volume[0],
-                        &outBeg,
-                        &outNb,
-                        &out[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getAD: TA-Lib error" << rc;
-    return 0;
-  }
-
-  QList<Data *> outs;
-  Data *c = new CurveData;
-  outs.append(c);
-
-  TALibOutput tao;
-  if (tao.fillDouble1(outs, keys, outNb, &out[0]))
-  {
-    delete c;
-    return 0;
-  }
-
-  return c;
+  _returnCode = "OK";
+  return _returnCode;
 }

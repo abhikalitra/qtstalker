@@ -29,27 +29,30 @@
 #include <QTabWidget>
 
 #include "Dialog.h"
-#include "Data.h"
+#include "Entity.h"
 
 class DataDialog : public Dialog
 {
   Q_OBJECT
-
+  
   public:
-    DataDialog (QWidget *);
+    DataDialog (QWidget *, QString id, Entity);
+    ~DataDialog ();
     void createGUI ();
-    void set (Data *);
+    void setSettings (Entity);
+    Entity settings ();
+    void setGUI ();
     void addTab (int pos);
-    int setText (int tab, QString key, QString text, QString tt);
-    int setColor (int tab, QString key, QColor c, QString tt);
-    int setInteger (int tab, QString key, int v, int h, int l, QString tt);
-    int setDouble (int tab, QString key, double v, double h, double l, QString tt);
-    int setBool (int tab, QString key, bool v, QString tt);
-    int setList (int tab, QString key, QString v, QStringList l, QString tt);
-    int setDateTime (int tab, QString key, QDateTime v, QString tt);
-    int setFile (int tab, QString key, QStringList v, QString tt);
+    int setText (int tab, QString key, QString label, QString text, QString tt);
+    int setColor (int tab, QString key, QString label, QColor c, QString tt);
+    int setInteger (int tab, QString key, QString label, int v, int h, int l, QString tt);
+    int setDouble (int tab, QString key, QString label, double v, double h, double l, QString tt);
+    int setBool (int tab, QString key, QString label, bool v, QString tt);
+    int setList (int tab, QString key, QString label, QString v, QStringList l, QString tt);
+    int setDateTime (int tab, QString key, QString label, QDateTime v, QString tt);
+    int setFile (int tab, QString key, QString label, QStringList v, QString tt);
     void setTabTitle (int pos, QString);
-    int setSymbol (int tab, QString key, QStringList v, QString tt);
+    void setSettings (Entity *);
 
   public slots:
     void done ();
@@ -57,8 +60,9 @@ class DataDialog : public Dialog
   protected:
     QHash<int, QFormLayout *> _formList;
     QHash<QString, void *> _widgets;
-    QHash<QString, Data *> _settings;
+    Entity _settings;
     QTabWidget *_tabs;
+    QString _id;
 };
 
 #endif

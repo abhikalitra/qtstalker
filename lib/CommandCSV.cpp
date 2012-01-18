@@ -23,64 +23,79 @@
 #include "QuoteDataBase.h"
 #include "Symbol.h"
 #include "CurveBar.h"
-#include "DataFile.h"
-#include "DataDouble.h"
-#include "DataDateTime.h"
-#include "DataString.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
-#include "DataList.h"
-#include "DataBool.h"
+#include "SymbolKey.h"
+#include "CurveBarKey.h"
+#include "GlobalParent.h"
+#include "Global.h"
 
 #include <QtDebug>
 #include <QFile>
+#include <QObject>
 
-CommandCSV::CommandCSV (QObject *p) : Command (p)
+CommandCSV::CommandCSV ()
 {
   _name = "CSV";
+  _formatType << "X" << "S" << "N" << "D" << "O" << "H" << "L" << "C" << "V" << "I";
+  _delimiterType << "Comma" << "Semicolon";
+  _quoteType << "Stock" << "Futures" << "ETF" << "Mutual";
 
-  _formatType << "EXCHANGE" << "SYMBOL" << "NAME" << "DATE" << "OPEN" << "HIGH" << "LOW" << "CLOSE" << "VOLUME" << "OI";
+  QStringList l;
+  l << "/tmp/file.csv";
+  Data td(DataType::_FILE);
+  td.set(l);
+  td.setLabel(QObject::tr("CSV File"));
+  Entity::set(QString("CSV_FILE"), td);
 
-  _delimiterType << tr("Comma") << tr("Semicolon");
-
-  _values.insert(_ParmTypeCSVFile, new DataFile());
-  _values.insert(_ParmTypeFormat, new DataString());
-  _values.insert(_ParmTypeDateFormat, new DataString());
-
-  DataList *dl = new DataList(_delimiterType.at(0));
-  dl->set(_delimiterType);
-  _values.insert(_ParmTypeDelimiter, dl);
-
-  QStringList tl;
-  tl << "Stock" << "Futures";
-  dl = new DataList(tl.at(0));
-  dl->set(tl);
-  _values.insert(_ParmTypeType, dl);
-
-  _values.insert(_ParmTypeFilenameAsSymbol, new DataBool(FALSE));
-  _values.insert(_ParmTypeExchange, new DataString());
+  td = Data(QString("XSNDOHLCV"));
+  td.setLabel(QObject::tr("Format"));
+  Entity::set(QString("FORMAT"), td);
+  
+  td = Data(QString("yyyy-MM-dd"));
+  td.setLabel(QObject::tr("Date Format"));
+  Entity::set(QString("DATE_FORMAT"), td);
+  
+  td = Data(_delimiterType, _delimiterType.at(0));
+  td.setLabel(QObject::tr("Delimiter"));
+  Entity::set(QString("DELIMITER"), td);
+  
+  td = Data(_quoteType, _quoteType.at(0));
+  td.setLabel(QObject::tr("Type"));
+  Entity::set(QString("TYPE"), td);
+  
+  td = Data(FALSE);
+  td.setLabel(QObject::tr("Use Filename As Symbol"));
+  Entity::set(QString("FILENAME_AS_SYMBOL"), td);
+  
+  td = Data(QString());
+  td.setLabel(QObject::tr("Exchange Override"));
+  Entity::set(QString("EXCHANGE"), td);
 }
 
-void CommandCSV::runScript (CommandParse sg, Script *script)
+QString CommandCSV::run (CommandParse &, void *)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandCSV::runScript: parse error");
-    return;
-  }
-
   // CSV file
-  QStringList files = _values.value(_ParmTypeCSVFile)->toList();
+  Data td;
+  Entity::toData(QString("CSV_FILE"), td);
+  QStringList files = td.toList();
 
   // FORMAT
-  QStringList format = _values.value(_ParmTypeFormat)->toString().split(";");
+  Entity::toData(QString("FORMAT"), td);
+  QString s = td.toString();
+  QStringList format;
+  int loop = 0;
+  for (; loop < s.length(); loop++)
+    format << s.at(loop);
 
   // DATE_FORMAT
-  QString dateFormat = _values.value(_ParmTypeDateFormat)->toString();
+  Entity::toData(QString("DATE_FORMAT"), td);
+  QString dateFormat = td.toString();
 
   // DELIMITER
   QString delimiter;
-  QString s = _values.value(_ParmTypeDelimiter)->toString();
+  Entity::toData(QString("DELIMITER"), td);
+  s = td.toString();
   switch (_delimiterType.indexOf(s))
   {
     case 0: // Comma
@@ -92,18 +107,23 @@ void CommandCSV::runScript (CommandParse sg, Script *script)
   }
 
   // TYPE
-  QString type = _values.value(_ParmTypeType)->toString();
+  Entity::toData(QString("TYPE"), td);
+  QString type = td.toString();
 
   // FILENAME AS SYMBOL
-  bool fileNameFlag = _values.value(_ParmTypeFilenameAsSymbol)->toBool();
+  Entity::toData(QString("FILENAME_AS_SYMBOL"), td);
+  bool fileNameFlag = td.toBool();
 
   // EXCHANGE
-  QString exchange = _values.value(_ParmTypeExchange)->toString();
+  Entity::toData(QString("EXCHANGE"), td);
+  QString exchange = td.toString();
 
+  CurveBarKey cbkeys;
+  SymbolKey symkeys;
+  
   // away we go
   QHash<QString, Symbol *> symbols;
-  int loop = 0;
-  for (; loop < files.size(); loop++)
+  for (loop = 0; loop < files.size(); loop++)
   {
     QFile f(files.at(loop));
     if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -143,8 +163,7 @@ void CommandCSV::runScript (CommandParse sg, Script *script)
 
       QString texchange = exchange;
 
-      Data *bar = new CurveBar;
-
+      CurveBar bar;
       int loop2 = 0;
       int flag = 0;
       for (; loop2 < format.count(); loop2++)
@@ -169,7 +188,7 @@ void CommandCSV::runScript (CommandParse sg, Script *script)
               flag++;
             }
             else
-              bar->set(CurveBar::_DATE, new DataDateTime(dt));
+              bar.set(cbkeys.indexToString(CurveBarKey::_DATE), Data(dt));
             break;
           }
           case _OPEN:
@@ -192,22 +211,22 @@ void CommandCSV::runScript (CommandParse sg, Script *script)
             switch ((FormatType) _formatType.indexOf(format.at(loop2)))
             {
               case _OPEN:
-                bar->set(CurveBar::_OPEN, new DataDouble(t));
+                bar.set(cbkeys.indexToString(CurveBarKey::_OPEN), Data(t));
                 break;
               case _HIGH:
-                bar->set(CurveBar::_HIGH, new DataDouble(t));
+                bar.set(cbkeys.indexToString(CurveBarKey::_HIGH), Data(t));
                 break;
               case _LOW:
-                bar->set(CurveBar::_LOW, new DataDouble(t));
+                bar.set(cbkeys.indexToString(CurveBarKey::_LOW), Data(t));
                 break;
               case _CLOSE:
-                bar->set(CurveBar::_CLOSE, new DataDouble(t));
+                bar.set(cbkeys.indexToString(CurveBarKey::_CLOSE), Data(t));
                 break;
               case _VOLUME:
-                bar->set(CurveBar::_VOLUME, new DataDouble(t));
+                bar.set(cbkeys.indexToString(CurveBarKey::_VOLUME), Data(t));
                 break;
               case _OI:
-                bar->set(CurveBar::_OI, new DataDouble(t));
+                bar.set(cbkeys.indexToString(CurveBarKey::_OI), Data(t));
                 break;
               default:
                 break;
@@ -217,10 +236,9 @@ void CommandCSV::runScript (CommandParse sg, Script *script)
           }
           default:
           {
-            delete bar;
             qDeleteAll(symbols);
-            Command::error("CommandCSV::runScript: invalid format");
-            return;
+            qDebug() << "CommandCSV::runScript: invalid format";
+            return _returnCode;
             break;
           }
         }
@@ -230,22 +248,17 @@ void CommandCSV::runScript (CommandParse sg, Script *script)
       }
 
       if (flag)
-      {
-        delete bar;
         continue;
-      }
 
       if (texchange.isEmpty())
       {
         qDebug() << "CommandCSV::runScript: invalid EXCHANGE " << texchange;
-        delete bar;
         continue;
       }
 
       if (symbol.isEmpty())
       {
         qDebug() << "CommandCSV::runScript: invalid SYMBOL " << symbol;
-        delete bar;
         continue;
       }
 
@@ -254,15 +267,14 @@ void CommandCSV::runScript (CommandParse sg, Script *script)
       if (! bd)
       {
         bd = new Symbol;
-        bd->setExchange(texchange);
-        bd->setSymbol(symbol);
-        bd->setType(type);
-        bd->setName(name);
-
+        bd->set(symkeys.indexToString(SymbolKey::_SYMBOL), Data(key));
+	bd->set(symkeys.indexToString(SymbolKey::_TYPE), Data(type));
+	bd->set(symkeys.indexToString(SymbolKey::_NAME), Data(name));
         symbols.insert(key, bd);
       }
 
-      bd->append(bar);
+      QString ts = QString::number(bd->ekeyCount() + 1);
+      bd->setEntity(ts, bar);
     }
 
     f.close();
@@ -282,5 +294,6 @@ void CommandCSV::runScript (CommandParse sg, Script *script)
 
   qDeleteAll(symbols);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }

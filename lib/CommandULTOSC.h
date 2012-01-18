@@ -26,23 +26,9 @@
 
 class CommandULTOSC : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose,
-      _ParmTypePeriodS,
-      _ParmTypePeriodM,
-      _ParmTypePeriodL
-    };
-
-    CommandULTOSC (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getULTOSC (QList<Data *> &, int sp, int mp, int lp);
+    CommandULTOSC ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

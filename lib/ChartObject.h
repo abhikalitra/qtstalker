@@ -28,8 +28,7 @@
 #include <qwt_plot_item.h>
 #include <qwt_scale_map.h>
 
-#include "Data.h"
-#include "Message.h"
+#include "Entity.h"
 
 class ChartObject : public QwtPlotItem
 {
@@ -44,7 +43,7 @@ class ChartObject : public QwtPlotItem
 
     ChartObject ();
     ~ChartObject ();
-    virtual int info (Message &);
+    virtual int info (Entity &);
     virtual int highLow (int start, int end, double &high, double &low);
     virtual void move (QPoint);
     virtual void click (int, QPoint);
@@ -54,16 +53,17 @@ class ChartObject : public QwtPlotItem
     int isSelected (QPoint);
     int isGrabSelected (QPoint);
     void setSelected (int);
-    void setSettings (Data *);
-    Data * settings ();
+    void setSettings (Entity);
+    Entity settings ();
     void setScript (QString);
     QString script ();
     int save ();
     void setModified (int);
     int modified ();
+    void newID (QString &);
 
   protected:
-    mutable Data *_settings;
+    mutable Entity _settings;
     mutable QList<QRegion> _selectionArea;
     mutable QList<QRegion> _grabHandles;
     int _selected;

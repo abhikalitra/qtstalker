@@ -26,25 +26,9 @@
 
 class CommandCandlePattern : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeOpen,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose,
-      _ParmTypePenetration,
-      _ParmTypeMethod
-    };
-
-    CommandCandlePattern (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getPattern (QList<Data *> &, int type, double pen);
-    Data * getCandles (QList<Data *> &, int type);
-    Data * getCandlesPen (QList<Data *> &, int type, double pen);
+    CommandCandlePattern ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

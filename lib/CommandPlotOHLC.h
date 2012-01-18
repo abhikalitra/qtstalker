@@ -26,26 +26,9 @@
 
 class CommandPlotOHLC : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeName,
-      _ParmTypeChart,
-      _ParmTypeLabel,
-      _ParmTypeStyle,
-      _ParmTypeColor,
-      _ParmTypeZ,
-      _ParmTypePen,
-      _ParmTypeOpen,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose
-    };
-
-    CommandPlotOHLC (QObject *);
-    void runScript (CommandParse, Script *);
+    CommandPlotOHLC ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

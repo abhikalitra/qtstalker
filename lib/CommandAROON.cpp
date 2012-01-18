@@ -20,123 +20,83 @@
  */
 
 #include "CommandAROON.h"
-#include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "TALibInput.h"
-#include "TALibOutput.h"
-#include "DataString.h"
-#include "DataInteger.h"
 #include "ScriptVerifyCurve.h"
-#include "ScriptVerifyCurveKeys.h"
+#include "TALibFunction.h"
+#include "TALibFunctionKey.h"
+#include "Script.h"
 
 #include <QtDebug>
 
-CommandAROON::CommandAROON (QObject *p) : Command (p)
+CommandAROON::CommandAROON ()
 {
   _name = "AROON";
 
-  _values.insert(_ParmTypeUpper, new DataString());
-  _values.insert(_ParmTypeLower, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
-  _values.insert(_ParmTypePeriod, new DataInteger(10));
+  Data td(QString("aroonu"));
+  td.setLabel(QObject::tr("Output Upper"));
+  Entity::set(QString("UPPER"), td);
 
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandAROON::CommandAROON: error on TA_Initialize");
+  td = Data(QString("aroonl"));
+  td.setLabel(QObject::tr("Output Lower"));
+  Entity::set(QString("LOWER"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(10);
+  td.setLabel(QObject::tr("Period"));
+  Entity::set(QString("PERIOD"), td);
 }
 
-void CommandAROON::runScript (CommandParse sg, Script *script)
+QString CommandAROON::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandAROON::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandAROON::runScript: invalid High");
-    return;
+    qDebug() << "CommandAROON::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandAROON::runScript: invalid Low");
-    return;
+    qDebug() << "CommandAROON::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow;
-
-  QList<Data *> lines = getAROON(list, _values.value(_ParmTypePeriod)->toInteger());
-  if (lines.count() != 2)
+  Entity parms;
+  Data period;
+  Entity::toData(QString("PERIOD"), period);
+  parms.set(QString("PERIOD"), period);
+  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_AROON));
+  
+  CurveData upper;
+  CurveData lower;
+  TALibFunction func;
+  if (func.run(parms, 2, ihigh, ilow, ilow, ilow, 2, upper, lower, lower))
   {
-    Command::error("CommandAROON::runScript: getAROON error");
-    return;
+    qDebug() << "CommandAROON::run: getAROON error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeUpper)->toString(), lines.at(0));
-  script->setData(_values.value(_ParmTypeLower)->toString(), lines.at(1));
+  Entity::toData(QString("UPPER"), td);
+  script->setData(td.toString(), upper);
 
-  Command::done(QString());
-}
+  Entity::toData(QString("LOWER"), td);
+  script->setData(td.toString(), lower);
 
-QList<Data *> CommandAROON::getAROON (QList<Data *> &list, int period)
-{
-  QList<Data *> lines;
-  QList<int> keys;
-  ScriptVerifyCurveKeys svck;
-  if (svck.keys(list, keys))
-    return lines;
-
-  int size = keys.count();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Integer outBeg;
-  TA_Integer outNb;
-
-  TALibInput tai;
-  size = tai.fill2(list, keys, &high[0], &low[0]);
-  if (! size)
-    return lines;
-
-  TA_RetCode rc = TA_AROON(0,
-                           size - 1,
-                           &high[0],
-                           &low[0],
-                           period,
-                           &outBeg,
-                           &outNb,
-                           &out[0],
-                           &out2[0]);
-
-  if (rc != TA_SUCCESS)
-  {
-    qDebug() << _type << "::getAROON: TA-Lib error" << rc;
-    return lines;
-  }
-
-  Data *c = new CurveData;
-  lines.append(c);
-  c = new CurveData;
-  lines.append(c);
-
-  TALibOutput tao;
-  if (tao.fillDouble2(lines, keys, outNb, &out[0], &out2[0]))
-  {
-    qDeleteAll(lines);
-    lines.clear();
-    return lines;
-  }
-
-  return lines;
+  _returnCode = "OK";
+  return _returnCode;
 }

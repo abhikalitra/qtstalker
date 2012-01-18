@@ -32,8 +32,7 @@
 #include <qwt_text.h>
 #include <qwt_scale_map.h>
 
-#include "Data.h"
-#include "Message.h"
+#include "Entity.h"
 
 class Curve : public QwtPlotCurve
 {
@@ -42,20 +41,20 @@ class Curve : public QwtPlotCurve
     ~Curve ();
     virtual int highLow (double &h, double &l);
     virtual int highLowRange (int start, int end, double &h, double &l);
-    virtual int info (int, Message *);
+    virtual int info (int, Entity &);
     virtual int scalePoint (int, QColor &, double &);
 
     QwtDoubleRect boundingRect () const;
     int rtti () const;
     void init ();
-    void setSettings (Data *);
-    Data * settings ();
-    QList<int> keys ();
+    void setSettings (Entity &);
+    Entity & settings ();
+    QList<QString> keys ();
     void keyRange (int &startIndex, int &endIndex);
     int setAllColor (QColor color);
 
   protected:
-    Data *_settings;
+    mutable Entity _settings;
     double _high;
     double _low;
 };

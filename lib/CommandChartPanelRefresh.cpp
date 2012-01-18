@@ -20,19 +20,26 @@
  */
 
 #include "CommandChartPanelRefresh.h"
-#include "GlobalSidePanel.h"
+#include "ThreadMessage.h"
+#include "ThreadMessageType.h"
 
 #include <QtDebug>
 
-CommandChartPanelRefresh::CommandChartPanelRefresh (QObject *p) : Command (p)
+CommandChartPanelRefresh::CommandChartPanelRefresh ()
 {
   _name = "CHART_PANEL_REFRESH";
-  _type = _WAIT;
 }
 
-void CommandChartPanelRefresh::runScript (CommandParse, Script *)
+QString CommandChartPanelRefresh::run (CommandParse &, void *d)
 {
-  g_sidePanel->chartPanel()->updateList();
-
-  Command::done(QString());
+  Script *script = (Script *) d;
+  
+  Entity e;
+  e.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_PANEL_REFRESH));
+  
+  ThreadMessage tm;
+  tm.sendMessage(e, script);
+  
+  _returnCode = "OK";
+  return _returnCode;
 }

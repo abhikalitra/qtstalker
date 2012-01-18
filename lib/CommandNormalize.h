@@ -26,18 +26,10 @@
 
 class CommandNormalize : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeInput
-    };
-
-    CommandNormalize (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getNORM (QList<Data *> &);
+    CommandNormalize ();
+    QString run (CommandParse &, void *);
+    int getNORM (Entity &, Entity &line);
 };
 
 #endif

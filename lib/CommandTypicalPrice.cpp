@@ -22,106 +22,116 @@
 #include "CommandTypicalPrice.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "DataDouble.h"
-#include "DataString.h"
+#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
-CommandTypicalPrice::CommandTypicalPrice (QObject *p) : Command (p)
+CommandTypicalPrice::CommandTypicalPrice ()
 {
   _name = "TYPICAL_PRICE";
 
-  _values.insert(_ParmTypeOutput, new DataString());
-  _values.insert(_ParmTypeHigh, new DataString());
-  _values.insert(_ParmTypeLow, new DataString());
-  _values.insert(_ParmTypeClose, new DataString());
+  Data td;
+  td.setLabel(QObject::tr("Output"));
+  Entity::set(QString("OUTPUT"), td);
+  
+  td = Data(QString("high"));
+  td.setLabel(QObject::tr("Input High"));
+  Entity::set(QString("HIGH"), td);
+  
+  td = Data(QString("low"));
+  td.setLabel(QObject::tr("Input Low"));
+  Entity::set(QString("LOW"), td);
+  
+  td = Data(QString("close"));
+  td.setLabel(QObject::tr("Input Close"));
+  Entity::set(QString("CLOSE"), td);
 }
 
-void CommandTypicalPrice::runScript (CommandParse sg, Script *script)
+QString CommandTypicalPrice::run (CommandParse &, void *d)
 {
-  if (Command::parse(sg, script))
-  {
-    Command::error("CommandTypicalPrice::runScript: parse error");
-    return;
-  }
+  Script *script = (Script *) d;
+  
+  Data td;
+  Entity::toData(QString("HIGH"), td);
 
-  int toffset = 0;
   ScriptVerifyCurve svc;
-  Data *ihigh = svc.toCurve(script, _values.value(_ParmTypeHigh)->toString(), toffset);
-  if (! ihigh)
+  Entity ihigh;
+  if (svc.curve(script, td.toString(), ihigh))
   {
-    Command::error("CommandTypicalPrice::runScript: invalid High");
-    return;
+    qDebug() << "CommandTypicalPrice::run: invalid HIGH" << td.toString();
+    return _returnCode;
   }
 
-  Data *ilow = svc.toCurve(script, _values.value(_ParmTypeLow)->toString(), toffset);
-  if (! ilow)
+  Entity::toData(QString("LOW"), td);
+  Entity ilow;
+  if (svc.curve(script, td.toString(), ilow))
   {
-    Command::error("CommandTypicalPrice::runScript: invalid Low");
-    return;
+    qDebug() << "CommandTypicalPrice::run: invalid LOW" << td.toString();
+    return _returnCode;
   }
 
-  Data *iclose = svc.toCurve(script, _values.value(_ParmTypeClose)->toString(), toffset);
-  if (! iclose)
+  Entity::toData(QString("CLOSE"), td);
+  Entity iclose;
+  if (svc.curve(script, td.toString(), iclose))
   {
-    Command::error("CommandTypicalPrice::runScript: invalid Close");
-    return;
+    qDebug() << "CommandTypicalPrice::run: invalid CLOSE" << td.toString();
+    return _returnCode;
   }
 
-  QList<Data *> list;
-  list << ihigh << ilow << iclose;
-
-  Data *line = getTP(list);
-  if (! line)
+  CurveData line;
+  if (getTP(ihigh, ilow, iclose, line))
   {
-    Command::error("CommandTypicalPrice::runScript: getTP error");
-    return;
+    qDebug() << "CommandTypicalPrice::runScript: getWC error";
+    return _returnCode;
   }
 
-  script->setData(_values.value(_ParmTypeOutput)->toString(), line);
+  Entity::toData(QString("OUTPUT"), td);
+  script->setData(td.toString(), line);
 
-  Command::done(QString());
+  _returnCode = "OK";
+  return _returnCode;
 }
 
-Data * CommandTypicalPrice::getTP (QList<Data *> &list)
+int CommandTypicalPrice::getTP (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &line)
 {
-  if (list.count() != 3)
-    return 0;
-
+  QList<QString> keys;
   ScriptVerifyCurveKeys svck;
-  QList<int> keys;
-  if (svck.keys(list, keys))
-    return 0;
+  if (svck.keys3(ihigh, ilow, iclose, keys))
+    return 1;
 
-  Data *line = new CurveData;
+  CurveBarKey cbkeys;
   int loop = 0;
-  Data *ihigh = list.at(loop++);
-  Data *ilow = list.at(loop++);
-  Data *iclose = list.at(loop++);
-  for (loop = 0; loop < keys.count(); loop++)
+  for (; loop < keys.size(); loop++)
   {
-    Data *hbar = ihigh->toData(keys.at(loop));
-    if (! hbar)
+    Entity hbar;
+    if (ihigh.toEntity(keys.at(loop), hbar))
+      continue;
+    Data high;
+    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), high))
+      continue;
+    
+    Entity lbar;
+    if (ilow.toEntity(keys.at(loop), lbar))
+      continue;
+    Data low;
+    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), low))
       continue;
 
-    Data *lbar = ilow->toData(keys.at(loop));
-    if (! lbar)
+    Entity cbar;
+    if (iclose.toEntity(keys.at(loop), cbar))
+      continue;
+    Data close;
+    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), close))
       continue;
 
-    Data *cbar = iclose->toData(keys.at(loop));
-    if (! cbar)
-      continue;
+    double t = (high.toDouble() + low.toDouble() + close.toDouble()) / 3.0;
 
-    double t = (hbar->toData(CurveBar::_VALUE)->toDouble() +
-                lbar->toData(CurveBar::_VALUE)->toDouble() +
-                cbar->toData(CurveBar::_VALUE)->toDouble()) / 3.0;
-
-    Data *b = new CurveBar;
-    b->set(CurveBar::_VALUE, new DataDouble(t));
-    line->set(keys.at(loop), b);
+    CurveBar b;
+    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    line.setEntity(keys.at(loop), b);
   }
 
-  return line;
+  return 0;
 }

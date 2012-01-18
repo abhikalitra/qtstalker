@@ -26,20 +26,10 @@
 
 class CommandWeightedClose : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeOutput,
-      _ParmTypeHigh,
-      _ParmTypeLow,
-      _ParmTypeClose
-    };
-
-    CommandWeightedClose (QObject *);
-    void runScript (CommandParse, Script *);
-    Data * getWC (QList<Data *> &);
+    CommandWeightedClose ();
+    QString run (CommandParse &, void *);
+    int getWC (Entity &, Entity &, Entity &, Entity &line);
 };
 
 #endif

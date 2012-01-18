@@ -23,6 +23,7 @@
 #define SCRIPT_VERIFY_CURVE_HPP
 
 #include "Script.h"
+#include "Entity.h"
 
 #include <QString>
 
@@ -30,7 +31,8 @@ class ScriptVerifyCurve
 {
   public:
     ScriptVerifyCurve ();
-    Data * toCurve (Script *script, QString key, int &offset);
+    int curve (Script *script, QString d, Entity &e);
+    int entity (QString d, Entity &e);
 };
 
 #endif

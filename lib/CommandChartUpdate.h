@@ -22,26 +22,14 @@
 #ifndef COMMAND_CHART_UPDATE_HPP
 #define COMMAND_CHART_UPDATE_HPP
 
-#include "Command.h"
 #include "Plot.h"
+#include "Command.h"
 
 class CommandChartUpdate : public Command
 {
-  Q_OBJECT
-
   public:
-    enum ParmType
-    {
-      _ParmTypeChart,
-      _ParmTypeDate
-    };
-
-    CommandChartUpdate (QObject *);
-    void runScript (CommandParse, Script *);
-    int chartUpdate (Script *, QString chart, QString ds);
-    void curve (Data *dg, QString name, Plot *);
-    void chartObject (Data *dg, QString name, Plot *);
-    void update (QString chart, Plot *);
+    CommandChartUpdate ();
+    QString run (CommandParse &, void *);
 };
 
 #endif
