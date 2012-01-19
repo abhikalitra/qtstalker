@@ -19,26 +19,22 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// Input the Range and input datetime and the output datetime will be a ranged back from the
-// input. eg. Range is Day, output datetime will be one day back from the input datetime
-// *************************************************************************************************
-
-#ifndef DATE_RANGE_HPP
-#define DATE_RANGE_HPP
-
-#include <QDateTime>
-
-#include "BarLengthType.h"
 #include "DateRangeType.h"
 
-class DateRange
-{
-  public:
-    DateRange ();
-    int dateRange (DateRangeType::Type, QDateTime &input, QDateTime &output);
-    void dateInterval (QDateTime dt, BarLengthType::Type length, QDateTime &startDate, QDateTime &endDate);
-    QString rangeKey (QDateTime sd, QDateTime ed);
-};
+#include <QDebug>
 
-#endif
+DateRangeType::DateRangeType ()
+{
+  _list << "1 Day";
+  _list << "1 Week";
+  _list << "1 Month";
+  _list << "3 Months";
+  _list << "6 Months";
+  _list << "1 Year";
+  _list << "2 Years";
+  _list << "5 Years";
+  _list << "10 Years";
+  _list << "25 Years";
+  _list << "50 Years";
+  _list << "All";
+}

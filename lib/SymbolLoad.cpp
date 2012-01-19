@@ -24,7 +24,7 @@
 #include "Global.h"
 #include "GlobalSymbol.h"
 #include "QuoteDataBase.h"
-#include "BarLength.h"
+#include "BarLengthType.h"
 #include "SymbolKey.h"
 
 #include <QStringList>
@@ -34,7 +34,7 @@ SymbolLoad::SymbolLoad (QObject *p, QString symbol) : QThread (p)
 {
   _symbol = symbol;
 
-  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
+//  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void SymbolLoad::run ()
@@ -57,6 +57,7 @@ void SymbolLoad::run ()
   {
     qDebug() << "SymbolLoad::run: QuoteDataBase error";
     emit signalError();
+    deleteLater();
     return;
   }
 
@@ -65,6 +66,8 @@ void SymbolLoad::run ()
   settings.sync();
 
   emit signalDone(getWindowCaption(length), g_currentSymbol.ekeyCount());
+
+  deleteLater();
 }
 
 QString SymbolLoad::getWindowCaption (int length)
@@ -84,10 +87,8 @@ QString SymbolLoad::getWindowCaption (int length)
   if (! symbol.toString().isEmpty())
     l << "(" + symbol.toString() + ")";
 
-  QStringList bl;
-  BarLength b;
-  bl = b.list();
-  l << bl.at(length);
+  BarLengthType b;
+  l << b.indexToString(length);
 
   return l.join(" ");
 }

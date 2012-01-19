@@ -23,9 +23,6 @@
 #include "LineEdit.h"
 #include "ColorButton.h"
 #include "FileButton.h"
-#include "SymbolButton.h"
-#include "DataType.h"
-#include "EntityType.h"
 #include "GlobalData.h"
 #include "GlobalMutex.h"
 

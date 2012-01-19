@@ -22,7 +22,6 @@
 #include "AddIndicator.h"
 #include "Global.h"
 #include "GlobalParent.h"
-#include "GlobalSymbol.h"
 #include "EAVDataBase.h"
 #include "ScriptRunDialog.h"
 #include "IndicatorDataBaseKey.h"

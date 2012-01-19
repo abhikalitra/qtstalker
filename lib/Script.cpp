@@ -68,7 +68,7 @@ void Script::run ()
   l << QDateTime::currentDateTime().toString();
   l << _file;
   l << tr("started");
-  qDebug() << l.join(" ");
+//  qDebug() << l.join(" ");
 
   while (_proc.state() == QProcess::Running)
   {

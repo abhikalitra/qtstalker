@@ -29,7 +29,6 @@
 #include "EAVDataBase.h"
 #include "EAVSearch.h"
 #include "SymbolKey.h"
-#include "EntityType.h"
 
 #include <QtDebug>
 

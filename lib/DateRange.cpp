@@ -25,51 +25,49 @@
 
 DateRange::DateRange ()
 {
-  _list << "1 Day" << "1 Week" << "1 Month" << "3 Months" << "6 Months" << "1 Year";
-  _list << "2 Years" << "5 Years" << "10 Years" << "25 Years" << "50 Years" << "All";
 }
 
-int DateRange::dateRange (DateRange::Range type, QDateTime &input, QDateTime &output)
+int DateRange::dateRange (DateRangeType::Type type, QDateTime &input, QDateTime &output)
 {
   if (! input.isValid())
     return 1;
 
   switch (type)
   {
-    case _DAY:
+    case DateRangeType::_DAY:
       output = input.addDays(-1);
       break;
-    case _WEEK:
+    case DateRangeType::_WEEK:
       output = input.addDays(-7);
       break;
-    case _MONTH:
+    case DateRangeType::_MONTH:
       output = input.addDays(-31);
       break;
-    case _MONTH3:
+    case DateRangeType::_MONTH3:
       output = input.addDays(-63);
       break;
-    case _MONTH6:
+    case DateRangeType::_MONTH6:
       output = input.addDays(-186);
       break;
-    case _YEAR:
+    case DateRangeType::_YEAR:
       output = input.addYears(-1);
       break;
-    case _YEAR2:
+    case DateRangeType::_YEAR2:
       output = input.addYears(-2);
       break;
-    case _YEAR5:
+    case DateRangeType::_YEAR5:
       output = input.addYears(-5);
       break;
-    case _YEAR10:
+    case DateRangeType::_YEAR10:
       output = input.addYears(-10);
       break;
-    case _YEAR25:
+    case DateRangeType::_YEAR25:
       output = input.addYears(-25);
       break;
-    case _YEAR50:
+    case DateRangeType::_YEAR50:
       output = input.addYears(-50);
       break;
-    case _ALL:
+    case DateRangeType::_ALL:
       output = input.addYears(-1000);
       break;
     default:
@@ -80,79 +78,22 @@ int DateRange::dateRange (DateRange::Range type, QDateTime &input, QDateTime &ou
   return 0;
 }
 
-QStringList DateRange::list ()
-{
-  return _list;
-}
-
-int DateRange::toType (QString d)
-{
-  return _list.indexOf(d);
-}
-
-void DateRange::dateRangeText (DateRange::Range k, QString &d)
-{
-  d.clear();
-
-  switch (k)
-  {
-    case _DAY:
-      d = "1D";
-      break;
-    case _WEEK:
-      d = "1W";
-      break;
-    case _MONTH:
-      d = "1M";
-      break;
-    case _MONTH3:
-      d = "3M";
-      break;
-    case _MONTH6:
-      d = "6M";
-      break;
-    case _YEAR:
-      d = "1Y";
-      break;
-    case _YEAR2:
-      d = "2Y";
-      break;
-    case _YEAR5:
-      d = "5Y";
-      break;
-    case _YEAR10:
-      d = "10Y";
-      break;
-    case _YEAR25:
-      d = "25Y";
-      break;
-    case _YEAR50:
-      d = "50Y";
-      break;
-    case _ALL:
-      d = "All";
-      break;
-    default:
-      break;
-  }
-}
-
-void DateRange::dateInterval (QDateTime dt, BarLength::Length length, QDateTime &startDate, QDateTime &endDate)
+void DateRange::dateInterval (QDateTime dt, BarLengthType::Type length, QDateTime &startDate, QDateTime &endDate)
 {
   startDate = dt;
 
-  switch ((BarLength::Length) length)
+  switch ((BarLengthType::Type) length)
   {
-    case BarLength::_NONE:
+    case BarLengthType::_NONE:
       endDate = startDate;
       break;
-    case BarLength::_MINUTE1:
+    case BarLengthType::_MINUTE1:
       startDate.setTime(QTime(startDate.time().hour(), startDate.time().minute(), 0, 0));
       endDate = startDate;
       endDate = endDate.addSecs(60);
       endDate = endDate.addSecs(-1);
       break;
-    case BarLength::_MINUTE5:
+    case BarLengthType::_MINUTE5:
     {
       int tint = startDate.time().minute() / 5;
       startDate.setTime(QTime(startDate.time().hour(), tint * 5, 0, 0));
@@ -161,7 +102,7 @@ void DateRange::dateInterval (QDateTime dt, BarLength::Length length, QDateTime 
       endDate = endDate.addSecs(-1);
       break;
     }
-    case BarLength::_MINUTE10:
+    case BarLengthType::_MINUTE10:
     {
       int tint = startDate.time().minute() / 10;
       startDate.setTime(QTime(startDate.time().hour(), tint * 10, 0, 0));
@@ -170,7 +111,7 @@ void DateRange::dateInterval (QDateTime dt, BarLength::Length length, QDateTime 
       endDate = endDate.addSecs(-1);
       break;
     }
-    case BarLength::_MINUTE15:
+    case BarLengthType::_MINUTE15:
     {
       int tint = startDate.time().minute() / 15;
       startDate.setTime(QTime(startDate.time().hour(), tint * 15, 0, 0));
@@ -179,7 +120,7 @@ void DateRange::dateInterval (QDateTime dt, BarLength::Length length, QDateTime 
       endDate = endDate.addSecs(-1);
       break;
     }
-    case BarLength::_MINUTE30:
+    case BarLengthType::_MINUTE30:
     {
       int tint = startDate.time().minute() / 30;
       startDate.setTime(QTime(startDate.time().hour(), tint * 30, 0, 0));
@@ -188,26 +129,26 @@ void DateRange::dateInterval (QDateTime dt, BarLength::Length length, QDateTime 
       endDate = endDate.addSecs(-1);
       break;
     }
-    case BarLength::_MINUTE60:
+    case BarLengthType::_MINUTE60:
       startDate.setTime(QTime(startDate.time().hour(), 0, 0, 0));
       endDate = startDate;
       endDate = endDate.addSecs(3600);
       endDate = endDate.addSecs(-1);
       break;
-    case BarLength::_DAILY:
+    case BarLengthType::_DAILY:
       startDate.setTime(QTime(0, 0, 0, 0));
       endDate = startDate;
       endDate = endDate.addDays(1);
       endDate = endDate.addSecs(-1);
       break;
-    case BarLength::_WEEKLY:
+    case BarLengthType::_WEEKLY:
       startDate.setTime(QTime(0, 0, 0, 0));
       startDate = startDate.addDays(- startDate.date().dayOfWeek());
       endDate = startDate;
       endDate = endDate.addDays(7);
       endDate = endDate.addSecs(-1);
       break;
-    case BarLength::_MONTHLY:
+    case BarLengthType::_MONTHLY:
       startDate.setTime(QTime(0, 0, 0, 0));
       startDate = startDate.addDays(- (startDate.date().day() - 1));
       endDate = startDate;

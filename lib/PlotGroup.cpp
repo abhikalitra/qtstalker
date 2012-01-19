@@ -58,7 +58,7 @@ int PlotGroup::setPlot (Plot *p)
 
   if (tw->isHidden())
     tw->show();
-
+  
   return 0;
 }
 

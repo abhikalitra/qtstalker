@@ -20,9 +20,7 @@
  */
 
 #include "CurveHistogram.h"
-#include "CurveData.h"
 #include "CurveDataKey.h"
-#include "CurveBar.h"
 #include "CurveBarKey.h"
 #include "Strip.h"
 

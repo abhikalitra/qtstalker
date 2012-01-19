@@ -23,8 +23,6 @@
 #include "Strip.h"
 #include "Global.h"
 #include "GlobalSymbol.h"
-#include "CurveData.h"
-#include "CurveBar.h"
 #include "CurveType.h"
 #include "SymbolKey.h"
 #include "CurveDataKey.h"

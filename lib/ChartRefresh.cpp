@@ -23,12 +23,9 @@
 #include "ChartRefresh.h"
 #include "Global.h"
 #include "GlobalPlotGroup.h"
-#include "GlobalSymbol.h"
-#include "QuoteDataBase.h"
 #include "EAVDataBase.h"
 #include "EAVSearch.h"
 #include "IndicatorDataBaseKey.h"
-#include "GlobalParent.h"
 #include "GlobalSidePanel.h"
 
 #include <QStringList>
@@ -79,23 +76,6 @@ int ChartRefresh::run ()
 
     // launch indicator
     g_sidePanel->scriptPanel()->runScript(command.toString(), file.toString());
-    
-/*
-    Script *script = new Script(g_parent);
-    connect(script, SIGNAL(signalMessage(QString)), g_sidePanel->scriptPanel(), SLOT(scriptThreadMessage(QString)));
-//qDebug() << "ChartRefresh::run:" << il.at(loop);
-
-    Data td;
-    i.toData(keys.indexToString(IndicatorDataBaseKey::_FILE), td);
-    script->setFile(td.toString());
-    
-    i.toData(keys.indexToString(IndicatorDataBaseKey::_COMMAND), td);
-    script->setCommand(td.toString());
-    
-    script->setSymbol(g_currentSymbol);
-    
-    script->start();
-*/
   }
 
   deleteLater();

@@ -20,9 +20,8 @@
  */
 
 #include "BarLengthButton.h"
-#include "BarLength.h"
+#include "BarLengthType.h"
 #include "Global.h"
-#include "GlobalControlPanel.h"
 #include "GlobalSymbol.h"
 #include "ChartLoad.h"
 #include "SymbolKey.h"
@@ -36,7 +35,7 @@ BarLengthButton::BarLengthButton ()
   font.setPointSize(9);
   setFont(font);
 
-  BarLength bl;
+  BarLengthType bl;
   _list = bl.list();
 
   createMenu();

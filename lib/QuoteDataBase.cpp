@@ -23,11 +23,13 @@
 #include "QuoteDataBase.h"
 #include "CurveBar.h"
 #include "DateRange.h"
+#include "DateRangeType.h"
 #include "SymbolKey.h"
 #include "QuoteDataBaseKey.h"
 #include "DataType.h"
 #include "Symbol.h"
 #include "CurveBarKey.h"
+#include "BarLengthType.h"
 
 #include <QDateTime>
 #include <QtDebug>
@@ -123,7 +125,7 @@ int QuoteDataBase::getBars (Symbol &bd)
     {
       endDate = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmss");
       DateRange dr;
-      if (dr.dateRange((DateRange::Range) dateRange.toInteger(), endDate, startDate))
+      if (dr.dateRange((DateRangeType::Type) dateRange.toInteger(), endDate, startDate))
       {
         qDebug() << "QuoteDataBase::getBars: date range error" << dateRange.toString();
         return 1;
@@ -156,7 +158,7 @@ int QuoteDataBase::getBars (Symbol &bd)
     QDateTime lastDate = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmss");
 
     QDateTime tsd, ted;
-    dr.dateInterval(lastDate, (BarLength::Length) length.toInteger(), tsd, ted);
+    dr.dateInterval(lastDate, (BarLengthType::Type) length.toInteger(), tsd, ted);
     s = dr.rangeKey(tsd, ted);
 
 //qDebug() << lastDate << tsd << ted;

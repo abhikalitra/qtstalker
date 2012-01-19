@@ -16,9 +16,9 @@ $csvDelimiterSetting = 'DELIMITER';
 $csvDelimiterValue = 'Semicolon';
 
 ################################################################################
-
 # all perl scripts must turn on buffer flush flag otherwise script will hang
 $|=1;
+########################################################################################
 
 ########################################################################################
 ############################# create the Yahoo dialog ####################################
@@ -29,7 +29,7 @@ $command = "NEW($yahooCommand, $yahooCommandName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# set the yahoo_history DATE_START
+# set the yahoo_history settings
 $command = "SET($yahooCommandName, $dateStartSetting, $dateStartValue,
                 $yahooCommandName, $csvFileSetting, $csvFileValue,
                 $yahooCommandName, $symbolFileSetting, $symbolFileValue)";
@@ -55,7 +55,12 @@ $command = "NEW($csvCommand, $csvCommandName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# set the CSV CSV_FILE
+# get the csvFileSetting value from the yahoo_history object
+$command = "GET($yahooCommandName, $csvFileSetting)";
+print STDOUT $command;
+$csvFileValue = <STDIN>; chomp($csvFileValue); if ($csvFileValue eq "ERROR") {print STDERR $command; exit; }
+
+# set the CSV settings
 $command = "SET($csvCommandName, $csvFileSetting, $csvFileValue,
                 $csvCommandName, $csvDelimiterSetting, $csvDelimiterValue)";
 print STDOUT $command;

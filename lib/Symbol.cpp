@@ -21,6 +21,7 @@
 
 #include "Symbol.h"
 #include "EntityType.h"
+#include "SymbolKey.h"
 
 #include <QtDebug>
 
@@ -28,12 +29,13 @@ Symbol::Symbol ()
 {
   _type = EntityType::_SYMBOL;
   
-  Entity::set(QString("TYPE"), Data(QString("Stock")));
-  Entity::set(QString("SYMBOL"), Data(QString()));
-  Entity::set(QString("NAME"), Data(QString()));
-  Entity::set(QString("LENGTH"), Data(-1));
-  Entity::set(QString("RANGE"), Data(-1));
-  Entity::set(QString("START_DATE"), Data(QDateTime()));
-  Entity::set(QString("END_DATE"), Data(QDateTime()));
-  Entity::set(QString("TABLE"), Data(QString()));
+  SymbolKey keys;
+  Entity::set(keys.indexToString(SymbolKey::_TYPE), Data(QString("Stock")));
+  Entity::set(keys.indexToString(SymbolKey::_SYMBOL), Data(QString()));
+  Entity::set(keys.indexToString(SymbolKey::_NAME), Data(QString()));
+  Entity::set(keys.indexToString(SymbolKey::_LENGTH), Data(-1));
+  Entity::set(keys.indexToString(SymbolKey::_RANGE), Data(-1));
+  Entity::set(keys.indexToString(SymbolKey::_START_DATE), Data(QDateTime()));
+  Entity::set(keys.indexToString(SymbolKey::_END_DATE), Data(QDateTime()));
+  Entity::set(keys.indexToString(SymbolKey::_TABLE), Data(QString()));
 }

@@ -19,26 +19,36 @@
  *  USA.
  */
 
-#include "BarLength.h"
+// ******************************************************
+// ******************************************************
 
-#include <QtDebug>
+#ifndef BAR_LENGTH_TYPE_HPP
+#define BAR_LENGTH_TYPE_HPP
 
-BarLength::BarLength ()
+#include <QString>
+#include <QStringList>
+#include <QDateTime>
+
+#include "Keys.h"
+
+class BarLengthType : public Keys
 {
-  _list << "0" << "1" << "5" << "10" << "15" << "30" << "60" << "D" << "W" << "M";
-}
+  public:
+    enum Type
+    {
+      _NONE,
+      _MINUTE1,
+      _MINUTE5,
+      _MINUTE10,
+      _MINUTE15,
+      _MINUTE30,
+      _MINUTE60,
+      _DAILY,
+      _WEEKLY,
+      _MONTHLY
+    };
 
-QStringList & BarLength::list ()
-{
-  return _list;
-}
+    BarLengthType ();
+};
 
-QString BarLength::barLengthText (BarLength::Length k)
-{
-  return _list.at((int) k);
-}
-
-int BarLength::stringToType (QString d)
-{
-  return _list.indexOf(d);
-}
+#endif

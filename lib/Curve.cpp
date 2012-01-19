@@ -21,7 +21,6 @@
 
 #include "Curve.h"
 #include "Strip.h"
-#include "CurveData.h"
 #include "CurveBar.h"
 #include "CurveBarKey.h"
 #include "CurveDataKey.h"

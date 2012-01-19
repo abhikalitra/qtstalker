@@ -21,9 +21,8 @@
 
 #include "DateRangeControl.h"
 #include "Global.h"
-#include "GlobalControlPanel.h"
 #include "GlobalSymbol.h"
-#include "DateRange.h"
+#include "DateRangeType.h"
 #include "ChartLoad.h"
 #include "SymbolKey.h"
 
@@ -36,16 +35,9 @@ DateRangeControl::DateRangeControl ()
   font.setPointSize(9);
   setFont(font);
 
-  DateRange dr;
+  DateRangeType dr;
   _lengthList = dr.list();
-
-  int loop = 0;
-  for (; loop < _lengthList.count(); loop++)
-  {
-    QString s;
-    dr.dateRangeText((DateRange::Range) loop, s);
-    _shortList << s;
-  }
+  _shortList = dr.list();
 
   createMenu();
 

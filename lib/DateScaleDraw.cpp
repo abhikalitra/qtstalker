@@ -20,12 +20,11 @@
  */
 
 #include "DateScaleDraw.h"
-#include "BarLength.h"
 #include "GlobalSymbol.h"
 #include "DateRange.h"
-#include "CurveBar.h"
 #include "CurveBarKey.h"
 #include "SymbolKey.h"
+#include "BarLengthType.h"
 
 #include <QString>
 #include <QDebug>
@@ -62,7 +61,7 @@ void DateScaleDraw::setDates (Entity &d)
     cb.toData(cbkeys.indexToString(CurveBarKey::_DATE), td);
 
     QDateTime tsd, ted;
-    dr.dateInterval(td.toDateTime(), (BarLength::Length) length.toInteger(), tsd, ted);
+    dr.dateInterval(td.toDateTime(), (BarLengthType::Type) length.toInteger(), tsd, ted);
     QString s = dr.rangeKey(tsd, ted);
 
     _data.insert(s, keys.at(loop).toInt());
@@ -100,23 +99,23 @@ QwtText DateScaleDraw::label (double v) const
 
   QwtText date;
 
-  switch ((BarLength::Length) _barLength)
+  switch ((BarLengthType::Type) _barLength)
   {
-    case BarLength::_MINUTE1:
-    case BarLength::_MINUTE5:
-    case BarLength::_MINUTE10:
-    case BarLength::_MINUTE15:
-    case BarLength::_MINUTE30:
-    case BarLength::_MINUTE60:
+    case BarLengthType::_MINUTE1:
+    case BarLengthType::_MINUTE5:
+    case BarLengthType::_MINUTE10:
+    case BarLengthType::_MINUTE15:
+    case BarLengthType::_MINUTE30:
+    case BarLengthType::_MINUTE60:
       date = _dateList.at(t).toString("d h:m");
       break;
-    case BarLength::_DAILY:
+    case BarLengthType::_DAILY:
       if (_dateList.at(t).date().month() == 1)
         date = _dateList.at(t).toString("yyyy");
       else
         date = _dateList.at(t).toString("MMM");
       break;
-    case BarLength::_WEEKLY:
+    case BarLengthType::_WEEKLY:
       if (_dateList.at(t).date().month() == 1)
         date = _dateList.at(t).toString("yyyy");
       else
@@ -126,7 +125,7 @@ QwtText DateScaleDraw::label (double v) const
         date = s;
       }
       break;
-    case BarLength::_MONTHLY:
+    case BarLengthType::_MONTHLY:
       date = _dateList.at(t).toString("yyyy");
       break;
     default:
@@ -149,7 +148,7 @@ int DateScaleDraw::x (QDateTime d)
   int x = -1;
   DateRange dr;
   QDateTime tsd, ted;
-  dr.dateInterval(d, (BarLength::Length) _barLength, tsd, ted);
+  dr.dateInterval(d, (BarLengthType::Type) _barLength, tsd, ted);
 
   QString s = dr.rangeKey(tsd, ted);
   if (_data.contains(s))
@@ -194,7 +193,7 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
   QDateTime nextHour = _dateList.at(loop);
   QDateTime oldDay = nextHour;
   nextHour.setTime(QTime(nextHour.time().hour(), 0, 0, 0));
-  if ((BarLength::Length) _barLength != BarLength::_MINUTE1)
+  if ((BarLengthType::Type) _barLength != BarLengthType::_MINUTE1)
     nextHour = nextHour.addSecs(7200);
   else
     nextHour = nextHour.addSecs(3600);
@@ -203,14 +202,14 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
   {
     _dateString.clear();
 
-    switch ((BarLength::Length) _barLength)
+    switch ((BarLengthType::Type) _barLength)
     {
-      case BarLength::_MINUTE1:
-      case BarLength::_MINUTE5:
-      case BarLength::_MINUTE10:
-      case BarLength::_MINUTE15:
-      case BarLength::_MINUTE30:
-      case BarLength::_MINUTE60:
+      case BarLengthType::_MINUTE1:
+      case BarLengthType::_MINUTE5:
+      case BarLengthType::_MINUTE10:
+      case BarLengthType::_MINUTE15:
+      case BarLengthType::_MINUTE30:
+      case BarLengthType::_MINUTE60:
       {
         QDateTime date = _dateList.at(loop);
         if (date.date().day() != oldDay.date().day())
@@ -226,7 +225,7 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
         {
           if (date >= nextHour)
           {
-            if ((BarLength::Length) _barLength < BarLength::_MINUTE30)
+            if ((BarLengthType::Type) _barLength < BarLengthType::_MINUTE30)
             {
               // draw the short tick
               drawTick(painter, loop, 4);
@@ -239,14 +238,14 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
         {
           nextHour = date;
           nextHour.setTime(QTime(date.time().hour(), 0, 0, 0));
-          if ((BarLength::Length) _barLength != BarLength::_MINUTE1)
+          if ((BarLengthType::Type) _barLength != BarLengthType::_MINUTE1)
             nextHour = nextHour.addSecs(7200);
           else
             nextHour = nextHour.addSecs(3600);
         }
         break;
       }
-      case BarLength::_DAILY:
+      case BarLengthType::_DAILY:
       {
         QDate date = _dateList.at(loop).date();
         if (date.month() != oldDate.month())
@@ -276,7 +275,7 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
         }
         break;
       }
-      case BarLength::_WEEKLY:
+      case BarLengthType::_WEEKLY:
       {
         QDate date = _dateList.at(loop).date();
         if (date.month() != oldMonth.month())
@@ -300,7 +299,7 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
         }
         break;
       }
-      case BarLength::_MONTHLY:
+      case BarLengthType::_MONTHLY:
       {
         QDate date = _dateList.at(loop).date();
         if (date.year() != oldYear.year())

@@ -20,8 +20,6 @@
  */
 
 #include "CurveLine.h"
-#include "CurveData.h"
-#include "CurveBar.h"
 #include "CurveDataKey.h"
 #include "CurveBarKey.h"
 #include "LineStyle.h"

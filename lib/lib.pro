@@ -10,7 +10,7 @@ QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 HEADERS += AboutDialog.h
 HEADERS += AddIndicator.h
 
-HEADERS += BarLength.h
+HEADERS += BarLengthType.h
 HEADERS += BarLengthButton.h
 HEADERS += BarSpaceButton.h
 
@@ -135,6 +135,7 @@ HEADERS += DataWindow.h
 HEADERS += DataWindowButton.h
 HEADERS += DateRange.h
 HEADERS += DateRangeControl.h
+HEADERS += DateRangeType.h
 HEADERS += DateScaleDraw.h
 HEADERS += Dialog.h
 HEADERS += Doc.h
@@ -232,7 +233,7 @@ HEADERS += ThreadMessageType.h
 SOURCES += AboutDialog.cpp
 SOURCES += AddIndicator.cpp
 
-SOURCES += BarLength.cpp
+SOURCES += BarLengthType.cpp
 SOURCES += BarLengthButton.cpp
 SOURCES += BarSpaceButton.cpp
 
@@ -356,6 +357,7 @@ SOURCES += DataWindow.cpp
 SOURCES += DataWindowButton.cpp
 SOURCES += DateRange.cpp
 SOURCES += DateRangeControl.cpp
+SOURCES += DateRangeType.cpp
 SOURCES += DateScaleDraw.cpp
 SOURCES += Dialog.cpp
 SOURCES += Doc.cpp

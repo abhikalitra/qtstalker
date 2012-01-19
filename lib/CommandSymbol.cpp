@@ -24,8 +24,8 @@
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "QuoteDataBase.h"
-#include "BarLength.h"
-#include "DateRange.h"
+#include "BarLengthType.h"
+#include "DateRangeType.h"
 #include "Script.h"
 #include "SymbolKey.h"
 #include "CurveBarKey.h"
@@ -40,13 +40,13 @@ CommandSymbol::CommandSymbol ()
   td.setLabel(QObject::tr("Symbol"));
   Entity::set(QString("SYMBOL"), td);
   
-  BarLength bl;
+  BarLengthType bl;
   QStringList l = bl.list();
   td = Data(l, l.at(0));
   td.setLabel(QObject::tr("Bar Length"));
   Entity::set(QString("LENGTH"), td);
   
-  DateRange dr;
+  DateRangeType dr;
   l = dr.list();
   td = Data(l, l.at(0));
   td.setLabel(QObject::tr("Date Range"));

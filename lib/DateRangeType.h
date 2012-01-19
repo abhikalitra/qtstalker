@@ -19,41 +19,34 @@
  *  USA.
  */
 
-// ******************************************************
-// This class is used for holding 1 bar or quote of data.
-// ******************************************************
+// *************************************************************************************************
+// *************************************************************************************************
 
-#ifndef BAR_LENGTH_HPP
-#define BAR_LENGTH_HPP
+#ifndef DATE_RANGE_TYPE_HPP
+#define DATE_RANGE_TYPE_HPP
 
-#include <QString>
-#include <QStringList>
-#include <QDateTime>
+#include "Keys.h"
 
-class BarLength
+class DateRangeType : public Keys
 {
   public:
-    enum Length
+    enum Type
     {
-      _NONE,
-      _MINUTE1,
-      _MINUTE5,
-      _MINUTE10,
-      _MINUTE15,
-      _MINUTE30,
-      _MINUTE60,
-      _DAILY,
-      _WEEKLY,
-      _MONTHLY
+      _DAY,
+      _WEEK,
+      _MONTH,
+      _MONTH3,
+      _MONTH6,
+      _YEAR,
+      _YEAR2,
+      _YEAR5,
+      _YEAR10,
+      _YEAR25,
+      _YEAR50,
+      _ALL
     };
 
-    BarLength ();
-    QStringList & list ();
-    QString barLengthText (BarLength::Length);
-    int stringToType (QString);
-
-  protected:
-    QStringList _list;
+    DateRangeType ();
 };
 
 #endif
