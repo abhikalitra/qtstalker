@@ -19,21 +19,21 @@
  *  USA.
  */
 
-#ifndef ENTITY_TYPE_HPP
-#define ENTITY_TYPE_HPP
+#ifndef TYPE_HISTOGRAM_HPP
+#define TYPE_HISTOGRAM_HPP
 
-class EntityType
+#include "Type.h"
+
+class TypeHistogram : public Type
 {
   public:
-    enum Type
+    enum Key
     {
-      _SETTING,
-      _CHART_OBJECT,
-      _CURVE,
-      _CURVE_BAR,
-      _SYMBOL,
-      _COMMAND
+      _HISTOGRAM,
+      _HISTOGRAM_BAR
     };
+
+    TypeHistogram ();
 };
 
 #endif

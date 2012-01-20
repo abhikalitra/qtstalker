@@ -28,7 +28,7 @@ Data::Data ()
   clear();
 }
 
-Data::Data (DataType::Type type)
+Data::Data (TypeData::Key type)
 {
   clear();
   _type = type;
@@ -37,21 +37,21 @@ Data::Data (DataType::Type type)
 Data::Data (QString d)
 {
   clear();
-  _type = DataType::_STRING;
+  _type = TypeData::_STRING;
   set(d);
 }
 
 Data::Data (QStringList d)
 {
   clear();
-  _type = DataType::_LIST;
+  _type = TypeData::_LIST;
   set(d);
 }
 
 Data::Data (QStringList l, QString d)
 {
   clear();
-  _type = DataType::_LIST;
+  _type = TypeData::_LIST;
   set(d);
   set(l);
 }
@@ -59,48 +59,48 @@ Data::Data (QStringList l, QString d)
 Data::Data (int d)
 {
   clear();
-  _type = DataType::_INTEGER;
+  _type = TypeData::_INTEGER;
   set(d);
 }
 
 Data::Data (double d)
 {
   clear();
-  _type = DataType::_DOUBLE;
+  _type = TypeData::_DOUBLE;
   set(d);
 }
 
 Data::Data (bool d)
 {
   clear();
-  _type = DataType::_BOOL;
+  _type = TypeData::_BOOL;
   set(d);
 }
 
 Data::Data (QColor d)
 {
   clear();
-  _type = DataType::_COLOR;
+  _type = TypeData::_COLOR;
   set(d);
 }
 
 Data::Data (QFont d)
 {
   clear();
-  _type = DataType::_FONT;
+  _type = TypeData::_FONT;
   set(d);
 }
 
 Data::Data (QDateTime d)
 {
   clear();
-  _type = DataType::_DATETIME;
+  _type = TypeData::_DATETIME;
   set(d);
 }
 
 void Data::clear ()
 {
-  _type = DataType::_STRING;
+  _type = TypeData::_STRING;
   _tab = 0;
 }
 
@@ -116,7 +116,7 @@ void Data::setType (int d)
 
 int Data::set (QString d)
 {
-//  _type = DataType::_STRING;
+//  _type = TypeData::_STRING;
   _value = QVariant(d);
   return 0;
 }
@@ -136,42 +136,42 @@ int Data::set (QStringList l, QString d)
 
 int Data::set (int d)
 {
-//  _type = DataType::_INTEGER;
+//  _type = TypeData::_INTEGER;
   _value = QVariant(d);
   return 0;
 }
 
 int Data::set (double d)
 {
-//  _type = DataType::_DOUBLE;
+//  _type = TypeData::_DOUBLE;
   _value = QVariant(d);
   return 0;
 }
 
 int Data::set (bool d)
 {
-//  _type = DataType::_BOOL;
+//  _type = TypeData::_BOOL;
   _value = QVariant(d);
   return 0;
 }
 
 int Data::set (QColor d)
 {
-//  _type = DataType::_COLOR;
+//  _type = TypeData::_COLOR;
   _value = QVariant(d.name());
   return 0;
 }
 
 int Data::set (QFont d)
 {
-//  _type = DataType::_FONT;
+//  _type = TypeData::_FONT;
   _value = QVariant(d.toString());
   return 0;
 }
 
 int Data::set (QDateTime d)
 {
-//  _type = DataType::_DATETIME;
+//  _type = TypeData::_DATETIME;
   _value = QVariant(d);
   return 0;
 }
@@ -180,9 +180,9 @@ int Data::set (QString d, int type)
 {
   int rc = 0;
   
-  switch ((DataType::Type) type)
+  switch ((TypeData::Key) type)
   {
-    case DataType::_BOOL:
+    case TypeData::_BOOL:
     {
       if (d == "true" || d == "TRUE" || d == "1")
 	set(TRUE);
@@ -195,7 +195,7 @@ int Data::set (QString d, int type)
       }
       break;
     }
-    case DataType::_COLOR:
+    case TypeData::_COLOR:
     {
       QColor c(d);
       if (c.isValid())
@@ -204,7 +204,7 @@ int Data::set (QString d, int type)
         rc++;
       break;
     }
-    case DataType::_DATETIME:
+    case TypeData::_DATETIME:
     {
       QDateTime tdt = QDateTime::fromString(d, Qt::ISODate);
       if (tdt.isValid())
@@ -213,7 +213,7 @@ int Data::set (QString d, int type)
         rc++;
       break;
     }
-    case DataType::_DOUBLE:
+    case TypeData::_DOUBLE:
     {
       bool ok;
       double td = d.toDouble(&ok);
@@ -223,7 +223,7 @@ int Data::set (QString d, int type)
         rc++;
       break;
     }
-    case DataType::_FONT:
+    case TypeData::_FONT:
     {
       QFont f;
       if (f.fromString(d))
@@ -232,7 +232,7 @@ int Data::set (QString d, int type)
         rc++;
       break;
     }
-    case DataType::_INTEGER:
+    case TypeData::_INTEGER:
     {
       bool ok;
       int ti = d.toInt(&ok);
@@ -242,21 +242,21 @@ int Data::set (QString d, int type)
         rc++;
       break;
     }
-    case DataType::_LIST:
+    case TypeData::_LIST:
       if (_list.indexOf(d) != -1)
-	set(d);
+        set(d);
       else
         rc++;
       break;
-    case DataType::_STRING:
+    case TypeData::_STRING:
       set(d);
       break;
-    case DataType::_FILE:
+    case TypeData::_FILE:
     {
       QStringList tl = d.split(";");
       if (tl.size())
       {
-        _type = DataType::_FILE;
+        _type = TypeData::_FILE;
 	_list = tl;
       }
       else
@@ -273,19 +273,7 @@ int Data::set (QString d, int type)
 
 QString Data::toString ()
 {
-  QString s;
-  
-  switch ((DataType::Type) _type)
-  {
-    case DataType::_FILE:
-      s = _list.join(";");
-      break;
-    default:
-      s = _value.toString();
-      break;
-  }
-  
-  return s;
+  return _value.toString();
 }
 
 QStringList Data::toList ()
@@ -297,7 +285,7 @@ int Data::toInteger ()
 {
   int d = _value.toInt();
   
-  if (_type == (DataType::_LIST))
+  if (_type == (TypeData::_LIST))
     d = _list.indexOf(_value.toString());
   
   return d;

@@ -21,7 +21,7 @@
 
 #include "ThreadMessage.h"
 #include "GlobalData.h"
-#include "ThreadMessageType.h"
+#include "TypeThreadMessage.h"
 #include "GlobalParent.h"
 #include "DataDialog.h"
 #include "ChartNew.h"
@@ -60,7 +60,7 @@ void ThreadMessage::getMessage (QString id)
   if (e.toData(QString("MESSAGE"), td))
     return;
 
-  if (td.toInteger() == ThreadMessageType::_DIALOG)
+  if (td.toInteger() == TypeThreadMessage::_DIALOG)
   {
     DataDialog *dialog = new DataDialog(g_parent, id, e);
     dialog->show();
@@ -75,48 +75,48 @@ void ThreadMessage::runMessage (Entity &e)
   if (e.toData(QString("MESSAGE"), td))
     return;
   
-  switch ((ThreadMessageType::Type) td.toInteger())
+  switch ((TypeThreadMessage::Type) td.toInteger())
   {
-    case ThreadMessageType::_CHART_CURVE:
+    case TypeThreadMessage::_CHART_CURVE:
     {
       ChartUpdate cu;
       cu.curve(e);
       break;
     }
-    case ThreadMessageType::_CHART_DATE:
+    case TypeThreadMessage::_CHART_DATE:
     {
       ChartUpdate cu;
       cu.date(e);
       break;
     }
-    case ThreadMessageType::_CHART_LOAD_OBJECT:
+    case TypeThreadMessage::_CHART_LOAD_OBJECT:
     {
       ChartUpdate cu;
       cu.loadObjects(e);
       break;
     }
-    case ThreadMessageType::_CHART_NEW:
+    case TypeThreadMessage::_CHART_NEW:
     {
       ChartNew cn;
       cn.run(e);
       break;
     }
-    case ThreadMessageType::_CHART_OBJECT:
+    case TypeThreadMessage::_CHART_OBJECT:
     {
       ChartUpdate cu;
       cu.object(e);
       break;
     }
-    case ThreadMessageType::_CHART_PANEL_REFRESH:
+    case TypeThreadMessage::_CHART_PANEL_REFRESH:
       g_sidePanel->chartPanel()->updateList();
       break;
-    case ThreadMessageType::_CHART_UPDATE:
+    case TypeThreadMessage::_CHART_UPDATE:
     {
       ChartUpdate cu;
       cu.update(e);
       break;
     }
-    case ThreadMessageType::_GROUP_PANEL_REFRESH:
+    case TypeThreadMessage::_GROUP_PANEL_REFRESH:
       g_sidePanel->groupPanel()->updateList();
       break;
     default:

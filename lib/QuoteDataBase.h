@@ -42,7 +42,7 @@ class QuoteDataBase
     int deleteSymbol (Symbol &);
     int getExchange (QStringList &);
 //    int rename (Symbol *osymbol, Symbol *nsymbol);
-    int search (Symbol &bd, QList<Symbol> &l);
+    int search (QString symbol, QList<Symbol> &l);
     int setName (Symbol &);
 //    int dump (DataGroup *, QString);
 

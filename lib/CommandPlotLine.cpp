@@ -20,13 +20,13 @@
  */
 
 #include "CommandPlotLine.h"
-#include "LineStyle.h"
+#include "TypeLine.h"
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
-#include "CurveDataKey.h"
-#include "CurveBarKey.h"
+#include "KeyCurveData.h"
+#include "KeyCurveBar.h"
 #include "Script.h"
 
 #include <QtDebug>
@@ -43,7 +43,7 @@ CommandPlotLine::CommandPlotLine ()
   Entity::set(QString("PEN"), Data(1));
   Entity::set(QString("INPUT"), Data(QString("close")));
 
-  LineStyle ls;
+  TypeLine ls;
   Data td(ls.list(), QString("Line"));
   Entity::set(QString("STYLE"), td);
 }
@@ -71,27 +71,27 @@ QString CommandPlotLine::run (CommandParse &, void *d)
     return _returnCode;
   }
 
-  CurveDataKey cdkeys;
+  KeyCurveData cdkeys;
   CurveData line;
-  line.set(cdkeys.indexToString(CurveDataKey::_TYPE), Data(QString("Line")));
+  line.set(cdkeys.indexToString(KeyCurveData::_TYPE), Data(QString("Line")));
   
   Data td;
   Entity::toData(QString("Z"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_Z), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_Z), td);
   
   Entity::toData(QString("PEN"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_PEN), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_PEN), td);
   
   Entity::toData(QString("LABEL"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_LABEL), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_LABEL), td);
   
   Entity::toData(QString("CHART"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_CHART), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_CHART), td);
   
   Entity::toData(QString("STYLE"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_STYLE), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_STYLE), td);
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   for (; loop < keys.count(); loop++)
   {
@@ -100,14 +100,14 @@ QString CommandPlotLine::run (CommandParse &, void *d)
       continue;
     
     Data value;
-    if (ibar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), value))
+    if (ibar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), value))
       continue;
 
     CurveBar bar;
-    bar.set(cbkeys.indexToString(CurveBarKey::_VALUE), value);
+    bar.set(cbkeys.indexToString(KeyCurveBar::_VALUE), value);
     
     Entity::toData(QString("COLOR"), td);
-    bar.set(cbkeys.indexToString(CurveBarKey::_COLOR), td);
+    bar.set(cbkeys.indexToString(KeyCurveBar::_COLOR), td);
     
     line.setEntity(keys.at(loop), bar);
   }

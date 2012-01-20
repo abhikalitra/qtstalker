@@ -22,22 +22,23 @@
 // *************************************************************************************************
 // *************************************************************************************************
 
-#ifndef INDICATOR_DATA_BASE_KEY_HPP
-#define INDICATOR_DATA_BASE_KEY_HPP
+#ifndef KEY_QUOTE_DATA_BASE_HPP
+#define KEY_QUOTE_DATA_BASE_HPP
 
-#include "Keys.h"
+#include "Type.h"
 
-class IndicatorDataBaseKey : public Keys
+class KeyQuoteDataBase : public Type
 {
   public:
     enum Key
     {
-      _SESSION,
-      _FILE,
-      _COMMAND
+      _SYMBOL,
+      _TYPE,
+      _NAME,
+      _TABLE
     };
     
-    IndicatorDataBaseKey ();
+    KeyQuoteDataBase ();
 };
 
 #endif

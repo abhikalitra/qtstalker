@@ -299,10 +299,6 @@ App restart required to take effect</source>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>DataWindowButton</name>
@@ -1121,6 +1117,10 @@ App restart required to take effect</source>
         <source>invalid adjusted close, record skipped</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indicators</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -1289,10 +1289,6 @@ App restart required to take effect</source>
 <context>
     <name>ScriptTimerDialog</name>
     <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Script File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1314,6 +1310,10 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Script Timer</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1368,10 +1368,6 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Exchange</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Symbol pattern</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1385,14 +1381,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a specific exchange or * for all</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter a partial search like %OOG% or * for all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1421,6 +1409,10 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Remove selected from symbols</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a partial search like %OOG% or % for all</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

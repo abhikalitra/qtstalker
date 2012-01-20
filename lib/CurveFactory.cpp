@@ -20,7 +20,7 @@
  */
 
 #include "CurveFactory.h"
-#include "CurveType.h"
+#include "TypeCurve.h"
 #include "CurveOHLC.h"
 #include "CurveHistogram.h"
 #include "CurveLine.h"
@@ -34,17 +34,17 @@ CurveFactory::CurveFactory ()
 Curve * CurveFactory::curve (QString type)
 {
   Curve *curve = 0;
-  CurveType ct;
+  TypeCurve ct;
 
-  switch ((CurveType::Type) ct.stringToIndex(type))
+  switch ((TypeCurve::Key) ct.stringToIndex(type))
   {
-    case CurveType::_LINE:
+    case TypeCurve::_LINE:
       curve = new CurveLine;
       break;
-    case CurveType::_HISTOGRAM:
+    case TypeCurve::_HISTOGRAM:
       curve = new CurveHistogram;
       break;
-    case CurveType::_OHLC:
+    case TypeCurve::_OHLC:
       curve = new CurveOHLC;
       break;
     default:

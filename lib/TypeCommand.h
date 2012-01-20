@@ -19,12 +19,12 @@
  *  USA.
  */
 
-#ifndef COMMAND_TYPE_HPP
-#define COMMAND_TYPE_HPP
+#ifndef TYPE_COMMAND_HPP
+#define TYPE_COMMAND_HPP
 
-#include "Keys.h"
+#include "Type.h"
 
-class CommandType : public Keys
+class TypeCommand : public Type
 {
   public:
     enum Type
@@ -106,7 +106,7 @@ class CommandType : public Keys
       _YAHOO_HISTORY
     };
 
-    CommandType ();
+    TypeCommand ();
 };
 
 #endif

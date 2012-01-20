@@ -23,7 +23,7 @@
 #include "ChartObjectHLine.h"
 #include "GlobalParent.h"
 #include "Strip.h"
-#include "ChartObjectKey.h"
+#include "KeyChartObject.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -32,26 +32,26 @@
 
 ChartObjectHLine::ChartObjectHLine ()
 {
-  ChartObjectKey keys;
+  KeyChartObject keys;
 
   Data td(QString("HLine"));
-  _settings.set(keys.indexToString(ChartObjectKey::_TYPE), td);
+  _settings.set(keys.indexToString(KeyChartObject::_TYPE), td);
   
   td = Data(0.0);
   td.setLabel(QObject::tr("Price"));
-  _settings.set(keys.indexToString(ChartObjectKey::_PRICE), td);
+  _settings.set(keys.indexToString(KeyChartObject::_PRICE), td);
 
   td = Data(QColor(Qt::red));
   td.setLabel(QObject::tr("Color"));
-  _settings.set(keys.indexToString(ChartObjectKey::_COLOR), td);
+  _settings.set(keys.indexToString(KeyChartObject::_COLOR), td);
 }
 
 void ChartObjectHLine::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap &yMap, const QRect &) const
 {
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data color, price;
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
-  _settings.toData(keys.indexToString(ChartObjectKey::_COLOR), color);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
+  _settings.toData(keys.indexToString(KeyChartObject::_COLOR), color);
   
   p->setPen(color.toColor());
 
@@ -111,10 +111,10 @@ void ChartObjectHLine::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap
 
 int ChartObjectHLine::info (Entity &info)
 {
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data type, price;
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
-  _settings.toData(keys.indexToString(ChartObjectKey::_TYPE), type);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
+  _settings.toData(keys.indexToString(KeyChartObject::_TYPE), type);
 
   info.set(QObject::tr("Type"), type);
   info.set(QObject::tr("Price"), price);
@@ -128,13 +128,13 @@ void ChartObjectHLine::move (QPoint p)
   {
     case _MOVE:
     {
-      ChartObjectKey keys;
+      KeyChartObject keys;
       Data price;
-      _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+      _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
       
       QwtScaleMap map = plot()->canvasMap(QwtPlot::yRight);
       price.set(map.invTransform((double) p.y()));
-      _settings.set(keys.indexToString(ChartObjectKey::_PRICE), price);
+      _settings.set(keys.indexToString(KeyChartObject::_PRICE), price);
 
       plot()->replot();
 
@@ -161,9 +161,9 @@ int ChartObjectHLine::create ()
 
 int ChartObjectHLine::highLow (int, int, double &high, double &low)
 {
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data price;
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
 
   high = price.toDouble();
   low = price.toDouble();

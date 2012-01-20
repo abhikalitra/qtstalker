@@ -19,26 +19,26 @@
  *  USA.
  */
 
-#ifndef OHLC_STYLE_HPP
-#define OHLC_STYLE_HPP
+#ifndef TYPE_CHART_OBJECT_HPP
+#define TYPE_CHART_OBJECT_HPP
 
-#include <QStringList>
+#include "Type.h"
 
-class OHLCStyle
+class TypeChartObject : public Type
 {
   public:
-    enum Style
+    enum Key
     {
-      _OHLC,
-      _CANDLE
+      _BUY,
+      _HLINE,
+      _RETRACEMENT,
+      _SELL,
+      _TEXT,
+      _TLINE,
+      _VLINE
     };
 
-    OHLCStyle ();
-    QStringList list ();
-    int stringToStyle (QString);
-
-  protected:
-    QStringList _styles;
+    TypeChartObject ();
 };
 
 #endif

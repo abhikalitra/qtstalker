@@ -22,8 +22,8 @@
 #include "Curve.h"
 #include "Strip.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
-#include "CurveDataKey.h"
+#include "KeyCurveBar.h"
+#include "KeyCurveData.h"
 
 #include <QDebug>
 
@@ -107,14 +107,14 @@ int Curve::info (int index, Entity &data)
   if (_settings.toEntity(QString::number(index), b))
     return 1;
   
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   Data value;
-  if (b.toData(cbkeys.indexToString(CurveBarKey::_VALUE), value))
+  if (b.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), value))
     return 1;
 
-  CurveDataKey cdkeys;
+  KeyCurveData cdkeys;
   Data label;
-  if (_settings.toData(cdkeys.indexToString(CurveDataKey::_LABEL), label))
+  if (_settings.toData(cdkeys.indexToString(KeyCurveData::_LABEL), label))
     return 1;
 
   Strip strip;
@@ -139,7 +139,7 @@ void Curve::keyRange (int &startIndex, int &endIndex)
 
 int Curve::setAllColor (QColor color)
 {
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   QList<QString> keys = _settings.ekeys();
   int loop = 0;
   for (; loop < keys.size(); loop++)
@@ -148,7 +148,7 @@ int Curve::setAllColor (QColor color)
     if (_settings.toEntity(keys.at(loop), bar))
       continue;
     
-    bar.set(cbkeys.indexToString(CurveBarKey::_COLOR), Data(color));
+    bar.set(cbkeys.indexToString(KeyCurveBar::_COLOR), Data(color));
     _settings.setEntity(keys.at(loop), bar);
   }
 
@@ -159,9 +159,9 @@ void Curve::setSettings (Entity &d)
 {
   _settings = d;
 
-  CurveDataKey keys;
+  KeyCurveData keys;
   Data tdi;
-  _settings.toData(keys.indexToString(CurveDataKey::_Z), tdi);
+  _settings.toData(keys.indexToString(KeyCurveData::_Z), tdi);
   setZ(tdi.toInteger());
 }
 
@@ -176,13 +176,13 @@ int Curve::scalePoint (int i, QColor &color, double &v)
   if (_settings.toEntity(QString::number(i), bar))
     return 1;
 
-  CurveBarKey keys;
+  KeyCurveBar keys;
   Data td;
-  if (bar.toData(keys.indexToString(CurveBarKey::_COLOR), td))
+  if (bar.toData(keys.indexToString(KeyCurveBar::_COLOR), td))
     return 1;
   color = td.toColor();
   
-  if (bar.toData(keys.indexToString(CurveBarKey::_VALUE), td))
+  if (bar.toData(keys.indexToString(KeyCurveBar::_VALUE), td))
     return 1;
   v = td.toDouble();
 

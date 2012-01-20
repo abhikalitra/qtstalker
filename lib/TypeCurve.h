@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,27 +19,22 @@
  *  USA.
  */
 
-#ifndef MA_TYPE_HPP
-#define MA_TYPE_HPP
+#ifndef TYPE_CURVE_HPP
+#define TYPE_CURVE_HPP
 
-#include "Keys.h"
+#include "Type.h"
 
-class MAType : public Keys
+class TypeCurve : public Type
 {
   public:
-    enum Type
+    enum Key
     {
-      _SMA,
-      _EMA,
-      _WMA,
-      _DEMA,
-      _TEMA,
-      _TRIMA,
-      _KAMA,
-      _WILDER
+      _LINE,
+      _HISTOGRAM,
+      _OHLC
     };
 
-    MAType ();
+    TypeCurve ();
 };
 
 #endif

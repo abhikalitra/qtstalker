@@ -20,8 +20,8 @@
  */
 
 #include "Script.h"
-#include "ChartObjectKey.h"
-#include "EntityType.h"
+#include "KeyChartObject.h"
+#include "TypeEntity.h"
 #include "CommandParse.h"
 #include "CommandFactory.h"
 
@@ -191,7 +191,7 @@ QList<QString> Script::dataKeys ()
 
 int Script::nextROID ()
 {
-  ChartObjectKey cokeys;
+  KeyChartObject cokeys;
   int low = 0;
   QHashIterator<QString, Entity> it(_data);
   while (it.hasNext())
@@ -199,11 +199,11 @@ int Script::nextROID ()
     it.next();
 
     Entity dg = it.value();
-    if (dg.type() != EntityType::_CHART_OBJECT)
+    if (dg.type() != TypeEntity::_CHART_OBJECT)
       continue;
 
     Data td;
-    dg.toData(cokeys.indexToString(ChartObjectKey::_ID), td);
+    dg.toData(cokeys.indexToString(KeyChartObject::_ID), td);
     int t = td.toInteger();
     if (t < low)
       low = t;

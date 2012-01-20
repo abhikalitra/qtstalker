@@ -21,7 +21,7 @@
 
 #include "TALibOutput.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 
 TALibOutput::TALibOutput ()
 {
@@ -29,13 +29,13 @@ TALibOutput::TALibOutput ()
 
 int TALibOutput::fillOutputDouble1 (Entity &line, QList<QString> &keys, int outNb, TA_Real out[])
 {
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int keyLoop = keys.size() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out[outLoop]));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(out[outLoop]));
     line.setEntity(keys.at(keyLoop), b);
 
     keyLoop--;
@@ -47,16 +47,16 @@ int TALibOutput::fillOutputDouble1 (Entity &line, QList<QString> &keys, int outN
 
 int TALibOutput::fillOutputDouble2 (Entity &line, Entity &line2, QList<QString> &keys, int outNb, TA_Real out[], TA_Real out2[])
 {
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int keyLoop = keys.size() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out[outLoop]));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(out[outLoop]));
     line.setEntity(keys.at(keyLoop), b);
 
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out2[outLoop]));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(out2[outLoop]));
     line2.setEntity(keys.at(keyLoop), b);
 
     keyLoop--;
@@ -69,19 +69,19 @@ int TALibOutput::fillOutputDouble2 (Entity &line, Entity &line2, QList<QString> 
 int TALibOutput::fillOutputDouble3 (Entity &line, Entity &line2, Entity &line3, QList<QString> &keys,
 			      int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[])
 {
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int keyLoop = keys.size() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out[outLoop]));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(out[outLoop]));
     line.setEntity(keys.at(keyLoop), b);
 
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out2[outLoop]));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(out2[outLoop]));
     line2.setEntity(keys.at(keyLoop), b);
 
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out3[outLoop]));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(out3[outLoop]));
     line3.setEntity(keys.at(keyLoop), b);
 
     keyLoop--;
@@ -93,13 +93,13 @@ int TALibOutput::fillOutputDouble3 (Entity &line, Entity &line2, Entity &line3, 
 
 int TALibOutput::fillOutputInteger1 (Entity &line, QList<QString> &keys, int outNb, TA_Integer out[])
 {
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int keyLoop = keys.size() - 1;
   int outLoop = outNb - 1;
   while (keyLoop > -1 && outLoop > -1)
   {
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out[outLoop]));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(out[outLoop]));
     line.setEntity(keys.at(keyLoop), b);
 
     keyLoop--;

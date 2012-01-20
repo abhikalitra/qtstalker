@@ -21,8 +21,6 @@
 
 #include "CommandShift.h"
 #include "CurveData.h"
-#include "CurveBar.h"
-#include "CurveBarKey.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 #include "ScriptVerifyCurveValue.h"

@@ -19,26 +19,45 @@
  *  USA.
  */
 
-#ifndef CHART_OBJECT_TYPE_HPP
-#define CHART_OBJECT_TYPE_HPP
+// *************************************************************************************************
+// *************************************************************************************************
 
-#include "Keys.h"
+#ifndef KEY_CHART_OBJECT_HPP
+#define KEY_CHART_OBJECT_HPP
 
-class ChartObjectType : public Keys
+#include "Type.h"
+
+class KeyChartObject : public Type
 {
   public:
-    enum Type
+    enum Key
     {
-      _BUY,
-      _HLINE,
-      _RETRACEMENT,
-      _SELL,
+      _ID,
+      _DATE,
+      _DATE2,
+      _PRICE,
+      _PRICE2,
+      _COLOR,
+      _EXTEND,
       _TEXT,
-      _TLINE,
-      _VLINE
+      _FONT,
+      _HIGH,
+      _LOW,
+      _LEVEL1,
+      _LEVEL2,
+      _LEVEL3,
+      _LEVEL4,
+      _LEVEL5,
+      _LEVEL6,
+      _SYMBOL,
+      _CHART,
+      _TYPE,
+      _Z,
+      _PEN,
+      _RO
     };
-
-    ChartObjectType ();
+    
+    KeyChartObject ();
 };
 
 #endif

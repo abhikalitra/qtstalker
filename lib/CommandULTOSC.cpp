@@ -23,7 +23,7 @@
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 
@@ -97,7 +97,7 @@ QString CommandULTOSC::run (CommandParse &, void *d)
   Entity::toData(QString("PERIOD_L"), lp);
   
   Entity parms;
-  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_ULTOSC));
+  parms.set(QString("FUNCTION"), Data(TypeTALibFunction::_ULTOSC));
   parms.set(QString("PERIOD_S"), sp);
   parms.set(QString("PERIOD_M"), mp);
   parms.set(QString("PERIOD_L"), lp);

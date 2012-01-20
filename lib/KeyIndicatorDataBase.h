@@ -19,36 +19,25 @@
  *  USA.
  */
 
-// ******************************************************
-// ******************************************************
+// *************************************************************************************************
+// *************************************************************************************************
 
-#ifndef BAR_LENGTH_TYPE_HPP
-#define BAR_LENGTH_TYPE_HPP
+#ifndef KEY_INDICATOR_DATA_BASE_HPP
+#define KEY_INDICATOR_DATA_BASE_HPP
 
-#include <QString>
-#include <QStringList>
-#include <QDateTime>
+#include "Type.h"
 
-#include "Keys.h"
-
-class BarLengthType : public Keys
+class KeyIndicatorDataBase : public Type
 {
   public:
-    enum Type
+    enum Key
     {
-      _NONE,
-      _MINUTE1,
-      _MINUTE5,
-      _MINUTE10,
-      _MINUTE15,
-      _MINUTE30,
-      _MINUTE60,
-      _DAILY,
-      _WEEKLY,
-      _MONTHLY
+      _SESSION,
+      _FILE,
+      _COMMAND
     };
-
-    BarLengthType ();
+    
+    KeyIndicatorDataBase ();
 };
 
 #endif

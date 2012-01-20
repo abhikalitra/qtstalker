@@ -25,7 +25,7 @@
 #include "GlobalPlotGroup.h"
 #include "EAVDataBase.h"
 #include "EAVSearch.h"
-#include "IndicatorDataBaseKey.h"
+#include "KeyIndicatorDataBase.h"
 #include "GlobalSidePanel.h"
 
 #include <QStringList>
@@ -42,9 +42,9 @@ ChartRefresh::~ChartRefresh ()
 int ChartRefresh::run ()
 {
   // do all the stuff we need to do to load a chart
-  IndicatorDataBaseKey keys;
+  KeyIndicatorDataBase keys;
   EAVSearch search;
-  search.append(keys.indexToString(IndicatorDataBaseKey::_SESSION), "=", g_session);
+  search.append(keys.indexToString(KeyIndicatorDataBase::_SESSION), "=", g_session);
   
   EAVDataBase db("indicators");
   QStringList il;
@@ -71,8 +71,8 @@ int ChartRefresh::run ()
       continue;
     
     Data command, file;
-    i.toData(keys.indexToString(IndicatorDataBaseKey::_COMMAND), command);
-    i.toData(keys.indexToString(IndicatorDataBaseKey::_FILE), file);
+    i.toData(keys.indexToString(KeyIndicatorDataBase::_COMMAND), command);
+    i.toData(keys.indexToString(KeyIndicatorDataBase::_FILE), file);
 
     // launch indicator
     g_sidePanel->scriptPanel()->runScript(command.toString(), file.toString());

@@ -23,12 +23,12 @@
 #define SYMBOL_DIALOG_HPP
 
 #include <QStringList>
-#include <QTreeWidget>
 #include <QComboBox>
 #include <QToolButton>
 
 #include "Dialog.h"
 #include "LineEdit.h"
+#include "SymbolListWidget.h"
 
 class SymbolDialog : public Dialog
 {
@@ -40,7 +40,6 @@ class SymbolDialog : public Dialog
   public:
     SymbolDialog (QWidget *);
     void createGUI ();
-    void loadExchanges ();
     QStringList symbols ();
 
   public slots:
@@ -52,9 +51,8 @@ class SymbolDialog : public Dialog
     void deleteButtonPressed ();
 
   private:
-    QTreeWidget *_searchList;
-    QTreeWidget *_symbolList;
-    QComboBox *_exchanges;
+    SymbolListWidget *_searchList;
+    SymbolListWidget *_symbolList;
     LineEdit *_search;
     QPushButton *_searchButton;
     QToolButton *_addButton;

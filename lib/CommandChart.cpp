@@ -20,7 +20,7 @@
  */
 
 #include "CommandChart.h"
-#include "ThreadMessageType.h"
+#include "TypeThreadMessage.h"
 #include "Script.h"
 #include "ThreadMessage.h"
 
@@ -64,7 +64,7 @@ QString CommandChart::run (CommandParse &, void *d)
     Entity::toData(keys.at(loop), td);
     e.set(keys.at(loop), td);
   }
-  e.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_NEW));
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_NEW));
   e.set(QString("FILE"), Data(script->file()));
 
   ThreadMessage tm;

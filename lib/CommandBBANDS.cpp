@@ -23,8 +23,8 @@
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
-#include "MAType.h"
+#include "TypeTALibFunction.h"
+#include "TypeMA.h"
 
 #include <QtDebug>
 
@@ -50,7 +50,7 @@ CommandBBANDS::CommandBBANDS ()
   td.setLabel(QObject::tr("Period"));
   Entity::set(QString("PERIOD"), td);
   
-  MAType mat;
+  TypeMA mat;
   td = Data(mat.list(), QString("EMA"));
   td.setLabel(QObject::tr("MA Type"));
   Entity::set(QString("MA_TYPE"), td);
@@ -86,7 +86,7 @@ QString CommandBBANDS::run (CommandParse &, void *d)
   Entity::toData(QString("DEV_DOWN"), devDown);
   
   Entity parms;
-  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_BBANDS));
+  parms.set(QString("FUNCTION"), Data(TypeTALibFunction::_BBANDS));
   parms.set(QString("PERIOD"), period);
   parms.set(QString("MA_TYPE"), maType);
   parms.set(QString("DEV_UP"), devUp);

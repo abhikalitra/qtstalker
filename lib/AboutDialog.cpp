@@ -20,14 +20,13 @@
  */
 
 #include "AboutDialog.h"
-#include "Global.h"
+#include "WindowTitle.h"
 
 #include "../pics/qtstalker.xpm"
 
 #include <QtDebug>
 #include <QDialogButtonBox>
 #include <QLayout>
-#include <QString>
 #include <QLabel>
 #include <QPushButton>
 
@@ -38,9 +37,8 @@ AboutDialog::AboutDialog ()
 
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 
-  QStringList wt;
-  wt << "QtStalker" + g_session + ":" << tr("About QtStalker");
-  setWindowTitle(wt.join(" "));
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("About QtStalker"), QString()));
 }
 
 void AboutDialog::createGUI ()

@@ -20,13 +20,13 @@
  */
 
 #include "Command.h"
-#include "EntityType.h"
+#include "TypeEntity.h"
 
 #include <QtDebug>
 
 Command::Command ()
 {
-  _type = EntityType::_COMMAND;
+  _type = TypeEntity::_COMMAND;
   _returnCode = "ERROR";
 }
 

@@ -22,7 +22,7 @@
 #include "CommandBreakout.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
@@ -95,7 +95,7 @@ int CommandBreakout::breakout (Entity &in, Entity &in2, int method, int &flag)
   if (end < 0)
     return 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   if (method == 0)
   {
@@ -105,14 +105,14 @@ int CommandBreakout::breakout (Entity &in, Entity &in2, int method, int &flag)
       if (in.toEntity(keys.at(loop), bar))
         continue;
       Data tv;
-      if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv))
+      if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv))
         continue;
 
       Entity bar2;
       if (in2.toEntity(keys.at(loop), bar2))
         continue;
       Data tv2;
-      if (bar2.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv2))
+      if (bar2.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv2))
         continue;
 
       double v = tv.toDouble();
@@ -129,14 +129,14 @@ int CommandBreakout::breakout (Entity &in, Entity &in2, int method, int &flag)
       if (in.toEntity(keys.at(loop), bar))
         continue;
       Data tv;
-      if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv))
+      if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv))
         continue;
 
       Entity bar2;
       if (in2.toEntity(keys.at(loop), bar2))
         continue;
       Data tv2;
-      if (bar2.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv2))
+      if (bar2.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv2))
         continue;
 
       double v = tv.toDouble();
@@ -151,14 +151,14 @@ int CommandBreakout::breakout (Entity &in, Entity &in2, int method, int &flag)
   if (in.toEntity(keys.at(end), bar))
     return 0;
   Data tv;
-  if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv))
+  if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv))
     return 0;
 
   Entity bar2;
   if (in2.toEntity(keys.at(end), bar2))
     return 0;
   Data tv2;
-  if (bar2.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv2))
+  if (bar2.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv2))
     return 0;
 
   double v = tv.toDouble();

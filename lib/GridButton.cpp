@@ -20,8 +20,9 @@
  */
 
 #include "GridButton.h"
-#include "Global.h"
 #include "GlobalPlotGroup.h"
+#include "WindowTitle.h"
+#include "Global.h"
 
 #include "../pics/grid.xpm"
 #include "../pics/color.xpm"
@@ -81,11 +82,9 @@ void GridButton::colorDialog ()
   QSettings settings(g_localSettings);
   QColor c(settings.value("grid_color", "dimgray").toString());
 
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << tr("Grid Color");
-
+  WindowTitle wt;
   QColorDialog *dialog = new QColorDialog(c, this);
-  dialog->setWindowTitle(l.join(" "));
+  dialog->setWindowTitle(wt.title(tr("Grid Color"), QString()));
   connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(colorDialog2(QColor)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();

@@ -24,8 +24,8 @@
 #include "Global.h"
 #include "GlobalSymbol.h"
 #include "QuoteDataBase.h"
-#include "BarLengthType.h"
-#include "SymbolKey.h"
+#include "KeySymbol.h"
+#include "WindowTitle.h"
 
 #include <QStringList>
 #include <QSettings>
@@ -33,8 +33,6 @@
 SymbolLoad::SymbolLoad (QObject *p, QString symbol) : QThread (p)
 {
   _symbol = symbol;
-
-//  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void SymbolLoad::run ()
@@ -43,14 +41,14 @@ void SymbolLoad::run ()
 
   QMutexLocker locker(&g_currentSymbolMutex);
 
-  SymbolKey skeys;
+  KeySymbol skeys;
   g_currentSymbol = Symbol();
-  g_currentSymbol.set(skeys.indexToString(SymbolKey::_SYMBOL), Data(_symbol));
+  g_currentSymbol.set(skeys.indexToString(KeySymbol::_SYMBOL), Data(_symbol));
 
   QSettings settings(g_localSettings);
   int length = settings.value("bar_length").toInt();
-  g_currentSymbol.set(skeys.indexToString(SymbolKey::_LENGTH), Data(length));
-  g_currentSymbol.set(skeys.indexToString(SymbolKey::_RANGE), Data(settings.value("date_range").toInt()));
+  g_currentSymbol.set(skeys.indexToString(KeySymbol::_LENGTH), Data(length));
+  g_currentSymbol.set(skeys.indexToString(KeySymbol::_RANGE), Data(settings.value("date_range").toInt()));
 
   QuoteDataBase db;
   if (db.getBars(g_currentSymbol))
@@ -65,30 +63,8 @@ void SymbolLoad::run ()
   settings.setValue("current_symbol", _symbol);
   settings.sync();
 
-  emit signalDone(getWindowCaption(length), g_currentSymbol.ekeyCount());
+  WindowTitle wt;
+  emit signalDone(wt.mainWindowTitle(length), g_currentSymbol.ekeyCount());
 
   deleteLater();
-}
-
-QString SymbolLoad::getWindowCaption (int length)
-{
-  // update the main window text
-  QStringList l;
-  l << "QtStalker" + g_session + ":";
-
-  SymbolKey keys;
-  Data name;
-  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), name);
-  if (! name.toString().isEmpty())
-    l << name.toString();
-
-  Data symbol;
-  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), symbol);
-  if (! symbol.toString().isEmpty())
-    l << "(" + symbol.toString() + ")";
-
-  BarLengthType b;
-  l << b.indexToString(length);
-
-  return l.join(" ");
 }

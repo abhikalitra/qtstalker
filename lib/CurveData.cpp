@@ -20,17 +20,19 @@
  */
 
 #include "CurveData.h"
-#include "EntityType.h"
+#include "TypeEntity.h"
+#include "KeyCurveData.h"
 
 #include <QtDebug>
 
 CurveData::CurveData ()
 {
-  _type = EntityType::_CURVE;
+  _type = TypeEntity::_CURVE;
   _startIndex = 99999999;
   _endIndex = -1;
   
-  Entity::set(QString("PEN"), Data(1));
-  Entity::set(QString("Z"), Data(-1));
-  Entity::set(QString("LABEL"), Data(QString()));
+  KeyCurveData keys;
+  Entity::set(keys.indexToString(KeyCurveData::_PEN), Data(1));
+  Entity::set(keys.indexToString(KeyCurveData::_Z), Data(-1));
+  Entity::set(keys.indexToString(KeyCurveData::_LABEL), Data(QString()));
 }

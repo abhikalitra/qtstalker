@@ -23,8 +23,8 @@
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
-#include "MAType.h"
+#include "TypeTALibFunction.h"
+#include "TypeMA.h"
 
 #include <QtDebug>
 
@@ -58,7 +58,7 @@ CommandMACD::CommandMACD ()
   td.setLabel(QObject::tr("Period Signal"));
   Entity::set(QString("PERIOD_SIG"), td);
 
-  MAType mat;
+  TypeMA mat;
   td = Data(mat.list(), QString("EMA"));
   td.setLabel(QObject::tr("MA Type Fast"));
   Entity::set(QString("MA_FAST"), td);
@@ -94,7 +94,7 @@ QString CommandMACD::run (CommandParse &, void *d)
   Entity::toData(QString("MA_SIG"), masig);
   
   Entity parms;
-  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_MACD));
+  parms.set(QString("FUNCTION"), Data(TypeTALibFunction::_MACD));
   parms.set(QString("PERIOD_FAST"), perf);
   parms.set(QString("PERIOD_SLOW"), pers);
   parms.set(QString("PERIOD_SIG"), persig);

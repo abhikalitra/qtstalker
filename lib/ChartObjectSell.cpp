@@ -23,7 +23,7 @@
 #include "ChartObjectSell.h"
 #include "GlobalParent.h"
 #include "DateScaleDraw.h"
-#include "ChartObjectKey.h"
+#include "KeyChartObject.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -32,31 +32,31 @@
 
 ChartObjectSell::ChartObjectSell ()
 {
-  ChartObjectKey keys;
+  KeyChartObject keys;
   
   Data td(QString("Sell"));
-  _settings.set(keys.indexToString(ChartObjectKey::_TYPE), td);
+  _settings.set(keys.indexToString(KeyChartObject::_TYPE), td);
   
   td = Data(QDateTime::currentDateTime());
   td.setLabel(QObject::tr("Date"));
-  _settings.set(keys.indexToString(ChartObjectKey::_DATE), td);
+  _settings.set(keys.indexToString(KeyChartObject::_DATE), td);
   
   td = Data(0.0);
   td.setLabel(QObject::tr("Price"));
-  _settings.set(keys.indexToString(ChartObjectKey::_PRICE), td);
+  _settings.set(keys.indexToString(KeyChartObject::_PRICE), td);
   
   td = Data(QColor(Qt::red));
   td.setLabel(QObject::tr("Color"));
-  _settings.set(keys.indexToString(ChartObjectKey::_COLOR), td);
+  _settings.set(keys.indexToString(KeyChartObject::_COLOR), td);
 }
 
 void ChartObjectSell::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data date, price, color;
-  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
-  _settings.toData(keys.indexToString(ChartObjectKey::_COLOR), color);
+  _settings.toData(keys.indexToString(KeyChartObject::_DATE), date);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
+  _settings.toData(keys.indexToString(KeyChartObject::_COLOR), color);
 
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
   int x = xMap.transform(dsd->x(date.toDateTime()));
@@ -100,11 +100,11 @@ void ChartObjectSell::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScale
 
 int ChartObjectSell::info (Entity &info)
 {
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data type, date, price;
-  _settings.toData(keys.indexToString(ChartObjectKey::_TYPE), type);
-  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+  _settings.toData(keys.indexToString(KeyChartObject::_TYPE), type);
+  _settings.toData(keys.indexToString(KeyChartObject::_DATE), date);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
   
   info.set(QObject::tr("Type"), type);
 
@@ -123,10 +123,10 @@ void ChartObjectSell::move (QPoint p)
   {
     case _MOVE:
     {
-      ChartObjectKey keys;
+      KeyChartObject keys;
       Data date, price;
-      _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
-      _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
+      _settings.toData(keys.indexToString(KeyChartObject::_DATE), date);
+      _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
 
       QwtScaleMap map = plot()->canvasMap(QwtPlot::xBottom);
       int x = map.invTransform((double) p.x());
@@ -135,11 +135,11 @@ void ChartObjectSell::move (QPoint p)
       QDateTime dt;
       dsd->date(x, dt);
       date.set(dt);
-      _settings.set(keys.indexToString(ChartObjectKey::_DATE), date);
+      _settings.set(keys.indexToString(KeyChartObject::_DATE), date);
 
       map = plot()->canvasMap(QwtPlot::yRight);
       price.set(map.invTransform((double) p.y()));
-      _settings.set(keys.indexToString(ChartObjectKey::_PRICE), price);
+      _settings.set(keys.indexToString(KeyChartObject::_PRICE), price);
 
       plot()->replot();
 

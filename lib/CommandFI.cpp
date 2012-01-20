@@ -22,7 +22,7 @@
 #include "CommandFI.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
@@ -89,7 +89,7 @@ int CommandFI::getFI (Entity &in, Entity &in2, Entity &line)
   if (svck.keys2(in, in2, keys))
     return 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 1;
   double force = 0;
   for (; loop < keys.size(); loop++)
@@ -98,28 +98,28 @@ int CommandFI::getFI (Entity &in, Entity &in2, Entity &line)
     if (in.toEntity(keys.at(loop), cbar))
       continue;
     Data close;
-    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), close))
+    if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), close))
       continue;
 
     Entity ycbar;
     if (in.toEntity(keys.at(loop - 1), ycbar))
       continue;
     Data yclose;
-    if (ycbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), yclose))
+    if (ycbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), yclose))
       continue;
 
     Entity vbar;
     if (in2.toEntity(keys.at(loop), vbar))
       continue;
     Data vol;
-    if (vbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), vol))
+    if (vbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), vol))
       continue;
 
     double cdiff = close.toDouble() - yclose.toDouble();
     force = vol.toDouble() * cdiff;
 
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(force));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(force));
     line.setEntity(keys.at(loop), b);
   }
 

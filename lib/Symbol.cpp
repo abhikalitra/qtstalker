@@ -20,22 +20,22 @@
  */
 
 #include "Symbol.h"
-#include "EntityType.h"
-#include "SymbolKey.h"
+#include "TypeEntity.h"
+#include "KeySymbol.h"
 
 #include <QtDebug>
 
 Symbol::Symbol ()
 {
-  _type = EntityType::_SYMBOL;
+  _type = TypeEntity::_SYMBOL;
   
-  SymbolKey keys;
-  Entity::set(keys.indexToString(SymbolKey::_TYPE), Data(QString("Stock")));
-  Entity::set(keys.indexToString(SymbolKey::_SYMBOL), Data(QString()));
-  Entity::set(keys.indexToString(SymbolKey::_NAME), Data(QString()));
-  Entity::set(keys.indexToString(SymbolKey::_LENGTH), Data(-1));
-  Entity::set(keys.indexToString(SymbolKey::_RANGE), Data(-1));
-  Entity::set(keys.indexToString(SymbolKey::_START_DATE), Data(QDateTime()));
-  Entity::set(keys.indexToString(SymbolKey::_END_DATE), Data(QDateTime()));
-  Entity::set(keys.indexToString(SymbolKey::_TABLE), Data(QString()));
+  KeySymbol keys;
+  Entity::set(keys.indexToString(KeySymbol::_TYPE), Data(QString("Stock")));
+  Entity::set(keys.indexToString(KeySymbol::_SYMBOL), Data(QString()));
+  Entity::set(keys.indexToString(KeySymbol::_NAME), Data(QString()));
+  Entity::set(keys.indexToString(KeySymbol::_LENGTH), Data(-1));
+  Entity::set(keys.indexToString(KeySymbol::_RANGE), Data(-1));
+  Entity::set(keys.indexToString(KeySymbol::_START_DATE), Data(QDateTime()));
+  Entity::set(keys.indexToString(KeySymbol::_END_DATE), Data(QDateTime()));
+  Entity::set(keys.indexToString(KeySymbol::_TABLE), Data(QString()));
 }

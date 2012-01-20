@@ -21,10 +21,10 @@
 
 #include "CommandStochSlow.h"
 #include "CurveData.h"
-#include "MAType.h"
+#include "TypeMA.h"
 #include "ScriptVerifyCurve.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 
@@ -63,7 +63,7 @@ CommandStochSlow::CommandStochSlow ()
   td.setLabel(QObject::tr("Period D"));
   Entity::set(QString("PERIOD_D"), td);
   
-  MAType mat;
+  TypeMA mat;
   td = Data(mat.list(), QString("EMA"));
   td.setLabel(QObject::tr("%K MA Type"));
   Entity::set(QString("KMA"), td);
@@ -111,7 +111,7 @@ QString CommandStochSlow::run (CommandParse &, void *d)
   Entity::toData(QString("DMA"), dma);
   
   Entity parms;
-  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_STOCHS));
+  parms.set(QString("FUNCTION"), Data(TypeTALibFunction::_STOCHS));
   parms.set(QString("PERIOD_FK"), fk);
   parms.set(QString("PERIOD_K"), pk);
   parms.set(QString("PERIOD_D"), pd);

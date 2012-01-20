@@ -21,9 +21,9 @@
 
 #include "GroupAdd.h"
 #include "SelectDialog.h"
-#include "Global.h"
+#include "WindowTitle.h"
 #include "EAVDataBase.h"
-#include "GroupDataBaseKey.h"
+#include "KeyGroupDataBase.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -56,9 +56,8 @@ void GroupAdd::add ()
   dialog->setTitle(tr("Groups"));
   dialog->setMode(1);
 
-  l.clear();
-  l << "QtStalker" + g_session + ":" << tr("Add To Group");
-  dialog->setWindowTitle(l.join(" "));
+  WindowTitle wt;
+  dialog->setWindowTitle(wt.title(tr("Add To Group"), QString()));
 
   connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(add2(QStringList)));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
@@ -83,9 +82,9 @@ void GroupAdd::add2 (QStringList gl)
     return;
   }
 
-  GroupDataBaseKey gkeys;
+  KeyGroupDataBase gkeys;
   Data td;
-  g.toData(gkeys.indexToString(GroupDataBaseKey::_LIST), td);
+  g.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), td);
   QStringList l = td.toList();
 
   int loop = 0;
@@ -96,7 +95,7 @@ void GroupAdd::add2 (QStringList gl)
 
   Data dl;
   dl.set(l);
-  g.set(gkeys.indexToString(GroupDataBaseKey::_LIST), dl);
+  g.set(gkeys.indexToString(KeyGroupDataBase::_LIST), dl);
 
   db.transaction();
   if (db.set(g))

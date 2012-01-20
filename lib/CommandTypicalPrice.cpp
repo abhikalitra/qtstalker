@@ -22,7 +22,7 @@
 #include "CommandTypicalPrice.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
@@ -101,7 +101,7 @@ int CommandTypicalPrice::getTP (Entity &ihigh, Entity &ilow, Entity &iclose, Ent
   if (svck.keys3(ihigh, ilow, iclose, keys))
     return 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
@@ -109,27 +109,27 @@ int CommandTypicalPrice::getTP (Entity &ihigh, Entity &ilow, Entity &iclose, Ent
     if (ihigh.toEntity(keys.at(loop), hbar))
       continue;
     Data high;
-    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), high))
+    if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), high))
       continue;
     
     Entity lbar;
     if (ilow.toEntity(keys.at(loop), lbar))
       continue;
     Data low;
-    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), low))
+    if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), low))
       continue;
 
     Entity cbar;
     if (iclose.toEntity(keys.at(loop), cbar))
       continue;
     Data close;
-    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), close))
+    if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), close))
       continue;
 
     double t = (high.toDouble() + low.toDouble() + close.toDouble()) / 3.0;
 
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(t));
     line.setEntity(keys.at(loop), b);
   }
 

@@ -5,16 +5,16 @@ CONFIG += thread warn_on debug
 
 QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 
-# headers
+######################################################
+################## HEADERS  #########################
+######################################################
 
 HEADERS += AboutDialog.h
 HEADERS += AddIndicator.h
 
-HEADERS += BarLengthType.h
 HEADERS += BarLengthButton.h
 HEADERS += BarSpaceButton.h
 
-HEADERS += CandleType.h
 HEADERS += ChartLoad.h
 HEADERS += ChartNew.h
 HEADERS += ChartObject.h
@@ -22,13 +22,11 @@ HEADERS += ChartObjectBuy.h
 HEADERS += ChartObjectDeleteAll.h
 HEADERS += ChartObjectFactory.h
 HEADERS += ChartObjectHLine.h
-HEADERS += ChartObjectKey.h
 HEADERS += ChartObjectRetracement.h
 HEADERS += ChartObjectSell.h
 HEADERS += ChartObjectText.h
 HEADERS += ChartObjectTLine.h
 HEADERS += ChartObjectVLine.h
-HEADERS += ChartObjectType.h
 HEADERS += ChartPage.h
 HEADERS += ChartRefresh.h
 HEADERS += ChartUpdate.h
@@ -101,7 +99,6 @@ HEADERS += CommandTHERM.h
 HEADERS += CommandTLine.h
 HEADERS += CommandTRIX.h
 HEADERS += CommandTypicalPrice.h
-HEADERS += CommandType.h
 HEADERS += CommandULTOSC.h
 HEADERS += CommandVAR.h
 #HEADERS += CommandVBP.h
@@ -118,24 +115,19 @@ HEADERS += ControlPanel.h
 HEADERS += CrossHairsButton.h
 HEADERS += Curve.h
 HEADERS += CurveBar.h
-HEADERS += CurveBarKey.h
 HEADERS += CurveData.h
-HEADERS += CurveDataKey.h
 HEADERS += CurveFactory.h
 HEADERS += CurveHistogram.h
 HEADERS += CurveLine.h
 HEADERS += CurveOHLC.h
-HEADERS += CurveType.h
 
 HEADERS += Data.h
 HEADERS += DataBase.h
 HEADERS += DataDialog.h
-HEADERS += DataType.h
 HEADERS += DataWindow.h
 HEADERS += DataWindowButton.h
 HEADERS += DateRange.h
 HEADERS += DateRangeControl.h
-HEADERS += DateRangeType.h
 HEADERS += DateScaleDraw.h
 HEADERS += Dialog.h
 HEADERS += Doc.h
@@ -143,7 +135,6 @@ HEADERS += Doc.h
 HEADERS += EAVDataBase.h
 HEADERS += EAVSearch.h
 HEADERS += Entity.h
-HEADERS += EntityType.h
 
 HEADERS += FileButton.h
 HEADERS += FontButton.h
@@ -159,31 +150,29 @@ HEADERS += GlobalSidePanel.h
 HEADERS += GlobalSymbol.h
 HEADERS += GridButton.h
 HEADERS += GroupAdd.h
-HEADERS += GroupDataBaseKey.h
 HEADERS += GroupDelete.h
 HEADERS += GroupEditDialog.h
 HEADERS += GroupNew.h
 HEADERS += GroupPage.h
 
-HEADERS += HistogramStyle.h
-
 HEADERS += IconButton.h
-HEADERS += IndicatorDataBaseKey.h
 HEADERS += InfoPanel.h
 
-HEADERS += Keys.h
+HEADERS += KeyChartObject.h
+HEADERS += KeyCurveBar.h
+HEADERS += KeyCurveData.h
+HEADERS += KeyGroupDataBase.h
+HEADERS += KeyIndicatorDataBase.h
+HEADERS += KeyQuoteDataBase.h
+HEADERS += KeyScriptDataBase.h
+HEADERS += KeySymbol.h
 
 HEADERS += LineEdit.h
-HEADERS += LineStyle.h
 
 HEADERS += MA.h
-HEADERS += MAType.h
 HEADERS += MessageDialog.h
 
 HEADERS += NewDialog.h
-
-HEADERS += OHLCStyle.h
-HEADERS += Operator.h
 
 HEADERS += PickerMachine.h
 HEADERS += Plot.h
@@ -194,13 +183,11 @@ HEADERS += PlotPicker.h
 HEADERS += PlotScaleDraw.h
 
 HEADERS += QuoteDataBase.h
-HEADERS += QuoteDataBaseKey.h
 
 HEADERS += RecentCharts.h
 HEADERS += RemoveIndicator.h
 
 HEADERS += Script.h
-HEADERS += ScriptDataBaseKey.h
 HEADERS += ScriptLaunchButton.h
 HEADERS += ScriptLaunchButtonDialog.h
 HEADERS += ScriptPage.h
@@ -217,27 +204,42 @@ HEADERS += Symbol.h
 HEADERS += SymbolButton.h
 HEADERS += SymbolDelete.h
 HEADERS += SymbolDialog.h
-HEADERS += SymbolKey.h
+HEADERS += SymbolListWidget.h
 HEADERS += SymbolLoad.h
 
 HEADERS += TALibFunction.h
-HEADERS += TALibFunctionKey.h
 HEADERS += TALibInput.h
 HEADERS += TALibOutput.h
 HEADERS += ThreadMessage.h
-HEADERS += ThreadMessageType.h
+HEADERS += Type.h
+HEADERS += TypeBarLength.h
+HEADERS += TypeCandle.h
+HEADERS += TypeChartObject.h
+HEADERS += TypeCurve.h
+HEADERS += TypeCommand.h
+HEADERS += TypeData.h
+HEADERS += TypeDateRange.h
+HEADERS += TypeEntity.h
+HEADERS += TypeHistogram.h
+HEADERS += TypeLine.h
+HEADERS += TypeMA.h
+HEADERS += TypeOHLC.h
+HEADERS += TypeOperator.h
+HEADERS += TypeThreadMessage.h
+HEADERS += TypeTALibFunction.h
 
+HEADERS += WindowTitle.h
 
-#sources
+######################################################
+################## SOURCES  #########################
+######################################################
 
 SOURCES += AboutDialog.cpp
 SOURCES += AddIndicator.cpp
 
-SOURCES += BarLengthType.cpp
 SOURCES += BarLengthButton.cpp
 SOURCES += BarSpaceButton.cpp
 
-SOURCES += CandleType.cpp
 SOURCES += ChartLoad.cpp
 SOURCES += ChartNew.cpp
 SOURCES += ChartObject.cpp
@@ -245,13 +247,11 @@ SOURCES += ChartObjectBuy.cpp
 SOURCES += ChartObjectDeleteAll.cpp
 SOURCES += ChartObjectFactory.cpp
 SOURCES += ChartObjectHLine.cpp
-SOURCES += ChartObjectKey.cpp
 SOURCES += ChartObjectRetracement.cpp
 SOURCES += ChartObjectSell.cpp
 SOURCES += ChartObjectText.cpp
 SOURCES += ChartObjectTLine.cpp
 SOURCES += ChartObjectVLine.cpp
-SOURCES += ChartObjectType.cpp
 SOURCES += ChartPage.cpp
 SOURCES += ChartRefresh.cpp
 SOURCES += ChartUpdate.cpp
@@ -324,7 +324,6 @@ SOURCES += CommandTHERM.cpp
 SOURCES += CommandTLine.cpp
 SOURCES += CommandTRIX.cpp
 SOURCES += CommandTypicalPrice.cpp
-SOURCES += CommandType.cpp
 SOURCES += CommandULTOSC.cpp
 SOURCES += CommandVAR.cpp
 #SOURCES += CommandVBP.cpp
@@ -341,14 +340,11 @@ SOURCES += ControlPanel.cpp
 SOURCES += CrossHairsButton.cpp
 SOURCES += Curve.cpp
 SOURCES += CurveBar.cpp
-SOURCES += CurveBarKey.cpp
 SOURCES += CurveData.cpp
-SOURCES += CurveDataKey.cpp
 SOURCES += CurveFactory.cpp
 SOURCES += CurveHistogram.cpp
 SOURCES += CurveLine.cpp
 SOURCES += CurveOHLC.cpp
-SOURCES += CurveType.cpp
 
 SOURCES += Data.cpp
 SOURCES += DataBase.cpp
@@ -357,7 +353,6 @@ SOURCES += DataWindow.cpp
 SOURCES += DataWindowButton.cpp
 SOURCES += DateRange.cpp
 SOURCES += DateRangeControl.cpp
-SOURCES += DateRangeType.cpp
 SOURCES += DateScaleDraw.cpp
 SOURCES += Dialog.cpp
 SOURCES += Doc.cpp
@@ -380,31 +375,29 @@ SOURCES += GlobalSidePanel.cpp
 SOURCES += GlobalSymbol.cpp
 SOURCES += GridButton.cpp
 SOURCES += GroupAdd.cpp
-SOURCES += GroupDataBaseKey.cpp
 SOURCES += GroupDelete.cpp
 SOURCES += GroupEditDialog.cpp
 SOURCES += GroupNew.cpp
 SOURCES += GroupPage.cpp
 
-SOURCES += HistogramStyle.cpp
-
 SOURCES += IconButton.cpp
-SOURCES += IndicatorDataBaseKey.cpp
 SOURCES += InfoPanel.cpp
 
-SOURCES += Keys.cpp
+SOURCES += KeyChartObject.cpp
+SOURCES += KeyCurveBar.cpp
+SOURCES += KeyCurveData.cpp
+SOURCES += KeyGroupDataBase.cpp
+SOURCES += KeyIndicatorDataBase.cpp
+SOURCES += KeyQuoteDataBase.cpp
+SOURCES += KeyScriptDataBase.cpp
+SOURCES += KeySymbol.cpp
 
 SOURCES += LineEdit.cpp
-SOURCES += LineStyle.cpp
 
 SOURCES += MA.cpp
-SOURCES += MAType.cpp
 SOURCES += MessageDialog.cpp
 
 SOURCES += NewDialog.cpp
-
-SOURCES += OHLCStyle.cpp
-SOURCES += Operator.cpp
 
 SOURCES += PickerMachine.cpp
 SOURCES += Plot.cpp
@@ -415,13 +408,11 @@ SOURCES += PlotPicker.cpp
 SOURCES += PlotScaleDraw.cpp
 
 SOURCES += QuoteDataBase.cpp
-SOURCES += QuoteDataBaseKey.cpp
 
 SOURCES += RecentCharts.cpp
 SOURCES += RemoveIndicator.cpp
 
 SOURCES += Script.cpp
-SOURCES += ScriptDataBaseKey.cpp
 SOURCES += ScriptLaunchButton.cpp
 SOURCES += ScriptLaunchButtonDialog.cpp
 SOURCES += ScriptPage.cpp
@@ -438,14 +429,28 @@ SOURCES += Symbol.cpp
 SOURCES += SymbolButton.cpp
 SOURCES += SymbolDelete.cpp
 SOURCES += SymbolDialog.cpp
-SOURCES += SymbolKey.cpp
+SOURCES += SymbolListWidget.cpp
 SOURCES += SymbolLoad.cpp
 
 SOURCES += TALibFunction.cpp
-SOURCES += TALibFunctionKey.cpp
 SOURCES += TALibInput.cpp
 SOURCES += TALibOutput.cpp
 SOURCES += ThreadMessage.cpp
+SOURCES += Type.cpp
+SOURCES += TypeBarLength.cpp
+SOURCES += TypeCandle.cpp
+SOURCES += TypeChartObject.cpp
+SOURCES += TypeCommand.cpp
+SOURCES += TypeCurve.cpp
+SOURCES += TypeDateRange.cpp
+SOURCES += TypeHistogram.cpp
+SOURCES += TypeLine.cpp
+SOURCES += TypeMA.cpp
+SOURCES += TypeOHLC.cpp
+SOURCES += TypeOperator.cpp
+SOURCES += TypeTALibFunction.cpp
+
+SOURCES += WindowTitle.cpp
 
 
 TARGET = qtstalker

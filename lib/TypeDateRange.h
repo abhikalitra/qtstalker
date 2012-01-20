@@ -19,26 +19,34 @@
  *  USA.
  */
 
-#ifndef HISTOGRAM_STYLE_HPP
-#define HISTOGRAM_STYLE_HPP
+// *************************************************************************************************
+// *************************************************************************************************
 
-#include <QStringList>
+#ifndef TYPE_DATE_RANGE_HPP
+#define TYPE_DATE_RANGE_HPP
 
-class HistogramStyle
+#include "Type.h"
+
+class TypeDateRange : public Type
 {
   public:
-    enum Style
+    enum Key
     {
-      _HISTOGRAM,
-      _HISTOGRAM_BAR
+      _DAY,
+      _WEEK,
+      _MONTH,
+      _MONTH3,
+      _MONTH6,
+      _YEAR,
+      _YEAR2,
+      _YEAR5,
+      _YEAR10,
+      _YEAR25,
+      _YEAR50,
+      _ALL
     };
 
-    HistogramStyle ();
-    QStringList list ();
-    int stringToStyle (QString);
-
-  protected:
-    QStringList _styles;
+    TypeDateRange ();
 };
 
 #endif

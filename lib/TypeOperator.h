@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,30 +19,26 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// *************************************************************************************************
+#ifndef TYPE_OPERATOR_HPP
+#define TYPE_OPERATOR_HPP
 
-#ifndef SYMBOL_KEY_HPP
-#define SYMBOL_KEY_HPP
+#include "Type.h"
 
-#include "Keys.h"
-
-class SymbolKey : public Keys
+class TypeOperator : public Type
 {
   public:
     enum Key
     {
-      _SYMBOL,
-      _NAME,
-      _LENGTH,
-      _RANGE,
-      _START_DATE,
-      _END_DATE,
-      _TABLE,
-      _TYPE
+      _LESS_THAN,
+      _LESS_THAN_EQUAL,
+      _EQUAL,
+      _NOT_EQUAL,
+      _GREATER_THAN_EQUAL,
+      _GREATER_THAN
     };
     
-    SymbolKey ();
+    TypeOperator ();
+    int test (double val, TypeOperator::Key, double val2);
 };
 
 #endif

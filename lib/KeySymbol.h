@@ -22,21 +22,27 @@
 // *************************************************************************************************
 // *************************************************************************************************
 
-#ifndef KEYS_HPP
-#define KEYS_HPP
+#ifndef KEY_SYMBOL_HPP
+#define KEY_SYMBOL_HPP
 
-#include <QStringList>
+#include "Type.h"
 
-class Keys
+class KeySymbol : public Type
 {
   public:
-    Keys ();
-    QStringList list ();
-    QString indexToString (int);
-    int stringToIndex (QString);
+    enum Key
+    {
+      _SYMBOL,
+      _NAME,
+      _LENGTH,
+      _RANGE,
+      _START_DATE,
+      _END_DATE,
+      _TABLE,
+      _TYPE
+    };
     
-  protected:
-    QStringList _list;
+    KeySymbol ();
 };
 
 #endif

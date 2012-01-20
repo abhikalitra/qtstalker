@@ -22,7 +22,7 @@
 #include "CommandNormalize.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
@@ -85,20 +85,20 @@ int CommandNormalize::getNORM (Entity &in, Entity &line)
 
   double range = fabs(max) + fabs(min);
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
     Entity bar;
     in.toEntity(keys.at(loop), bar);
     Data v;
-    if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), v))
+    if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), v))
       continue;
     
     double t = ((v.toDouble() - min) / range) * 100;
 
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(t));
     line.setEntity(keys.at(loop), b);
   }
 

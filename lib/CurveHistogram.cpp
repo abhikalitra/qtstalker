@@ -20,8 +20,8 @@
  */
 
 #include "CurveHistogram.h"
-#include "CurveDataKey.h"
-#include "CurveBarKey.h"
+#include "KeyCurveData.h"
+#include "KeyCurveBar.h"
 #include "Strip.h"
 
 #include <qwt_plot.h>
@@ -43,10 +43,10 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
 
 //  int zero = yMap.transform(0);
 
-  CurveDataKey cdkeys;
-  CurveBarKey cbkeys;
+  KeyCurveData cdkeys;
+  KeyCurveBar cbkeys;
   Data style;
-  _settings.toData(cdkeys.indexToString(CurveDataKey::_STYLE), style);
+  _settings.toData(cdkeys.indexToString(KeyCurveData::_STYLE), style);
   if (style.toString() == "Histogram")
   {
     for (; loop < size; loop++)
@@ -63,32 +63,32 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
 
       // bottom left
       Data td;
-      if (yb.toData(cbkeys.indexToString(CurveBarKey::_LOW), td))
+      if (yb.toData(cbkeys.indexToString(KeyCurveBar::_LOW), td))
 	continue;
       int x = xMap.transform(loop - 1);
       int y = yMap.transform(td.toDouble());
       poly << QPoint(x, y);
 
       // top left
-      if (yb.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td))
+      if (yb.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), td))
 	continue;
       y = yMap.transform(td.toDouble());
       poly << QPoint(x, y);
 
       // top right
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), td))
 	continue;
       x = xMap.transform(loop);
       y = yMap.transform(td.toDouble());
       poly << QPoint(x, y);
 
       // bottom right
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_LOW), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_LOW), td))
 	continue;
       y = yMap.transform(td.toDouble());
       poly << QPoint(x, y);
 
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_COLOR), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_COLOR), td))
 	continue;
       painter->setBrush(td.toColor());
       painter->drawPolygon(poly, Qt::OddEvenFill);
@@ -104,11 +104,11 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
         continue;
 
       Data high;
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_HIGH), high))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), high))
         continue;
       
       Data low;
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_LOW), low))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_LOW), low))
         continue;
       
       if (low.toDouble() > high.toDouble())
@@ -136,7 +136,7 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
         poly << QPoint(x, y);
 
         Data color;
-        if (b.toData(cbkeys.indexToString(CurveBarKey::_COLOR), color))
+        if (b.toData(cbkeys.indexToString(KeyCurveBar::_COLOR), color))
           continue;
 	
         painter->setBrush(color.toColor());
@@ -167,7 +167,7 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
         poly << QPoint(x, y);
 
         Data color;
-        if (b.toData(cbkeys.indexToString(CurveBarKey::_COLOR), color))
+        if (b.toData(cbkeys.indexToString(KeyCurveBar::_COLOR), color))
           continue;
 	
         painter->setBrush(color.toColor());
@@ -183,14 +183,14 @@ int CurveHistogram::info (int index, Entity &data)
   if (_settings.toEntity(QString::number(index), bar))
     return 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   Data high;
-  if (bar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), high))
+  if (bar.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), high))
     return 1;
 
-  CurveDataKey cdkeys;
+  KeyCurveData cdkeys;
   Data label;
-  if (_settings.toData(cdkeys.indexToString(CurveDataKey::_LABEL), label))
+  if (_settings.toData(cdkeys.indexToString(KeyCurveData::_LABEL), label))
     return 1;
   
   Strip strip;
@@ -208,13 +208,13 @@ int CurveHistogram::scalePoint (int i, QColor &color, double &v)
   if (_settings.toEntity(QString::number(i), bar))
     return 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   Data td;
-  if (bar.toData(cbkeys.indexToString(CurveBarKey::_COLOR), td))
+  if (bar.toData(cbkeys.indexToString(KeyCurveBar::_COLOR), td))
     return 1;
   color = td.toColor();
   
-  if (bar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td))
+  if (bar.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), td))
     return 1;
   v = td.toDouble();
 

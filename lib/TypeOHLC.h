@@ -19,27 +19,21 @@
  *  USA.
  */
 
-#include "CommandChartPanelRefresh.h"
-#include "ThreadMessage.h"
-#include "TypeThreadMessage.h"
+#ifndef TYPE_OHLC_HPP
+#define TYPE_OHLC_HPP
 
-#include <QtDebug>
+#include "Type.h"
 
-CommandChartPanelRefresh::CommandChartPanelRefresh ()
+class TypeOHLC : public Type
 {
-  _name = "CHART_PANEL_REFRESH";
-}
+  public:
+    enum Key
+    {
+      _OHLC,
+      _CANDLE
+    };
 
-QString CommandChartPanelRefresh::run (CommandParse &, void *d)
-{
-  Script *script = (Script *) d;
-  
-  Entity e;
-  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_PANEL_REFRESH));
-  
-  ThreadMessage tm;
-  tm.sendMessage(e, script);
-  
-  _returnCode = "OK";
-  return _returnCode;
-}
+    TypeOHLC ();
+};
+
+#endif

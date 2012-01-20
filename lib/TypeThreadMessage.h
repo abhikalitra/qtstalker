@@ -19,33 +19,24 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// *************************************************************************************************
+#ifndef TYPE_THREAD_MESSAGE_HPP
+#define TYPE_THREAD_MESSAGE_HPP
 
-#ifndef CURVE_BAR_KEY_HPP
-#define CURVE_BAR_KEY_HPP
-
-#include "Keys.h"
-
-class CurveBarKey : public Keys
+class TypeThreadMessage
 {
   public:
-    enum Key
+    enum Type
     {
-      _DATE,
-      _OPEN,
-      _HIGH,
-      _LOW,
-      _CLOSE,
-      _VOLUME,
-      _OI,
-      _COLOR,
-      _VALUE,
-      _UP,
-      _DOWN
+      _CHART_CURVE,
+      _CHART_DATE,
+      _CHART_LOAD_OBJECT,
+      _CHART_NEW,
+      _CHART_OBJECT,
+      _CHART_PANEL_REFRESH,
+      _CHART_UPDATE,
+      _DIALOG,
+      _GROUP_PANEL_REFRESH
     };
-    
-    CurveBarKey ();
 };
 
 #endif

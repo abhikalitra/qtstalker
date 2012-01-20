@@ -22,7 +22,8 @@
 #include "GroupEditDialog.h"
 #include "EAVDataBase.h"
 #include "SymbolDialog.h"
-#include "GroupDataBaseKey.h"
+#include "KeyGroupDataBase.h"
+#include "WindowTitle.h"
 
 #include "../pics/add.xpm"
 #include "../pics/delete.xpm"
@@ -39,9 +40,8 @@ GroupEditDialog::GroupEditDialog (QWidget *p, QString n) : Dialog (p)
   _keySize = "group_edit_dialog_window_size";
   _keyPos = "group_edit_dialog_window_position";
 
-  QStringList l;
-  l << "QtStalker" << ":" << tr("Edit Group") << _name;
-  setWindowTitle(l.join(" "));
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("Edit Group"), _name));
 
   createGUI();
 
@@ -51,9 +51,9 @@ GroupEditDialog::GroupEditDialog (QWidget *p, QString n) : Dialog (p)
   EAVDataBase db("groups");
   db.get(g);
 
-  GroupDataBaseKey gkeys;
+  KeyGroupDataBase gkeys;
   Data td;
-  g.toData(gkeys.indexToString(GroupDataBaseKey::_LIST), td);
+  g.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), td);
 
   _list->clear();
   _list->addItems(td.toList());
@@ -131,13 +131,12 @@ void GroupEditDialog::done ()
   for (; loop < _list->count(); loop++)
     l << _list->item(loop)->text();
 
+  KeyGroupDataBase gkeys;
   Entity g;
   g.setName(_name);
-
-  GroupDataBaseKey gkeys;
-  Data dl;
-  dl.set(l);
-  g.set(gkeys.indexToString(GroupDataBaseKey::_LIST), dl);
+  
+  Data dl(l.join(";"));
+  g.set(gkeys.indexToString(KeyGroupDataBase::_LIST), dl);
   
   EAVDataBase db("groups");
   db.transaction();

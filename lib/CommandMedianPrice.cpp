@@ -22,7 +22,7 @@
 #include "CommandMedianPrice.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 #include "ScriptVerifyCurveValue.h"
@@ -94,7 +94,7 @@ int CommandMedianPrice::getMP (Entity &in, Entity &in2, Entity &line)
   if (svck.keys2(in, in2, keys))
     return 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   ScriptVerifyCurveValue svcv;
   int offset = 0;
   int loop = 0;
@@ -110,7 +110,7 @@ int CommandMedianPrice::getMP (Entity &in, Entity &in2, Entity &line)
 
     double t = (v + v2) / 2.0;
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(t));
     line.setEntity(keys.at(loop), b);
   }
 

@@ -20,13 +20,14 @@
  */
 
 #include "AddIndicator.h"
-#include "Global.h"
 #include "GlobalParent.h"
 #include "EAVDataBase.h"
 #include "ScriptRunDialog.h"
-#include "IndicatorDataBaseKey.h"
+#include "KeyIndicatorDataBase.h"
 #include "NewDialog.h"
 #include "GlobalSidePanel.h"
+#include "WindowTitle.h"
+#include "Global.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -51,9 +52,8 @@ void AddIndicator::addIndicator ()
   dialog->setTitle(tr("New indicator name"));
   dialog->setItems(names);
 
-  QStringList wt;
-  wt << "QtStalker" + g_session + ":" << tr("Add Indicator");
-  dialog->setWindowTitle(wt.join(" "));
+  WindowTitle wt;
+  dialog->setWindowTitle(wt.title(tr("Add Indicator"), QString()));
   
   connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(addIndicator2(QString)));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
@@ -66,26 +66,26 @@ void AddIndicator::addIndicator2 (QString name)
   
   QSettings settings(g_localSettings);
 
-  QStringList wt;
-  wt << "QtStalker" + g_session + ":" << tr("Add Indicator");
-
   ScriptRunDialog *dialog = new ScriptRunDialog(g_parent,
                                                 settings.value("add_indicator_last_script").toString(),
                                                 settings.value("add_indicator_last_command", "perl").toString());
   connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(addIndicator3(QString, QString)));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
-  dialog->setWindowTitle(wt.join(" "));
+  
+  WindowTitle wt;
+  dialog->setWindowTitle(wt.title(tr("Add Indicator"), QString()));
+  
   dialog->show();
 }
 
 void AddIndicator::addIndicator3 (QString command, QString file)
 {
-  IndicatorDataBaseKey keys;
+  KeyIndicatorDataBase keys;
   Entity i;
   i.setName(_name);
-  i.set(keys.indexToString(IndicatorDataBaseKey::_SESSION), Data(g_session));
-  i.set(keys.indexToString(IndicatorDataBaseKey::_FILE), Data(file));
-  i.set(keys.indexToString(IndicatorDataBaseKey::_COMMAND), Data(command));
+  i.set(keys.indexToString(KeyIndicatorDataBase::_SESSION), Data(g_session));
+  i.set(keys.indexToString(KeyIndicatorDataBase::_FILE), Data(file));
+  i.set(keys.indexToString(KeyIndicatorDataBase::_COMMAND), Data(command));
 
   EAVDataBase db("indicators");
   db.transaction();

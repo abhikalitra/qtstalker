@@ -19,28 +19,22 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// *************************************************************************************************
+#ifndef TYPE_LINE_HPP
+#define TYPE_LINE_HPP
 
-#ifndef CURVE_DATA_KEY_HPP
-#define CURVE_DATA_KEY_HPP
+#include "Type.h"
 
-#include "Keys.h"
-
-class CurveDataKey : public Keys
+class TypeLine : public Type
 {
   public:
     enum Key
     {
-      _LABEL,
-      _TYPE,
-      _CHART,
-      _Z,
-      _PEN,
-      _STYLE
+      _DASH,
+      _DOT,
+      _LINE
     };
-    
-    CurveDataKey ();
+
+    TypeLine ();
 };
 
 #endif

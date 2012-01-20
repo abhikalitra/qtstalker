@@ -22,9 +22,9 @@
 #include "CommandADX.h"
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
-#include "MAType.h"
+#include "TypeMA.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 
@@ -53,7 +53,7 @@ CommandADX::CommandADX ()
   td.setLabel(QObject::tr("Period"));
   Entity::set(QString("PERIOD"), td);
 
-  MAType mat;
+  TypeMA mat;
   td = Data(mat.list(), QString("EMA"));
   td.setLabel(QObject::tr("Method"));
   Entity::set(QString("METHOD"), td);
@@ -95,7 +95,7 @@ QString CommandADX::run (CommandParse &, void *d)
   Entity::toData(QString("METHOD"), method);
   
   Entity parms;
-  TALibFunctionKey fkeys;
+  TypeTALibFunction fkeys;
   parms.set(QString("FUNCTION"), Data(fkeys.stringToIndex(method.toString())));
   parms.set(QString("PERIOD"), period);
   

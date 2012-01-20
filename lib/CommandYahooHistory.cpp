@@ -20,7 +20,7 @@
  */
 
 #include "CommandYahooHistory.h"
-#include "DataType.h"
+#include "TypeData.h"
 #include "GlobalParent.h"
 #include "Global.h"
 
@@ -46,7 +46,7 @@ CommandYahooHistory::CommandYahooHistory ()
   
   QStringList tl;
   tl << "/tmp/yahoo_symbols";
-  td = Data(DataType::_FILE);
+  td = Data(TypeData::_FILE);
   td.set(tl);
   td.setLabel(QObject::tr("Symbol File"));
   Entity::set(QString("SYMBOL_FILE"), td);

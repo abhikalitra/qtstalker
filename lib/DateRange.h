@@ -29,15 +29,15 @@
 
 #include <QDateTime>
 
-#include "BarLengthType.h"
-#include "DateRangeType.h"
+#include "TypeBarLength.h"
+#include "TypeDateRange.h"
 
 class DateRange
 {
   public:
     DateRange ();
-    int dateRange (DateRangeType::Type, QDateTime &input, QDateTime &output);
-    void dateInterval (QDateTime dt, BarLengthType::Type length, QDateTime &startDate, QDateTime &endDate);
+    int dateRange (TypeDateRange::Key, QDateTime &input, QDateTime &output);
+    void dateInterval (QDateTime dt, TypeBarLength::Key length, QDateTime &startDate, QDateTime &endDate);
     QString rangeKey (QDateTime sd, QDateTime ed);
 };
 

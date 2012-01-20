@@ -22,7 +22,7 @@
 #include "CommandNewHighLow.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
@@ -80,12 +80,12 @@ int CommandNewHighLow::getNewHighLow (Entity &in, int method, int &flag)
   if (svck.keys1(in, keys))
     return 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   Entity bar;
   in.toEntity(keys.at(loop++), bar);
   Data val;
-  bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), val);
+  bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), val);
   double v = val.toDouble();
 
   if (method == 0) // highest
@@ -93,7 +93,7 @@ int CommandNewHighLow::getNewHighLow (Entity &in, int method, int &flag)
     for (; loop < keys.size() - 2; loop++)
     {
       in.toEntity(keys.at(loop), bar);
-      bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), val);
+      bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), val);
       double tv = val.toDouble();
       if (tv > v)
         v = tv;
@@ -104,7 +104,7 @@ int CommandNewHighLow::getNewHighLow (Entity &in, int method, int &flag)
     for (; loop < keys.size() - 2; loop++)
     {
       in.toEntity(keys.at(loop), bar);
-      bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), val);
+      bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), val);
       double tv = val.toDouble();
       if (tv < v)
         v = tv;
@@ -112,7 +112,7 @@ int CommandNewHighLow::getNewHighLow (Entity &in, int method, int &flag)
   }
 
   in.toEntity(keys.at(keys.size() - 1), bar);
-  bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), val);
+  bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), val);
   if (method == 0)
   {
     if (val.toDouble() > v)

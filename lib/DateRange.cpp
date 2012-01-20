@@ -27,47 +27,47 @@ DateRange::DateRange ()
 {
 }
 
-int DateRange::dateRange (DateRangeType::Type type, QDateTime &input, QDateTime &output)
+int DateRange::dateRange (TypeDateRange::Key type, QDateTime &input, QDateTime &output)
 {
   if (! input.isValid())
     return 1;
 
   switch (type)
   {
-    case DateRangeType::_DAY:
+    case TypeDateRange::_DAY:
       output = input.addDays(-1);
       break;
-    case DateRangeType::_WEEK:
+    case TypeDateRange::_WEEK:
       output = input.addDays(-7);
       break;
-    case DateRangeType::_MONTH:
+    case TypeDateRange::_MONTH:
       output = input.addDays(-31);
       break;
-    case DateRangeType::_MONTH3:
+    case TypeDateRange::_MONTH3:
       output = input.addDays(-63);
       break;
-    case DateRangeType::_MONTH6:
+    case TypeDateRange::_MONTH6:
       output = input.addDays(-186);
       break;
-    case DateRangeType::_YEAR:
+    case TypeDateRange::_YEAR:
       output = input.addYears(-1);
       break;
-    case DateRangeType::_YEAR2:
+    case TypeDateRange::_YEAR2:
       output = input.addYears(-2);
       break;
-    case DateRangeType::_YEAR5:
+    case TypeDateRange::_YEAR5:
       output = input.addYears(-5);
       break;
-    case DateRangeType::_YEAR10:
+    case TypeDateRange::_YEAR10:
       output = input.addYears(-10);
       break;
-    case DateRangeType::_YEAR25:
+    case TypeDateRange::_YEAR25:
       output = input.addYears(-25);
       break;
-    case DateRangeType::_YEAR50:
+    case TypeDateRange::_YEAR50:
       output = input.addYears(-50);
       break;
-    case DateRangeType::_ALL:
+    case TypeDateRange::_ALL:
       output = input.addYears(-1000);
       break;
     default:
@@ -78,22 +78,22 @@ int DateRange::dateRange (DateRangeType::Type type, QDateTime &input, QDateTime 
   return 0;
 }
 
-void DateRange::dateInterval (QDateTime dt, BarLengthType::Type length, QDateTime &startDate, QDateTime &endDate)
+void DateRange::dateInterval (QDateTime dt, TypeBarLength::Key length, QDateTime &startDate, QDateTime &endDate)
 {
   startDate = dt;
 
-  switch ((BarLengthType::Type) length)
+  switch ((TypeBarLength::Key) length)
   {
-    case BarLengthType::_NONE:
+    case TypeBarLength::_NONE:
       endDate = startDate;
       break;
-    case BarLengthType::_MINUTE1:
+    case TypeBarLength::_MINUTE1:
       startDate.setTime(QTime(startDate.time().hour(), startDate.time().minute(), 0, 0));
       endDate = startDate;
       endDate = endDate.addSecs(60);
       endDate = endDate.addSecs(-1);
       break;
-    case BarLengthType::_MINUTE5:
+    case TypeBarLength::_MINUTE5:
     {
       int tint = startDate.time().minute() / 5;
       startDate.setTime(QTime(startDate.time().hour(), tint * 5, 0, 0));
@@ -102,7 +102,7 @@ void DateRange::dateInterval (QDateTime dt, BarLengthType::Type length, QDateTim
       endDate = endDate.addSecs(-1);
       break;
     }
-    case BarLengthType::_MINUTE10:
+    case TypeBarLength::_MINUTE10:
     {
       int tint = startDate.time().minute() / 10;
       startDate.setTime(QTime(startDate.time().hour(), tint * 10, 0, 0));
@@ -111,7 +111,7 @@ void DateRange::dateInterval (QDateTime dt, BarLengthType::Type length, QDateTim
       endDate = endDate.addSecs(-1);
       break;
     }
-    case BarLengthType::_MINUTE15:
+    case TypeBarLength::_MINUTE15:
     {
       int tint = startDate.time().minute() / 15;
       startDate.setTime(QTime(startDate.time().hour(), tint * 15, 0, 0));
@@ -120,7 +120,7 @@ void DateRange::dateInterval (QDateTime dt, BarLengthType::Type length, QDateTim
       endDate = endDate.addSecs(-1);
       break;
     }
-    case BarLengthType::_MINUTE30:
+    case TypeBarLength::_MINUTE30:
     {
       int tint = startDate.time().minute() / 30;
       startDate.setTime(QTime(startDate.time().hour(), tint * 30, 0, 0));
@@ -129,26 +129,26 @@ void DateRange::dateInterval (QDateTime dt, BarLengthType::Type length, QDateTim
       endDate = endDate.addSecs(-1);
       break;
     }
-    case BarLengthType::_MINUTE60:
+    case TypeBarLength::_MINUTE60:
       startDate.setTime(QTime(startDate.time().hour(), 0, 0, 0));
       endDate = startDate;
       endDate = endDate.addSecs(3600);
       endDate = endDate.addSecs(-1);
       break;
-    case BarLengthType::_DAILY:
+    case TypeBarLength::_DAILY:
       startDate.setTime(QTime(0, 0, 0, 0));
       endDate = startDate;
       endDate = endDate.addDays(1);
       endDate = endDate.addSecs(-1);
       break;
-    case BarLengthType::_WEEKLY:
+    case TypeBarLength::_WEEKLY:
       startDate.setTime(QTime(0, 0, 0, 0));
       startDate = startDate.addDays(- startDate.date().dayOfWeek());
       endDate = startDate;
       endDate = endDate.addDays(7);
       endDate = endDate.addSecs(-1);
       break;
-    case BarLengthType::_MONTHLY:
+    case TypeBarLength::_MONTHLY:
       startDate.setTime(QTime(0, 0, 0, 0));
       startDate = startDate.addDays(- (startDate.date().day() - 1));
       endDate = startDate;

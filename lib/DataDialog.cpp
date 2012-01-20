@@ -103,30 +103,30 @@ void DataDialog::setGUI ()
     if (label.isEmpty())
       continue;
 
-    switch ((DataType::Type) d.type())
+    switch ((TypeData::Key) d.type())
     {
-      case DataType::_STRING:
+      case TypeData::_STRING:
         setText(tab, key, label, d.toString(), QString());
         break;
-      case DataType::_INTEGER:
+      case TypeData::_INTEGER:
         setInteger(tab, key, label, d.toInteger(), 999999, -999999, QString());
         break;
-      case DataType::_DOUBLE:
+      case TypeData::_DOUBLE:
         setDouble(tab, key, label, d.toDouble(), 99999999.0, -99999999.0, QString());
         break;
-      case DataType::_LIST:
+      case TypeData::_LIST:
         setList(tab, key, label, d.toString(), d.toList(), QString());
         break;
-      case DataType::_COLOR:
+      case TypeData::_COLOR:
         setColor(tab, key, label, d.toColor(), QString());
         break;
-      case DataType::_DATETIME:
+      case TypeData::_DATETIME:
         setDateTime(tab, key, label, d.toDateTime(), QString());
         break;
-      case DataType::_BOOL:
+      case TypeData::_BOOL:
         setBool(tab, key, label, d.toBool(), QString());
         break;
-      case DataType::_FILE:
+      case TypeData::_FILE:
         setFile(tab, key, label, d.toList(), QString());
         break;
       default:
@@ -325,9 +325,9 @@ void DataDialog::done ()
     Data d;
     _settings.toData(keys.at(loop), d);
     
-    switch ((DataType::Type) d.type())
+    switch ((TypeData::Key) d.type())
     {
-      case DataType::_STRING:
+      case TypeData::_STRING:
       {
         LineEdit *w = (LineEdit *) _widgets.value(keys.at(loop));
 	if (! w)
@@ -336,7 +336,7 @@ void DataDialog::done ()
 	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataType::_COLOR:
+      case TypeData::_COLOR:
       {
         ColorButton *w = (ColorButton *) _widgets.value(keys.at(loop));
 	if (! w)
@@ -345,7 +345,7 @@ void DataDialog::done ()
 	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataType::_INTEGER:
+      case TypeData::_INTEGER:
       {
         QSpinBox *w = (QSpinBox *) _widgets.value(keys.at(loop));
 	if (! w)
@@ -354,7 +354,7 @@ void DataDialog::done ()
 	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataType::_DOUBLE:
+      case TypeData::_DOUBLE:
       {
         QDoubleSpinBox *w = (QDoubleSpinBox *) _widgets.value(keys.at(loop));
 	if (! w)
@@ -363,7 +363,7 @@ void DataDialog::done ()
 	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataType::_BOOL:
+      case TypeData::_BOOL:
       {
         QCheckBox *w = (QCheckBox *) _widgets.value(keys.at(loop));
 	if (! w)
@@ -372,7 +372,7 @@ void DataDialog::done ()
 	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataType::_DATETIME:
+      case TypeData::_DATETIME:
       {
         QDateTimeEdit *w = (QDateTimeEdit *) _widgets.value(keys.at(loop));
 	if (! w)
@@ -381,7 +381,7 @@ void DataDialog::done ()
 	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataType::_LIST:
+      case TypeData::_LIST:
       {
         QComboBox *w = (QComboBox *) _widgets.value(keys.at(loop));
 	if (! w)
@@ -390,7 +390,7 @@ void DataDialog::done ()
 	_settings.set(keys.at(loop), d);
         break;
       }
-      case DataType::_FILE:
+      case TypeData::_FILE:
       {
         FileButton *w = (FileButton *) _widgets.value(keys.at(loop));
 	if (! w)

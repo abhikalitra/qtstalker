@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,26 +19,27 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// *************************************************************************************************
+#ifndef TYPE_MA_HPP
+#define TYPE_MA_HPP
 
-#ifndef QUOTE_DATA_BASE_KEY_HPP
-#define QUOTE_DATA_BASE_KEY_HPP
+#include "Type.h"
 
-#include "Keys.h"
-
-class QuoteDataBaseKey : public Keys
+class TypeMA : public Type
 {
   public:
     enum Key
     {
-      _SYMBOL,
-      _TYPE,
-      _NAME,
-      _TABLE
+      _SMA,
+      _EMA,
+      _WMA,
+      _DEMA,
+      _TEMA,
+      _TRIMA,
+      _KAMA,
+      _WILDER
     };
-    
-    QuoteDataBaseKey ();
+
+    TypeMA ();
 };
 
 #endif

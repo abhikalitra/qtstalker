@@ -22,11 +22,11 @@
 #include "CommandVIDYA.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 #include <cmath>
@@ -95,7 +95,7 @@ QString CommandVIDYA::run (CommandParse &, void *d)
 int CommandVIDYA::getVIDYA (Entity &in, int period, int vperiod, Entity &out)
 {
   Entity cmoParms;
-  cmoParms.set(QString("FUNCTION"), Data(TALibFunctionKey::_CMO));
+  cmoParms.set(QString("FUNCTION"), Data(TypeTALibFunction::_CMO));
   cmoParms.set(QString("PERIOD"), vperiod);
   
   CurveBar cmo;
@@ -124,14 +124,14 @@ int CommandVIDYA::getVIDYA (Entity &in, int period, int vperiod, Entity &out)
 
   double c = 2 / (double) period + 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
     Entity bar;
     in.toEntity(keys.at(loop), bar);
     Data tv;
-    if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv))
+    if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv))
       continue;
     inSeries[loop] = tv.toDouble();
   }
@@ -145,7 +145,7 @@ int CommandVIDYA::getVIDYA (Entity &in, int period, int vperiod, Entity &out)
     Entity bar;
     cmo.toEntity(keys.at(loop), bar);
     Data tv;
-    if (bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tv))
+    if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv))
       continue;
     absCmo[index] = fabs(tv.toDouble() / 100);
     index--;
@@ -157,7 +157,7 @@ int CommandVIDYA::getVIDYA (Entity &in, int period, int vperiod, Entity &out)
     vidya[loop] = (inSeries.at(loop) * c * absCmo.at(loop)) + ((1 - absCmo.at(loop) * c) * vidya.at(loop - 1));
 
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(vidya.at(loop)));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(vidya.at(loop)));
     out.setEntity(QString::number(loop), b);
   }
 

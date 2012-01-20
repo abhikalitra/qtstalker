@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2011 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,24 +19,21 @@
  *  USA.
  */
 
-#ifndef SCRIPT_DATABASE_KEY_HPP
-#define SCRIPT_DATABASE_KEY_HPP
+// *************************************************************************************************
+// *************************************************************************************************
 
-#include "Keys.h"
+#ifndef WINDOW_TITLE_HPP
+#define WINDOW_TITLE_HPP
 
-class ScriptDataBaseKey : public Keys
+#include <QString>
+
+class WindowTitle
 {
   public:
-    enum Key
-    {
-      _NAME,
-      _FILE,
-      _STARTUP,
-      _RUN_INTERVAL,
-      _COMMAND
-    };
-    
-    ScriptDataBaseKey ();
+    WindowTitle ();
+    QString title (QString name, QString item);
+    QString mainWindowTitle (int length);
+    QString dataWindowTitle ();
 };
 
 #endif

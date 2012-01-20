@@ -23,7 +23,7 @@
 #include "Script.h"
 #include "GlobalMutex.h"
 #include "GlobalData.h"
-#include "ThreadMessageType.h"
+#include "TypeThreadMessage.h"
 
 #include <QtDebug>
 #include <QUuid>
@@ -53,7 +53,7 @@ QString CommandDialog::run (CommandParse &sg, void *scr)
   }
 
   Entity dialog;
-  dialog.set(QString("MESSAGE"), Data(ThreadMessageType::_DIALOG));
+  dialog.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG));
   
   QList<QString> keys = c->dkeys();
   int loop = 0;

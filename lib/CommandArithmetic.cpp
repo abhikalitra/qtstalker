@@ -25,7 +25,7 @@
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveValue.h"
 #include "ScriptVerifyCurveKeys.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 
 #include <QtDebug>
 
@@ -118,7 +118,7 @@ int CommandArithmetic::getArithmetic (Entity &in, int offset, Entity &in2, int o
     return 1;
   }
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   ScriptVerifyCurveValue svcv;
   int loop = 0;
   for (; loop < keys.size(); loop++)
@@ -136,28 +136,28 @@ int CommandArithmetic::getArithmetic (Entity &in, int offset, Entity &in2, int o
       case 0: // add
       {
         CurveBar b;
-        b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(v + v2));
+        b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(v + v2));
         line.setEntity(keys.at(loop), b);
 	break;
       }
       case 1: // div
       {
         CurveBar b;
-        b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(v / v2));
+        b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(v / v2));
         line.setEntity(keys.at(loop), b);
 	break;
       }
       case 2: // mult
       {
         CurveBar b;
-        b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(v * v2));
+        b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(v * v2));
         line.setEntity(keys.at(loop), b);
 	break;
       }
       case 3: // sub
       {
         CurveBar b;
-        b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(v - v2));
+        b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(v - v2));
         line.setEntity(keys.at(loop), b);
 	break;
       }

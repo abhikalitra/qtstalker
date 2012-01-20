@@ -31,13 +31,13 @@
 #include <QDateTime>
 #include <QVariant>
 
-#include "DataType.h"
+#include "TypeData.h"
 
 class Data
 {
   public:
     Data ();
-    Data (DataType::Type);
+    Data (TypeData::Key);
     Data (QString);
     Data (QStringList);
     Data (QStringList, QString);

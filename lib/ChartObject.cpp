@@ -22,8 +22,8 @@
 #include "ChartObject.h"
 #include "EAVDataBase.h"
 #include "Plot.h"
-#include "ChartObjectKey.h"
-#include "EntityType.h"
+#include "KeyChartObject.h"
+#include "TypeEntity.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -37,16 +37,16 @@ ChartObject::ChartObject ()
   setYAxis(QwtPlot::yRight);
   _modified = 0;
   
-  ChartObjectKey keys;
-  _settings.setType(EntityType::_CHART_OBJECT);
-  _settings.set(keys.indexToString(ChartObjectKey::_RO), Data(FALSE));
-  _settings.set(keys.indexToString(ChartObjectKey::_Z), Data(0));
-  _settings.set(keys.indexToString(ChartObjectKey::_PEN), Data(1));
+  KeyChartObject keys;
+  _settings.setType(TypeEntity::_CHART_OBJECT);
+  _settings.set(keys.indexToString(KeyChartObject::_RO), Data(FALSE));
+  _settings.set(keys.indexToString(KeyChartObject::_Z), Data(0));
+  _settings.set(keys.indexToString(KeyChartObject::_PEN), Data(1));
   
   QString id;
   newID(id);
   _settings.setName(id);
-  _settings.set(keys.indexToString(ChartObjectKey::_ID), Data(id));
+  _settings.set(keys.indexToString(KeyChartObject::_ID), Data(id));
 }
 
 ChartObject::~ChartObject ()
@@ -118,16 +118,16 @@ int ChartObject::highLow (int start, int end, double &high, double &low)
   if (! dsd)
     return 1;
 
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data tddt;
-  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), tddt);
+  _settings.toData(keys.indexToString(KeyChartObject::_DATE), tddt);
   int x = dsd->x(tddt.toDateTime());
 
   if (x < start || x > end)
     return 1;
 
   Data tdd;
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), tdd);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE), tdd);
   double d = tdd.toDouble();
   if (! flag)
   {
@@ -223,9 +223,9 @@ void ChartObject::click (int button, QPoint p)
 
 	    Plot *tplot = (Plot *) plot();
 	    
-	    ChartObjectKey keys;
+	    KeyChartObject keys;
 	    Data td;
-	    _settings.toData(keys.indexToString(ChartObjectKey::_ID), td);
+	    _settings.toData(keys.indexToString(KeyChartObject::_ID), td);
 	    tplot->select(td.toString());
 
             plot()->replot();
@@ -250,9 +250,9 @@ int ChartObject::create ()
 
 int ChartObject::save ()
 {
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data td;
-  _settings.toData(keys.indexToString(ChartObjectKey::_RO), td);
+  _settings.toData(keys.indexToString(KeyChartObject::_RO), td);
   if (td.toBool())
     return 1;
 

@@ -20,14 +20,13 @@
  */
 
 #include "CommandCompare.h"
-#include "Operator.h"
+#include "TypeOperator.h"
 #include "CurveData.h"
 #include "CurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 #include "ScriptVerifyCurveValue.h"
 #include "Script.h"
-#include "DataType.h"
 
 #include <QtDebug>
 
@@ -59,7 +58,7 @@ CommandCompare::CommandCompare ()
   td.setLabel(QObject::tr("Output 2"));
   Entity::set(QString("OUTPUT2"), td);
 
-  Operator op;
+  TypeOperator op;
   td = Data(op.list(), QString("="));
   td.setLabel(QObject::tr("Op"));
   Entity::set(QString("OP"), td);
@@ -135,8 +134,8 @@ QString CommandCompare::run (CommandParse &, void *d)
   }
 
   ScriptVerifyCurveValue svcv;
-  Operator top;
-  int comp = top.stringToOperator(op.toString());
+  TypeOperator top;
+  int comp = top.stringToIndex(op.toString());
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
@@ -148,7 +147,7 @@ QString CommandCompare::run (CommandParse &, void *d)
     if (svcv.getValue(in2, keys, loop, offset2.toInteger(), v2))
       continue;
 
-    if (! top.test(v, (Operator::Type) comp, v2))
+    if (! top.test(v, (TypeOperator::Key) comp, v2))
       continue;
 
     Entity b;

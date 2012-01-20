@@ -24,11 +24,11 @@
 #include "ChartObjectFactory.h"
 #include "GlobalPlotGroup.h"
 #include "GlobalSymbol.h"
-#include "CurveDataKey.h"
-#include "ChartObjectKey.h"
+#include "KeyCurveData.h"
+#include "KeyChartObject.h"
 #include "EAVDataBase.h"
 #include "EAVSearch.h"
-#include "SymbolKey.h"
+#include "KeySymbol.h"
 
 #include <QtDebug>
 
@@ -66,9 +66,9 @@ int ChartUpdate::curve (Entity &e)
     return 1;
   }
 
-  CurveDataKey keys;
+  KeyCurveData keys;
   Data setting;
-  e.toData(keys.indexToString(CurveDataKey::_TYPE), setting);
+  e.toData(keys.indexToString(KeyCurveData::_TYPE), setting);
 
   CurveFactory fac;
   Curve *curve = fac.curve(setting.toString());
@@ -96,9 +96,9 @@ int ChartUpdate::object (Entity &e)
     return 1;
   }
 
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data setting;
-  e.toData(keys.indexToString(ChartObjectKey::_TYPE), setting);
+  e.toData(keys.indexToString(KeyChartObject::_TYPE), setting);
 
   ChartObjectFactory fac;
   ChartObject *co = fac.chartObject(setting.toString());
@@ -127,14 +127,14 @@ int ChartUpdate::loadObjects (Entity &e)
   }
   
   // load chart objects from database
-  SymbolKey skeys;
+  KeySymbol skeys;
   Data symbol;
-  g_currentSymbol.toData(skeys.indexToString(SymbolKey::_SYMBOL), symbol);
+  g_currentSymbol.toData(skeys.indexToString(KeySymbol::_SYMBOL), symbol);
 
-  ChartObjectKey cokeys;
+  KeyChartObject cokeys;
   EAVSearch request;
-  request.append(cokeys.indexToString(ChartObjectKey::_CHART), "=", name.toString());
-  request.append(cokeys.indexToString(ChartObjectKey::_SYMBOL), "=", symbol.toString());
+  request.append(cokeys.indexToString(KeyChartObject::_CHART), "=", name.toString());
+  request.append(cokeys.indexToString(KeyChartObject::_SYMBOL), "=", symbol.toString());
 
   EAVDataBase codb("chartObjects");
   QStringList names;
@@ -150,7 +150,7 @@ int ChartUpdate::loadObjects (Entity &e)
       continue;
 
     Data type;
-    osettings.toData(cokeys.indexToString(ChartObjectKey::_TYPE), type);
+    osettings.toData(cokeys.indexToString(KeyChartObject::_TYPE), type);
       
     ChartObjectFactory fac;
     ChartObject *co = fac.chartObject(type.toString());

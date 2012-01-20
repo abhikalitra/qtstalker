@@ -23,7 +23,7 @@
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 
@@ -71,7 +71,7 @@ QString CommandMAMA::run (CommandParse &, void *d)
   Entity::toData(QString("LIMIT_SLOW"), ls);
 
   Entity parms;
-  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_MAMA));
+  parms.set(QString("FUNCTION"), Data(TypeTALibFunction::_MAMA));
   parms.set(QString("LIMIT_FAST"), lf);
   parms.set(QString("LIMIT_SLOW"), ls);
   

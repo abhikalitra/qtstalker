@@ -20,8 +20,7 @@
  */
 
 #include "CommandFactory.h"
-#include "CommandType.h"
-
+#include "TypeCommand.h"
 #include "CommandAD.h"
 #include "CommandADX.h"
 #include "CommandArithmetic.h"
@@ -107,233 +106,233 @@ CommandFactory::CommandFactory ()
 Command * CommandFactory::command (QString type)
 {
   Command *c = 0;
-  CommandType ct;
+  TypeCommand ct;
 
-  switch ((CommandType::Type) ct.stringToIndex(type))
+  switch ((TypeCommand::Type) ct.stringToIndex(type))
   {
-    case CommandType::_AD:
+    case TypeCommand::_AD:
       c = new CommandAD;
       break;
-    case CommandType::_ADX:
+    case TypeCommand::_ADX:
       c = new CommandADX;
       break;
-    case CommandType::_ARITHMETIC:
+    case TypeCommand::_ARITHMETIC:
       c = new CommandArithmetic;
       break;
-    case CommandType::_AROON:
+    case TypeCommand::_AROON:
       c = new CommandAROON;
       break;
-    case CommandType::_ATR:
+    case TypeCommand::_ATR:
       c = new CommandATR;
       break;
-    case CommandType::_AVERAGE_PRICE:
+    case TypeCommand::_AVERAGE_PRICE:
       c = new CommandAveragePrice;
       break;
-    case CommandType::_BBANDS:
+    case TypeCommand::_BBANDS:
       c = new CommandBBANDS;
       break;
-    case CommandType::_BETA:
+    case TypeCommand::_BETA:
       c = new CommandBETA;
       break;
-    case CommandType::_BOP:
+    case TypeCommand::_BOP:
       c = new CommandBOP;
       break;
-    case CommandType::_BREAKOUT:
+    case TypeCommand::_BREAKOUT:
       c = new CommandBreakout;
       break;
-    case CommandType::_CANDLE_PATTERN:
+    case TypeCommand::_CANDLE_PATTERN:
       c = new CommandCandlePattern;
       break;
-    case CommandType::_CCI:
+    case TypeCommand::_CCI:
       c = new CommandCCI;
       break;
-    case CommandType::_CHART:
+    case TypeCommand::_CHART:
       c = new CommandChart;
       break;
-    case CommandType::_CHART_OBJECT_BUY:
+    case TypeCommand::_CHART_OBJECT_BUY:
       c = new CommandBuy;
       break;
-    case CommandType::_CHART_OBJECT_HLINE:
+    case TypeCommand::_CHART_OBJECT_HLINE:
       c = new CommandHLine;
       break;
-    case CommandType::_CHART_OBJECT_RETRACEMENT:
+    case TypeCommand::_CHART_OBJECT_RETRACEMENT:
       c = new CommandRetracement;
       break;
-    case CommandType::_CHART_OBJECT_SELL:
+    case TypeCommand::_CHART_OBJECT_SELL:
       c = new CommandSell;
       break;
-    case CommandType::_CHART_OBJECT_TEXT:
+    case TypeCommand::_CHART_OBJECT_TEXT:
       c = new CommandText;
       break;
-    case CommandType::_CHART_OBJECT_TLINE:
+    case TypeCommand::_CHART_OBJECT_TLINE:
       c = new CommandTLine;
       break;
-    case CommandType::_CHART_OBJECT_VLINE:
+    case TypeCommand::_CHART_OBJECT_VLINE:
       c = new CommandVLine;
       break;
-    case CommandType::_CHART_PANEL_REFRESH:
+    case TypeCommand::_CHART_PANEL_REFRESH:
       c = new CommandChartPanelRefresh;
       break;
-    case CommandType::_CHART_UPDATE:
+    case TypeCommand::_CHART_UPDATE:
       c = new CommandChartUpdate;
       break;
-    case CommandType::_CMO:
+    case TypeCommand::_CMO:
       c = new CommandCMO;
       break;
-    case CommandType::_COMPARE:
+    case TypeCommand::_COMPARE:
       c = new CommandCompare;
       break;
-    case CommandType::_CORREL:
+    case TypeCommand::_CORREL:
       c = new CommandCORREL;
       break;
-    case CommandType::_CSV:
+    case TypeCommand::_CSV:
       c = new CommandCSV;
       break;
-    case CommandType::_DIALOG:
+    case TypeCommand::_DIALOG:
       c = new CommandDialog;
       break;
-    case CommandType::_FI:
+    case TypeCommand::_FI:
       c = new CommandFI;
       break;
-    case CommandType::_GET:
+    case TypeCommand::_GET:
       c = new CommandGet;
       break;
-    case CommandType::_GROUP_PANEL_REFRESH:
+    case TypeCommand::_GROUP_PANEL_REFRESH:
       c = new CommandGroupPanelRefresh;
       break;
-    case CommandType::_GROUP_SAVE:
+    case TypeCommand::_GROUP_SAVE:
       c = new CommandGroupSave;
       break;
-    case CommandType::_HT:
+    case TypeCommand::_HT:
       c = new CommandHT;
       break;
-    case CommandType::_HT_PHASOR:
+    case TypeCommand::_HT_PHASOR:
       c = new CommandPHASOR;
       break;
-    case CommandType::_HT_SINE:
+    case TypeCommand::_HT_SINE:
       c = new CommandSINE;
       break;
-    case CommandType::_LINEARREG:
+    case TypeCommand::_LINEARREG:
       c = new CommandLINEARREG;
       break;
-    case CommandType::_MA:
+    case TypeCommand::_MA:
       c = new CommandMA;
       break;
-    case CommandType::_MACD:
+    case TypeCommand::_MACD:
       c = new CommandMACD;
       break;
-    case CommandType::_MAMA:
+    case TypeCommand::_MAMA:
       c = new CommandMAMA;
       break;
-    case CommandType::_MEDIAN_PRICE:
+    case TypeCommand::_MEDIAN_PRICE:
       c = new CommandMedianPrice;
       break;
-    case CommandType::_MINMAX:
+    case TypeCommand::_MINMAX:
       c = new CommandMINMAX;
       break;
-    case CommandType::_MFI:
+    case TypeCommand::_MFI:
       c = new CommandMFI;
       break;
-    case CommandType::_MOM:
+    case TypeCommand::_MOM:
       c = new CommandMOM;
       break;
-    case CommandType::__NEW:
+    case TypeCommand::__NEW:
       c = new CommandNew;
       break;
-    case CommandType::_NEW_HIGH_LOW:
+    case TypeCommand::_NEW_HIGH_LOW:
       c = new CommandNewHighLow;
       break;
-    case CommandType::_NORMALIZE:
+    case TypeCommand::_NORMALIZE:
       c = new CommandNormalize;
       break;
-    case CommandType::_PO:
+    case TypeCommand::_PO:
       c = new CommandPO;
       break;
-    case CommandType::_PLOT_LINE:
+    case TypeCommand::_PLOT_LINE:
       c = new CommandPlotLine;
       break;
-    case CommandType::_PLOT_HISTOGRAM:
+    case TypeCommand::_PLOT_HISTOGRAM:
       c = new CommandPlotHistogram;
       break;
-    case CommandType::_PLOT_OHLC:
+    case TypeCommand::_PLOT_OHLC:
       c = new CommandPlotOHLC;
       break;
-    case CommandType::_ROC:
+    case TypeCommand::_ROC:
       c = new CommandROC;
       break;
-    case CommandType::_RSI:
+    case TypeCommand::_RSI:
       c = new CommandRSI;
       break;
-    case CommandType::_RUN:
+    case TypeCommand::_RUN:
       c = new CommandRun;
       break;
-    case CommandType::_SAR:
+    case TypeCommand::_SAR:
       c = new CommandSAR;
       break;
-    case CommandType::_SET:
+    case TypeCommand::_SET:
       c = new CommandSet;
       break;
-    case CommandType::_SHIFT:
+    case TypeCommand::_SHIFT:
       c = new CommandShift;
       break;
-    case CommandType::_STDDEV:
+    case TypeCommand::_STDDEV:
       c = new CommandSTDDEV;
       break;
-    case CommandType::_STOCH_FAST:
+    case TypeCommand::_STOCH_FAST:
       c = new CommandStochFast;
       break;
-    case CommandType::_STOCH_RSI:
+    case TypeCommand::_STOCH_RSI:
       c = new CommandStochRSI;
       break;
-    case CommandType::_STOCH_SLOW:
+    case TypeCommand::_STOCH_SLOW:
       c = new CommandStochSlow;
       break;
-    case CommandType::_SZ:
+    case TypeCommand::_SZ:
       c = new CommandSZ;
       break;
-    case CommandType::_SYMBOL:
+    case TypeCommand::_SYMBOL:
       c = new CommandSymbol;
       break;
-    case CommandType::_SYMBOL_CURRENT:
+    case TypeCommand::_SYMBOL_CURRENT:
       c = new CommandSymbolCurrent;
       break;
-    case CommandType::_T3:
+    case TypeCommand::_T3:
       c = new CommandT3;
       break;
-    case CommandType::_TEST:
+    case TypeCommand::_TEST:
 //      c = new CommandTest;
       break;
-    case CommandType::_THERM:
+    case TypeCommand::_THERM:
       c = new CommandTHERM;
       break;
-    case CommandType::_TRIX:
+    case TypeCommand::_TRIX:
       c = new CommandTRIX;
       break;
-    case CommandType::_TYPICAL_PRICE:
+    case TypeCommand::_TYPICAL_PRICE:
       c = new CommandTypicalPrice;
       break;
-    case CommandType::_ULTOSC:
+    case TypeCommand::_ULTOSC:
       c = new CommandULTOSC;
       break;
-    case CommandType::_VAR:
+    case TypeCommand::_VAR:
       c = new CommandVAR;
       break;
-    case CommandType::_VBP:
+    case TypeCommand::_VBP:
 //      c = new CommandVBP;
       break;
-    case CommandType::_VFI:
+    case TypeCommand::_VFI:
       c = new CommandVFI;
       break;
-    case CommandType::_VIDYA:
+    case TypeCommand::_VIDYA:
       c = new CommandVIDYA;
       break;
-    case CommandType::_WEIGHTED_CLOSE:
+    case TypeCommand::_WEIGHTED_CLOSE:
       c = new CommandWeightedClose;
       break;
-    case CommandType::_WILLR:
+    case TypeCommand::_WILLR:
       c = new CommandWILLR;
       break;
-    case CommandType::_YAHOO_HISTORY:
+    case TypeCommand::_YAHOO_HISTORY:
       c = new CommandYahooHistory;
       break;
     default:

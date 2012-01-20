@@ -21,9 +21,9 @@
 
 #include "CommandPlotHistogram.h"
 #include "CurveData.h"
-#include "CurveDataKey.h"
-#include "CurveBarKey.h"
-#include "HistogramStyle.h"
+#include "KeyCurveData.h"
+#include "KeyCurveBar.h"
+#include "TypeHistogram.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 #include "ScriptVerifyCurveValue.h"
@@ -44,7 +44,7 @@ CommandPlotHistogram::CommandPlotHistogram ()
   Entity::set(QString("HIGH"), Data(QString("high")));
   Entity::set(QString("LOW"), Data(QString("low")));
   
-  HistogramStyle st;
+  TypeHistogram st;
   Data td(st.list(), QString("Histogram Bar"));
   Entity::set(QString("STYLE"), td);
 }
@@ -87,29 +87,29 @@ QString CommandPlotHistogram::run (CommandParse &, void *d)
     return _returnCode;
   }
   
-  CurveDataKey cdkeys;
+  KeyCurveData cdkeys;
   CurveData line;
-  line.set(cdkeys.indexToString(CurveDataKey::_TYPE), Data(QString("Histogram")));
+  line.set(cdkeys.indexToString(KeyCurveData::_TYPE), Data(QString("Histogram")));
   
   Entity::toData(QString("Z"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_Z), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_Z), td);
   
   Entity::toData(QString("PEN"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_PEN), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_PEN), td);
   
   Entity::toData(QString("LABEL"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_LABEL), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_LABEL), td);
   
   Entity::toData(QString("CHART"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_CHART), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_CHART), td);
   
   Entity::toData(QString("STYLE"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_STYLE), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_STYLE), td);
 
   Data color;
   Entity::toData(QString("COLOR"), color);
   
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   ScriptVerifyCurveValue svcv;
   int loop = 0;
   for (; loop < keys.size(); loop++)
@@ -123,9 +123,9 @@ QString CommandPlotHistogram::run (CommandParse &, void *d)
       continue;
 
     Entity bar;
-    bar.set(cbkeys.indexToString(CurveBarKey::_HIGH), Data(v));
-    bar.set(cbkeys.indexToString(CurveBarKey::_LOW), Data(v2));
-    bar.set(cbkeys.indexToString(CurveBarKey::_COLOR), color);
+    bar.set(cbkeys.indexToString(KeyCurveBar::_HIGH), Data(v));
+    bar.set(cbkeys.indexToString(KeyCurveBar::_LOW), Data(v2));
+    bar.set(cbkeys.indexToString(KeyCurveBar::_COLOR), color);
     
     line.setEntity(keys.at(loop), bar);
   }

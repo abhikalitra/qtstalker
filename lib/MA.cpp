@@ -22,10 +22,10 @@
 #include "MA.h"
 #include "ta_libc.h"
 #include "CurveData.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "CurveBar.h"
 #include "ScriptVerifyCurveKeys.h"
-#include "MAType.h"
+#include "TypeMA.h"
 
 #include <QDebug>
 
@@ -38,7 +38,7 @@ MA::MA ()
 
 int MA::getMA (Entity &in, int period, int method, Entity &line)
 {
-  if (method == MAType::_WILDER)
+  if (method == TypeMA::_WILDER)
     return getWilder(in, period, line);
 
   // verify curve keys
@@ -56,7 +56,7 @@ int MA::getMA (Entity &in, int period, int method, Entity &line)
   TA_Integer outBeg;
   TA_Integer outNb;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   for (; loop < size; loop++)
   {
@@ -64,7 +64,7 @@ int MA::getMA (Entity &in, int period, int method, Entity &line)
     in.toEntity(keys.at(loop), bar);
     
     Data td;
-    bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
     input[loop] = (TA_Real) td.toDouble();
   }
 
@@ -80,7 +80,7 @@ int MA::getMA (Entity &in, int period, int method, Entity &line)
   while (keyLoop > -1 && outLoop > -1)
   {
     Entity b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(out[outLoop]));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(out[outLoop]));
     line.setEntity(keys.at(keyLoop), b);
 
     keyLoop--;
@@ -101,7 +101,7 @@ int MA::getWilder (Entity &in, int period, Entity &line)
     return 1;
   }
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   double t = 0;
   int loop = 0;
   for (; loop < period; loop++)
@@ -110,13 +110,13 @@ int MA::getWilder (Entity &in, int period, Entity &line)
     in.toEntity(keys.at(loop), bar);
     
     Data td;
-    bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
     t += td.toDouble();
   }
   double yesterday = t / (double) period;
   
   Entity db;
-  db.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(yesterday));
+  db.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(yesterday));
   line.setEntity(keys.at(loop), db);
 
   for (; loop < keys.size(); loop++)
@@ -125,12 +125,12 @@ int MA::getWilder (Entity &in, int period, Entity &line)
     in.toEntity(keys.at(loop), bar);
     
     Data td;
-    bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
     double t  = (yesterday * (period - 1) + td.toDouble()) / (double) period;
     yesterday = t;
 
     Entity db;
-    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    db.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(t));
     line.setEntity(keys.at(loop), db);
   }
 

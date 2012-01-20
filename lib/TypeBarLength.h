@@ -19,34 +19,36 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// *************************************************************************************************
+// ******************************************************
+// ******************************************************
 
-#ifndef DATE_RANGE_TYPE_HPP
-#define DATE_RANGE_TYPE_HPP
+#ifndef TYPE_BAR_LENGTH_HPP
+#define TYPE_BAR_LENGTH_HPP
 
-#include "Keys.h"
+#include <QString>
+#include <QStringList>
+#include <QDateTime>
 
-class DateRangeType : public Keys
+#include "Type.h"
+
+class TypeBarLength : public Type
 {
   public:
-    enum Type
+    enum Key
     {
-      _DAY,
-      _WEEK,
-      _MONTH,
-      _MONTH3,
-      _MONTH6,
-      _YEAR,
-      _YEAR2,
-      _YEAR5,
-      _YEAR10,
-      _YEAR25,
-      _YEAR50,
-      _ALL
+      _NONE,
+      _MINUTE1,
+      _MINUTE5,
+      _MINUTE10,
+      _MINUTE15,
+      _MINUTE30,
+      _MINUTE60,
+      _DAILY,
+      _WEEKLY,
+      _MONTHLY
     };
 
-    DateRangeType ();
+    TypeBarLength ();
 };
 
 #endif

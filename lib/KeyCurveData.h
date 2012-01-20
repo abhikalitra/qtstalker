@@ -19,24 +19,28 @@
  *  USA.
  */
 
-#ifndef THREAD_MESSAGE_TYPE_HPP
-#define THREAD_MESSAGE_TYPE_HPP
+// *************************************************************************************************
+// *************************************************************************************************
 
-class ThreadMessageType
+#ifndef KEY_CURVE_DATA_HPP
+#define KEY_CURVE_DATA_HPP
+
+#include "Type.h"
+
+class KeyCurveData : public Type
 {
   public:
-    enum Type
+    enum Key
     {
-      _CHART_CURVE,
-      _CHART_DATE,
-      _CHART_LOAD_OBJECT,
-      _CHART_NEW,
-      _CHART_OBJECT,
-      _CHART_PANEL_REFRESH,
-      _CHART_UPDATE,
-      _DIALOG,
-      _GROUP_PANEL_REFRESH
+      _LABEL,
+      _TYPE,
+      _CHART,
+      _Z,
+      _PEN,
+      _STYLE
     };
+    
+    KeyCurveData ();
 };
 
 #endif

@@ -26,7 +26,7 @@
 #include "GlobalParent.h"
 #include "GlobalSymbol.h"
 #include "ChartRefresh.h"
-#include "SymbolKey.h"
+#include "KeySymbol.h"
 
 ChartLoad::ChartLoad (QObject *p, QString symbol) : QObject (p)
 {
@@ -43,9 +43,9 @@ void ChartLoad::run ()
 
 void ChartLoad::symbolLoadDone (QString title, int bars)
 {
-  SymbolKey keys;
+  KeySymbol keys;
   Data tds;
-  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), tds);
+  g_currentSymbol.toData(keys.indexToString(KeySymbol::_SYMBOL), tds);
 
   g_controlPanel->recentCharts()->addRecentChart(tds.toString());
   g_parent->setWindowTitle(title);

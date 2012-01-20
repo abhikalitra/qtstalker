@@ -25,8 +25,8 @@
 #include "CurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
-#include "SymbolKey.h"
-#include "CurveBarKey.h"
+#include "KeySymbol.h"
+#include "KeyCurveBar.h"
 #include "GlobalParent.h"
 #include "Global.h"
 
@@ -43,7 +43,7 @@ CommandCSV::CommandCSV ()
 
   QStringList l;
   l << "/tmp/file.csv";
-  Data td(DataType::_FILE);
+  Data td(TypeData::_FILE);
   td.set(l);
   td.setLabel(QObject::tr("CSV File"));
   Entity::set(QString("CSV_FILE"), td);
@@ -118,8 +118,8 @@ QString CommandCSV::run (CommandParse &, void *)
   Entity::toData(QString("EXCHANGE"), td);
   QString exchange = td.toString();
 
-  CurveBarKey cbkeys;
-  SymbolKey symkeys;
+  KeyCurveBar cbkeys;
+  KeySymbol symkeys;
   
   // away we go
   QHash<QString, Symbol> symbols;
@@ -188,7 +188,7 @@ QString CommandCSV::run (CommandParse &, void *)
               flag++;
             }
             else
-              bar.set(cbkeys.indexToString(CurveBarKey::_DATE), Data(dt));
+              bar.set(cbkeys.indexToString(KeyCurveBar::_DATE), Data(dt));
             break;
           }
           case _OPEN:
@@ -211,22 +211,22 @@ QString CommandCSV::run (CommandParse &, void *)
             switch ((FormatType) _formatType.indexOf(format.at(loop2)))
             {
               case _OPEN:
-                bar.set(cbkeys.indexToString(CurveBarKey::_OPEN), Data(t));
+                bar.set(cbkeys.indexToString(KeyCurveBar::_OPEN), Data(t));
                 break;
               case _HIGH:
-                bar.set(cbkeys.indexToString(CurveBarKey::_HIGH), Data(t));
+                bar.set(cbkeys.indexToString(KeyCurveBar::_HIGH), Data(t));
                 break;
               case _LOW:
-                bar.set(cbkeys.indexToString(CurveBarKey::_LOW), Data(t));
+                bar.set(cbkeys.indexToString(KeyCurveBar::_LOW), Data(t));
                 break;
               case _CLOSE:
-                bar.set(cbkeys.indexToString(CurveBarKey::_CLOSE), Data(t));
+                bar.set(cbkeys.indexToString(KeyCurveBar::_CLOSE), Data(t));
                 break;
               case _VOLUME:
-                bar.set(cbkeys.indexToString(CurveBarKey::_VOLUME), Data(t));
+                bar.set(cbkeys.indexToString(KeyCurveBar::_VOLUME), Data(t));
                 break;
               case _OI:
-                bar.set(cbkeys.indexToString(CurveBarKey::_OI), Data(t));
+                bar.set(cbkeys.indexToString(KeyCurveBar::_OI), Data(t));
                 break;
               default:
                 break;
@@ -266,9 +266,9 @@ QString CommandCSV::run (CommandParse &, void *)
       if (! symbols.contains(key))
       {
         Symbol tbd;
-        tbd.set(symkeys.indexToString(SymbolKey::_SYMBOL), Data(key));
-	tbd.set(symkeys.indexToString(SymbolKey::_TYPE), Data(type));
-	tbd.set(symkeys.indexToString(SymbolKey::_NAME), Data(name));
+        tbd.set(symkeys.indexToString(KeySymbol::_SYMBOL), Data(key));
+	tbd.set(symkeys.indexToString(KeySymbol::_TYPE), Data(type));
+	tbd.set(symkeys.indexToString(KeySymbol::_NAME), Data(name));
         symbols.insert(key, tbd);
       }
       
@@ -277,9 +277,9 @@ QString CommandCSV::run (CommandParse &, void *)
       if (! bd)
       {
         bd = new Symbol;
-        bd->set(symkeys.indexToString(SymbolKey::_SYMBOL), Data(key));
-	bd->set(symkeys.indexToString(SymbolKey::_TYPE), Data(type));
-	bd->set(symkeys.indexToString(SymbolKey::_NAME), Data(name));
+        bd->set(symkeys.indexToString(KeySymbol::_SYMBOL), Data(key));
+	bd->set(symkeys.indexToString(KeySymbol::_TYPE), Data(type));
+	bd->set(symkeys.indexToString(KeySymbol::_NAME), Data(name));
         symbols.insert(key, bd);
       }
 */

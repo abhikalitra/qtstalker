@@ -24,7 +24,7 @@
 #include "ScriptVerifyCurve.h"
 #include "Script.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 
@@ -71,7 +71,7 @@ QString CommandMINMAX::run (CommandParse &, void *d)
   parms.set(QString("PERIOD"), period);
   
   Entity::toData(QString("METHOD"), method);
-  TALibFunctionKey fkeys;
+  TypeTALibFunction fkeys;
   parms.set(QString("FUNCTION"), Data(fkeys.stringToIndex(method.toString())));
   
   CurveData line;

@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,31 +19,24 @@
  *  USA.
  */
 
-#ifndef OPERATOR_HPP
-#define OPERATOR_HPP
+#ifndef TYPE_DATA_HPP
+#define TYPE_DATA_HPP
 
-#include <QStringList>
-
-class Operator
+class TypeData
 {
   public:
-    enum Type
+    enum Key
     {
-      _LESS_THAN,
-      _LESS_THAN_EQUAL,
-      _EQUAL,
-      _NOT_EQUAL,
-      _GREATER_THAN_EQUAL,
-      _GREATER_THAN
+      _BOOL = 10,
+      _COLOR = 20,
+      _DATETIME = 30,
+      _DOUBLE = 40,
+      _FONT = 50,
+      _INTEGER = 60,
+      _LIST = 70,
+      _STRING = 80,
+      _FILE = 90
     };
-    
-    Operator ();
-    QStringList & list ();
-    int stringToOperator (QString);
-    int test (double val, Operator::Type, double val2);
-
-  private:
-    QStringList _list;
 };
 
 #endif

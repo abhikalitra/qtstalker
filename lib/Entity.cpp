@@ -20,13 +20,13 @@
  */
 
 #include "Entity.h"
-#include "EntityType.h"
+#include "TypeEntity.h"
 
 #include <QtDebug>
 
 Entity::Entity ()
 {
-  _type = EntityType::_SETTING;
+  _type = TypeEntity::_SETTING;
   _startIndex = 99999999;
   _endIndex = -99999999;
 }
@@ -125,7 +125,7 @@ int Entity::highLow (double &h, double &l)
   {
     it.next();
     Data td = it.value();
-    if (td.type() != DataType::_DOUBLE)
+    if (td.type() != TypeData::_DOUBLE)
       continue;
 
     double t = td.toDouble();

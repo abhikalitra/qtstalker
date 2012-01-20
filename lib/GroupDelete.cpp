@@ -21,7 +21,7 @@
 
 #include "GroupDelete.h"
 #include "SelectDialog.h"
-#include "Global.h"
+#include "WindowTitle.h"
 #include "EAVDataBase.h"
 
 #include <QtDebug>
@@ -42,11 +42,9 @@ void GroupDelete::remove ()
   EAVDataBase db("groups");
   db.names(names);
 
-  QStringList title;
-  title << "QtStalker" + g_session + ":" << tr("Delete Group");
-
+  WindowTitle wt;
   SelectDialog *dialog = new SelectDialog(0);
-  dialog->setWindowTitle(title.join(" "));
+  dialog->setWindowTitle(wt.title(tr("Delete Group"), QString()));
   dialog->setItems(names);
   dialog->setTitle(tr("Groups"));
   connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(remove2(QStringList)));

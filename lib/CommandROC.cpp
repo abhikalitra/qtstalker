@@ -23,7 +23,7 @@
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 
@@ -69,7 +69,7 @@ QString CommandROC::run (CommandParse &, void *d)
   Entity::toData(QString("METHOD"), method);
   
   Entity parms;
-  TALibFunctionKey fkeys;
+  TypeTALibFunction fkeys;
   parms.set(QString("FUNCTION"), Data(fkeys.stringToIndex(method.toString())));
   parms.set(QString("PERIOD"), period);
   

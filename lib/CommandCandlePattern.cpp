@@ -20,11 +20,11 @@
  */
 
 #include "CommandCandlePattern.h"
-#include "CandleType.h"
+#include "TypeCandle.h"
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 
@@ -56,7 +56,7 @@ CommandCandlePattern::CommandCandlePattern ()
   td.setLabel(QObject::tr("Penetration"));
   Entity::set(QString("PENETRATION"), td);
 
-  CandleType ct;
+  TypeCandle ct;
   td = Data(ct.list(), QString("HARAMI"));
   td.setLabel(QObject::tr("Method"));
   Entity::set(QString("METHOD"), td);
@@ -106,7 +106,7 @@ QString CommandCandlePattern::run (CommandParse &, void *d)
   Entity::toData(QString("METHOD"), method);
   Entity::toData(QString("PENETRATION"), pen);
   
-  TALibFunctionKey fkeys;
+  TypeTALibFunction fkeys;
   parms.set(QString("FUNCTION"), Data(fkeys.stringToIndex(method.toString())));
   parms.set(QString("PENETRATION"), pen);
   

@@ -21,12 +21,11 @@
 
 #include "CommandChartUpdate.h"
 #include "ScriptVerifyCurve.h"
-#include "EntityType.h"
-#include "CurveDataKey.h"
-#include "ChartObjectKey.h"
-#include "SymbolKey.h"
+#include "TypeEntity.h"
+#include "KeyCurveData.h"
+#include "KeyChartObject.h"
 #include "Script.h"
-#include "ThreadMessageType.h"
+#include "TypeThreadMessage.h"
 #include "ThreadMessage.h"
 
 #include <QtDebug>
@@ -59,7 +58,7 @@ QString CommandChartUpdate::run (CommandParse &, void *d)
     qDebug() << "CommandChartUpdate::chartUpdate: date not found" << dateName.toString();
     return _returnCode;
   }
-  date.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_DATE));
+  date.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_DATE));
   date.set(QString("CHART"), chartName);
 
   // send chart date
@@ -74,38 +73,38 @@ QString CommandChartUpdate::run (CommandParse &, void *d)
     Entity dg;
     script->data(keys.at(loop), dg);
 
-    switch ((EntityType::Type) dg.type())
+    switch ((TypeEntity::Key) dg.type())
     {
-      case EntityType::_CURVE:
+      case TypeEntity::_CURVE:
       {
-        CurveDataKey keys;
+        KeyCurveData keys;
         Data setting;
-        if (dg.toData(keys.indexToString(CurveDataKey::_Z), setting))
+        if (dg.toData(keys.indexToString(KeyCurveData::_Z), setting))
           break;
         if (setting.toInteger() < 0)
           break;
-        if (dg.toData(keys.indexToString(CurveDataKey::_CHART), setting))
+        if (dg.toData(keys.indexToString(KeyCurveData::_CHART), setting))
           break;
         if (setting.toString() != chartName.toString())
           break;
-        dg.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_CURVE));
+        dg.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_CURVE));
         dg.set(QString("CHART"), chartName);
         tm.sendMessage(dg, script);
         break;
       }
-      case EntityType::_CHART_OBJECT:
+      case TypeEntity::_CHART_OBJECT:
       {
-        ChartObjectKey keys;
+        KeyChartObject keys;
         Data setting;
-        if (dg.toData(keys.indexToString(ChartObjectKey::_Z), setting))
+        if (dg.toData(keys.indexToString(KeyChartObject::_Z), setting))
           break;
         if (setting.toInteger() < 0)
           break;
-        if (dg.toData(keys.indexToString(ChartObjectKey::_CHART), setting))
+        if (dg.toData(keys.indexToString(KeyChartObject::_CHART), setting))
           break;
         if (setting.toString() != chartName.toString())
           break;
-        dg.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_OBJECT));
+        dg.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_OBJECT));
         dg.set(QString("CHART"), chartName);
         tm.sendMessage(dg, script);
         break;
@@ -117,12 +116,12 @@ QString CommandChartUpdate::run (CommandParse &, void *d)
 
   // load chart objects
   Entity e;
-  e.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_LOAD_OBJECT));
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_LOAD_OBJECT));
   e.set(QString("CHART"), chartName);
   tm.sendMessage(e, script);
   
   // update chart
-  e.set(QString("MESSAGE"), Data(ThreadMessageType::_CHART_UPDATE));
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_UPDATE));
   tm.sendMessage(e, script);
 
   _returnCode = "OK";

@@ -20,11 +20,11 @@
  */
 
 #include "CurveBar.h"
-#include "EntityType.h"
+#include "TypeEntity.h"
 
 #include <QtDebug>
 
 CurveBar::CurveBar ()
 {
-  _type = EntityType::_CURVE_BAR;
+  _type = TypeEntity::_CURVE_BAR;
 }

@@ -19,22 +19,23 @@
  *  USA.
  */
 
-#ifndef CURVE_TYPE_HPP
-#define CURVE_TYPE_HPP
+// *************************************************************************************************
+// *************************************************************************************************
 
-#include "Keys.h"
+#ifndef KEY_GROUP_DATA_BASE_HPP
+#define KEY_GROUP_DATA_BASE_HPP
 
-class CurveType : public Keys
+#include "Type.h"
+
+class KeyGroupDataBase : public Type
 {
   public:
-    enum Type
+    enum Key
     {
-      _LINE,
-      _HISTOGRAM,
-      _OHLC
+      _LIST
     };
-
-    CurveType ();
+    
+    KeyGroupDataBase ();
 };
 
 #endif

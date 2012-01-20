@@ -21,8 +21,8 @@
 
 #include "CommandTLine.h"
 #include "ChartObjectTLine.h"
-#include "EntityType.h"
-#include "ChartObjectKey.h"
+#include "TypeEntity.h"
+#include "KeyChartObject.h"
 #include "Script.h"
 
 #include <QtDebug>
@@ -46,17 +46,17 @@ QString CommandTLine::run (CommandParse &, void *d)
 
   Entity co;
   co.set(Entity::data());
-  co.setType(EntityType::_CHART_OBJECT);
+  co.setType(TypeEntity::_CHART_OBJECT);
   
-  ChartObjectKey keys;
-  co.set(keys.indexToString(ChartObjectKey::_RO), Data(TRUE));
+  KeyChartObject keys;
+  co.set(keys.indexToString(KeyChartObject::_RO), Data(TRUE));
 
   // update with new ID
   ChartObjectTLine tline;
   QString s;
   tline.newID(s);
   co.setName(s);
-  co.set(keys.indexToString(ChartObjectKey::_ID), Data(s));
+  co.set(keys.indexToString(KeyChartObject::_ID), Data(s));
 
   script->setData(co.name(), co);
 

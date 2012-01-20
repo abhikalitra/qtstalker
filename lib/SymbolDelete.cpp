@@ -23,7 +23,7 @@
 #include "QuoteDataBase.h"
 #include "Symbol.h"
 #include "ConfirmDialog.h"
-#include "SymbolKey.h"
+#include "KeySymbol.h"
 
 #include <QtDebug>
 #include <QTimer>
@@ -58,13 +58,13 @@ void SymbolDelete::remove2 ()
   QuoteDataBase db;
   db.transaction();
 
-  SymbolKey keys;
+  KeySymbol keys;
   QStringList l2;
   int loop = 0;
   for (; loop < _symbols.size(); loop++)
   {
     Symbol bd;
-    bd.set(keys.indexToString(SymbolKey::_SYMBOL), Data(_symbols.at(loop)));
+    bd.set(keys.indexToString(KeySymbol::_SYMBOL), Data(_symbols.at(loop)));
     db.deleteSymbol(bd);
   }
 

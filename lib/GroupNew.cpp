@@ -21,7 +21,7 @@
 
 #include "GroupNew.h"
 #include "NewDialog.h"
-#include "Global.h"
+#include "WindowTitle.h"
 #include "EAVDataBase.h"
 #include "GroupEditDialog.h"
 
@@ -50,9 +50,8 @@ void GroupNew::run2 ()
   connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(run3(QString)));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
 
-  l.clear();
-  l << "QtStalker" + g_session + ":" << tr("New Group");
-  dialog->setWindowTitle(l.join(" "));
+  WindowTitle wt;
+  dialog->setWindowTitle(wt.title(tr("New Group"), QString()));
 
   dialog->show();
 }

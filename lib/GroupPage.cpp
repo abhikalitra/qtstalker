@@ -28,7 +28,7 @@
 #include "GroupNew.h"
 #include "GroupDelete.h"
 #include "ChartLoad.h"
-#include "SymbolKey.h"
+#include "KeyGroupDataBase.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -50,7 +50,7 @@ GroupPage::GroupPage (QWidget *p) : QWidget (p)
 
   createButtonMenu();
 
-  _nav = new QListWidget;
+  _nav = new SymbolListWidget;
   _nav->setFocusPolicy(Qt::StrongFocus);
   _nav->setContextMenuPolicy(Qt::CustomContextMenu);
   _nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -175,7 +175,7 @@ void GroupPage::loadGroups ()
   QStringList l;
   db.names(l);
 
-  if (! l.count())
+  if (! l.size())
     return;
 
   _groups->addItems(l);
@@ -206,12 +206,12 @@ void GroupPage::updateGroups ()
 void GroupPage::addToGroup ()
 {
   QList<QListWidgetItem *> l = _nav->selectedItems();
-  if (! l.count())
+  if (! l.size())
     return;
 
   QStringList tl;
   int loop = 0;
-  for (; loop < l.count(); loop++)
+  for (; loop < l.size(); loop++)
     tl << l.at(loop)->text();
 
   GroupAdd *ga = new GroupAdd(this, tl);
@@ -226,36 +226,29 @@ void GroupPage::updateList ()
   if (! _groups->count())
     return;
 
+  Entity group;
+  group.setName(_groups->currentText());
+  
   EAVDataBase db("groups");
-  QStringList l;
-  db.names(l);
-
-  QuoteDataBase qdb;
-  SymbolKey symkeys;
-  int loop = 0;
-  for (; loop < l.count(); loop++)
+  if (db.get(group))
   {
-    Symbol bd;
-    bd.set(symkeys.indexToString(SymbolKey::_SYMBOL), Data(l.at(loop)));
-
-    qdb.getSymbol(bd);
-
-    QListWidgetItem *item = new QListWidgetItem;
-    item->setText(l.at(loop));
-    
-    Data name;
-    bd.toData(symkeys.indexToString(SymbolKey::_SYMBOL), name);
-    item->setToolTip(name.toString());
-    
-    _nav->addItem(item);
+    qDebug() << "GroupPage::updateList: EAVDataBase error for" << _groups->currentText();
+    return;
   }
+
+  KeyGroupDataBase keys;
+  Data td;
+  group.toData(keys.indexToString(KeyGroupDataBase::_LIST), td);
+  QStringList l = td.toString().split(";");
+  
+  _nav->setSymbols(l);
 }
 
 void GroupPage::selectionChanged ()
 {
   bool status = TRUE;
   QList<QListWidgetItem *> l = _nav->selectedItems();
-  if (! l.count())
+  if (! l.size())
     status = FALSE;
   _actions.value(_ADD_GROUP)->setEnabled(status);
 

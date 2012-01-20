@@ -21,8 +21,8 @@
 
 #include "CurveOHLC.h"
 #include "Strip.h"
-#include "CurveDataKey.h"
-#include "CurveBarKey.h"
+#include "KeyCurveData.h"
+#include "KeyCurveBar.h"
 
 #include <qwt_plot.h>
 #include <qwt_painter.h>
@@ -41,10 +41,10 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
   int size = sd->upperBound();
 
   Data style;
-  CurveDataKey cdkeys;
-  CurveBarKey cbkeys;
+  KeyCurveData cdkeys;
+  KeyCurveBar cbkeys;
   
-  _settings.toData(cdkeys.indexToString(CurveDataKey::_STYLE), style);
+  _settings.toData(cdkeys.indexToString(KeyCurveData::_STYLE), style);
   if (style.toString() == "OHLC")
   {
     for (; loop < size; loop++)
@@ -54,25 +54,25 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
         continue;
 
       Data td;
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_COLOR), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_COLOR), td))
 	continue;
       painter->setPen(td.toColor());
 
       int x = xMap.transform(loop);
       
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_OPEN), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_OPEN), td))
 	continue;
       int yo = yMap.transform(td.toDouble());
       
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), td))
 	continue;
       int yh = yMap.transform(td.toDouble());
       
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_LOW), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_LOW), td))
 	continue;
       int yl = yMap.transform(td.toDouble());
       
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_CLOSE), td))
 	continue;
       int yc = yMap.transform(td.toDouble());
       
@@ -100,11 +100,11 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
         continue;
 
       Data close;
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), close))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_CLOSE), close))
 	continue;
       
       Data open;
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_OPEN), open))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_OPEN), open))
 	continue;
       
       ff = FALSE;
@@ -112,7 +112,7 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
         ff = TRUE;
 
       Data color;
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_COLOR), color))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_COLOR), color))
 	continue;
       painter->setPen(color.toColor());
 
@@ -121,11 +121,11 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
       int xo = yMap.transform(open.toDouble());
 
       Data td;
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), td))
 	continue;
       int xh = yMap.transform(td.toDouble());
       
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_LOW), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_LOW), td))
 	continue;
       int xl = yMap.transform(td.toDouble());
       
@@ -163,24 +163,24 @@ int CurveOHLC::info (int index, Entity &data)
   Strip strip;
   QString d;
   
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   Data td;
-  if (bar.toData(cbkeys.indexToString(CurveBarKey::_OPEN), td))
+  if (bar.toData(cbkeys.indexToString(KeyCurveBar::_OPEN), td))
     return 1;
   strip.strip(td.toDouble(), 4, d);
   data.set(QString("O"), d);
 
-  if (bar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td))
+  if (bar.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), td))
     return 1;
   strip.strip(td.toDouble(), 4, d);
   data.set(QString("H"), d);
 
-  if (bar.toData(cbkeys.indexToString(CurveBarKey::_LOW), td))
+  if (bar.toData(cbkeys.indexToString(KeyCurveBar::_LOW), td))
     return 1;
   strip.strip(td.toDouble(), 4, d);
   data.set(QString("L"), d);
 
-  if (bar.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), td))
+  if (bar.toData(cbkeys.indexToString(KeyCurveBar::_CLOSE), td))
     return 1;
   strip.strip(td.toDouble(), 4, d);
   data.set(QString("C"), d);
@@ -194,13 +194,13 @@ int CurveOHLC::scalePoint (int i, QColor &color, double &v)
   if (_settings.toEntity(QString::number(i), bar))
     return 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   Data td;
-  if (bar.toData(cbkeys.indexToString(CurveBarKey::_COLOR), td))
+  if (bar.toData(cbkeys.indexToString(KeyCurveBar::_COLOR), td))
     return 1;
   color = td.toColor();
   
-  if (bar.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), td))
+  if (bar.toData(cbkeys.indexToString(KeyCurveBar::_CLOSE), td))
     return 1;
   v = td.toDouble();
 

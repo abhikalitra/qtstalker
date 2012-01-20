@@ -52,12 +52,14 @@ int PlotGroup::setPlot (Plot *p)
 
   QTabWidget *tw = _tabs.at(p->row());
 
-  tw->insertTab(p->col(), p, p->name());
+  int pos = tw->insertTab(p->col(), p, p->name());
 
   _plots.insert(p->name(), p);
 
   if (tw->isHidden())
     tw->show();
+
+  tw->setCurrentIndex(pos);
   
   return 0;
 }

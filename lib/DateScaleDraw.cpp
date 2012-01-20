@@ -22,9 +22,9 @@
 #include "DateScaleDraw.h"
 #include "GlobalSymbol.h"
 #include "DateRange.h"
-#include "CurveBarKey.h"
-#include "SymbolKey.h"
-#include "BarLengthType.h"
+#include "KeyCurveBar.h"
+#include "KeySymbol.h"
+#include "TypeBarLength.h"
 
 #include <QString>
 #include <QDebug>
@@ -45,10 +45,10 @@ void DateScaleDraw::setDates (Entity &d)
 {
   QList<QString> keys = d.ekeys();
   
-  CurveBarKey cbkeys;
-  SymbolKey symkeys;
+  KeyCurveBar cbkeys;
+  KeySymbol symkeys;
   Data length;
-  g_currentSymbol.toData(symkeys.indexToString(SymbolKey::_LENGTH), length);
+  g_currentSymbol.toData(symkeys.indexToString(KeySymbol::_LENGTH), length);
 
   DateRange dr;
   int loop = 0;
@@ -58,10 +58,10 @@ void DateScaleDraw::setDates (Entity &d)
     d.toEntity(keys.at(loop), cb);
     
     Data td;
-    cb.toData(cbkeys.indexToString(CurveBarKey::_DATE), td);
+    cb.toData(cbkeys.indexToString(KeyCurveBar::_DATE), td);
 
     QDateTime tsd, ted;
-    dr.dateInterval(td.toDateTime(), (BarLengthType::Type) length.toInteger(), tsd, ted);
+    dr.dateInterval(td.toDateTime(), (TypeBarLength::Key) length.toInteger(), tsd, ted);
     QString s = dr.rangeKey(tsd, ted);
 
     _data.insert(s, keys.at(loop).toInt());
@@ -80,9 +80,9 @@ void DateScaleDraw::setDates ()
   for (; loop < keys.size(); loop++)
     _dateList << _dates.value(keys.at(loop));
 
-  SymbolKey symkeys;
+  KeySymbol symkeys;
   Data length;
-  g_currentSymbol.toData(symkeys.indexToString(SymbolKey::_LENGTH), length);
+  g_currentSymbol.toData(symkeys.indexToString(KeySymbol::_LENGTH), length);
   _barLength = length.toInteger();
 }
 
@@ -99,23 +99,23 @@ QwtText DateScaleDraw::label (double v) const
 
   QwtText date;
 
-  switch ((BarLengthType::Type) _barLength)
+  switch ((TypeBarLength::Key) _barLength)
   {
-    case BarLengthType::_MINUTE1:
-    case BarLengthType::_MINUTE5:
-    case BarLengthType::_MINUTE10:
-    case BarLengthType::_MINUTE15:
-    case BarLengthType::_MINUTE30:
-    case BarLengthType::_MINUTE60:
+    case TypeBarLength::_MINUTE1:
+    case TypeBarLength::_MINUTE5:
+    case TypeBarLength::_MINUTE10:
+    case TypeBarLength::_MINUTE15:
+    case TypeBarLength::_MINUTE30:
+    case TypeBarLength::_MINUTE60:
       date = _dateList.at(t).toString("d h:m");
       break;
-    case BarLengthType::_DAILY:
+    case TypeBarLength::_DAILY:
       if (_dateList.at(t).date().month() == 1)
         date = _dateList.at(t).toString("yyyy");
       else
         date = _dateList.at(t).toString("MMM");
       break;
-    case BarLengthType::_WEEKLY:
+    case TypeBarLength::_WEEKLY:
       if (_dateList.at(t).date().month() == 1)
         date = _dateList.at(t).toString("yyyy");
       else
@@ -125,7 +125,7 @@ QwtText DateScaleDraw::label (double v) const
         date = s;
       }
       break;
-    case BarLengthType::_MONTHLY:
+    case TypeBarLength::_MONTHLY:
       date = _dateList.at(t).toString("yyyy");
       break;
     default:
@@ -148,7 +148,7 @@ int DateScaleDraw::x (QDateTime d)
   int x = -1;
   DateRange dr;
   QDateTime tsd, ted;
-  dr.dateInterval(d, (BarLengthType::Type) _barLength, tsd, ted);
+  dr.dateInterval(d, (TypeBarLength::Key) _barLength, tsd, ted);
 
   QString s = dr.rangeKey(tsd, ted);
   if (_data.contains(s))
@@ -193,7 +193,7 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
   QDateTime nextHour = _dateList.at(loop);
   QDateTime oldDay = nextHour;
   nextHour.setTime(QTime(nextHour.time().hour(), 0, 0, 0));
-  if ((BarLengthType::Type) _barLength != BarLengthType::_MINUTE1)
+  if ((TypeBarLength::Key) _barLength != TypeBarLength::_MINUTE1)
     nextHour = nextHour.addSecs(7200);
   else
     nextHour = nextHour.addSecs(3600);
@@ -202,14 +202,14 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
   {
     _dateString.clear();
 
-    switch ((BarLengthType::Type) _barLength)
+    switch ((TypeBarLength::Key) _barLength)
     {
-      case BarLengthType::_MINUTE1:
-      case BarLengthType::_MINUTE5:
-      case BarLengthType::_MINUTE10:
-      case BarLengthType::_MINUTE15:
-      case BarLengthType::_MINUTE30:
-      case BarLengthType::_MINUTE60:
+      case TypeBarLength::_MINUTE1:
+      case TypeBarLength::_MINUTE5:
+      case TypeBarLength::_MINUTE10:
+      case TypeBarLength::_MINUTE15:
+      case TypeBarLength::_MINUTE30:
+      case TypeBarLength::_MINUTE60:
       {
         QDateTime date = _dateList.at(loop);
         if (date.date().day() != oldDay.date().day())
@@ -225,7 +225,7 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
         {
           if (date >= nextHour)
           {
-            if ((BarLengthType::Type) _barLength < BarLengthType::_MINUTE30)
+            if ((TypeBarLength::Key) _barLength < TypeBarLength::_MINUTE30)
             {
               // draw the short tick
               drawTick(painter, loop, 4);
@@ -238,14 +238,14 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
         {
           nextHour = date;
           nextHour.setTime(QTime(date.time().hour(), 0, 0, 0));
-          if ((BarLengthType::Type) _barLength != BarLengthType::_MINUTE1)
+          if ((TypeBarLength::Key) _barLength != TypeBarLength::_MINUTE1)
             nextHour = nextHour.addSecs(7200);
           else
             nextHour = nextHour.addSecs(3600);
         }
         break;
       }
-      case BarLengthType::_DAILY:
+      case TypeBarLength::_DAILY:
       {
         QDate date = _dateList.at(loop).date();
         if (date.month() != oldDate.month())
@@ -275,7 +275,7 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
         }
         break;
       }
-      case BarLengthType::_WEEKLY:
+      case TypeBarLength::_WEEKLY:
       {
         QDate date = _dateList.at(loop).date();
         if (date.month() != oldMonth.month())
@@ -299,7 +299,7 @@ void DateScaleDraw::draw (QPainter *painter, const QPalette &) const
         }
         break;
       }
-      case BarLengthType::_MONTHLY:
+      case TypeBarLength::_MONTHLY:
       {
         QDate date = _dateList.at(loop).date();
         if (date.year() != oldYear.year())

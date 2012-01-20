@@ -21,7 +21,7 @@
 
 #include "CommandGroupPanelRefresh.h"
 #include "ThreadMessage.h"
-#include "ThreadMessageType.h"
+#include "TypeThreadMessage.h"
 
 #include <QtDebug>
 
@@ -35,7 +35,7 @@ QString CommandGroupPanelRefresh::run (CommandParse &, void *d)
   Script *script = (Script *) d;
   
   Entity e;
-  e.set(QString("MESSAGE"), Data(ThreadMessageType::_GROUP_PANEL_REFRESH));
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_GROUP_PANEL_REFRESH));
   
   ThreadMessage tm;
   tm.sendMessage(e, script);

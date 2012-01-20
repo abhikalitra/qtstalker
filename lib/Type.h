@@ -19,27 +19,24 @@
  *  USA.
  */
 
-#ifndef LINE_STYLE_HPP
-#define LINE_STYLE_HPP
+// *************************************************************************************************
+// *************************************************************************************************
+
+#ifndef TYPE_HPP
+#define TYPE_HPP
 
 #include <QStringList>
 
-class LineStyle
+class Type
 {
   public:
-    enum Style
-    {
-      _DASH,
-      _DOT,
-      _LINE
-    };
-
-    LineStyle ();
+    Type ();
     QStringList list ();
-    int stringToStyle (QString);
-
+    QString indexToString (int);
+    int stringToIndex (QString);
+    
   protected:
-    QStringList _styles;
+    QStringList _list;
 };
 
 #endif

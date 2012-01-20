@@ -20,6 +20,8 @@
  */
 
 #include "SelectDialog.h"
+#include "WindowTitle.h"
+
 #include "../pics/select_all.xpm"
 #include "../pics/unselect_all.xpm"
 
@@ -32,9 +34,8 @@ SelectDialog::SelectDialog (QWidget *p) : Dialog (p)
   _keySize = "select_dialog_window_size";
   _keyPos = "select_dialog_window_position";
 
-  QStringList l;
-  l << "QtStalker" << ":" << tr("Select");
-  setWindowTitle(l.join(" "));
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("Select"), QString()));
 
   createGUI();
 

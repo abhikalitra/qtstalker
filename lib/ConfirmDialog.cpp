@@ -20,6 +20,7 @@
  */
 
 #include "ConfirmDialog.h"
+#include "WindowTitle.h"
 
 #include <QtDebug>
 #include <QMessageBox>
@@ -29,9 +30,8 @@ ConfirmDialog::ConfirmDialog (QWidget *p) : Dialog (p)
   _keySize = "confirm_dialog_window_size";
   _keyPos = "confirm_dialog_window_position";
 
-  QStringList l;
-  l << "QtStalker:" << tr("Confirm");
-  setWindowTitle(l.join(" "));
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("Confirm"), QString()));
 
   createGUI();
 

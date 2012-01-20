@@ -20,8 +20,9 @@
  */
 
 #include "CrossHairsButton.h"
-#include "Global.h"
 #include "GlobalPlotGroup.h"
+#include "WindowTitle.h"
+#include "Global.h"
 
 #include "../pics/crosshair.xpm"
 #include "../pics/color.xpm"
@@ -85,11 +86,9 @@ void CrossHairsButton::dialog ()
   QSettings settings(g_localSettings);
   QColor c(settings.value("crosshairs_color", "white").toString());
 
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << tr("Crosshair Color");
-
+  WindowTitle wt;;
   QColorDialog *dialog = new QColorDialog(c, this);
-  dialog->setWindowTitle(l.join(" "));
+  dialog->setWindowTitle(wt.title(tr("Crosshair Color"), QString()));
   connect(dialog, SIGNAL(colorSelected(const QColor &)), this, SLOT(dialog2(QColor)));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   dialog->show();

@@ -20,7 +20,7 @@
  */
 
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 #include "TALibInput.h"
 #include "TALibOutput.h"
 #include "ScriptVerifyCurveKeys.h"
@@ -106,254 +106,254 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
 
   int ioutFlag = 0;
   TA_RetCode tarc = TA_SUCCESS;
-  switch ((TALibFunctionKey::Key) function.toInteger())
+  switch ((TypeTALibFunction::Key) function.toInteger())
   {
-    case TALibFunctionKey::_2CROWS:
+    case TypeTALibFunction::_2CROWS:
       tarc = TA_CDL2CROWS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_3BLACKCROWS:
+    case TypeTALibFunction::_3BLACKCROWS:
       tarc = TA_CDL3BLACKCROWS(0,  size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_3INSIDE:
+    case TypeTALibFunction::_3INSIDE:
       tarc = TA_CDL3INSIDE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_3LINESTRIKE:
+    case TypeTALibFunction::_3LINESTRIKE:
       tarc = TA_CDL3LINESTRIKE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_3OUTSIDE:
+    case TypeTALibFunction::_3OUTSIDE:
       tarc = TA_CDL3OUTSIDE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_3STARSINSOUTH:
+    case TypeTALibFunction::_3STARSINSOUTH:
       tarc = TA_CDL3STARSINSOUTH(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_3WHITESOLDIERS:
+    case TypeTALibFunction::_3WHITESOLDIERS:
       tarc = TA_CDL3WHITESOLDIERS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_ADVANCEBLOCK:
+    case TypeTALibFunction::_ADVANCEBLOCK:
       tarc = TA_CDLADVANCEBLOCK(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_BELTHOLD:
+    case TypeTALibFunction::_BELTHOLD:
       tarc = TA_CDLBELTHOLD(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_BREAKAWAY:
+    case TypeTALibFunction::_BREAKAWAY:
       tarc = TA_CDLBREAKAWAY(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_CLOSINGMARUBOZU:
+    case TypeTALibFunction::_CLOSINGMARUBOZU:
       tarc = TA_CDLCLOSINGMARUBOZU(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_CONCEALBABYSWALL:
+    case TypeTALibFunction::_CONCEALBABYSWALL:
       tarc = TA_CDLCONCEALBABYSWALL(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_COUNTERATTACK:
+    case TypeTALibFunction::_COUNTERATTACK:
       tarc = TA_CDLCOUNTERATTACK(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_DOJI:
+    case TypeTALibFunction::_DOJI:
       tarc = TA_CDLDOJI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_DOJISTAR:
+    case TypeTALibFunction::_DOJISTAR:
       tarc = TA_CDLDOJISTAR(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_DRAGONFLYDOJI:
+    case TypeTALibFunction::_DRAGONFLYDOJI:
       tarc = TA_CDLDRAGONFLYDOJI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_ENGULFING:
+    case TypeTALibFunction::_ENGULFING:
       tarc = TA_CDLENGULFING(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_GAPSIDESIDEWHITE:
+    case TypeTALibFunction::_GAPSIDESIDEWHITE:
       tarc = TA_CDLGAPSIDESIDEWHITE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_GRAVESTONEDOJI:
+    case TypeTALibFunction::_GRAVESTONEDOJI:
       tarc = TA_CDLGRAVESTONEDOJI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_HAMMER:
+    case TypeTALibFunction::_HAMMER:
       tarc = TA_CDLHAMMER(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_HANGINGMAN:
+    case TypeTALibFunction::_HANGINGMAN:
       tarc = TA_CDLHANGINGMAN(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_HARAMI:
+    case TypeTALibFunction::_HARAMI:
       tarc = TA_CDLHARAMI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_HARAMICROSS:
+    case TypeTALibFunction::_HARAMICROSS:
       tarc = TA_CDLHARAMICROSS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_HIGHWAVE:
+    case TypeTALibFunction::_HIGHWAVE:
       tarc = TA_CDLHIGHWAVE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_HIKKAKE:
+    case TypeTALibFunction::_HIKKAKE:
       tarc = TA_CDLHIKKAKE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_HIKKAKEMOD:
+    case TypeTALibFunction::_HIKKAKEMOD:
       tarc = TA_CDLHIKKAKEMOD(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_HOMINGPIGEON:
+    case TypeTALibFunction::_HOMINGPIGEON:
       tarc = TA_CDLHOMINGPIGEON(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_IDENTICAL3CROWS:
+    case TypeTALibFunction::_IDENTICAL3CROWS:
       tarc = TA_CDLIDENTICAL3CROWS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_INNECK:
+    case TypeTALibFunction::_INNECK:
       tarc = TA_CDLINNECK(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_INVERTEDHAMMER:
+    case TypeTALibFunction::_INVERTEDHAMMER:
       tarc = TA_CDLINVERTEDHAMMER(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_KICKING:
+    case TypeTALibFunction::_KICKING:
       tarc = TA_CDLKICKING(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_KICKINGBYLENGTH:
+    case TypeTALibFunction::_KICKINGBYLENGTH:
       tarc = TA_CDLKICKINGBYLENGTH(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_LADDERBOTTOM:
+    case TypeTALibFunction::_LADDERBOTTOM:
       tarc = TA_CDLLADDERBOTTOM(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_LONGLEGGEDDOJI:
+    case TypeTALibFunction::_LONGLEGGEDDOJI:
       tarc = TA_CDLLONGLEGGEDDOJI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_LONGLINE:
+    case TypeTALibFunction::_LONGLINE:
       tarc = TA_CDLLONGLINE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_MARUBOZU:
+    case TypeTALibFunction::_MARUBOZU:
       tarc = TA_CDLMARUBOZU(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_MATCHINGLOW:
+    case TypeTALibFunction::_MATCHINGLOW:
       tarc = TA_CDLMATCHINGLOW(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_ONNECK:
+    case TypeTALibFunction::_ONNECK:
       tarc = TA_CDLONNECK(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_PIERCING:
+    case TypeTALibFunction::_PIERCING:
       tarc = TA_CDLPIERCING(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_RICKSHAWMAN:
+    case TypeTALibFunction::_RICKSHAWMAN:
       tarc = TA_CDLRICKSHAWMAN(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_RISEFALL3METHODS:
+    case TypeTALibFunction::_RISEFALL3METHODS:
       tarc = TA_CDLRISEFALL3METHODS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_SEPARATINGLINES:
+    case TypeTALibFunction::_SEPARATINGLINES:
       tarc = TA_CDLSEPARATINGLINES(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_SHOOTINGSTAR:
+    case TypeTALibFunction::_SHOOTINGSTAR:
       tarc = TA_CDLSHOOTINGSTAR(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_SHORTLINE:
+    case TypeTALibFunction::_SHORTLINE:
       tarc = TA_CDLSHORTLINE(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_SPINNINGTOP:
+    case TypeTALibFunction::_SPINNINGTOP:
       tarc = TA_CDLSPINNINGTOP(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_STALLEDPATTERN:
+    case TypeTALibFunction::_STALLEDPATTERN:
       tarc = TA_CDLSTALLEDPATTERN(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_STICKSANDWICH:
+    case TypeTALibFunction::_STICKSANDWICH:
       tarc = TA_CDLSTICKSANDWICH(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_TAKURI:
+    case TypeTALibFunction::_TAKURI:
       tarc = TA_CDLTAKURI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_TASUKIGAP:
+    case TypeTALibFunction::_TASUKIGAP:
       tarc = TA_CDLTASUKIGAP(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_THRUSTING:
+    case TypeTALibFunction::_THRUSTING:
       tarc = TA_CDLTHRUSTING(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_TRISTAR:
+    case TypeTALibFunction::_TRISTAR:
       tarc = TA_CDLTRISTAR(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_UNIQUE3RIVER:
+    case TypeTALibFunction::_UNIQUE3RIVER:
       tarc = TA_CDLUNIQUE3RIVER(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_UPSIDEGAP2CROWS:
+    case TypeTALibFunction::_UPSIDEGAP2CROWS:
       tarc = TA_CDLUPSIDEGAP2CROWS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_XSIDEGAP3METHODS:
+    case TypeTALibFunction::_XSIDEGAP3METHODS:
       tarc = TA_CDLXSIDEGAP3METHODS(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_ABANDONEDBABY:
+    case TypeTALibFunction::_ABANDONEDBABY:
       tarc = TA_CDLABANDONEDBABY(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], pen.toInteger(), &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_DARKCLOUDCOVER:
+    case TypeTALibFunction::_DARKCLOUDCOVER:
       tarc = TA_CDLDARKCLOUDCOVER(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], pen.toInteger(), &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_EVENINGDOJISTAR:
+    case TypeTALibFunction::_EVENINGDOJISTAR:
       tarc = TA_CDLEVENINGDOJISTAR(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], pen.toInteger(), &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_EVENINGSTAR:
+    case TypeTALibFunction::_EVENINGSTAR:
       tarc = TA_CDLEVENINGSTAR(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], pen.toInteger(), &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_MORNINGDOJISTAR:
+    case TypeTALibFunction::_MORNINGDOJISTAR:
       tarc = TA_CDLMORNINGDOJISTAR(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], pen.toInteger(), &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_AD:
+    case TypeTALibFunction::_AD:
       tarc = TA_AD(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_ADX:
+    case TypeTALibFunction::_ADX:
       tarc = TA_ADX(0, size - 1, &in[0], &in2[0], &in3[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_ADXR:
+    case TypeTALibFunction::_ADXR:
       tarc = TA_ADXR(0, size - 1, &in[0], &in2[0], &in3[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_APO:
+    case TypeTALibFunction::_APO:
     {
       Data fp, sp, ma;
       parms.toData(QString("PERIOD_FAST"), fp);
@@ -362,13 +362,13 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
       tarc = TA_APO(0, size - 1, &in[0], fp.toInteger(), sp.toInteger(), (TA_MAType) ma.toInteger(), &outBeg, &outNb, &out[0]);
       break;
     }
-    case TALibFunctionKey::_AROON:
+    case TypeTALibFunction::_AROON:
       tarc = TA_AROON(0, size - 1, &in[0], &in2[0], period.toInteger(), &outBeg, &outNb, &out[0], &out2[0]);
       break;
-    case TALibFunctionKey::_ATR:
+    case TypeTALibFunction::_ATR:
       tarc = TA_ATR(0, size - 1, &in[0], &in2[0], &in3[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_BBANDS:
+    case TypeTALibFunction::_BBANDS:
     {
       Data type, udev, ldev;
       parms.toData(QString("MA_TYPE"), type);
@@ -377,50 +377,50 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
       tarc = TA_BBANDS(0, size - 1, &in[0], period.toInteger(), udev.toDouble(), ldev.toDouble(), (TA_MAType) type.toInteger(), &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
       break;
     }
-    case TALibFunctionKey::_BETA:
+    case TypeTALibFunction::_BETA:
       tarc = TA_BETA(0, size - 1, &in[0], &in2[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_BOP:
+    case TypeTALibFunction::_BOP:
       tarc = TA_BOP(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_CCI:
+    case TypeTALibFunction::_CCI:
       tarc = TA_CCI(0, size - 1, &in[0], &in2[0], &in3[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_CMO:
+    case TypeTALibFunction::_CMO:
       tarc = TA_CMO(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_CORREL:
+    case TypeTALibFunction::_CORREL:
       tarc = TA_CORREL(0, size - 1, &in[0], &in2[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_HT_DCPERIOD:
+    case TypeTALibFunction::_HT_DCPERIOD:
       tarc = TA_HT_DCPERIOD (0, size - 1, &in[0], &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_HT_DCPHASE:
+    case TypeTALibFunction::_HT_DCPHASE:
       tarc = TA_HT_DCPHASE (0, size - 1, &in[0], &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_HT_TRENDLINE:
+    case TypeTALibFunction::_HT_TRENDLINE:
       tarc = TA_HT_TRENDLINE (0, size - 1, &in[0], &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_HT_TRENDMODE:
+    case TypeTALibFunction::_HT_TRENDMODE:
       tarc = TA_HT_TRENDMODE (0, size - 1, &in[0], &outBeg, &outNb, &iout[0]);
       ioutFlag++;
       break;
-    case TALibFunctionKey::_LR_LINEARREG:
+    case TypeTALibFunction::_LR_LINEARREG:
       rc = TA_LINEARREG(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_LR_ANGLE:
+    case TypeTALibFunction::_LR_ANGLE:
       rc = TA_LINEARREG_ANGLE(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_LR_INTERCEPT:
+    case TypeTALibFunction::_LR_INTERCEPT:
       rc = TA_LINEARREG_INTERCEPT(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_LR_SLOPE:
+    case TypeTALibFunction::_LR_SLOPE:
       rc = TA_LINEARREG_SLOPE(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_LR_TSF:
+    case TypeTALibFunction::_LR_TSF:
       rc = TA_TSF(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_MACD:
+    case TypeTALibFunction::_MACD:
     {
       Data fp, fma, sp, sma, sigp, sigma;
       parms.toData(QString("PERIOD_FAST"), fp);
@@ -432,7 +432,7 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
       tarc = TA_MACDEXT(0, size - 1, &in[0], fp.toInteger(), (TA_MAType) fma.toInteger(), sp.toInteger(), (TA_MAType) sma.toInteger(), sigp.toInteger(), (TA_MAType) sigma.toInteger(), &outBeg, &outNb, &out[0], &out2[0], &out3[0]);
       break;
     }
-    case TALibFunctionKey::_MAMA:
+    case TypeTALibFunction::_MAMA:
     {
       Data fl, sl;
       parms.toData(QString("LIMIT_FAST"), fl);
@@ -440,28 +440,28 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
       tarc = TA_MAMA(0, size - 1, &in[0], fl.toDouble(), sl.toDouble(), &outBeg, &outNb, &out[0], &out2[0]);
       break;
     }
-    case TALibFunctionKey::_MAX:
+    case TypeTALibFunction::_MAX:
       tarc = TA_MAX(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_MDI:
+    case TypeTALibFunction::_MDI:
       tarc = TA_MINUS_DI(0, size - 1, &in[0], &in2[0], &in3[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_MFI:
+    case TypeTALibFunction::_MFI:
       tarc = TA_MFI(0, size - 1, &in[0], &in2[0], &in3[0], &in4[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_MIN:
+    case TypeTALibFunction::_MIN:
       tarc = TA_MIN(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_MOM:
+    case TypeTALibFunction::_MOM:
       tarc = TA_MOM(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_PDI:
+    case TypeTALibFunction::_PDI:
       tarc = TA_PLUS_DI(0, size - 1, &in[0], &in2[0], &in3[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_PHASOR:
+    case TypeTALibFunction::_PHASOR:
       tarc = TA_HT_PHASOR (0, size - 1, &in[0], &outBeg, &outNb, &out[0], &out2[0]);
       break;
-    case TALibFunctionKey::_PPO:
+    case TypeTALibFunction::_PPO:
     {
       Data fp, sp, ma;
       parms.toData(QString("PERIOD_FAST"), fp);
@@ -470,22 +470,22 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
       tarc = TA_PPO(0, size - 1, &in[0], fp.toInteger(), sp.toInteger(), (TA_MAType) ma.toInteger(), &outBeg, &outNb, &out[0]);
       break;
     }
-    case TALibFunctionKey::_ROC:
+    case TypeTALibFunction::_ROC:
       tarc = TA_ROC(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_ROCP:
+    case TypeTALibFunction::_ROCP:
       tarc = TA_ROCP(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_ROCR:
+    case TypeTALibFunction::_ROCR:
       tarc = TA_ROCR(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_ROCR100:
+    case TypeTALibFunction::_ROCR100:
       tarc = TA_ROCR100(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_RSI:
+    case TypeTALibFunction::_RSI:
       tarc = TA_RSI(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_SAR:
+    case TypeTALibFunction::_SAR:
     {
       Data si, sm;
       parms.toData(QString("STEP_INIT"), si);
@@ -493,17 +493,17 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
       tarc = TA_SAR(0, size - 1, &in[0], &in2[0], si.toDouble(), sm.toDouble(), &outBeg, &outNb, &out[0]);
       break;
     }
-    case TALibFunctionKey::_SINE:
+    case TypeTALibFunction::_SINE:
       tarc = TA_HT_SINE (0, size - 1, &in[0], &outBeg, &outNb, &out[0], &out2[0]);
       break;
-    case TALibFunctionKey::_STDDEV:
+    case TypeTALibFunction::_STDDEV:
     {
       Data dev;
       parms.toData(QString("DEV"), dev);
       tarc = TA_STDDEV(0, size - 1, &in[0], period.toInteger(), dev.toDouble(), &outBeg, &outNb, &out[0]);
       break;
     }
-    case TALibFunctionKey::_STOCHF:
+    case TypeTALibFunction::_STOCHF:
     {
       Data pk, pd, ma;
       parms.toData(QString("PERIOD_K"), pk);
@@ -512,10 +512,10 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
       tarc = TA_STOCHF(0, size - 1, &in[0], &in2[0], &in3[0], pk.toInteger(), pd.toInteger(), (TA_MAType) ma.toInteger(), &outBeg, &outNb, &out[0], &out2[0]);
       break;
     }
-    case TALibFunctionKey::_STOCHRSI:
+    case TypeTALibFunction::_STOCHRSI:
       tarc = TA_STOCHRSI(0, size - 1, &in[0], period.toInteger(), period.toInteger(), 1, (TA_MAType) 0, &outBeg, &outNb, &out[0], &out2[0]);
       break;
-    case TALibFunctionKey::_STOCHS:
+    case TypeTALibFunction::_STOCHS:
     {
       Data fk, sk, sd, kma, dma;
       parms.toData(QString("PERIOD_FK"), fk);
@@ -526,17 +526,17 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
       tarc = TA_STOCH(0, size - 1, &in[0], &in2[0], &in3[0], fk.toInteger(), sk.toInteger(), (TA_MAType) kma.toInteger(), sd.toInteger(), (TA_MAType) dma.toInteger(), &outBeg, &outNb, &out[0], &out2[0]);
       break;
     }
-    case TALibFunctionKey::_T3:
+    case TypeTALibFunction::_T3:
     {
       Data vf;
       parms.toData(QString("V"), vf);
       tarc = TA_T3(0, size - 1, &in[0], period.toInteger(), vf.toDouble(), &outBeg, &outNb, &out[0]);
       break;
     }
-    case TALibFunctionKey::_TRIX:
+    case TypeTALibFunction::_TRIX:
       tarc = TA_TRIX(0, size - 1, &in[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
-    case TALibFunctionKey::_ULTOSC:
+    case TypeTALibFunction::_ULTOSC:
     {
       Data sp, mp, lp;
       parms.toData(QString("PERIOD_S"), sp);
@@ -545,14 +545,14 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
       tarc = TA_ULTOSC(0, size - 1, &in[0], &in2[0], &in3[0], sp.toInteger(), mp.toInteger(), lp.toInteger(), &outBeg, &outNb, &out[0]);
       break;
     }
-    case TALibFunctionKey::_VAR:
+    case TypeTALibFunction::_VAR:
     {
       Data dev;
       parms.toData(QString("DEV"), dev);
       tarc = TA_VAR(0, size - 1, &in[0], period.toInteger(), dev.toDouble(), &outBeg, &outNb, &out[0]);
       break;
     }
-    case TALibFunctionKey::_WILLR:
+    case TypeTALibFunction::_WILLR:
       tarc = TA_WILLR(0, size - 1, &in[0], &in2[0], &in3[0], period.toInteger(), &outBeg, &outNb, &out[0]);
       break;
     default:

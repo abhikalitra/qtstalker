@@ -21,7 +21,8 @@
 
 #include "SymbolDialog.h"
 #include "QuoteDataBase.h"
-#include "SymbolKey.h"
+#include "KeySymbol.h"
+#include "WindowTitle.h"
 
 #include "../pics/search.xpm"
 #include "../pics/select_all.xpm"
@@ -38,11 +39,10 @@ SymbolDialog::SymbolDialog (QWidget *p) : Dialog (p)
   _keySize = "symbol_dialog_window_size";
   _keyPos = "symbol_dialog_window_position";
 
-  setWindowTitle("Qtstalker: " + tr("Select Symbols"));
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("Select Symbols"), QString()));
 
   createGUI();
-
-  loadExchanges();
 
   loadSettings();
 
@@ -54,13 +54,9 @@ SymbolDialog::SymbolDialog (QWidget *p) : Dialog (p)
 
 void SymbolDialog::createGUI ()
 {
-  _exchanges = new QComboBox;
-  _exchanges->setToolTip(tr("Select a specific exchange or * for all"));
-  _form->addRow(tr("Exchange"), _exchanges);
-
   _search = new LineEdit(this);
-  _search->setText("*");
-  _search->setToolTip(tr("Enter a partial search like %OOG% or * for all"));
+  _search->setText("%");
+  _search->setToolTip(tr("Enter a partial search like %OOG% or % for all"));
   _form->addRow(tr("Symbol pattern"), _search);
 
   _searchButton = new QPushButton;
@@ -87,10 +83,8 @@ void SymbolDialog::createGUI ()
   QStringList l;
   l << tr("Symbol") << tr("Name");
 
-  _searchList = new QTreeWidget;
+  _searchList = new SymbolListWidget;
   _searchList->setSortingEnabled(FALSE);
-  _searchList->setRootIsDecorated(FALSE);
-  _searchList->setHeaderLabels(l);
   _searchList->setSelectionMode(QAbstractItemView::ExtendedSelection);
   connect(_searchList, SIGNAL(itemSelectionChanged()), this, SLOT(searchSelectionChanged()));
 //  connect(_searchList, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(done()));
@@ -141,10 +135,8 @@ void SymbolDialog::createGUI ()
   tvbox->setMargin(0);
   gbox->setLayout(tvbox);
 
-  _symbolList = new QTreeWidget;
+  _symbolList = new SymbolListWidget;
   _symbolList->setSortingEnabled(FALSE);
-  _symbolList->setRootIsDecorated(FALSE);
-  _symbolList->setHeaderLabels(l);
   _symbolList->setSelectionMode(QAbstractItemView::ExtendedSelection);
   connect(_symbolList, SIGNAL(itemSelectionChanged()), this, SLOT(symbolSelectionChanged()));
   tvbox->addWidget(_symbolList);
@@ -153,7 +145,7 @@ void SymbolDialog::createGUI ()
 void SymbolDialog::searchSelectionChanged ()
 {
   int status = 0;
-  QList<QTreeWidgetItem *> sl = _searchList->selectedItems();
+  QList<QListWidgetItem *> sl = _searchList->selectedItems();
   if (sl.count())
     status = 1;
 
@@ -163,7 +155,7 @@ void SymbolDialog::searchSelectionChanged ()
 void SymbolDialog::symbolSelectionChanged ()
 {
   int status = 0;
-  QList<QTreeWidgetItem *> sl = _symbolList->selectedItems();
+  QList<QListWidgetItem *> sl = _symbolList->selectedItems();
   if (sl.count())
     status = 1;
 
@@ -176,99 +168,53 @@ void SymbolDialog::done ()
 
   _symbols.clear();
   int loop = 0;
-  for (; loop < _symbolList->topLevelItemCount(); loop++)
-    _symbols << _symbolList->topLevelItem(loop)->text(0);
+  for (; loop < _symbolList->count(); loop++)
+    _symbols << _symbolList->item(loop)->text();
 
-  emit signalDone(_exchanges->currentText(), _search->text(), _symbols);
+  emit signalDone(QString(), _search->text(), _symbols);
 
   accept();
 }
 
 void SymbolDialog::addButtonPressed ()
 {
-  QList<QTreeWidgetItem *> sl = _searchList->selectedItems();
+  QList<QListWidgetItem *> sl = _searchList->selectedItems();
 
+  KeySymbol keys;
   int loop = 0;
-  for (; loop < sl.count(); loop++)
+  for (; loop < sl.size(); loop++)
   {
-    QTreeWidgetItem *item = sl.at(loop);
-
-    QTreeWidgetItem *nitem = new QTreeWidgetItem(_symbolList);
-    nitem->setText(0, item->text(0));
-    nitem->setText(1, item->text(1));
+    QListWidgetItem *item = sl.at(loop);
+    
+    Symbol symbol;
+    symbol.set(keys.indexToString(KeySymbol::_SYMBOL), Data(item->text()));
+    symbol.set(keys.indexToString(KeySymbol::_NAME), Data(item->toolTip()));
+    
+    _symbolList->addSymbol(symbol);
   }
-
-  for (loop = 0; loop < _symbolList->columnCount(); loop++)
-    _symbolList->resizeColumnToContents(loop);
 }
 
 void SymbolDialog::deleteButtonPressed ()
 {
-  QList<QTreeWidgetItem *> sl = _symbolList->selectedItems();
+  QList<QListWidgetItem *> sl = _symbolList->selectedItems();
 
   int loop = 0;
-  for (; loop < sl.count(); loop++)
+  for (; loop < sl.size(); loop++)
   {
-    QTreeWidgetItem *item = sl.at(loop);
+    QListWidgetItem *item = sl.at(loop);
     delete item;
   }
-
-  for (loop = 0; loop < _symbolList->columnCount(); loop++)
-    _symbolList->resizeColumnToContents(loop);
 
   symbolSelectionChanged();
 }
 
 void SymbolDialog::searchButtonPressed ()
 {
-  QStringList tl;
-  tl << _exchanges->currentText();
-  
-  QString s = _search->text();
-  if (s.isEmpty())
-    tl << "*";
-  else
-    tl << s;
-
-  SymbolKey keys;
-  Symbol symbol;
-  symbol.set(keys.indexToString(SymbolKey::_SYMBOL), Data(tl.join(":")));
-
   QuoteDataBase db;
   QList<Symbol> l;
-  db.search(symbol, l);
-
-  _searchList->clear();
-
-  int loop = 0;
-  for (; loop < l.size(); loop++)
-  {
-    Symbol bd = l.at(loop);
-    QTreeWidgetItem *item = new QTreeWidgetItem(_searchList);
-    
-    Data td;
-    bd.toData(keys.indexToString(SymbolKey::_SYMBOL), td);
-    item->setText(0, td.toString());
-    
-    bd.toData(keys.indexToString(SymbolKey::_NAME), td);
-    item->setText(1, td.toString());
-  }
-
-  for (loop = 0; loop < _searchList->columnCount(); loop++)
-    _searchList->resizeColumnToContents(loop);
-}
-
-void SymbolDialog::loadExchanges ()
-{
-  QuoteDataBase db;
-  QStringList l;
-  db.getExchange(l);
-
-  l.prepend("*");
-
-  _exchanges->clear();
-  _exchanges->addItems(l);
-  _exchanges->setCurrentIndex(0);
+  db.search(_search->text(), l);
+  
+  _searchList->setSymbols(l);
 }
 
 QStringList SymbolDialog::symbols ()

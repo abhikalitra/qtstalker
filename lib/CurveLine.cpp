@@ -20,9 +20,9 @@
  */
 
 #include "CurveLine.h"
-#include "CurveDataKey.h"
-#include "CurveBarKey.h"
-#include "LineStyle.h"
+#include "KeyCurveData.h"
+#include "KeyCurveBar.h"
+#include "TypeLine.h"
 
 #include <qwt_plot.h>
 #include <qwt_painter.h>
@@ -42,23 +42,23 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
 
 //  painter->setRenderHint(QPainter::Antialiasing, TRUE);
 
-  LineStyle ls;
+  TypeLine ls;
   Data td;
-  CurveDataKey cdkeys;
-  CurveBarKey cbkeys;
+  KeyCurveData cdkeys;
+  KeyCurveBar cbkeys;
   
-  _settings.toData(cdkeys.indexToString(CurveDataKey::_STYLE), td);
-  int style = ls.stringToStyle(td.toString());
+  _settings.toData(cdkeys.indexToString(KeyCurveData::_STYLE), td);
+  int style = ls.stringToIndex(td.toString());
 
-  _settings.toData(cdkeys.indexToString(CurveDataKey::_PEN), td);
+  _settings.toData(cdkeys.indexToString(KeyCurveData::_PEN), td);
   QPen tpen = painter->pen();
   tpen.setWidth(td.toInteger());
-  switch ((LineStyle::Style) style)
+  switch ((TypeLine::Key) style)
   {
-    case LineStyle::_DASH:
+    case TypeLine::_DASH:
       tpen.setStyle((Qt::PenStyle) Qt::DashLine);
       break;
-    case LineStyle::_DOT:
+    case TypeLine::_DOT:
       tpen.setStyle((Qt::PenStyle) Qt::DotLine);
       break;
     default:
@@ -66,7 +66,7 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
       break;
   }
 
-  if (style == (LineStyle::Style) LineStyle::_DASH || style == (LineStyle::Style) LineStyle::_LINE)
+  if (style == (TypeLine::Key) TypeLine::_DASH || style == (TypeLine::Key) TypeLine::_LINE)
   {
     for (; loop < size; loop++)
     {
@@ -82,15 +82,15 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
       int x2 = xMap.transform(loop);
 
       Data td;
-      if (yb.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td))
+      if (yb.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td))
 	continue;
       int y = yMap.transform(td.toDouble());
       
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td))
 	continue;
       int y2 = yMap.transform(td.toDouble());
 
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_COLOR), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_COLOR), td))
 	continue;
       tpen.setColor(td.toColor());
       
@@ -110,11 +110,11 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
       int x = xMap.transform(loop);
 
       Data td;
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td))
         continue;
       int y = yMap.transform(td.toDouble());
 
-      if (b.toData(cbkeys.indexToString(CurveBarKey::_COLOR), td))
+      if (b.toData(cbkeys.indexToString(KeyCurveBar::_COLOR), td))
         continue;
       tpen.setColor(td.toColor());
       

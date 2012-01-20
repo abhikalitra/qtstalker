@@ -19,15 +19,15 @@
  *  USA.
  */
 
-#ifndef CANDLE_TYPE_HPP
-#define CANDLE_TYPE_HPP
+#ifndef TYPE_CANDLE_HPP
+#define TYPE_CANDLE_HPP
 
-#include <QStringList>
+#include "Type.h"
 
-class CandleType
+class TypeCandle : public Type
 {
   public:
-    enum Method
+    enum Key
     {
       _2CROWS,
       _3BLACKCROWS,
@@ -92,12 +92,7 @@ class CandleType
       _XSIDEGAP3METHODS
     };
 
-    CandleType ();
-    int fromString (QString);
-    QStringList list ();
-
-  private:
-    QStringList _method;
+    TypeCandle ();
 };
 
 #endif

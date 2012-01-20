@@ -22,7 +22,7 @@
 #include "CommandVFI.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
@@ -121,7 +121,7 @@ int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivo
   if (svck.keys4(ihigh, ilow, iclose, ivol, keys))
     return 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = period;
   for (; loop < keys.size(); loop++)
   {
@@ -129,21 +129,21 @@ int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivo
     if (ihigh.toEntity(keys.at(loop - period), hbar))
       continue;
     Data thigh;
-    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), thigh))
+    if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), thigh))
       continue;
     
     Entity lbar;
     if (ilow.toEntity(keys.at(loop - period), lbar))
       continue;
     Data tlow;
-    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tlow))
+    if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tlow))
       continue;
 
     Entity cbar;
     if (iclose.toEntity(keys.at(loop - period), cbar))
       continue;
     Data tclose;
-    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tclose))
+    if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tclose))
       continue;
     
     double inter = 0.0;
@@ -159,28 +159,28 @@ int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivo
       if (ihigh.toEntity(keys.at(i), hbar))
         continue;
       Data thigh;
-      if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), thigh))
+      if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), thigh))
         continue;
     
       Entity lbar;
       if (ilow.toEntity(keys.at(i), lbar))
         continue;
       Data tlow;
-      if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tlow))
+      if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tlow))
         continue;
 
       Entity cbar;
       if (iclose.toEntity(keys.at(i), cbar))
         continue;
       Data tclose;
-      if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tclose))
+      if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tclose))
         continue;
 
       Entity vbar;
       if (ivol.toEntity(keys.at(i), vbar))
         continue;
       Data tvol;
-      if (vbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tvol))
+      if (vbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tvol))
         continue;
       
       double ytypical = typical;
@@ -197,17 +197,17 @@ int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivo
 
     if (ihigh.toEntity(keys.at(loop - period), hbar))
       continue;
-    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), thigh))
+    if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), thigh))
       continue;
     
     if (ilow.toEntity(keys.at(loop - period), lbar))
       continue;
-    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tlow))
+    if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tlow))
       continue;
 
     if (iclose.toEntity(keys.at(loop - period), cbar))
       continue;
-    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tclose))
+    if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tclose))
       continue;
     
     close = tclose.toDouble();
@@ -221,28 +221,28 @@ int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivo
       if (ihigh.toEntity(keys.at(i), hbar))
         continue;
       Data thigh;
-      if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), thigh))
+      if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), thigh))
         continue;
     
       Entity lbar;
       if (ilow.toEntity(keys.at(i), lbar))
         continue;
       Data tlow;
-      if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tlow))
+      if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tlow))
         continue;
 
       Entity cbar;
       if (iclose.toEntity(keys.at(i), cbar))
         continue;
       Data tclose;
-      if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tclose))
+      if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tclose))
         continue;
 
       Entity vbar;
       if (ivol.toEntity(keys.at(i), vbar))
         continue;
       Data tvol;
-      if (vbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), tvol))
+      if (vbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tvol))
         continue;
       
       double ytypical = typical;
@@ -262,7 +262,7 @@ int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivo
     }
 
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(t));
     line.setEntity(keys.at(loop), b);
   }
 

@@ -23,7 +23,7 @@
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 
@@ -68,7 +68,7 @@ QString CommandSTDDEV::run (CommandParse &, void *d)
   Entity::toData(QString("DEV"), dev);
   
   Entity parms;
-  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_STDDEV));
+  parms.set(QString("FUNCTION"), Data(TypeTALibFunction::_STDDEV));
   parms.set(QString("PERIOD"), period);
   parms.set(QString("DEV"), dev);
   

@@ -28,9 +28,9 @@
 #include <QPoint>
 #include <QHash>
 #include <QAction>
-#include <QListWidget>
 
 #include "Symbol.h"
+#include "SymbolListWidget.h"
 
 class ChartPage : public QWidget
 {
@@ -67,7 +67,7 @@ class ChartPage : public QWidget
 
   protected:
     QString _searchString;
-    QListWidget *_nav;
+    SymbolListWidget *_nav;
     QMenu *_menu;
     QHash<int, QAction *> _actions;
 };

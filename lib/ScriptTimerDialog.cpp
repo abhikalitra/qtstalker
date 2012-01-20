@@ -21,8 +21,8 @@
 
 #include "ScriptTimerDialog.h"
 #include "EAVDataBase.h"
-#include "Global.h"
-#include "ScriptDataBaseKey.h"
+#include "WindowTitle.h"
+#include "KeyScriptDataBase.h"
 
 #include <QtDebug>
 
@@ -32,9 +32,8 @@ ScriptTimerDialog::ScriptTimerDialog (QWidget *p, QString name) : Dialog (p)
   _keySize = "script_timer_dialog_window_size";
   _keyPos = "script_timer_dialog_window_position";
 
-  QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Edit") << _name;
-  setWindowTitle(l.join(" "));
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("Edit Script Timer"), _name));
 
   createGUI();
   loadSettings();
@@ -81,13 +80,13 @@ void ScriptTimerDialog::done ()
   EAVDataBase db("scripts");
   db.transaction();
 
-  ScriptDataBaseKey skeys;
+  KeyScriptDataBase skeys;
   Entity data;
   data.setName(_name);
-  data.set(skeys.indexToString(ScriptDataBaseKey::_FILE), Data(file));
-  data.set(skeys.indexToString(ScriptDataBaseKey::_STARTUP), Data(_startup->isChecked()));
-  data.set(skeys.indexToString(ScriptDataBaseKey::_RUN_INTERVAL), Data(_interval->value()));
-  data.set(skeys.indexToString(ScriptDataBaseKey::_COMMAND), Data(_command->text()));
+  data.set(skeys.indexToString(KeyScriptDataBase::_FILE), Data(file));
+  data.set(skeys.indexToString(KeyScriptDataBase::_STARTUP), Data(_startup->isChecked()));
+  data.set(skeys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), Data(_interval->value()));
+  data.set(skeys.indexToString(KeyScriptDataBase::_COMMAND), Data(_command->text()));
   if (db.set(data))
   {
     qDebug() << "ScriptTimerDialog::done: error saving timer" << _name;
@@ -114,19 +113,19 @@ void ScriptTimerDialog::setGUI ()
     return;
   }
 
-  ScriptDataBaseKey skeys;
+  KeyScriptDataBase skeys;
   Data td;
-  data.toData(skeys.indexToString(ScriptDataBaseKey::_STARTUP), td);
+  data.toData(skeys.indexToString(KeyScriptDataBase::_STARTUP), td);
   _startup->setChecked(td.toBool());
 
-  data.toData(skeys.indexToString(ScriptDataBaseKey::_RUN_INTERVAL), td);
+  data.toData(skeys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), td);
   _interval->setValue(td.toInteger());
 
   QStringList l;
-  data.toData(skeys.indexToString(ScriptDataBaseKey::_FILE), td);
+  data.toData(skeys.indexToString(KeyScriptDataBase::_FILE), td);
   l << td.toString();
   _file->setFiles(l);
 
-  data.toData(skeys.indexToString(ScriptDataBaseKey::_COMMAND), td);
+  data.toData(skeys.indexToString(KeyScriptDataBase::_COMMAND), td);
   _command->setText(td.toString());
 }

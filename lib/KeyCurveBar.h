@@ -22,42 +22,30 @@
 // *************************************************************************************************
 // *************************************************************************************************
 
-#ifndef CHART_OBJECT_KEY_HPP
-#define CHART_OBJECT_KEY_HPP
+#ifndef KEY_CURVE_BAR_HPP
+#define KEY_CURVE_BAR_HPP
 
-#include "Keys.h"
+#include "Type.h"
 
-class ChartObjectKey : public Keys
+class KeyCurveBar : public Type
 {
   public:
     enum Key
     {
-      _ID,
       _DATE,
-      _DATE2,
-      _PRICE,
-      _PRICE2,
-      _COLOR,
-      _EXTEND,
-      _TEXT,
-      _FONT,
+      _OPEN,
       _HIGH,
       _LOW,
-      _LEVEL1,
-      _LEVEL2,
-      _LEVEL3,
-      _LEVEL4,
-      _LEVEL5,
-      _LEVEL6,
-      _SYMBOL,
-      _CHART,
-      _TYPE,
-      _Z,
-      _PEN,
-      _RO
+      _CLOSE,
+      _VOLUME,
+      _OI,
+      _COLOR,
+      _VALUE,
+      _UP,
+      _DOWN
     };
     
-    ChartObjectKey ();
+    KeyCurveBar ();
 };
 
 #endif

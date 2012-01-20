@@ -19,56 +19,25 @@
  *  USA.
  */
 
-#include "Operator.h"
+#ifndef SYMBOL_LIST_WIDGET_HPP
+#define SYMBOL_LIST_WIDGET_HPP
 
-Operator::Operator ()
+#include <QListWidget>
+#include <QStringList>
+
+#include "Symbol.h"
+
+class SymbolListWidget : public QListWidget
 {
-  _list << "<" << "<=" << "=" << "!=" << "=>" << ">";
-}
+  Q_OBJECT
+  
+  signals:
 
-QStringList & Operator::list ()
-{
-  return _list;
-}
+  public:
+    SymbolListWidget ();
+    void setSymbols (QList<Symbol> &);
+    void setSymbols (QStringList &);
+    void addSymbol (Symbol &);
+};
 
-int Operator::stringToOperator (QString d)
-{
-  return _list.indexOf(d);
-}
-
-int Operator::test (double val, Operator::Type op, double val2)
-{
-  int rc = 0;
-
-  switch (op)
-  {
-    case _LESS_THAN:
-      if (val < val2)
-        rc = 1;
-      break;
-    case _LESS_THAN_EQUAL:
-      if (val <= val2)
-        rc = 1;
-      break;
-    case _EQUAL:
-      if (val == val2)
-        rc = 1;
-      break;
-    case _NOT_EQUAL:
-      if (val != val2)
-        rc = 1;
-      break;
-    case _GREATER_THAN_EQUAL:
-      if (val >= val2)
-        rc = 1;
-      break;
-    case _GREATER_THAN:
-      if (val > val2)
-        rc = 1;
-      break;
-    default:
-      break;
-  }
-
-  return rc;
-}
+#endif

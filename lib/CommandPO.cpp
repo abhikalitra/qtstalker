@@ -22,9 +22,9 @@
 #include "CommandPO.h"
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
-#include "MAType.h"
+#include "TypeMA.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 
@@ -49,7 +49,7 @@ CommandPO::CommandPO ()
   td.setLabel(QObject::tr("Period Slow"));
   Entity::set(QString("PERIOD_SLOW"), td);
   
-  MAType mat;
+  TypeMA mat;
   td = Data(mat.list(), QString("EMA"));
   td.setLabel(QObject::tr("MA Type"));
   Entity::set(QString("MA"), td);
@@ -81,7 +81,7 @@ QString CommandPO::run (CommandParse &, void *d)
   Entity::toData(QString("MA"), ma);
   
   Entity parms;
-  TALibFunctionKey fkeys;
+  TypeTALibFunction fkeys;
   parms.set(QString("FUNCTION"), Data(fkeys.stringToIndex(method.toString())));
   parms.set(QString("PERIOD_FAST"), fp);
   parms.set(QString("PERIOD_SLOW"), sp);

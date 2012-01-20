@@ -23,7 +23,7 @@
 #include "Strip.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "GlobalSymbol.h"
 #include "Script.h"
 
@@ -67,7 +67,7 @@ QString CommandSymbolCurrent::run (CommandParse &, void *d)
   CurveData cline;
   CurveData vline;
   CurveData iline;
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   QList<QString> keys = bd.ekeys();
   for (; loop < keys.size(); loop++)
@@ -77,40 +77,40 @@ QString CommandSymbolCurrent::run (CommandParse &, void *d)
     
     // date
     Data td;
-    b.toData(cbkeys.indexToString(CurveBarKey::_DATE), td);
+    b.toData(cbkeys.indexToString(KeyCurveBar::_DATE), td);
 
     CurveBar db;
-    db.set(cbkeys.indexToString(CurveBarKey::_DATE), td);
+    db.set(cbkeys.indexToString(KeyCurveBar::_DATE), td);
     dline.setEntity(keys.at(loop), db);
 
     // open
-    b.toData(cbkeys.indexToString(CurveBarKey::_OPEN), td);
-    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    b.toData(cbkeys.indexToString(KeyCurveBar::_OPEN), td);
+    db.set(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
     oline.setEntity(keys.at(loop), db);
 
     // high
-    b.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td);
-    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    b.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), td);
+    db.set(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
     hline.setEntity(keys.at(loop), db);
 
     // low
-    b.toData(cbkeys.indexToString(CurveBarKey::_LOW), td);
-    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    b.toData(cbkeys.indexToString(KeyCurveBar::_LOW), td);
+    db.set(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
     lline.setEntity(keys.at(loop), db);
 
     // close
-    b.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), td);
-    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    b.toData(cbkeys.indexToString(KeyCurveBar::_CLOSE), td);
+    db.set(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
     cline.setEntity(keys.at(loop), db);
 
     // volume
-    b.toData(cbkeys.indexToString(CurveBarKey::_VOLUME), td);
-    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    b.toData(cbkeys.indexToString(KeyCurveBar::_VOLUME), td);
+    db.set(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
     vline.setEntity(keys.at(loop), db);
 
     // oi
-    b.toData(cbkeys.indexToString(CurveBarKey::_OI), td);
-    db.set(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+    b.toData(cbkeys.indexToString(KeyCurveBar::_OI), td);
+    db.set(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
     iline.setEntity(keys.at(loop), db);
   }
 

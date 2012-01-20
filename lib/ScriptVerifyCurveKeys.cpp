@@ -20,7 +20,7 @@
  */
 
 #include "ScriptVerifyCurveKeys.h"
-#include "EntityType.h"
+#include "TypeEntity.h"
 
 #include <QtDebug>
 
@@ -145,7 +145,7 @@ int ScriptVerifyCurveKeys::keys4 (Entity &in, Entity &in2, Entity &in3, Entity &
 
 int ScriptVerifyCurveKeys::verifyKeys (Entity &e, int &minKey, int &pos)
 {
-  if (e.type() != EntityType::_CURVE)
+  if (e.type() != TypeEntity::_CURVE)
     return 1;
 
   if (e.ekeyCount() < minKey)

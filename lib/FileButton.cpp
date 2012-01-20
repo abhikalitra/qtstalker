@@ -20,6 +20,7 @@
  */
 
 #include "FileButton.h"
+#include "WindowTitle.h"
 
 #include <QFileDialog>
 #include <QFileInfo>
@@ -57,10 +58,11 @@ void FileButton::fileDialog ()
     _path = fi.absolutePath();
   }
 
+  WindowTitle wt;
   QFileDialog *dialog = new QFileDialog(this);
   dialog->setFileMode(QFileDialog::AnyFile);
   dialog->setDirectory(_path);
-  dialog->setWindowTitle(tr("Select Files"));
+  dialog->setWindowTitle(wt.title(tr("Select Files"), QString()));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   connect(dialog, SIGNAL(filesSelected(const QStringList &)), this, SLOT(setFiles(QStringList)));
   dialog->show();

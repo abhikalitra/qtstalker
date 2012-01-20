@@ -20,7 +20,7 @@
  */
 
 #include "ScriptRunDialog.h"
-#include "Global.h"
+#include "WindowTitle.h"
 
 #include <QtDebug>
 
@@ -29,13 +29,12 @@ ScriptRunDialog::ScriptRunDialog (QWidget *p, QString file, QString command) : D
   _keySize = "script_run_dialog_window_size";
   _keyPos = "script_run_dialog_window_position";
 
-  QStringList l;
-  l << "QtStalker" << g_session << ":" << tr("Run Script");
-  setWindowTitle(l.join(" "));
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("Run Script"), QString()));
 
   createGUI();
 
-  l.clear();
+  QStringList l;
   l << file;
   _file->setFiles(l);
 

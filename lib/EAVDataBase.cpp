@@ -20,7 +20,7 @@
  */
 
 #include "EAVDataBase.h"
-#include "DataType.h"
+#include "TypeData.h"
 
 #include <QtDebug>
 
@@ -70,7 +70,7 @@ int EAVDataBase::get (Entity &data)
 
   while (q.next())
   {
-    Data d((DataType::Type) q.value(2).toInt());
+    Data d((TypeData::Key) q.value(2).toInt());
     if (d.set(q.value(1).toString(), q.value(2).toInt()))
       continue;
 

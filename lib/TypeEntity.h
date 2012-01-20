@@ -19,23 +19,21 @@
  *  USA.
  */
 
-// *************************************************************************************************
-// *************************************************************************************************
+#ifndef TYPE_ENTITY_HPP
+#define TYPE_ENTITY_HPP
 
-#ifndef GROUP_DATA_BASE_KEY_HPP
-#define GROUP_DATA_BASE_KEY_HPP
-
-#include "Keys.h"
-
-class GroupDataBaseKey : public Keys
+class TypeEntity
 {
   public:
     enum Key
     {
-      _LIST
+      _SETTING,
+      _CHART_OBJECT,
+      _CURVE,
+      _CURVE_BAR,
+      _SYMBOL,
+      _COMMAND
     };
-    
-    GroupDataBaseKey ();
 };
 
 #endif

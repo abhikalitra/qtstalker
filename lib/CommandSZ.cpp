@@ -25,7 +25,7 @@
 #include "CommandSZ.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
 
@@ -146,7 +146,7 @@ int CommandSZ::getSZ (Entity &ihigh, Entity &ilow, int method, int period, int n
     old_dntrend_stops[loop] = 0;
   }
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int ipos = period + 1;
   int start = ipos;
   for (; ipos < keys.size(); ipos++)
@@ -166,28 +166,28 @@ int CommandSZ::getSZ (Entity &ihigh, Entity &ilow, int method, int period, int n
       if (ihigh.toEntity(keys.at(lbloop), hbar))
         continue;
       Data high;
-      if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), high))
+      if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), high))
         continue;
       
       Entity phbar;
       if (ihigh.toEntity(keys.at(lbloop - 1), phbar))
         continue;
       Data phigh;
-      if (phbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), phigh))
+      if (phbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), phigh))
         continue;
 
       Entity lbar;
       if (ilow.toEntity(keys.at(lbloop), lbar))
         continue;
       Data low;
-      if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), low))
+      if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), low))
         continue;
       
       Entity plbar;
       if (ilow.toEntity(keys.at(lbloop - 1), plbar))
         continue;
       Data plow;
-      if (plbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), plow))
+      if (plbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), plow))
         continue;
 
       double lo_curr = low.toDouble();
@@ -215,14 +215,14 @@ int CommandSZ::getSZ (Entity &ihigh, Entity &ilow, int method, int period, int n
     if (ihigh.toEntity(keys.at(ipos - 1), phbar))
       continue;
     Data phigh;
-    if (phbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), phigh))
+    if (phbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), phigh))
       continue;
 
     Entity plbar;
     if (ilow.toEntity(keys.at(ipos - 1), plbar))
       continue;
     Data plow;
-    if (plbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), plow))
+    if (plbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), plow))
       continue;
 
     double lo_last = plow.toDouble();
@@ -254,10 +254,10 @@ int CommandSZ::getSZ (Entity &ihigh, Entity &ilow, int method, int period, int n
     old_dntrend_stops[0] = dntrend_stop;
 
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(adjusted_uptrend_stop));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(adjusted_uptrend_stop));
     sz_uptrend.setEntity(keys.at(ipos), b);
 
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(adjusted_dntrend_stop));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(adjusted_dntrend_stop));
     sz_dntrend.setEntity(keys.at(ipos), b);
   }
 

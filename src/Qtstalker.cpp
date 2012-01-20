@@ -36,7 +36,7 @@
 #include "GlobalSymbol.h"
 #include "DockWidget.h"
 #include "ChartLoad.h"
-#include "SymbolKey.h"
+#include "KeySymbol.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -181,9 +181,9 @@ void QtstalkerApp::save()
   settings.setValue("main_window_size", size());
   settings.setValue("main_window_position", pos());
 
-  SymbolKey keys;
+  KeySymbol keys;
   Data td;
-  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), td);
+  g_currentSymbol.toData(keys.indexToString(KeySymbol::_SYMBOL), td);
   settings.setValue("current_symbol", td.toString());
 
   settings.sync();
@@ -221,35 +221,8 @@ void QtstalkerApp::commandLineAsset ()
   cl->run();
 }
 
-void QtstalkerApp::fixDockTabs ()
-{
-  // we have to expose the non-visible docked tabs before we can draw plots
-  // this is just a hack to expose each tab before user notices on startup
-
-  int loop = 0;
-  QList<QTabBar *> tabList = findChildren<QTabBar *>();
-  for (; loop < tabList.count(); loop++)
-  {
-    QTabBar *tabBar = tabList.at(loop);
-
-    // ignore side panel tabs
-    if (! tabBar->objectName().isEmpty())
-      continue;
-
-    int currentIndex = tabBar->currentIndex();
-    int loop2 = 0;
-    for (; loop2 < tabBar->count(); loop2++)
-      tabBar->setCurrentIndex(loop2);
-
-    tabBar->setCurrentIndex(currentIndex);
-  }
-}
-
 void QtstalkerApp::afterStartup ()
 {
-  // expose hidden charts so they plot properly (simple hack)
-//  fixDockTabs();
-
   // check if we are going to display a chart from the command line
   if (! _clAsset.isEmpty())
     commandLineAsset();

@@ -21,7 +21,7 @@
 
 #include "ScriptPage.h"
 #include "ScriptLaunchButton.h"
-#include "Global.h"
+#include "WindowTitle.h"
 #include "GlobalSymbol.h"
 #include "GlobalParent.h"
 #include "NewDialog.h"
@@ -29,10 +29,10 @@
 #include "ScriptTimerDialog.h"
 #include "ScriptRunDialog.h"
 #include "ThreadMessage.h"
-
+#include "Global.h"
 #include "EAVDataBase.h"
 #include "EAVSearch.h"
-#include "ScriptDataBaseKey.h"
+#include "KeyScriptDataBase.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -243,13 +243,11 @@ void ScriptPage::launchButtonRows ()
 {
   QSettings settings(g_localSettings);
 
-  QStringList wt;
-  wt << "Qtstalker" + g_session + ":" << tr("Set Launch Button Rows");
-
+  WindowTitle wt;
   QInputDialog *dialog = new QInputDialog(this);
   dialog->setIntValue(settings.value("script_launch_button_rows", 2).toInt());
   dialog->setLabelText(tr("Rows"));
-  dialog->setWindowTitle(wt.join(" "));
+  dialog->setWindowTitle(wt.title(tr("Set Launch Button Rows"), QString()));
   connect(dialog, SIGNAL(intValueSelected(int)), this, SLOT(launchButtonRows2(int)));
   dialog->show();
 }
@@ -265,13 +263,11 @@ void ScriptPage::launchButtonCols ()
 {
   QSettings settings(g_localSettings);
 
-  QStringList wt;
-  wt << "Qtstalker" + g_session + ":" << tr("Set Launch Button Columns");
-
+  WindowTitle wt;
   QInputDialog *dialog = new QInputDialog(this);
   dialog->setIntValue(settings.value("script_launch_button_cols", 5).toInt());
   dialog->setLabelText(tr("Columns"));
-  dialog->setWindowTitle(wt.join(" "));
+  dialog->setWindowTitle(wt.title(tr("Set Launch Button Columns"), QString()));
   connect(dialog, SIGNAL(intValueSelected(int)), this, SLOT(launchButtonCols2(int)));
   dialog->show();
 }
@@ -285,9 +281,9 @@ void ScriptPage::launchButtonCols2 (int d)
 
 void ScriptPage::setupScriptTimers ()
 {
-  ScriptDataBaseKey skeys;
+  KeyScriptDataBase skeys;
   EAVSearch search;
-  search.append(skeys.indexToString(ScriptDataBaseKey::_STARTUP), "=", "1");
+  search.append(skeys.indexToString(KeyScriptDataBase::_STARTUP), "=", "1");
 
   EAVDataBase db("scripts");
   QStringList l;
@@ -307,13 +303,13 @@ void ScriptPage::setupScriptTimers ()
       continue;
 
     Data interval;
-    st.toData(skeys.indexToString(ScriptDataBaseKey::_RUN_INTERVAL), interval);
+    st.toData(skeys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
       
     Data file;
-    st.toData(skeys.indexToString(ScriptDataBaseKey::_FILE), file);
+    st.toData(skeys.indexToString(KeyScriptDataBase::_FILE), file);
       
     Data command;
-    st.toData(skeys.indexToString(ScriptDataBaseKey::_COMMAND), command);
+    st.toData(skeys.indexToString(KeyScriptDataBase::_COMMAND), command);
 
     addScriptTimer(l.at(loop), file.toString(), interval.toString(), command.toString());
   }
@@ -342,9 +338,6 @@ QListWidget * ScriptPage::list ()
 
 void ScriptPage::newScriptTimer ()
 {
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << tr("New Script Timer");
-
   EAVDataBase db("scripts");
   QStringList sl;
   if (db.names(sl))
@@ -353,8 +346,9 @@ void ScriptPage::newScriptTimer ()
     return;
   }
 
+  WindowTitle wt;
   NewDialog *dialog = new NewDialog(this);
-  dialog->setWindowTitle(l.join(" "));
+  dialog->setWindowTitle(wt.title(tr("New Script Timer"), QString()));
   dialog->setTitle(tr("Enter script timer name"));
   dialog->setItems(sl);
   connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(editScriptTimer(QString)));
@@ -379,13 +373,11 @@ void ScriptPage::newScriptTimer ()
 
 void ScriptPage::editScriptTimer ()
 {
+  WindowTitle wt;
   SelectDialog *dialog = new SelectDialog(this);
+  dialog->setWindowTitle(wt.title(tr("Select script timer to edit"), QString()));
 
   QStringList l;
-  l << "QtStalker" + g_session + ":" << tr("Select script timer to edit");
-  dialog->setWindowTitle(l.join(" "));
-
-  l.clear();
   EAVDataBase db("scripts");
   if (db.names(l))
   {
@@ -435,7 +427,7 @@ void ScriptPage::editScriptTimer2 (QStringList l)
 
 void ScriptPage::editScriptTimer3 (QString d)
 {
-  ScriptDataBaseKey skeys;
+  KeyScriptDataBase skeys;
   EAVDataBase db("scripts");
   ScriptTimer *st = _timers.value(d);
   if (! st)
@@ -447,15 +439,15 @@ void ScriptPage::editScriptTimer3 (QString d)
       return;
 
     Data interval;
-    data.toData(skeys.indexToString(ScriptDataBaseKey::_RUN_INTERVAL), interval);
+    data.toData(skeys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
     
     if (interval.toInteger() > 0)
     {
       Data file;
-      data.toData(skeys.indexToString(ScriptDataBaseKey::_FILE), file);
+      data.toData(skeys.indexToString(KeyScriptDataBase::_FILE), file);
       
       Data command;
-      data.toData(skeys.indexToString(ScriptDataBaseKey::_COMMAND), command);
+      data.toData(skeys.indexToString(KeyScriptDataBase::_COMMAND), command);
 
       addScriptTimer(d, file.toString(), interval.toString(), command.toString());
     }
@@ -470,7 +462,7 @@ void ScriptPage::editScriptTimer3 (QString d)
     return;
 
   Data interval;
-  data.toData(skeys.indexToString(ScriptDataBaseKey::_RUN_INTERVAL), interval);
+  data.toData(skeys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
   
   if (interval.toInteger() == 0)
   {
@@ -487,13 +479,11 @@ void ScriptPage::editScriptTimer3 (QString d)
 
 void ScriptPage::deleteScriptTimer ()
 {
+  WindowTitle wt;
   SelectDialog *dialog = new SelectDialog(this);
+  dialog->setWindowTitle(wt.title(tr("Select script timer to delete"), QString()));
 
   QStringList l;
-  l << "QtStalker" + g_session + ":" << tr("Select script timer to delete");
-  dialog->setWindowTitle(l.join(" "));
-
-  l.clear();
   EAVDataBase db("scripts");
   db.names(l);
   dialog->setItems(l);
@@ -526,9 +516,9 @@ void ScriptPage::deleteScriptTimer2 (QStringList l)
 
 void ScriptPage::runStartupScripts ()
 {
-  ScriptDataBaseKey skeys;
+  KeyScriptDataBase skeys;
   EAVSearch search;
-  search.append(skeys.indexToString(ScriptDataBaseKey::_STARTUP), "=", "1");
+  search.append(skeys.indexToString(KeyScriptDataBase::_STARTUP), "=", "1");
 
   EAVDataBase db("scripts");
   QStringList l;
@@ -548,7 +538,7 @@ void ScriptPage::runStartupScripts ()
       continue;
 
     Data td;
-    data.toData(skeys.indexToString(ScriptDataBaseKey::_COMMAND), td);
+    data.toData(skeys.indexToString(KeyScriptDataBase::_COMMAND), td);
     runScript(td.toString(), l.at(loop));
   }
 }

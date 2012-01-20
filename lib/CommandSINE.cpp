@@ -23,7 +23,7 @@
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 
 #include <QtDebug>
 
@@ -59,7 +59,7 @@ QString CommandSINE::run (CommandParse &, void *d)
   }
 
   Entity parms;
-  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_SINE));
+  parms.set(QString("FUNCTION"), Data(TypeTALibFunction::_SINE));
   
   CurveData sine, lead;
   TALibFunction func;

@@ -23,13 +23,13 @@
 #include "QuoteDataBase.h"
 #include "CurveBar.h"
 #include "DateRange.h"
-#include "DateRangeType.h"
-#include "SymbolKey.h"
-#include "QuoteDataBaseKey.h"
-#include "DataType.h"
+#include "TypeDateRange.h"
+#include "KeySymbol.h"
+#include "KeyQuoteDataBase.h"
+#include "TypeData.h"
 #include "Symbol.h"
-#include "CurveBarKey.h"
-#include "BarLengthType.h"
+#include "KeyCurveBar.h"
+#include "TypeBarLength.h"
 
 #include <QDateTime>
 #include <QtDebug>
@@ -70,9 +70,9 @@ void QuoteDataBase::init ()
 
 int QuoteDataBase::getBars (Symbol &bd)
 {
-  SymbolKey symkeys;
+  KeySymbol symkeys;
   Data td;
-  bd.toData(symkeys.indexToString(SymbolKey::_SYMBOL), td);
+  bd.toData(symkeys.indexToString(KeySymbol::_SYMBOL), td);
   
   QStringList tl = td.toString().split(":");
   if (tl.size() != 2)
@@ -85,21 +85,21 @@ int QuoteDataBase::getBars (Symbol &bd)
   QString tsymbol = tl.at(1);
 
   Data length;
-  bd.toData(symkeys.indexToString(SymbolKey::_LENGTH), length);
+  bd.toData(symkeys.indexToString(KeySymbol::_LENGTH), length);
   if (length.toInteger() == -1)
   {
     qDebug() << "QuoteDataBase::getBars: invalid length";
     return 1;
   }
 
-  bd.toData(symkeys.indexToString(SymbolKey::_START_DATE), td);
+  bd.toData(symkeys.indexToString(KeySymbol::_START_DATE), td);
   QDateTime startDate = td.toDateTime();
   
-  bd.toData(symkeys.indexToString(SymbolKey::_END_DATE), td);
+  bd.toData(symkeys.indexToString(KeySymbol::_END_DATE), td);
   QDateTime endDate = td.toDateTime();
 
   Data dateRange;
-  bd.toData(symkeys.indexToString(SymbolKey::_RANGE), dateRange);
+  bd.toData(symkeys.indexToString(KeySymbol::_RANGE), dateRange);
 
   if (getSymbol(bd))
     return 1;
@@ -108,7 +108,7 @@ int QuoteDataBase::getBars (Symbol &bd)
 
   // check if we want to return most recent bars
   Data table;
-  bd.toData(symkeys.indexToString(SymbolKey::_TABLE), table);
+  bd.toData(symkeys.indexToString(KeySymbol::_TABLE), table);
 
   if (! startDate.isValid() && ! endDate.isValid())
   {
@@ -125,7 +125,7 @@ int QuoteDataBase::getBars (Symbol &bd)
     {
       endDate = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmss");
       DateRange dr;
-      if (dr.dateRange((DateRangeType::Type) dateRange.toInteger(), endDate, startDate))
+      if (dr.dateRange((TypeDateRange::Key) dateRange.toInteger(), endDate, startDate))
       {
         qDebug() << "QuoteDataBase::getBars: date range error" << dateRange.toString();
         return 1;
@@ -151,14 +151,14 @@ int QuoteDataBase::getBars (Symbol &bd)
   QHash<QString, CurveBar> bars;
   QList<CurveBar> order;
   DateRange dr;
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
 
   while (q.next())
   {
     QDateTime lastDate = QDateTime::fromString(q.value(0).toString(), "yyyyMMddHHmmss");
 
     QDateTime tsd, ted;
-    dr.dateInterval(lastDate, (BarLengthType::Type) length.toInteger(), tsd, ted);
+    dr.dateInterval(lastDate, (TypeBarLength::Key) length.toInteger(), tsd, ted);
     s = dr.rangeKey(tsd, ted);
 
 //qDebug() << lastDate << tsd << ted;
@@ -166,13 +166,13 @@ int QuoteDataBase::getBars (Symbol &bd)
     CurveBar bar;
     if (! bars.contains(s))
     {
-      bar.set(cbkeys.indexToString(CurveBarKey::_OPEN), Data(q.value(1).toDouble()));
-      bar.set(cbkeys.indexToString(CurveBarKey::_HIGH), Data(q.value(2).toDouble()));
-      bar.set(cbkeys.indexToString(CurveBarKey::_LOW), Data(q.value(3).toDouble()));
-      bar.set(cbkeys.indexToString(CurveBarKey::_CLOSE), Data(q.value(4).toDouble()));
-      bar.set(cbkeys.indexToString(CurveBarKey::_VOLUME), Data(q.value(5).toDouble()));
-      bar.set(cbkeys.indexToString(CurveBarKey::_OI), Data(q.value(6).toDouble()));
-      bar.set(cbkeys.indexToString(CurveBarKey::_DATE), Data(lastDate));
+      bar.set(cbkeys.indexToString(KeyCurveBar::_OPEN), Data(q.value(1).toDouble()));
+      bar.set(cbkeys.indexToString(KeyCurveBar::_HIGH), Data(q.value(2).toDouble()));
+      bar.set(cbkeys.indexToString(KeyCurveBar::_LOW), Data(q.value(3).toDouble()));
+      bar.set(cbkeys.indexToString(KeyCurveBar::_CLOSE), Data(q.value(4).toDouble()));
+      bar.set(cbkeys.indexToString(KeyCurveBar::_VOLUME), Data(q.value(5).toDouble()));
+      bar.set(cbkeys.indexToString(KeyCurveBar::_OI), Data(q.value(6).toDouble()));
+      bar.set(cbkeys.indexToString(KeyCurveBar::_DATE), Data(lastDate));
       bars.insert(s, bar);
       order.prepend(bar);
     }
@@ -180,25 +180,25 @@ int QuoteDataBase::getBars (Symbol &bd)
     {
       bar = bars.value(s);
       
-      bar.set(cbkeys.indexToString(CurveBarKey::_OPEN), Data(q.value(1).toDouble()));
+      bar.set(cbkeys.indexToString(KeyCurveBar::_OPEN), Data(q.value(1).toDouble()));
 
       Data td;
-      bar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td);
+      bar.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), td);
       double v = q.value(2).toDouble();
       if (v > td.toDouble())
-        bar.set(cbkeys.indexToString(CurveBarKey::_HIGH), Data(v));
+        bar.set(cbkeys.indexToString(KeyCurveBar::_HIGH), Data(v));
 
       v = q.value(3).toDouble();
-      bar.toData(cbkeys.indexToString(CurveBarKey::_LOW), td);
+      bar.toData(cbkeys.indexToString(KeyCurveBar::_LOW), td);
       if (v < td.toDouble())
-        bar.set(cbkeys.indexToString(CurveBarKey::_LOW), Data(v));
+        bar.set(cbkeys.indexToString(KeyCurveBar::_LOW), Data(v));
 
-      bar.toData(cbkeys.indexToString(CurveBarKey::_VOLUME), td);
+      bar.toData(cbkeys.indexToString(KeyCurveBar::_VOLUME), td);
       v = q.value(5).toDouble();
       v += td.toDouble();
-      bar.set(cbkeys.indexToString(CurveBarKey::_VOLUME), Data(v));
+      bar.set(cbkeys.indexToString(KeyCurveBar::_VOLUME), Data(v));
 
-      bar.set(cbkeys.indexToString(CurveBarKey::_OI), Data(q.value(6).toDouble()));
+      bar.set(cbkeys.indexToString(KeyCurveBar::_OI), Data(q.value(6).toDouble()));
       
       bars.insert(s, bar);
     }
@@ -215,7 +215,7 @@ int QuoteDataBase::getBars (Symbol &bd)
 int QuoteDataBase::setBars (Symbol &symbol)
 {
   // save bars
-  SymbolKey symkeys;
+  KeySymbol symkeys;
   QSqlQuery q(_db);
 
   if (getSymbol(symbol))
@@ -227,15 +227,15 @@ int QuoteDataBase::setBars (Symbol &symbol)
   {
     // check if we need to save the name
     Data name;
-    symbol.toData(symkeys.indexToString(SymbolKey::_NAME), name);
+    symbol.toData(symkeys.indexToString(KeySymbol::_NAME), name);
     if (! name.toString().isEmpty())
       setName(symbol);
   }
 
   Data table;
-  symbol.toData(symkeys.indexToString(SymbolKey::_TABLE), table);
+  symbol.toData(symkeys.indexToString(KeySymbol::_TABLE), table);
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   QList<QString> keys = symbol.ekeys();
   int loop = 0;
   for (; loop < keys.size(); loop++)
@@ -245,7 +245,7 @@ int QuoteDataBase::setBars (Symbol &symbol)
       continue;
 
     Data td;
-    bar.toData(cbkeys.indexToString(CurveBarKey::_DATE), td);
+    bar.toData(cbkeys.indexToString(KeyCurveBar::_DATE), td);
     QDateTime dt = td.toDateTime();
     
     QString date = dt.toString("yyyyMMddHHmmss");
@@ -267,37 +267,37 @@ int QuoteDataBase::setBars (Symbol &symbol)
       QStringList tl;
 
       Data set;
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_OPEN), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_OPEN), set))
       {
         if (! set.toString().isEmpty())
           tl << "open=" + set.toString();
       }
 
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), set))
       {
         if (! set.toString().isEmpty())
           tl << "high=" + set.toString();
       }
 
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_LOW), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_LOW), set))
       {
         if (! set.toString().isEmpty())
           tl << "low=" + set.toString();
       }
 
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_CLOSE), set))
       {
         if (! set.toString().isEmpty())
           tl << "close=" + set.toString();
       }
 
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_VOLUME), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_VOLUME), set))
       {
         if (! set.toString().isEmpty())
           tl << "volume=" + set.toString();
       }
 
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_OI), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_OI), set))
       {
         if (! set.toString().isEmpty())
           tl << "oi=" + set.toString();
@@ -316,42 +316,42 @@ int QuoteDataBase::setBars (Symbol &symbol)
 
       QString ts;
       Data set;
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_OPEN), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_OPEN), set))
         ts = set.toString();
       if (ts.isEmpty())
         ts = "0";
       tl << ts;
 
       ts.clear();
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), set))
         ts = set.toString();
       if (ts.isEmpty())
         ts = "0";
       tl << ts;
 
       ts.clear();
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_LOW), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_LOW), set))
         ts = set.toString();
       if (ts.isEmpty())
         ts = "0";
       tl << ts;
 
       ts.clear();
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_CLOSE), set))
         ts = set.toString();
       if (ts.isEmpty())
         ts = "0";
       tl << ts;
 
       ts.clear();
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_VOLUME), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_VOLUME), set))
         ts = set.toString();
       if (ts.isEmpty())
         ts = "0";
       tl << ts;
 
       ts.clear();
-      if (! bar.toData(cbkeys.indexToString(CurveBarKey::_OI), set))
+      if (! bar.toData(cbkeys.indexToString(KeyCurveBar::_OI), set))
         ts = set.toString();
       if (ts.isEmpty())
         ts = "0";
@@ -375,9 +375,9 @@ int QuoteDataBase::setBars (Symbol &symbol)
 
 int QuoteDataBase::newSymbol (Symbol &symbol)
 {
-  SymbolKey symkeys;
+  KeySymbol symkeys;
   Data td;
-  symbol.toData(symkeys.indexToString(SymbolKey::_SYMBOL), td);
+  symbol.toData(symkeys.indexToString(KeySymbol::_SYMBOL), td);
   
   QStringList tl = td.toString().split(":");
   if (tl.size() != 2)
@@ -388,7 +388,7 @@ int QuoteDataBase::newSymbol (Symbol &symbol)
   QString tsymbol = td.toString();
 
   Data type;
-  symbol.toData(symkeys.indexToString(SymbolKey::_TYPE), type);
+  symbol.toData(symkeys.indexToString(KeySymbol::_TYPE), type);
 
   if (! getSymbol(symbol))
   {
@@ -402,27 +402,27 @@ int QuoteDataBase::newSymbol (Symbol &symbol)
   table.remove("{");
   table.remove("}");
   table.remove("-");
-  symbol.set(symkeys.indexToString(SymbolKey::_TABLE), Data(table));
+  symbol.set(symkeys.indexToString(KeySymbol::_TABLE), Data(table));
 
   // set default name to symbol
   Data name;
-  symbol.toData(symkeys.indexToString(SymbolKey::_NAME), name);
+  symbol.toData(symkeys.indexToString(KeySymbol::_NAME), name);
   if (name.toString().isEmpty())
   {
     name.set(tsymbol);
-    symbol.set(symkeys.indexToString(SymbolKey::_NAME), name);
+    symbol.set(symkeys.indexToString(KeySymbol::_NAME), name);
   }
 
   // add new symbol entry into the symbolIndex table
 
   // add SYMBOL
-  QuoteDataBaseKey qkeys;
+  KeyQuoteDataBase qkeys;
   QString s = "INSERT INTO symbolIndex VALUES(";
   s.append("NULL"); // auto increment
   s.append(",'" + tsymbol + "'");
-  s.append(",'" + qkeys.indexToString(QuoteDataBaseKey::_SYMBOL) + "'");
+  s.append(",'" + qkeys.indexToString(KeyQuoteDataBase::_SYMBOL) + "'");
   s.append(",'" + tsymbol + "'");
-  s.append(",'" + QString::number(DataType::_STRING) + "'");
+  s.append(",'" + QString::number(TypeData::_STRING) + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -436,9 +436,9 @@ int QuoteDataBase::newSymbol (Symbol &symbol)
   s = "INSERT INTO symbolIndex VALUES(";
   s.append("NULL"); // auto increment
   s.append(",'" + tsymbol + "'");
-  s.append(",'" + qkeys.indexToString(QuoteDataBaseKey::_TABLE) + "'");
+  s.append(",'" + qkeys.indexToString(KeyQuoteDataBase::_TABLE) + "'");
   s.append(",'" + table + "'");
-  s.append(",'" + QString::number(DataType::_STRING) + "'");
+  s.append(",'" + QString::number(TypeData::_STRING) + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -452,9 +452,9 @@ int QuoteDataBase::newSymbol (Symbol &symbol)
   s = "INSERT INTO symbolIndex VALUES(";
   s.append("NULL"); // auto increment
   s.append(",'" + tsymbol + "'");
-  s.append(",'" + qkeys.indexToString(QuoteDataBaseKey::_NAME) + "'");
+  s.append(",'" + qkeys.indexToString(KeyQuoteDataBase::_NAME) + "'");
   s.append(",'" + name.toString() + "'");
-  s.append(",'" + QString::number(DataType::_STRING) + "'");
+  s.append(",'" + QString::number(TypeData::_STRING) + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -468,9 +468,9 @@ int QuoteDataBase::newSymbol (Symbol &symbol)
   s = "INSERT INTO symbolIndex VALUES(";
   s.append("NULL"); // auto increment
   s.append(",'" + tsymbol + "'");
-  s.append(",'" + qkeys.indexToString(QuoteDataBaseKey::_TYPE) + "'");
+  s.append(",'" + qkeys.indexToString(KeyQuoteDataBase::_TYPE) + "'");
   s.append(",'" + type.toString() + "'");
-  s.append(",'" + QString::number(DataType::_STRING) + "'");
+  s.append(",'" + QString::number(TypeData::_STRING) + "'");
   s.append(")");
   q.exec(s);
   if (q.lastError().isValid())
@@ -502,9 +502,9 @@ int QuoteDataBase::newSymbol (Symbol &symbol)
 
 int QuoteDataBase::getSymbol (Symbol &symbol)
 {
-  SymbolKey symkeys;
+  KeySymbol symkeys;
   Data tsymbol;
-  symbol.toData(symkeys.indexToString(SymbolKey::_SYMBOL), tsymbol);
+  symbol.toData(symkeys.indexToString(KeySymbol::_SYMBOL), tsymbol);
 
   QSqlQuery q(_db);
 
@@ -517,22 +517,22 @@ int QuoteDataBase::getSymbol (Symbol &symbol)
     return 1;
   }
 
-  QuoteDataBaseKey qkeys;
+  KeyQuoteDataBase qkeys;
   int rc = 1;
   while (q.next())
   {
     rc = 0;
     
-    switch ((QuoteDataBaseKey::Key) qkeys.stringToIndex(q.value(0).toString()))
+    switch ((KeyQuoteDataBase::Key) qkeys.stringToIndex(q.value(0).toString()))
     {
-      case QuoteDataBaseKey::_TYPE:
-        symbol.set(symkeys.indexToString(SymbolKey::_TYPE), Data(q.value(1).toString()));
+      case KeyQuoteDataBase::_TYPE:
+        symbol.set(symkeys.indexToString(KeySymbol::_TYPE), Data(q.value(1).toString()));
 	break;
-      case QuoteDataBaseKey::_NAME:
-        symbol.set(symkeys.indexToString(SymbolKey::_NAME), Data(q.value(1).toString()));
+      case KeyQuoteDataBase::_NAME:
+        symbol.set(symkeys.indexToString(KeySymbol::_NAME), Data(q.value(1).toString()));
 	break;
-      case QuoteDataBaseKey::_TABLE:
-        symbol.set(symkeys.indexToString(SymbolKey::_TABLE), Data(q.value(1).toString()));
+      case KeyQuoteDataBase::_TABLE:
+        symbol.set(symkeys.indexToString(KeySymbol::_TABLE), Data(q.value(1).toString()));
 	break;
       default:
 	break;
@@ -550,9 +550,9 @@ int QuoteDataBase::deleteSymbol (Symbol &bd)
     return 1;
   }
 
-  SymbolKey symkeys;
+  KeySymbol symkeys;
   Data table;
-  bd.toData(symkeys.indexToString(SymbolKey::_TABLE), table);
+  bd.toData(symkeys.indexToString(KeySymbol::_TABLE), table);
 
   // drop quote table
   QSqlQuery q(_db);
@@ -566,7 +566,7 @@ int QuoteDataBase::deleteSymbol (Symbol &bd)
   }
 
   Data symbol;
-  bd.toData(symkeys.indexToString(SymbolKey::_SYMBOL), symbol);
+  bd.toData(symkeys.indexToString(KeySymbol::_SYMBOL), symbol);
 
   // remove index records for symbol
   s = "DELETE FROM symbolIndex WHERE name='" + symbol.toString() + "'";
@@ -687,26 +687,21 @@ int QuoteDataBase::rename (Symbol *osymbol, Symbol *nsymbol)
 }
 */
 
-int QuoteDataBase::search (Symbol &bd, QList<Symbol> &l)
+int QuoteDataBase::search (QString symbol, QList<Symbol> &l)
 {
   l.clear();
 
-  SymbolKey symkeys;
-  Data symbol;
-  bd.toData(symkeys.indexToString(SymbolKey::_SYMBOL), symbol);
+  KeySymbol symkeys;
 
   QSqlQuery q(_db);
 
   // first find matching names
   QString s = "SELECT DISTINCT name FROM symbolIndex";
 
-  if (symbol.toString() != "*")
-  {
-    if (symbol.toString().contains("%"))
-      s.append(" WHERE name LIKE '" + symbol.toString() + "'");
-    else
-      s.append(" WHERE name='" + symbol.toString() + "'");
-  }
+  if (symbol.contains("%"))
+    s.append(" WHERE name LIKE '" + symbol + "'");
+  else
+    s.append(" WHERE name='" + symbol + "'");
 
   s.append(" ORDER BY name ASC");
   q.exec(s);
@@ -725,7 +720,7 @@ int QuoteDataBase::search (Symbol &bd, QList<Symbol> &l)
   for (; loop < names.size(); loop++)
   {
     Symbol sym;
-    sym.set(symkeys.indexToString(SymbolKey::_SYMBOL), Data(names.at(loop)));
+    sym.set(symkeys.indexToString(KeySymbol::_SYMBOL), Data(names.at(loop)));
     
     if (getSymbol(sym))
       continue;
@@ -738,9 +733,9 @@ int QuoteDataBase::search (Symbol &bd, QList<Symbol> &l)
 
 int QuoteDataBase::setName (Symbol &symbol)
 {
-  SymbolKey symkeys;
+  KeySymbol symkeys;
   Data name;
-  symbol.toData(symkeys.indexToString(SymbolKey::_NAME), name);
+  symbol.toData(symkeys.indexToString(KeySymbol::_NAME), name);
   
   if (name.toString().isEmpty())
   {
@@ -749,15 +744,15 @@ int QuoteDataBase::setName (Symbol &symbol)
   }
 
   Data tsymbol;
-  symbol.toData(symkeys.indexToString(SymbolKey::_SYMBOL), tsymbol);
+  symbol.toData(symkeys.indexToString(KeySymbol::_SYMBOL), tsymbol);
 
   QSqlQuery q(_db);
 
-  QuoteDataBaseKey qkeys;
+  KeyQuoteDataBase qkeys;
   QString s = "UPDATE symbolIndex";
   s.append(" SET value='" + name.toString() + "'");
   s.append(" WHERE name='" + tsymbol.toString() + "'");
-  s.append(" AND key='" + qkeys.indexToString(QuoteDataBaseKey::_NAME) + "'");
+  s.append(" AND key='" + qkeys.indexToString(KeyQuoteDataBase::_NAME) + "'");
   q.exec(s);
   if (q.lastError().isValid())
   {

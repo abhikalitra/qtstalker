@@ -20,11 +20,11 @@
  */
 
 #include "BarLengthButton.h"
-#include "BarLengthType.h"
+#include "TypeBarLength.h"
 #include "Global.h"
 #include "GlobalSymbol.h"
 #include "ChartLoad.h"
-#include "SymbolKey.h"
+#include "KeySymbol.h"
 
 #include <QDebug>
 #include <QSettings>
@@ -35,7 +35,7 @@ BarLengthButton::BarLengthButton ()
   font.setPointSize(9);
   setFont(font);
 
-  BarLengthType bl;
+  TypeBarLength bl;
   _list = bl.list();
 
   createMenu();
@@ -84,9 +84,9 @@ void BarLengthButton::lengthChanged (QAction *d)
 
   setText(_list.at(_barLength));
 
-  SymbolKey keys;
+  KeySymbol keys;
   Data symbol;
-  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), symbol);
+  g_currentSymbol.toData(keys.indexToString(KeySymbol::_SYMBOL), symbol);
   
   if (symbol.toString().isEmpty())
     return;

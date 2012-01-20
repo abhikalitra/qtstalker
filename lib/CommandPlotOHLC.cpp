@@ -20,11 +20,11 @@
  */
 
 #include "CommandPlotOHLC.h"
-#include "OHLCStyle.h"
+#include "TypeOHLC.h"
 #include "CurveData.h"
-#include "CurveDataKey.h"
+#include "KeyCurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurveKeys.h"
 #include "Script.h"
 #include "ScriptVerifyCurve.h"
@@ -46,7 +46,7 @@ CommandPlotOHLC::CommandPlotOHLC ()
   Entity::set(QString("LOW"), Data(QString("low")));
   Entity::set(QString("CLOSE"), Data(QString("close")));
 
-  OHLCStyle st;
+  TypeOHLC st;
   Data td(st.list(), QString("OHLC"));
   Entity::set(QString("STYLE"), td);
 }
@@ -98,29 +98,29 @@ QString CommandPlotOHLC::run (CommandParse &, void *d)
     return _returnCode;
   }
 
-  CurveDataKey cdkeys;
+  KeyCurveData cdkeys;
   CurveData line;
-  line.set(cdkeys.indexToString(CurveDataKey::_TYPE), Data(QString("OHLC")));
+  line.set(cdkeys.indexToString(KeyCurveData::_TYPE), Data(QString("OHLC")));
   
   Entity::toData(QString("Z"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_Z), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_Z), td);
   
   Entity::toData(QString("PEN"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_PEN), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_PEN), td);
   
   Entity::toData(QString("LABEL"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_LABEL), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_LABEL), td);
   
   Entity::toData(QString("CHART"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_CHART), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_CHART), td);
   
   Entity::toData(QString("STYLE"), td);
-  line.set(cdkeys.indexToString(CurveDataKey::_STYLE), td);
+  line.set(cdkeys.indexToString(KeyCurveData::_STYLE), td);
 
   Data color;
   Entity::toData(QString("COLOR"), color);
   
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
@@ -128,36 +128,36 @@ QString CommandPlotOHLC::run (CommandParse &, void *d)
     if (iopen.toEntity(keys.at(loop), obar))
       continue;
     Data ovalue;
-    if (obar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), ovalue))
+    if (obar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), ovalue))
       continue;
     
     Entity hbar;
     if (ihigh.toEntity(keys.at(loop), hbar))
       continue;
     Data hvalue;
-    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), hvalue))
+    if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), hvalue))
       continue;
 
     Entity lbar;
     if (ilow.toEntity(keys.at(loop), lbar))
       continue;
     Data lvalue;
-    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), lvalue))
+    if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), lvalue))
       continue;
 
     Entity cbar;
     if (iclose.toEntity(keys.at(loop), cbar))
       continue;
     Data cvalue;
-    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), cvalue))
+    if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), cvalue))
       continue;
 
     Entity bar;
-    bar.set(cbkeys.indexToString(CurveBarKey::_OPEN), ovalue);
-    bar.set(cbkeys.indexToString(CurveBarKey::_HIGH), hvalue);
-    bar.set(cbkeys.indexToString(CurveBarKey::_LOW), lvalue);
-    bar.set(cbkeys.indexToString(CurveBarKey::_CLOSE), cvalue);
-    bar.set(cbkeys.indexToString(CurveBarKey::_COLOR), color);
+    bar.set(cbkeys.indexToString(KeyCurveBar::_OPEN), ovalue);
+    bar.set(cbkeys.indexToString(KeyCurveBar::_HIGH), hvalue);
+    bar.set(cbkeys.indexToString(KeyCurveBar::_LOW), lvalue);
+    bar.set(cbkeys.indexToString(KeyCurveBar::_CLOSE), cvalue);
+    bar.set(cbkeys.indexToString(KeyCurveBar::_COLOR), color);
     
     line.setEntity(keys.at(loop), bar);
   }

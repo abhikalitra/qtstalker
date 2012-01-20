@@ -25,7 +25,7 @@
 #include "Strip.h"
 #include "DateScaleDraw.h"
 #include "Plot.h"
-#include "ChartObjectKey.h"
+#include "KeyChartObject.h"
 
 #include <QDebug>
 #include <QPolygon>
@@ -36,44 +36,44 @@ ChartObjectTLine::ChartObjectTLine ()
 {
   _fieldList << QObject::tr("Open") << QObject::tr("High") << QObject::tr("Low") << QObject::tr("Close");
   
-  ChartObjectKey keys;
+  KeyChartObject keys;
   
   Data td(QString("TLine"));
-  _settings.set(keys.indexToString(ChartObjectKey::_TYPE), td);
+  _settings.set(keys.indexToString(KeyChartObject::_TYPE), td);
   
   td = Data(QDateTime::currentDateTime());
   td.setLabel(QObject::tr("Date Start"));
-  _settings.set(keys.indexToString(ChartObjectKey::_DATE), td);
+  _settings.set(keys.indexToString(KeyChartObject::_DATE), td);
   
   td.setLabel(QObject::tr("Date End"));
-  _settings.set(keys.indexToString(ChartObjectKey::_DATE2), td);
+  _settings.set(keys.indexToString(KeyChartObject::_DATE2), td);
   
   td = Data(0.0);
   td.setLabel(QObject::tr("Price Start"));
-  _settings.set(keys.indexToString(ChartObjectKey::_PRICE), td);
+  _settings.set(keys.indexToString(KeyChartObject::_PRICE), td);
   
   td.setLabel(QObject::tr("Price End"));
-  _settings.set(keys.indexToString(ChartObjectKey::_PRICE2), td);
+  _settings.set(keys.indexToString(KeyChartObject::_PRICE2), td);
   
   td = Data(QColor(Qt::red));
   td.setLabel(QObject::tr("Color"));
-  _settings.set(keys.indexToString(ChartObjectKey::_COLOR), td);
+  _settings.set(keys.indexToString(KeyChartObject::_COLOR), td);
   
   td = Data(FALSE);
   td.setLabel(QObject::tr("Extend"));
-  _settings.set(keys.indexToString(ChartObjectKey::_EXTEND), td);
+  _settings.set(keys.indexToString(KeyChartObject::_EXTEND), td);
 }
 
 void ChartObjectTLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const
 {
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data date, date2, price, price2, color, extend;
-  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
-  _settings.toData(keys.indexToString(ChartObjectKey::_DATE2), date2);
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE2), price2);
-  _settings.toData(keys.indexToString(ChartObjectKey::_COLOR), color);
-  _settings.toData(keys.indexToString(ChartObjectKey::_EXTEND), extend);
+  _settings.toData(keys.indexToString(KeyChartObject::_DATE), date);
+  _settings.toData(keys.indexToString(KeyChartObject::_DATE2), date2);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE2), price2);
+  _settings.toData(keys.indexToString(KeyChartObject::_COLOR), color);
+  _settings.toData(keys.indexToString(KeyChartObject::_EXTEND), extend);
 
   DateScaleDraw *dsd = (DateScaleDraw *) plot()->axisScaleDraw(QwtPlot::xBottom);
   int x = xMap.transform(dsd->x(date.toDateTime()));
@@ -151,13 +151,13 @@ void ChartObjectTLine::draw (QPainter *p, const QwtScaleMap &xMap, const QwtScal
 
 int ChartObjectTLine::info (Entity &info)
 {
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data type, date, date2, price, price2;
-  _settings.toData(keys.indexToString(ChartObjectKey::_TYPE), type);
-  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
-  _settings.toData(keys.indexToString(ChartObjectKey::_DATE2), date2);
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+  _settings.toData(keys.indexToString(KeyChartObject::_TYPE), type);
+  _settings.toData(keys.indexToString(KeyChartObject::_DATE), date);
+  _settings.toData(keys.indexToString(KeyChartObject::_DATE2), date2);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE2), price2);
   
   info.set(QObject::tr("Type"), type);
 
@@ -182,12 +182,12 @@ int ChartObjectTLine::highLow (int start, int end, double &high, double &low)
   if (! dsd)
     return 1;
 
-  ChartObjectKey keys;
+  KeyChartObject keys;
   Data date, date2, price, price2;
-  _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
-  _settings.toData(keys.indexToString(ChartObjectKey::_DATE2), date2);
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
-  _settings.toData(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+  _settings.toData(keys.indexToString(KeyChartObject::_DATE), date);
+  _settings.toData(keys.indexToString(KeyChartObject::_DATE2), date2);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
+  _settings.toData(keys.indexToString(KeyChartObject::_PRICE2), price2);
   
   int x = dsd->x(date.toDateTime());
   if (x >= start && x <= end)
@@ -224,12 +224,12 @@ void ChartObjectTLine::move (QPoint p)
   {
     case _MOVE:
     {
-      ChartObjectKey keys;
+      KeyChartObject keys;
       Data date, date2, price, price2;
-      _settings.toData(keys.indexToString(ChartObjectKey::_DATE), date);
-      _settings.toData(keys.indexToString(ChartObjectKey::_DATE2), date2);
-      _settings.toData(keys.indexToString(ChartObjectKey::_PRICE), price);
-      _settings.toData(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+      _settings.toData(keys.indexToString(KeyChartObject::_DATE), date);
+      _settings.toData(keys.indexToString(KeyChartObject::_DATE2), date2);
+      _settings.toData(keys.indexToString(KeyChartObject::_PRICE), price);
+      _settings.toData(keys.indexToString(KeyChartObject::_PRICE2), price2);
       
       QwtScaleMap map = plot()->canvasMap(QwtPlot::xBottom);
       int x = map.invTransform((double) p.x());
@@ -238,19 +238,19 @@ void ChartObjectTLine::move (QPoint p)
       QDateTime dt;
       dsd->date(x, dt);
       date.set(dt);
-      _settings.set(keys.indexToString(ChartObjectKey::_DATE), date);
+      _settings.set(keys.indexToString(KeyChartObject::_DATE), date);
 
       map = plot()->canvasMap(QwtPlot::yRight);
       price.set(map.invTransform((double) p.y()));
-      _settings.set(keys.indexToString(ChartObjectKey::_PRICE), price);
+      _settings.set(keys.indexToString(KeyChartObject::_PRICE), price);
 
       if (_createFlag)
       {
 	date2.set(dt);
-        _settings.set(keys.indexToString(ChartObjectKey::_DATE2), date2);
+        _settings.set(keys.indexToString(KeyChartObject::_DATE2), date2);
 	
 	price2.set(price.toDouble());
-        _settings.set(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+        _settings.set(keys.indexToString(KeyChartObject::_PRICE2), price2);
       }
 
       plot()->replot();
@@ -268,10 +268,10 @@ void ChartObjectTLine::move (QPoint p)
     }
     case _MOVE2:
     {
-      ChartObjectKey keys;
+      KeyChartObject keys;
       Data date2, price2;
-      _settings.toData(keys.indexToString(ChartObjectKey::_DATE2), date2);
-      _settings.toData(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+      _settings.toData(keys.indexToString(KeyChartObject::_DATE2), date2);
+      _settings.toData(keys.indexToString(KeyChartObject::_PRICE2), price2);
 
       QwtScaleMap map = plot()->canvasMap(QwtPlot::xBottom);
       int x = map.invTransform((double) p.x());
@@ -280,11 +280,11 @@ void ChartObjectTLine::move (QPoint p)
       QDateTime dt;
       dsd->date(x, dt);
       date2.set(dt);
-      _settings.set(keys.indexToString(ChartObjectKey::_DATE2), date2);
+      _settings.set(keys.indexToString(KeyChartObject::_DATE2), date2);
 
       map = plot()->canvasMap(QwtPlot::yRight);
       price2.set(map.invTransform((double) p.y()));
-      _settings.set(keys.indexToString(ChartObjectKey::_PRICE2), price2);
+      _settings.set(keys.indexToString(KeyChartObject::_PRICE2), price2);
 
       plot()->replot();
 
@@ -392,9 +392,9 @@ void ChartObjectTLine::click (int button, QPoint p)
             _selected = 1;
 	    Plot *tplot = (Plot *) plot();
 	    
-	    ChartObjectKey keys;
+	    KeyChartObject keys;
 	    Data id;
-	    _settings.toData(keys.indexToString(ChartObjectKey::_ID), id);
+	    _settings.toData(keys.indexToString(KeyChartObject::_ID), id);
 	    tplot->select(id.toString());
             plot()->replot();
             return;

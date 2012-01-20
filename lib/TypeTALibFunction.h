@@ -22,12 +22,12 @@
 // *************************************************************************************************
 // *************************************************************************************************
 
-#ifndef TALIB_FUNCTION_KEY_HPP
-#define TALIB_FUNCTION_KEY_HPP
+#ifndef TYPE_TALIB_FUNCTION_HPP
+#define TYPE_TALIB_FUNCTION_HPP
 
-#include "Keys.h"
+#include "Type.h"
 
-class TALibFunctionKey : public Keys
+class TypeTALibFunction : public Type
 {
   public:
     enum Key
@@ -140,7 +140,7 @@ class TALibFunctionKey : public Keys
       _WILLR
     };
     
-    TALibFunctionKey ();
+    TypeTALibFunction ();
 };
 
 #endif

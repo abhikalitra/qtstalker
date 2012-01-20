@@ -21,7 +21,7 @@
 
 #include "CommandGroupSave.h"
 #include "EAVDataBase.h"
-#include "GroupDataBaseKey.h"
+#include "KeyGroupDataBase.h"
 
 #include <QtDebug>
 
@@ -44,10 +44,10 @@ QString CommandGroupSave::run (CommandParse &, void *)
   Entity::toData(QString("GROUP"), group);
   Entity::toData(QString("SYMBOLS"), symbols);
   
-  GroupDataBaseKey keys;
+  KeyGroupDataBase keys;
   Entity i;
   i.setName(group.toString());
-  i.set(keys.indexToString(GroupDataBaseKey::_LIST), symbols);
+  i.set(keys.indexToString(KeyGroupDataBase::_LIST), symbols);
   
   EAVDataBase db("groups");
   db.transaction();

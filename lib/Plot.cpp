@@ -27,10 +27,9 @@
 #include "ConfirmDialog.h"
 #include "ChartObjectFactory.h"
 #include "CurveData.h"
-#include "CurveDataKey.h"
-#include "ChartObjectKey.h"
-#include "ChartObjectType.h"
-#include "SymbolKey.h"
+#include "KeyCurveData.h"
+#include "KeyChartObject.h"
+#include "KeySymbol.h"
 
 #include "../pics/delete.xpm"
 #include "../pics/edit.xpm"
@@ -168,9 +167,9 @@ void Plot::setCurve (Curve *curve)
   curve->attach(this);
   
   Entity settings = curve->settings();
-  CurveDataKey cdkeys;
+  KeyCurveData cdkeys;
   Data label;
-  settings.toData(cdkeys.indexToString(CurveDataKey::_LABEL), label);
+  settings.toData(cdkeys.indexToString(KeyCurveData::_LABEL), label);
   
   _curves.insert(label.toString(), curve);
 }
@@ -313,7 +312,7 @@ void Plot::setYPoints ()
   _plotInfo->clearData();
   _plotInfo->setName(_name);
 
-  CurveDataKey cdkeys;
+  KeyCurveData cdkeys;
   QHashIterator<QString, Curve *> it(_curves);
   while (it.hasNext())
   {
@@ -334,7 +333,7 @@ void Plot::setYPoints ()
 
     // fix for Y AND X axis misalignment
     Data type;
-    settings.toData(cdkeys.indexToString(CurveDataKey::_TYPE), type);
+    settings.toData(cdkeys.indexToString(KeyCurveData::_TYPE), type);
     
     if (type.toString() == "Histogram" || type.toString() == "OHLC")
     {
@@ -384,7 +383,7 @@ void Plot::mouseClick (int button, QPoint p)
     return;
   }
 
-  ChartObjectKey cokeys;
+  KeyChartObject cokeys;
   QHashIterator<QString, ChartObject *> it(_chartObjects);
   while (it.hasNext())
   {
@@ -392,7 +391,7 @@ void Plot::mouseClick (int button, QPoint p)
 
     Entity settings = it.value()->settings();
     Data ro;
-    settings.toData(cokeys.indexToString(ChartObjectKey::_RO), ro);
+    settings.toData(cokeys.indexToString(KeyChartObject::_RO), ro);
     
     if (ro.toBool())
       continue;
@@ -573,23 +572,23 @@ void Plot::chartObjectNew (QString type)
     return;
   }
 
-  ChartObjectKey cokeys;
+  KeyChartObject cokeys;
   Entity settings = _selected->settings();
 
   Data id;
-  settings.toData(cokeys.indexToString(ChartObjectKey::_ID), id);
+  settings.toData(cokeys.indexToString(KeyChartObject::_ID), id);
 
   _chartObjects.insert(id.toString(), _selected);
 
   _selected->setScript(_scriptFile);
 
-  SymbolKey symkeys;
+  KeySymbol symkeys;
   Data symbol;
-  g_currentSymbol.toData(symkeys.indexToString(SymbolKey::_SYMBOL), symbol);
+  g_currentSymbol.toData(symkeys.indexToString(KeySymbol::_SYMBOL), symbol);
   
-  settings.set(cokeys.indexToString(ChartObjectKey::_SYMBOL), Data(symbol.toString()));
+  settings.set(cokeys.indexToString(KeyChartObject::_SYMBOL), Data(symbol.toString()));
 
-  settings.set(cokeys.indexToString(ChartObjectKey::_CHART), Data(_name));
+  settings.set(cokeys.indexToString(KeyChartObject::_CHART), Data(_name));
   
   _selected->setSettings(settings);
 
@@ -603,7 +602,7 @@ void Plot::chartObjectNew (QString type)
 
 void Plot::deleteAllChartObjects ()
 {
-  ChartObjectKey cokeys;
+  KeyChartObject cokeys;
   QStringList l;
   QHashIterator<QString, ChartObject *> it(_chartObjects);
   while (it.hasNext())
@@ -613,7 +612,7 @@ void Plot::deleteAllChartObjects ()
 
     Entity settings = co->settings();
     Data ro;
-    settings.toData(cokeys.indexToString(ChartObjectKey::_RO), ro);
+    settings.toData(cokeys.indexToString(KeyChartObject::_RO), ro);
     
     if (ro.toBool())
       continue;
@@ -641,9 +640,9 @@ void Plot::deleteAllChartObjects ()
 void Plot::addChartObject (ChartObject *co)
 {
   Entity settings = co->settings();
-  ChartObjectKey cokeys;
+  KeyChartObject cokeys;
   Data id;
-  settings.toData(cokeys.indexToString(ChartObjectKey::_ID), id);
+  settings.toData(cokeys.indexToString(KeyChartObject::_ID), id);
   
   _chartObjects.insert(id.toString(), co);
   
@@ -710,9 +709,9 @@ void Plot::deleteChartObject2 ()
     return;
 
   Entity settings = _selected->settings();
-  ChartObjectKey cokeys;
+  KeyChartObject cokeys;
   Data id;
-  settings.toData(cokeys.indexToString(ChartObjectKey::_ID), id);
+  settings.toData(cokeys.indexToString(KeyChartObject::_ID), id);
   
   QStringList l;
   l << id.toString();

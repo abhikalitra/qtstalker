@@ -20,9 +20,9 @@
  */
 
 #include "IconButton.h"
+#include "WindowTitle.h"
 
 #include <QFileDialog>
-
 
 IconButton::IconButton (QWidget *w, QString p) : QPushButton (w)
 {
@@ -48,9 +48,10 @@ void IconButton::setFile (QString d)
 
 void IconButton::fileDialog ()
 {
+  WindowTitle wt;
   QFileDialog *dialog = new QFileDialog(this);
   dialog->setDirectory(_file);
-  dialog->setWindowTitle(tr("Select Icon"));
+  dialog->setWindowTitle(wt.title(tr("Select Icon"), QString()));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
   connect(dialog, SIGNAL(fileSelected(const QString &)), this, SLOT(setFile(QString)));
   dialog->show();

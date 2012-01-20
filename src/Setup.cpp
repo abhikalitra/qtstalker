@@ -24,7 +24,7 @@
 #include "qtstalker_defines.h"
 //#include "ExchangeDataBase.h"
 #include "EAVDataBase.h"
-#include "IndicatorDataBaseKey.h"
+#include "KeyIndicatorDataBase.h"
 
 #include <QtDebug>
 #include <QDir>
@@ -114,12 +114,12 @@ void Setup::setupDefaultIndicators ()
   QString base = INSTALL_DATA_DIR;
   base.append("/qtstalker/indicator/");
 
-  IndicatorDataBaseKey keys;
+  KeyIndicatorDataBase keys;
   Entity i;
   i.setName(QString("OHLC_3MA"));
-  i.set(keys.indexToString(IndicatorDataBaseKey::_SESSION), Data(g_session));
-  i.set(keys.indexToString(IndicatorDataBaseKey::_FILE), Data(base + "OHLC_3MA.pl"));
-  i.set(keys.indexToString(IndicatorDataBaseKey::_COMMAND), Data(QString("perl")));
+  i.set(keys.indexToString(KeyIndicatorDataBase::_SESSION), Data(g_session));
+  i.set(keys.indexToString(KeyIndicatorDataBase::_FILE), Data(base + "OHLC_3MA.pl"));
+  i.set(keys.indexToString(KeyIndicatorDataBase::_COMMAND), Data(QString("perl")));
 
   EAVDataBase db("indicators");
   db.transaction();
@@ -130,9 +130,9 @@ void Setup::setupDefaultIndicators ()
   }
 
   i.setName(QString("Volume"));
-  i.set(keys.indexToString(IndicatorDataBaseKey::_SESSION), Data(g_session));
-  i.set(keys.indexToString(IndicatorDataBaseKey::_FILE), Data(base + "Volume.pl"));
-  i.set(keys.indexToString(IndicatorDataBaseKey::_COMMAND), Data(QString("perl")));
+  i.set(keys.indexToString(KeyIndicatorDataBase::_SESSION), Data(g_session));
+  i.set(keys.indexToString(KeyIndicatorDataBase::_FILE), Data(base + "Volume.pl"));
+  i.set(keys.indexToString(KeyIndicatorDataBase::_COMMAND), Data(QString("perl")));
 
   if (db.set(i))
     qDebug() << "Setup::setupDefaultIndicators: error saving Volume";

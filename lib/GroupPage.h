@@ -29,7 +29,8 @@
 #include <QComboBox>
 #include <QHash>
 #include <QAction>
-#include <QListWidget>
+
+#include "SymbolListWidget.h"
 
 class GroupPage : public QWidget
 {
@@ -66,7 +67,7 @@ class GroupPage : public QWidget
     void itemClicked (QListWidgetItem *);
 
   protected:
-    QListWidget *_nav;
+    SymbolListWidget *_nav;
     QMenu *_menu;
     QComboBox *_groups;
     QHash<int, QAction *> _actions;

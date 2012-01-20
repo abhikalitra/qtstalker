@@ -20,10 +20,10 @@
  */
 
 #include "ScriptVerifyCurveValue.h"
-#include "DataType.h"
+#include "TypeData.h"
 #include "CurveBar.h"
-#include "EntityType.h"
-#include "CurveBarKey.h"
+#include "TypeEntity.h"
+#include "KeyCurveBar.h"
 
 #include <QtDebug>
 
@@ -33,22 +33,22 @@ ScriptVerifyCurveValue::ScriptVerifyCurveValue ()
 
 int ScriptVerifyCurveValue::getValue (Entity &in, QList<QString> &keys, int index, int offset, double &v)
 {
-  CurveBarKey cbkeys;
-  switch ((EntityType::Type) in.type())
+  KeyCurveBar cbkeys;
+  switch ((TypeEntity::Key) in.type())
   {
-    case EntityType::_SETTING:
+    case TypeEntity::_SETTING:
     {
       Data td;
       if (in.toData(QString::number(0), td))
 	return 1;
       
-      if (td.type() != DataType::_DOUBLE)
+      if (td.type() != TypeData::_DOUBLE)
 	return 1;
       
       v = td.toDouble();
       break;
     }
-    case EntityType::_CURVE:
+    case TypeEntity::_CURVE:
     {
       int pos = index;
       pos -= offset;
@@ -60,7 +60,7 @@ int ScriptVerifyCurveValue::getValue (Entity &in, QList<QString> &keys, int inde
         return 1;
 
       Data td;
-      bar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+      bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
       v = td.toDouble();
       break;
     }
@@ -74,22 +74,22 @@ int ScriptVerifyCurveValue::getValue (Entity &in, QList<QString> &keys, int inde
 
 int ScriptVerifyCurveValue::setValue (Entity &out, Entity &bar, QString pos)
 {
-  CurveBarKey keys;  
-  switch ((EntityType::Type) out.type())
+  KeyCurveBar keys;  
+  switch ((TypeEntity::Key) out.type())
   {
-    case EntityType::_SETTING:
+    case TypeEntity::_SETTING:
     {
       Data td;
       if (out.toData(QString("0"), td))
 	return 1;
       
-      switch ((DataType::Type) td.type())
+      switch ((TypeData::Key) td.type())
       {
-	case DataType::_DOUBLE:
-          bar.set(keys.indexToString(CurveBarKey::_VALUE), td);
+	case TypeData::_DOUBLE:
+          bar.set(keys.indexToString(KeyCurveBar::_VALUE), td);
           break;
-	case DataType::_COLOR:
-          bar.set(keys.indexToString(CurveBarKey::_COLOR), td);
+	case TypeData::_COLOR:
+          bar.set(keys.indexToString(KeyCurveBar::_COLOR), td);
           break;
 	default:
 	  return 1;
@@ -97,15 +97,15 @@ int ScriptVerifyCurveValue::setValue (Entity &out, Entity &bar, QString pos)
       }
       break;
     }
-    case EntityType::_CURVE:
+    case TypeEntity::_CURVE:
     {
       Entity b;
       if (out.toEntity(pos, b))
         return 1;
 
       Data td;
-      b.toData(keys.indexToString(CurveBarKey::_VALUE), td);
-      bar.set(keys.indexToString(CurveBarKey::_VALUE), td);
+      b.toData(keys.indexToString(KeyCurveBar::_VALUE), td);
+      bar.set(keys.indexToString(KeyCurveBar::_VALUE), td);
       break;
     }
     default:

@@ -21,14 +21,14 @@
 
 #include "CommandBETA.h"
 #include "Symbol.h"
-#include "SymbolKey.h"
+#include "KeySymbol.h"
 #include "QuoteDataBase.h"
 #include "ScriptVerifyCurve.h"
 #include "TALibFunction.h"
-#include "TALibFunctionKey.h"
+#include "TypeTALibFunction.h"
 #include "CurveData.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 #include "GlobalSymbol.h"
 
 #include <QtDebug>
@@ -81,7 +81,7 @@ QString CommandBETA::run (CommandParse &, void *d)
   Entity::toData(QString("PERIOD"), period);
   
   Entity parms;
-  parms.set(QString("FUNCTION"), Data(TALibFunctionKey::_BETA));
+  parms.set(QString("FUNCTION"), Data(TypeTALibFunction::_BETA));
   parms.set(QString("PERIOD"), period);
   
   CurveData line;
@@ -108,21 +108,21 @@ int CommandBETA::getIndex (QString d, Entity &line)
     return 1;
   }
 
-  SymbolKey skeys;
+  KeySymbol skeys;
   Symbol bd;
-  bd.set(skeys.indexToString(SymbolKey::_SYMBOL), Data(d));
+  bd.set(skeys.indexToString(KeySymbol::_SYMBOL), Data(d));
   
   g_currentSymbolMutex.lock();
   Data td;
-  g_currentSymbol.toData(skeys.indexToString(SymbolKey::_LENGTH), td);
-  bd.set(skeys.indexToString(SymbolKey::_LENGTH), td);
+  g_currentSymbol.toData(skeys.indexToString(KeySymbol::_LENGTH), td);
+  bd.set(skeys.indexToString(KeySymbol::_LENGTH), td);
   
-  g_currentSymbol.toData(skeys.indexToString(SymbolKey::_RANGE), td);
-  bd.set(skeys.indexToString(SymbolKey::_RANGE), td);
+  g_currentSymbol.toData(skeys.indexToString(KeySymbol::_RANGE), td);
+  bd.set(skeys.indexToString(KeySymbol::_RANGE), td);
   g_currentSymbolMutex.unlock();
 
-  bd.set(skeys.indexToString(SymbolKey::_START_DATE), Data(QDateTime()));
-  bd.set(skeys.indexToString(SymbolKey::_END_DATE), Data(QDateTime()));
+  bd.set(skeys.indexToString(KeySymbol::_START_DATE), Data(QDateTime()));
+  bd.set(skeys.indexToString(KeySymbol::_END_DATE), Data(QDateTime()));
 
   // load quotes
   QuoteDataBase db;
@@ -132,7 +132,7 @@ int CommandBETA::getIndex (QString d, Entity &line)
     return 1;
   }
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   QList<QString> barKeys = bd.ekeys();
   for (; loop < barKeys.size(); loop++)
@@ -141,11 +141,11 @@ int CommandBETA::getIndex (QString d, Entity &line)
     bd.toEntity(barKeys.at(loop), b);
     
     Data close;
-    if (b.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), close))
+    if (b.toData(cbkeys.indexToString(KeyCurveBar::_CLOSE), close))
       continue;
 
     CurveBar cb;
-    cb.set(cbkeys.indexToString(CurveBarKey::_VALUE), close);
+    cb.set(cbkeys.indexToString(KeyCurveBar::_VALUE), close);
     line.setEntity(barKeys.at(loop), cb);
   }
 

@@ -21,6 +21,7 @@
 
 #include "InfoPanel.h"
 #include "Strip.h"
+#include "WindowTitle.h"
 #include "Global.h"
 
 #include "../pics/configure.xpm"
@@ -109,8 +110,9 @@ void InfoPanel::contextMenu ()
 
 void InfoPanel::dialog ()
 {
+  WindowTitle wt;
   QInputDialog *dialog = new QInputDialog;
-  dialog->setWindowTitle("Qtstalker" + g_session + ": " + tr("Info Panel Number Precision"));
+  dialog->setWindowTitle(wt.title(tr("Info Panel Number Precision"), QString()));
   dialog->setLabelText(tr("Precision"));
   dialog->setInputMode(QInputDialog::IntInput);
   dialog->setIntRange(1, 4);

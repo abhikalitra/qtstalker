@@ -21,13 +21,13 @@
 
 #include "DataWindow.h"
 #include "Strip.h"
-#include "Global.h"
 #include "GlobalSymbol.h"
-#include "CurveType.h"
-#include "SymbolKey.h"
-#include "CurveDataKey.h"
-#include "CurveBarKey.h"
+#include "TypeCurve.h"
+#include "KeySymbol.h"
+#include "KeyCurveData.h"
+#include "KeyCurveBar.h"
 #include "ScriptVerifyCurveKeys.h"
+#include "WindowTitle.h"
 
 #include <QtDebug>
 
@@ -49,18 +49,15 @@ DataWindow::DataWindow (QWidget *p) : QDialog (p, 0)
 
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 
-  SymbolKey symkeys;
+  KeySymbol symkeys;
   Data symbol;
-  g_currentSymbol.toData(symkeys.indexToString(SymbolKey::_SYMBOL), symbol);
+  g_currentSymbol.toData(symkeys.indexToString(KeySymbol::_SYMBOL), symbol);
   
   Data name;
-  g_currentSymbol.toData(symkeys.indexToString(SymbolKey::_NAME), name);
+  g_currentSymbol.toData(symkeys.indexToString(KeySymbol::_NAME), name);
 
-  QStringList l;
-  l << "QtStalker" + g_session << ":" << symbol.toString();
-  l << "(" + name.toString() + ")";
-  l << "-" << tr("Indicators");
-  setWindowTitle(l.join(" "));
+  WindowTitle wt;
+  setWindowTitle(wt.dataWindowTitle());
 }
 
 void DataWindow::setPlot (Plot *p)
@@ -69,9 +66,9 @@ void DataWindow::setPlot (Plot *p)
   
   QHash<QString, Curve *> curves = p->curves();
 
-  CurveDataKey cdkeys;
-  CurveBarKey cbkeys;
-  CurveType ct;
+  KeyCurveData cdkeys;
+  KeyCurveBar cbkeys;
+  TypeCurve ct;
   Strip strip;
   QHashIterator<QString, Curve *> it(curves);
   while (it.hasNext())
@@ -81,7 +78,7 @@ void DataWindow::setPlot (Plot *p)
     Entity settings = line->settings();
 
     Data curveType;
-    settings.toData(cdkeys.indexToString(CurveDataKey::_TYPE), curveType);
+    settings.toData(cdkeys.indexToString(KeyCurveData::_TYPE), curveType);
       
     QList<QString> keys = settings.ekeys();
 
@@ -93,9 +90,9 @@ void DataWindow::setPlot (Plot *p)
 
       Entity dwBar = _bars.value(keys.at(loop));
 
-      switch ((CurveType::Type) ct.stringToIndex(curveType.toString()))
+      switch ((TypeCurve::Key) ct.stringToIndex(curveType.toString()))
       {
-        case CurveType::_OHLC:
+        case TypeCurve::_OHLC:
         {
           _headers.set(tr("Open"), Data(tr("Open")));
           _headers.set(tr("High"), Data(tr("High")));
@@ -104,32 +101,32 @@ void DataWindow::setPlot (Plot *p)
 
           QString s;
 	  Data td;
-	  cbar.toData(cbkeys.indexToString(CurveBarKey::_OPEN), td);
+	  cbar.toData(cbkeys.indexToString(KeyCurveBar::_OPEN), td);
           strip.strip(td.toDouble(), 4, s);
           dwBar.set(tr("Open"), Data(s));
 
-	  cbar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td);
+	  cbar.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), td);
           strip.strip(td.toDouble(), 4, s);
           dwBar.set(tr("High"), Data(s));
 
-	  cbar.toData(cbkeys.indexToString(CurveBarKey::_LOW), td);
+	  cbar.toData(cbkeys.indexToString(KeyCurveBar::_LOW), td);
           strip.strip(td.toDouble(), 4, s);
           dwBar.set(tr("Low"), Data(s));
 
-	  cbar.toData(cbkeys.indexToString(CurveBarKey::_CLOSE), td);
+	  cbar.toData(cbkeys.indexToString(KeyCurveBar::_CLOSE), td);
           strip.strip(td.toDouble(), 4, s);
           dwBar.set(tr("Close"), Data(s));
           break;
         }
-        case CurveType::_HISTOGRAM:
+        case TypeCurve::_HISTOGRAM:
         {
 	  Data label;
-	  settings.toData(cdkeys.indexToString(CurveDataKey::_LABEL), label);
+	  settings.toData(cdkeys.indexToString(KeyCurveData::_LABEL), label);
           _headers.set(label.toString(), label);
 
           QString s;
 	  Data td;
-	  cbar.toData(cbkeys.indexToString(CurveBarKey::_HIGH), td);
+	  cbar.toData(cbkeys.indexToString(KeyCurveBar::_HIGH), td);
           strip.strip(td.toDouble(), 4, s);
           dwBar.set(label.toString(), Data(s));
           break;
@@ -137,12 +134,12 @@ void DataWindow::setPlot (Plot *p)
         default:
         {
 	  Data label;
-	  settings.toData(cdkeys.indexToString(CurveDataKey::_LABEL), label);
+	  settings.toData(cdkeys.indexToString(KeyCurveData::_LABEL), label);
           _headers.set(label.toString(), label);
 
           QString s;
 	  Data td;
-	  cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), td);
+	  cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
           strip.strip(td.toDouble(), 4, s);
           dwBar.set(label.toString(), Data(s));
           break;

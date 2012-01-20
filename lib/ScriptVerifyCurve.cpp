@@ -20,8 +20,8 @@
  */
 
 #include "ScriptVerifyCurve.h"
-#include "EntityType.h"
-#include "DataType.h"
+#include "TypeEntity.h"
+#include "TypeData.h"
 
 #include <QtDebug>
 
@@ -34,7 +34,7 @@ int ScriptVerifyCurve::curve (Script *script, QString d, Entity &e)
   if (script->data(d, e))
     return 1;
   
-  if (e.type() != EntityType::_CURVE)
+  if (e.type() != TypeEntity::_CURVE)
     return 1;
     
   return 0;
@@ -42,11 +42,11 @@ int ScriptVerifyCurve::curve (Script *script, QString d, Entity &e)
 
 int ScriptVerifyCurve::entity (QString d, Entity &e)
 {
-  Data tdd(DataType::_DOUBLE);
-  if (tdd.set(d, DataType::_DOUBLE))
+  Data tdd(TypeData::_DOUBLE);
+  if (tdd.set(d, TypeData::_DOUBLE))
   {
-    Data tdc(DataType::_COLOR);
-    if (tdc.set(d, DataType::_COLOR))
+    Data tdc(TypeData::_COLOR);
+    if (tdc.set(d, TypeData::_COLOR))
     {
       qDebug() << "ScriptVerifyCurve::entity: invalid data" << d;
       return 1;

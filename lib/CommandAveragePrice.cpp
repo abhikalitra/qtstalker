@@ -23,10 +23,8 @@
 #include "CurveData.h"
 #include "ScriptVerifyCurve.h"
 #include "ScriptVerifyCurveKeys.h"
-#include "TALibFunction.h"
-#include "TALibFunctionKey.h"
 #include "CurveBar.h"
-#include "CurveBarKey.h"
+#include "KeyCurveBar.h"
 
 #include <QtDebug>
 
@@ -112,7 +110,7 @@ int CommandAveragePrice::getAP (Entity &iopen, Entity &ihigh, Entity &ilow, Enti
   if (svck.keys4(iopen, ihigh, ilow, iclose, keys))
     return 1;
 
-  CurveBarKey cbkeys;
+  KeyCurveBar cbkeys;
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
@@ -120,33 +118,33 @@ int CommandAveragePrice::getAP (Entity &iopen, Entity &ihigh, Entity &ilow, Enti
     if (iopen.toEntity(keys.at(loop), obar))
       continue;
     Data open;
-    if (obar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), open))
+    if (obar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), open))
       continue;
 
     Entity hbar;
     if (ihigh.toEntity(keys.at(loop), hbar))
       continue;
     Data high;
-    if (hbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), high))
+    if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), high))
       continue;
 
     Entity lbar;
     if (ilow.toEntity(keys.at(loop), lbar))
       continue;
     Data low;
-    if (lbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), low))
+    if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), low))
       continue;
 
     Entity cbar;
     if (iclose.toEntity(keys.at(loop), cbar))
       continue;
     Data close;
-    if (cbar.toData(cbkeys.indexToString(CurveBarKey::_VALUE), close))
+    if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), close))
       continue;
 
     double t = (open.toDouble() + high.toDouble() + low.toDouble() + close.toDouble()) / 4.0;
     CurveBar b;
-    b.set(cbkeys.indexToString(CurveBarKey::_VALUE), Data(t));
+    b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(t));
     line.setEntity(keys.at(loop), b);
   }
 

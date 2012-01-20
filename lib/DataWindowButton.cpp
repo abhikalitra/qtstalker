@@ -23,7 +23,7 @@
 #include "GlobalPlotGroup.h"
 #include "GlobalSymbol.h"
 #include "DataWindow.h"
-#include "SymbolKey.h"
+#include "KeySymbol.h"
 #include "GlobalParent.h"
 
 #include "../pics/datawindow.xpm"
@@ -42,9 +42,9 @@ DataWindowButton::DataWindowButton ()
 
 void DataWindowButton::dialog ()
 {
-  SymbolKey keys;
+  KeySymbol keys;
   Data symbol;
-  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), symbol);
+  g_currentSymbol.toData(keys.indexToString(KeySymbol::_SYMBOL), symbol);
   if (symbol.toString().isEmpty())
     return;
 

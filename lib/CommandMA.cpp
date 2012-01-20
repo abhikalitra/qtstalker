@@ -20,7 +20,7 @@
  */
 
 #include "CommandMA.h"
-#include "MAType.h"
+#include "TypeMA.h"
 #include "ScriptVerifyCurve.h"
 #include "Script.h"
 #include "CurveData.h"
@@ -36,7 +36,7 @@ CommandMA::CommandMA ()
   Entity::set(QString("INPUT"), Data(QString("close")));
   Entity::set(QString("PERIOD"), Data(10));
 
-  MAType mat;
+  TypeMA mat;
   Data td(mat.list(), QString("EMA"));
   Entity::set(QString("TYPE"), td);
 }
@@ -64,7 +64,7 @@ QString CommandMA::run (CommandParse &, void *d)
   CurveData line;
   if (ma.getMA(in, period.toInteger(), type.toInteger(), line))
   {
-    qDebug() << "CommandMA::run: MAType error";
+    qDebug() << "CommandMA::run: TypeMA error";
     return _returnCode;
   }
 

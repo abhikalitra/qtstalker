@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2011 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,24 +19,24 @@
  *  USA.
  */
 
-#ifndef DATA_TYPE_HPP
-#define DATA_TYPE_HPP
+#ifndef KEY_SCRIPT_DATABASE_HPP
+#define KEY_SCRIPT_DATABASE_HPP
 
-class DataType
+#include "Type.h"
+
+class KeyScriptDataBase : public Type
 {
   public:
-    enum Type
+    enum Key
     {
-      _BOOL = 10,
-      _COLOR = 20,
-      _DATETIME = 30,
-      _DOUBLE = 40,
-      _FONT = 50,
-      _INTEGER = 60,
-      _LIST = 70,
-      _STRING = 80,
-      _FILE = 90
+      _NAME,
+      _FILE,
+      _STARTUP,
+      _RUN_INTERVAL,
+      _COMMAND
     };
+    
+    KeyScriptDataBase ();
 };
 
 #endif

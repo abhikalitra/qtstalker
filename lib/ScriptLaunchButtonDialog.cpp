@@ -20,7 +20,7 @@
  */
 
 #include "ScriptLaunchButtonDialog.h"
-#include "Global.h"
+#include "WindowTitle.h"
 
 #include <QtDebug>
 
@@ -29,7 +29,8 @@ ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString command,
   _keySize = "script_launch_button_dialog_window_size";
   _keyPos = "script_launch_button_dialog_window_position";
 
-  setWindowTitle("Qtstalker" + g_session + ": " +  tr("Script Launch Button Settings"));
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("Script Launch Button Settings"), QString()));
 
   createMainPage();
 

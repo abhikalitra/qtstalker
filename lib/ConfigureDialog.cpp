@@ -20,9 +20,10 @@
  */
 
 #include "ConfigureDialog.h"
-#include "Global.h"
 #include "GlobalPlotGroup.h"
 #include "GlobalParent.h"
+#include "WindowTitle.h"
+#include "Global.h"
 
 #include <QtDebug>
 #include <QApplication>
@@ -34,9 +35,8 @@ ConfigureDialog::ConfigureDialog (QWidget *p) : Dialog (p)
   _keyPos = "configure_dialog_window_position";
   _modified = 0;
 
-  QStringList l;
-  l << "QtStalker" + g_session + ":" << tr("Configure");
-  setWindowTitle(l.join(" "));
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("Configure"), QString()));
 
   createGUI();
   createGeneralPage();

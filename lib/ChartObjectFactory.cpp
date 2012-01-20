@@ -20,7 +20,7 @@
  */
 
 #include "ChartObjectFactory.h"
-#include "ChartObjectType.h"
+#include "TypeChartObject.h"
 #include "ChartObjectBuy.h"
 #include "ChartObjectHLine.h"
 #include "ChartObjectRetracement.h"
@@ -38,29 +38,29 @@ ChartObjectFactory::ChartObjectFactory ()
 ChartObject * ChartObjectFactory::chartObject (QString type)
 {
   ChartObject *co = 0;
-  ChartObjectType cot;
+  TypeChartObject cot;
 
-  switch ((ChartObjectType::Type) cot.stringToIndex(type))
+  switch ((TypeChartObject::Key) cot.stringToIndex(type))
   {
-    case ChartObjectType::_BUY:
+    case TypeChartObject::_BUY:
       co = new ChartObjectBuy;
       break;
-    case ChartObjectType::_HLINE:
+    case TypeChartObject::_HLINE:
       co = new ChartObjectHLine;
       break;
-    case ChartObjectType::_RETRACEMENT:
+    case TypeChartObject::_RETRACEMENT:
       co = new ChartObjectRetracement;
       break;
-    case ChartObjectType::_SELL:
+    case TypeChartObject::_SELL:
       co = new ChartObjectSell;
       break;
-    case ChartObjectType::_TEXT:
+    case TypeChartObject::_TEXT:
       co = new ChartObjectText;
       break;
-    case ChartObjectType::_TLINE:
+    case TypeChartObject::_TLINE:
       co = new ChartObjectTLine;
       break;
-    case ChartObjectType::_VLINE:
+    case TypeChartObject::_VLINE:
       co = new ChartObjectVLine;
       break;
     default:

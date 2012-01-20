@@ -27,7 +27,7 @@
 #include "GroupAdd.h"
 #include "SymbolDelete.h"
 #include "ChartLoad.h"
-#include "SymbolKey.h"
+#include "KeySymbol.h"
 
 #include "../pics/add.xpm"
 #include "../pics/search.xpm"
@@ -49,7 +49,7 @@ ChartPage::ChartPage (QWidget *p) : QWidget (p)
   vbox->setSpacing(0);
   setLayout(vbox);
 
-  _nav = new QListWidget;
+  _nav = new SymbolListWidget;
   _nav->setFocusPolicy(Qt::StrongFocus);
   _nav->setContextMenuPolicy(Qt::CustomContextMenu);
   _nav->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -60,7 +60,7 @@ ChartPage::ChartPage (QWidget *p) : QWidget (p)
 
   // update to last symbol search before displaying
   QSettings settings(g_localSettings);
-  _searchString = settings.value("last_chart_panel_symbol_search", "*").toString();
+  _searchString = settings.value("last_chart_panel_symbol_search", "%").toString();
 
   createActions();
 
@@ -153,35 +153,11 @@ void ChartPage::addToGroup ()
 
 void ChartPage::updateList ()
 {
-  _nav->clear();
-
-  _nav->setSortingEnabled(FALSE);
-
-  SymbolKey keys;
-  Symbol bd;
-  bd.set(keys.indexToString(SymbolKey::_SYMBOL), Data(_searchString));
-
   QuoteDataBase db;
   QList<Symbol> l;
-  db.search(bd, l);
-
-  int loop = 0;
-  for (; loop < l.size(); loop++)
-  {
-    Symbol dg = l.at(loop);
-    
-    Data td;
-    dg.toData(keys.indexToString(SymbolKey::_SYMBOL), td);
-
-    QListWidgetItem *item = new QListWidgetItem;
-    item->setText(td.toString());
-    
-    dg.toData(keys.indexToString(SymbolKey::_NAME), td);
-    item->setToolTip(td.toString());
-    _nav->addItem(item);
-  }
-
-  _nav->setSortingEnabled(TRUE);
+  db.search(_searchString, l);
+  
+  _nav->setSymbols(l);
 
   buttonStatus();
 }
@@ -206,7 +182,7 @@ void ChartPage::setSearch (QString symbol)
 
 void ChartPage::allButtonPressed ()
 {
-  _searchString = "*";
+  _searchString = "%";
 
   QSettings settings(g_localSettings);
   settings.setValue("last_chart_panel_symbol_search", _searchString);
@@ -262,9 +238,9 @@ void ChartPage::refresh ()
 {
   updateList();
 
-  SymbolKey keys;
+  KeySymbol keys;
   Data td;
-  g_currentSymbol.toData(keys.indexToString(SymbolKey::_SYMBOL), td);
+  g_currentSymbol.toData(keys.indexToString(KeySymbol::_SYMBOL), td);
   
   if (td.toString().isEmpty())
     return;
