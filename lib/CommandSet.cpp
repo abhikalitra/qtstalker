@@ -53,12 +53,22 @@ QString CommandSet::run (CommandParse &sg, void *scr)
     }
   
     QString newValue = sg.value(pos++);
-    if (setting.set(newValue, setting.type()))
+    
+    switch ((TypeData::Key) setting.type())
     {
-      qDebug() << "CommandSet::run: invalid value";
-      return _returnCode;
+//      case TypeData::_LIST:
+      case TypeData::_FILE:
+	setting.set(newValue.split(";"));
+        break;
+      default:
+        if (setting.set(newValue, setting.type()))
+        {
+          qDebug() << "CommandSet::run: invalid value";
+          return _returnCode;
+        }
+        break;
     }
-
+    
     c->set(settingName, setting);
   }
 

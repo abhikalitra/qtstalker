@@ -19,21 +19,25 @@
  *  USA.
  */
 
-#include "CommandGet.h"
+#include "CommandSave.h"
 #include "Script.h"
+#include "EAVDataBase.h"
 
 #include <QtDebug>
 
-CommandGet::CommandGet ()
+CommandSave::CommandSave ()
 {
-  _name = "GET";
+  _name = "SAVE";
 }
 
-QString CommandGet::run (CommandParse &sg, void *scr)
+QString CommandSave::run (CommandParse &sg, void *scr)
 {
+  // PARM1 = object
+  // PARM2 = database table
+  
   if (sg.values() != 2)
   {
-    qDebug() << "CommandGet::run: invalid number of values";
+    qDebug() << "CommandSave::run: invalid number of values";
     return _returnCode;
   }
   
@@ -43,28 +47,32 @@ QString CommandGet::run (CommandParse &sg, void *scr)
   Command *c = script->scriptCommand(name);
   if (! c)
   {
-    qDebug() << "CommandGet::run: invalid object name" << name;
+    qDebug() << "CommandSave::run: invalid object name" << name;
     return _returnCode;
   }
 
-  QString settingName = sg.value(pos++);
-  Data setting;
-  if (c->toData(settingName, setting))
+  QString table = sg.value(pos++);
+  
+  QList<QString> keys = c->dkeys();
+  Entity settings;
+  settings.setName(name);
+  int loop = 0;
+  for (; loop < keys.size(); loop++)
   {
-    qDebug() << "CommandGet::run: invalid setting name" << settingName;
+    Data td;
+    c->toData(keys.at(loop), td);
+    settings.set(keys.at(loop), td);
+  }
+
+  EAVDataBase db(table);
+  db.transaction();
+  if (db.set(settings))
+  {
+    qDebug() << "CommandSave::run: EAVDataBase error";
     return _returnCode;
   }
-  
-  switch ((TypeData::Key) setting.type())
-  {
-//    case TypeData::_LIST:
-    case TypeData::_FILE:
-      _returnCode = setting.toList().join(";");
-      break;
-    default:
-      _returnCode = setting.toString();
-      break;
-  }
-  
+  db.commit();
+
+  _returnCode = "OK";
   return _returnCode;
 }

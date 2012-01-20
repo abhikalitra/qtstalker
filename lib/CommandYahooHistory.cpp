@@ -33,12 +33,14 @@ CommandYahooHistory::CommandYahooHistory ()
 {
   _name = "YAHOO_HISTORY";
 
-  Data td(QDateTime::currentDateTime());
-  td.setLabel(QObject::tr("Date Start"));
-  Entity::set(QString("DATE_START"), td);
-  
+  QDateTime dt = QDateTime::currentDateTime();
+  Data td(dt);
   td.setLabel(QObject::tr("Date End"));
   Entity::set(QString("DATE_END"), td);
+  
+  td = Data(dt.addYears(-1));
+  td.setLabel(QObject::tr("Date Start"));
+  Entity::set(QString("DATE_START"), td);
   
   td = Data(TRUE);
   td.setLabel(QObject::tr("Adjusted"));

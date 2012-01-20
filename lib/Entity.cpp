@@ -184,6 +184,8 @@ void Entity::merge (Entity &osettings)
   {
     Data ntd;
     toData(keys.at(loop), ntd);
+    if (ntd.toString().isEmpty())
+      continue;
       
     Data otd;
     if (osettings.toData(keys.at(loop), otd))

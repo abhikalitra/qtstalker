@@ -243,10 +243,15 @@ int Data::set (QString d, int type)
       break;
     }
     case TypeData::_LIST:
-      if (_list.indexOf(d) != -1)
+      if (! _list.size())
         set(d);
       else
-        rc++;
+      {
+        if (_list.indexOf(d) != -1)
+          set(d);
+        else
+          rc++;
+      }
       break;
     case TypeData::_STRING:
       set(d);
@@ -273,7 +278,18 @@ int Data::set (QString d, int type)
 
 QString Data::toString ()
 {
-  return _value.toString();
+  QString s;
+  switch ((TypeData::Key) _type)
+  {
+    case TypeData::_FILE:
+      s = _list.join(";");
+      break;
+    default:
+      s = _value.toString();
+      break;
+  }
+  
+  return s;
 }
 
 QStringList Data::toList ()

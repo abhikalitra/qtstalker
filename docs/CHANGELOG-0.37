@@ -1317,4 +1317,10 @@
            Database structure has been changed to an EAV format. This allows more flexibility for future
            changes without requiring users to export/import data to fit changing structures.
 
+**************************************************************************************************************************
+
+20120120:  Added 2 new script verbs LOAD and SAVE. These allow script commands to save/restore settings to the
+           database. Modified YahooScriptDownload script to save/restore settings.
+
+           Renamed a bunch of classes to better organize them.
 

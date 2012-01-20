@@ -24,6 +24,7 @@
 #include "TypeEntity.h"
 #include "CommandParse.h"
 #include "CommandFactory.h"
+#include "TypeVerb.h"
 
 #include <QDebug>
 #include <QUuid>
@@ -31,7 +32,6 @@
 Script::Script (QObject *p) : QThread (p)
 {
   _killFlag = 0;
-  _verbList << "DIALOG" << "GET" << "NEW" << "RUN" << "SET";
   _id = QUuid::createUuid().toString();
 }
 
@@ -64,6 +64,8 @@ void Script::run ()
     return;
   }
 
+  TypeVerb verbs;
+  
   QStringList l;
   l << QDateTime::currentDateTime().toString();
   l << _file;
@@ -75,7 +77,6 @@ void Script::run ()
     if (_killFlag)
     {
       qDebug() << "Script::run: script terminated";
-//      emit signalDone(_file);
       _proc.kill();
       break;
     }
@@ -100,16 +101,14 @@ void Script::run ()
     {
       qDebug() << "Script::run: verb parse error";
       qDebug() << "Script::run:" << s;
-//      emit signalDone(_file);
       _proc.kill();
       break;
     }
 
     // check if verb
-    if (_verbList.indexOf(cp.command()) == -1)
+    if (verbs.stringToIndex(cp.command()) == -1)
     {
       qDebug() << "Script::run: invalid verb" << cp.command();
-//      emit signalDone(_file);
       _proc.kill();
       break;
     }
@@ -119,7 +118,6 @@ void Script::run ()
     if (! command)
     {
       qDebug() << "Script::run: invalid command" << cp.command();
-//      emit signalDone(_file);
       _proc.kill();
       break;
     }

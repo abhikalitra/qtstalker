@@ -49,6 +49,7 @@
 #include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandLINEARREG.h"
+#include "CommandLoad.h"
 #include "CommandMA.h"
 #include "CommandMACD.h"
 #include "CommandMAMA.h"
@@ -69,6 +70,7 @@
 #include "CommandRSI.h"
 #include "CommandRun.h"
 #include "CommandSAR.h"
+#include "CommandSave.h"
 #include "CommandSell.h"
 #include "CommandSet.h"
 #include "CommandShift.h"
@@ -215,6 +217,9 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_LINEARREG:
       c = new CommandLINEARREG;
       break;
+    case TypeCommand::_LOAD:
+      c = new CommandLoad;
+      break;
     case TypeCommand::_MA:
       c = new CommandMA;
       break;
@@ -268,6 +273,9 @@ Command * CommandFactory::command (QString type)
       break;
     case TypeCommand::_SAR:
       c = new CommandSAR;
+      break;
+    case TypeCommand::_SAVE:
+      c = new CommandSave;
       break;
     case TypeCommand::_SET:
       c = new CommandSet;

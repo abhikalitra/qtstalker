@@ -60,6 +60,7 @@ TypeCommand::TypeCommand ()
   _list << "HT_PHASOR";
   _list << "HT_SINE";
   _list << "LINEARREG";
+  _list << "LOAD";
   _list << "MA";
   _list << "MACD";
   _list << "MAMA";
@@ -78,6 +79,7 @@ TypeCommand::TypeCommand ()
   _list << "RSI";
   _list << "RUN";
   _list << "SAR";
+  _list << "SAVE";
   _list << "SET";
   _list << "SHIFT";
   _list << "STDDEV";

@@ -83,7 +83,6 @@ class Script : public QThread
     int _killFlag;
     Symbol _symbol;
     QString _id;
-    QStringList _verbList;
 };
 
 #endif

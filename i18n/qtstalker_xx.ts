@@ -1121,6 +1121,14 @@ App restart required to take effect</source>
         <source>Indicators</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Setting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>

@@ -2,18 +2,10 @@
 
 $yahooCommand = 'YAHOO_HISTORY';
 $yahooCommandName = 'downloader';
-$dateStartSetting = 'DATE_START';
-$dateStartValue = '2011-01-01 00:00:00';
-$dateEndSetting = 'DATE_END';
-$dateEndValue = '2012-01-01 23:59:59';
-$symbolFileSetting = 'SYMBOL_FILE';
-$symbolFileValue = '~/.qtstalker/yahoo/symbols';
-$csvFileSetting = 'CSV_FILE';
-$csvFileValue = '~/.qtstalker/yahoo/yahoo.csv';
+$yahooDialogSettingsKey = 'yahoo_history_download_yahoo_dialog_settings';
 $csvCommand = 'CSV';
 $csvCommandName = 'csv';
-$csvDelimiterSetting = 'DELIMITER';
-$csvDelimiterValue = 'Semicolon';
+$csvDialogSettingsKey = 'yahoo_history_download_csv_dialog_settings';
 
 ################################################################################
 # all perl scripts must turn on buffer flush flag otherwise script will hang
@@ -29,10 +21,8 @@ $command = "NEW($yahooCommand, $yahooCommandName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# set the yahoo_history settings
-$command = "SET($yahooCommandName, $dateStartSetting, $dateStartValue,
-                $yahooCommandName, $csvFileSetting, $csvFileValue,
-                $yahooCommandName, $symbolFileSetting, $symbolFileValue)";
+# load saved yahoo dialog settings
+$command = "LOAD($yahooCommandName, $yahooDialogSettingsKey)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
@@ -41,7 +31,11 @@ $command = "DIALOG($yahooCommandName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# download the quotes
+# save yahoo dialog settings
+$command = "SAVE($yahooCommandName, $yahooDialogSettingsKey)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
 $command = "RUN($yahooCommandName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
@@ -55,19 +49,18 @@ $command = "NEW($csvCommand, $csvCommandName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
-# get the csvFileSetting value from the yahoo_history object
-$command = "GET($yahooCommandName, $csvFileSetting)";
-print STDOUT $command;
-$csvFileValue = <STDIN>; chomp($csvFileValue); if ($csvFileValue eq "ERROR") {print STDERR $command; exit; }
-
-# set the CSV settings
-$command = "SET($csvCommandName, $csvFileSetting, $csvFileValue,
-                $csvCommandName, $csvDelimiterSetting, $csvDelimiterValue)";
+# load saved csv dialog settings
+$command = "LOAD($csvCommandName, $csvDialogSettingsKey)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # show CSV dialog
 $command = "DIALOG($csvCommandName)";
+print STDOUT $command;
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+
+# save yahoo dialog settings
+$command = "SAVE($csvCommandName, $csvDialogSettingsKey)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 

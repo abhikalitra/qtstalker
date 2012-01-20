@@ -19,21 +19,25 @@
  *  USA.
  */
 
-#include "CommandGet.h"
+#include "CommandLoad.h"
 #include "Script.h"
+#include "EAVDataBase.h"
 
 #include <QtDebug>
 
-CommandGet::CommandGet ()
+CommandLoad::CommandLoad ()
 {
-  _name = "GET";
+  _name = "LOAD";
 }
 
-QString CommandGet::run (CommandParse &sg, void *scr)
+QString CommandLoad::run (CommandParse &sg, void *scr)
 {
+  // PARM1 = object
+  // PARM2 = database table name
+  
   if (sg.values() != 2)
   {
-    qDebug() << "CommandGet::run: invalid number of values";
+    qDebug() << "CommandLoad::run: invalid number of values";
     return _returnCode;
   }
   
@@ -43,28 +47,24 @@ QString CommandGet::run (CommandParse &sg, void *scr)
   Command *c = script->scriptCommand(name);
   if (! c)
   {
-    qDebug() << "CommandGet::run: invalid object name" << name;
+    qDebug() << "CommandLoad::run: invalid object name" << name;
     return _returnCode;
   }
 
-  QString settingName = sg.value(pos++);
-  Data setting;
-  if (c->toData(settingName, setting))
+  QString table = sg.value(pos++);
+  
+  Entity settings;
+  settings.setName(name);
+
+  EAVDataBase db(table);
+  if (db.get(settings))
   {
-    qDebug() << "CommandGet::run: invalid setting name" << settingName;
+    qDebug() << "CommandLoad::run: EAVDataBase error";
     return _returnCode;
   }
+
+  c->merge(settings);
   
-  switch ((TypeData::Key) setting.type())
-  {
-//    case TypeData::_LIST:
-    case TypeData::_FILE:
-      _returnCode = setting.toList().join(";");
-      break;
-    default:
-      _returnCode = setting.toString();
-      break;
-  }
-  
+  _returnCode = "OK";
   return _returnCode;
 }

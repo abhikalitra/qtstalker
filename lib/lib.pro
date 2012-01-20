@@ -61,6 +61,7 @@ HEADERS += CommandGroupSave.h
 HEADERS += CommandHLine.h
 HEADERS += CommandHT.h
 HEADERS += CommandLINEARREG.h
+HEADERS += CommandLoad.h
 HEADERS += CommandMA.h
 HEADERS += CommandMACD.h
 HEADERS += CommandMAMA.h
@@ -82,6 +83,7 @@ HEADERS += CommandROC.h
 HEADERS += CommandRSI.h
 HEADERS += CommandRun.h
 HEADERS += CommandSAR.h
+HEADERS += CommandSave.h
 HEADERS += CommandSell.h
 HEADERS += CommandSet.h
 HEADERS += CommandShift.h
@@ -227,6 +229,7 @@ HEADERS += TypeOHLC.h
 HEADERS += TypeOperator.h
 HEADERS += TypeThreadMessage.h
 HEADERS += TypeTALibFunction.h
+HEADERS += TypeVerb.h
 
 HEADERS += WindowTitle.h
 
@@ -286,6 +289,7 @@ SOURCES += CommandGroupSave.cpp
 SOURCES += CommandHLine.cpp
 SOURCES += CommandHT.cpp
 SOURCES += CommandLINEARREG.cpp
+SOURCES += CommandLoad.cpp
 SOURCES += CommandMA.cpp
 SOURCES += CommandMACD.cpp
 SOURCES += CommandMAMA.cpp
@@ -307,6 +311,7 @@ SOURCES += CommandROC.cpp
 SOURCES += CommandRSI.cpp
 SOURCES += CommandRun.cpp
 SOURCES += CommandSAR.cpp
+SOURCES += CommandSave.cpp
 SOURCES += CommandSell.cpp
 SOURCES += CommandSet.cpp
 SOURCES += CommandShift.cpp
@@ -449,6 +454,7 @@ SOURCES += TypeMA.cpp
 SOURCES += TypeOHLC.cpp
 SOURCES += TypeOperator.cpp
 SOURCES += TypeTALibFunction.cpp
+SOURCES += TypeVerb.cpp
 
 SOURCES += WindowTitle.cpp
 

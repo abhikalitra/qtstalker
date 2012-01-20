@@ -22,7 +22,6 @@ Priority
 
 - add help to dialogs
 - key shortcuts
-- add Settings command so that scripts can save/restore data in the global qsettings file
 
 
 
