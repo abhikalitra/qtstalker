@@ -10,7 +10,6 @@ QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
 ######################################################
 
 HEADERS += AboutDialog.h
-HEADERS += AddIndicator.h
 
 HEADERS += BarLengthButton.h
 HEADERS += BarSpaceButton.h
@@ -158,6 +157,8 @@ HEADERS += GroupNew.h
 HEADERS += GroupPage.h
 
 HEADERS += IconButton.h
+HEADERS += IndicatorAdd.h
+HEADERS += IndicatorRemove.h
 HEADERS += InfoPanel.h
 
 HEADERS += KeyChartObject.h
@@ -187,7 +188,6 @@ HEADERS += PlotScaleDraw.h
 HEADERS += QuoteDataBase.h
 
 HEADERS += RecentCharts.h
-HEADERS += RemoveIndicator.h
 
 HEADERS += Script.h
 HEADERS += ScriptLaunchButton.h
@@ -238,7 +238,6 @@ HEADERS += WindowTitle.h
 ######################################################
 
 SOURCES += AboutDialog.cpp
-SOURCES += AddIndicator.cpp
 
 SOURCES += BarLengthButton.cpp
 SOURCES += BarSpaceButton.cpp
@@ -386,6 +385,8 @@ SOURCES += GroupNew.cpp
 SOURCES += GroupPage.cpp
 
 SOURCES += IconButton.cpp
+SOURCES += IndicatorAdd.cpp
+SOURCES += IndicatorRemove.cpp
 SOURCES += InfoPanel.cpp
 
 SOURCES += KeyChartObject.cpp
@@ -415,7 +416,6 @@ SOURCES += PlotScaleDraw.cpp
 SOURCES += QuoteDataBase.cpp
 
 SOURCES += RecentCharts.cpp
-SOURCES += RemoveIndicator.cpp
 
 SOURCES += Script.cpp
 SOURCES += ScriptLaunchButton.cpp

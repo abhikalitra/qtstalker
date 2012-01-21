@@ -19,27 +19,27 @@
  *  USA.
  */
 
-#ifndef REMOVE_INDICATOR_HPP
-#define REMOVE_INDICATOR_HPP
+#ifndef INDICATOR_ADD_HPP
+#define INDICATOR_ADD_HPP
 
-#include <QString>
 #include <QObject>
 
-class RemoveIndicator : public QObject
+class IndicatorAdd : public QObject
 {
   Q_OBJECT
 
   public:
-    RemoveIndicator (QObject *p, QString indicator);
+    IndicatorAdd (QObject *p);
     void run ();
 
   public slots:
-    void remove ();
-    void remove2 ();
+    void add ();
+    void add2 (QString);
+    void add3 (QString command, QString file);
     void done ();
-
+    
   private:
-    QString _indicator;
+    QString _name;
 };
 
 #endif

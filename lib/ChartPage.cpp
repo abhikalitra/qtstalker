@@ -28,6 +28,7 @@
 #include "SymbolDelete.h"
 #include "ChartLoad.h"
 #include "KeySymbol.h"
+#include "GlobalSidePanel.h"
 
 #include "../pics/add.xpm"
 #include "../pics/search.xpm"
@@ -148,6 +149,7 @@ void ChartPage::addToGroup ()
     tl << l.at(loop)->text();
 
   GroupAdd *ga = new GroupAdd(this, tl);
+  connect(ga, SIGNAL(signalDone()), g_sidePanel->groupPanel(), SLOT(updateList()));
   ga->run();
 }
 
@@ -165,7 +167,7 @@ void ChartPage::updateList ()
 void ChartPage::symbolSearch ()
 {
   SymbolDialog *dialog = new SymbolDialog(this);
-  connect(dialog, SIGNAL(signalDone(QString, QString, QStringList)), this, SLOT(setSearch(QString, QString)));
+  connect(dialog, SIGNAL(signalDone(QString, QString, QStringList)), this, SLOT(setSearchDummy(QString, QString, QStringList)));
   dialog->show();
 }
 
@@ -178,6 +180,11 @@ void ChartPage::setSearch (QString symbol)
   settings.sync();
 
   updateList();
+}
+
+void ChartPage::setSearchDummy (QString symbol, QString, QStringList)
+{
+  setSearch(symbol);
 }
 
 void ChartPage::allButtonPressed ()

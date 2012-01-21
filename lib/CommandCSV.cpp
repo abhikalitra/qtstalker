@@ -42,7 +42,7 @@ CommandCSV::CommandCSV ()
   _quoteType << "Stock" << "Futures" << "ETF" << "Mutual";
 
   QStringList l;
-  l << "/tmp/file.csv";
+  l << "/tmp/yahoo.csv";
   Data td(TypeData::_FILE);
   td.set(l);
   td.setLabel(QObject::tr("CSV File"));
@@ -56,7 +56,7 @@ CommandCSV::CommandCSV ()
   td.setLabel(QObject::tr("Date Format"));
   Entity::set(QString("DATE_FORMAT"), td);
   
-  td = Data(_delimiterType, _delimiterType.at(0));
+  td = Data(_delimiterType, _delimiterType.at(1));
   td.setLabel(QObject::tr("Delimiter"));
   Entity::set(QString("DELIMITER"), td);
   

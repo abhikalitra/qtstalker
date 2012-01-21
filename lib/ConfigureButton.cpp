@@ -23,7 +23,7 @@
 #include "Doc.h"
 #include "AboutDialog.h"
 #include "ConfigureDialog.h"
-#include "AddIndicator.h"
+#include "IndicatorAdd.h"
 
 #include "../pics/about.xpm"
 #include "../pics/help.xpm"
@@ -126,6 +126,6 @@ void ConfigureButton::configureDialog ()
 
 void ConfigureButton::addIndicator ()
 {
-  AddIndicator *ai = new AddIndicator(this);
+  IndicatorAdd *ai = new IndicatorAdd(this);
   ai->run();
 }

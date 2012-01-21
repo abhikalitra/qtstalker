@@ -24,6 +24,7 @@
 #include "WindowTitle.h"
 #include "EAVDataBase.h"
 #include "KeyGroupDataBase.h"
+#include "GlobalParent.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -51,7 +52,7 @@ void GroupAdd::add ()
   EAVDataBase db("groups");
   db.names(l);
 
-  SelectDialog *dialog = new SelectDialog(0);
+  SelectDialog *dialog = new SelectDialog(g_parent);
   dialog->setItems(l);
   dialog->setTitle(tr("Groups"));
   dialog->setMode(1);
@@ -85,7 +86,7 @@ void GroupAdd::add2 (QStringList gl)
   KeyGroupDataBase gkeys;
   Data td;
   g.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), td);
-  QStringList l = td.toList();
+  QStringList l = td.toString().split(";", QString::SkipEmptyParts);
 
   int loop = 0;
   for (; loop < _symbols.size(); loop++)
@@ -93,9 +94,8 @@ void GroupAdd::add2 (QStringList gl)
 
   l.removeDuplicates();
 
-  Data dl;
-  dl.set(l);
-  g.set(gkeys.indexToString(KeyGroupDataBase::_LIST), dl);
+  td.set(l.join(";"));
+  g.set(gkeys.indexToString(KeyGroupDataBase::_LIST), td);
 
   db.transaction();
   if (db.set(g))

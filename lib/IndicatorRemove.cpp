@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "RemoveIndicator.h"
+#include "IndicatorRemove.h"
 #include "ConfirmDialog.h"
 #include "GlobalPlotGroup.h"
 #include "EAVDataBase.h"
@@ -29,17 +29,17 @@
 #include <QStringList>
 #include <QTimer>
 
-RemoveIndicator::RemoveIndicator (QObject *p, QString indicator) : QObject (p)
+IndicatorRemove::IndicatorRemove (QObject *p, QString indicator) : QObject (p)
 {
   _indicator = indicator;
 }
 
-void RemoveIndicator::run ()
+void IndicatorRemove::run ()
 {
   QTimer::singleShot(0, this, SLOT(remove()));
 }
 
-void RemoveIndicator::remove ()
+void IndicatorRemove::remove ()
 {
   QStringList mess;
   mess << tr("Confirm indicator removal") << _indicator;
@@ -51,7 +51,7 @@ void RemoveIndicator::remove ()
   dialog->show();
 }
 
-void RemoveIndicator::remove2 ()
+void IndicatorRemove::remove2 ()
 {
   Plot *p = g_plotGroup->plot(_indicator);
   if (! p)
@@ -75,7 +75,7 @@ void RemoveIndicator::remove2 ()
   done();
 }
 
-void RemoveIndicator::done ()
+void IndicatorRemove::done ()
 {
   deleteLater();
 }

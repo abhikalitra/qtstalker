@@ -53,8 +53,7 @@ CommandADX::CommandADX ()
   td.setLabel(QObject::tr("Period"));
   Entity::set(QString("PERIOD"), td);
 
-  TypeMA mat;
-  td = Data(mat.list(), QString("EMA"));
+  td = Data(_method, _method.at(0));
   td.setLabel(QObject::tr("Method"));
   Entity::set(QString("METHOD"), td);
 }

@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "AddIndicator.h"
+#include "IndicatorAdd.h"
 #include "GlobalParent.h"
 #include "EAVDataBase.h"
 #include "ScriptRunDialog.h"
@@ -33,16 +33,16 @@
 #include <QSettings>
 #include <QTimer>
 
-AddIndicator::AddIndicator (QObject *p) : QObject (p)
+IndicatorAdd::IndicatorAdd (QObject *p) : QObject (p)
 {
 }
 
-void AddIndicator::run ()
+void IndicatorAdd::run ()
 {
-  QTimer::singleShot(0, this, SLOT(addIndicator()));
+  QTimer::singleShot(0, this, SLOT(add()));
 }
 
-void AddIndicator::addIndicator ()
+void IndicatorAdd::add ()
 {
   EAVDataBase db("indicators");
   QStringList names;
@@ -55,12 +55,12 @@ void AddIndicator::addIndicator ()
   WindowTitle wt;
   dialog->setWindowTitle(wt.title(tr("Add Indicator"), QString()));
   
-  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(addIndicator2(QString)));
+  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(add2(QString)));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
   dialog->show();
 }
 
-void AddIndicator::addIndicator2 (QString name)
+void IndicatorAdd::add2 (QString name)
 {
   _name = name;
   
@@ -69,7 +69,7 @@ void AddIndicator::addIndicator2 (QString name)
   ScriptRunDialog *dialog = new ScriptRunDialog(g_parent,
                                                 settings.value("add_indicator_last_script").toString(),
                                                 settings.value("add_indicator_last_command", "perl").toString());
-  connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(addIndicator3(QString, QString)));
+  connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(add3(QString, QString)));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
   
   WindowTitle wt;
@@ -78,7 +78,7 @@ void AddIndicator::addIndicator2 (QString name)
   dialog->show();
 }
 
-void AddIndicator::addIndicator3 (QString command, QString file)
+void IndicatorAdd::add3 (QString command, QString file)
 {
   KeyIndicatorDataBase keys;
   Entity i;
@@ -107,7 +107,7 @@ void AddIndicator::addIndicator3 (QString command, QString file)
   done();
 }
 
-void AddIndicator::done ()
+void IndicatorAdd::done ()
 {
   deleteLater();
 }

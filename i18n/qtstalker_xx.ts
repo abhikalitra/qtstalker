@@ -39,17 +39,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>AddIndicator</name>
-    <message>
-        <source>Add Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New indicator name</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>BarLengthButton</name>
     <message>
         <source>Bar Length</source>
@@ -480,6 +469,24 @@ App restart required to take effect</source>
     <name>IconButton</name>
     <message>
         <source>Select Icon</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IndicatorAdd</name>
+    <message>
+        <source>New indicator name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add Indicator</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>IndicatorRemove</name>
+    <message>
+        <source>Confirm indicator removal</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1141,13 +1148,6 @@ App restart required to take effect</source>
     <name>RecentCharts</name>
     <message>
         <source>Recent Charts</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>RemoveIndicator</name>
-    <message>
-        <source>Confirm indicator removal</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

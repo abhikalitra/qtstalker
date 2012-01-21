@@ -56,7 +56,7 @@ GroupEditDialog::GroupEditDialog (QWidget *p, QString n) : Dialog (p)
   g.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), td);
 
   _list->clear();
-  _list->addItems(td.toList());
+  _list->addItems(td.toString().split(";", QString::SkipEmptyParts));
 
   loadSettings();
 

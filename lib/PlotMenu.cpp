@@ -21,8 +21,8 @@
 
 #include "PlotMenu.h"
 #include "GlobalParent.h"
-#include "RemoveIndicator.h"
-#include "AddIndicator.h"
+#include "IndicatorRemove.h"
+#include "IndicatorAdd.h"
 #include "ChartObjectDeleteAll.h"
 
 #include "../pics/buyarrow.xpm"
@@ -166,12 +166,12 @@ void PlotMenu::setCOMenuStatus (bool status)
 
 void PlotMenu::addIndicator ()
 {
-  AddIndicator *ai = new AddIndicator(this);
+  IndicatorAdd *ai = new IndicatorAdd(this);
   ai->run();
 }
 
 void PlotMenu::removeIndicator ()
 {
-  RemoveIndicator *ri = new RemoveIndicator(g_parent, _plotName);
+  IndicatorRemove *ri = new IndicatorRemove(g_parent, _plotName);
   ri->run();
 }

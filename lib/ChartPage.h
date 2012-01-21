@@ -59,6 +59,7 @@ class ChartPage : public QWidget
     void addToGroup ();
     void symbolSearch ();
     void setSearch (QString symbol);
+    void setSearchDummy (QString symbol, QString, QStringList);
     void allButtonPressed ();
     void buttonStatus ();
     void deleteSymbol ();
