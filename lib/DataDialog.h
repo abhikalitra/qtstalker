@@ -63,6 +63,7 @@ class DataDialog : public Dialog
     Entity _settings;
     QTabWidget *_tabs;
     QString _id;
+    int _saveFlag;
 };
 
 #endif

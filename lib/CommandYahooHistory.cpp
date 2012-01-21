@@ -53,6 +53,7 @@ CommandYahooHistory::CommandYahooHistory ()
   td.setLabel(QObject::tr("Symbol File"));
   Entity::set(QString("SYMBOL_FILE"), td);
 
+  td = Data(TypeData::_FILE);
   tl.clear();
   tl << "/tmp/yahoo.csv";
   td.set(tl);
@@ -65,44 +66,39 @@ QString CommandYahooHistory::run (CommandParse &, void *)
   // DATE_START
   Data td;
   Entity::toData(QString("DATE_START"), td);
-//qDebug() << "CommandYahooHistory::runScript: START_DATE" << td.toDateTime();
   QDateTime sd = td.toDateTime();
 
   // DATE_END
   Entity::toData(QString("DATE_END"), td);
-//qDebug() << "CommandYahooHistory::runScript: END_DATE" << td.toDateTime();
   QDateTime ed = td.toDateTime();
 
   // ADJUSTED
   Data adjusted;
   Entity::toData(QString("ADJUSTED"), adjusted);
-//qDebug() << "CommandYahooHistory::runScript: ADJUSTED" << adjusted.toBool();
 
   // CSV_FILE
   Entity::toData(QString("CSV_FILE"), td);
-//qDebug() << "CommandYahooHistory::runScript: CSV_FILE" << td.toList();
   QStringList tl = td.toList();
   if (! tl.size())
   {
-    qDebug() << "CommandYahooHistory::runScript: invalid CSV file";
+    qDebug() << "CommandYahooHistory::run: invalid CSV file";
     return _returnCode;
   }
   QString outFile = tl.at(0);
 
   // SYMBOL_FILE
   Entity::toData(QString("SYMBOL_FILE"), td);
-//qDebug() << "CommandYahooHistory::runScript: SYMBOL_FILE" << td.toList();
   QStringList symbolFiles = td.toList();
   if (! symbolFiles.size())
   {
-    qDebug() << "CommandYahooHistory::runScript: invalid symbol file";
+    qDebug() << "CommandYahooHistory::run: invalid symbol file";
     return _returnCode;
   }
 
   QFile f2(outFile);
   if (! f2.open(QIODevice::WriteOnly | QIODevice::Text))
   {
-    qDebug() << "CommandYahooHistory::runScript: file error" << outFile;
+    qDebug() << "CommandYahooHistory::run: file error" << outFile;
     return _returnCode;
   }
   QTextStream out(&f2);
@@ -115,7 +111,7 @@ QString CommandYahooHistory::run (CommandParse &, void *)
     QFile f(symbolFiles.at(loop));
     if (! f.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-      qDebug() << "CommandYahooHistory::runScript: file error " << symbolFiles.at(loop);
+      qDebug() << "CommandYahooHistory::run: file error " << symbolFiles.at(loop);
       continue;
     }
 

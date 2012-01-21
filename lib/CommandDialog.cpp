@@ -99,6 +99,10 @@ QString CommandDialog::run (CommandParse &sg, void *scr)
   g_dataList.remove(id);
   g_dataMutex.unlock();
   
+  // check if dialog was cancelled
+  if (! dialog.dkeyCount())
+    return _returnCode;
+  
   // copy new data into entity
   for (loop = 0; loop < keys.size(); loop++)
   {

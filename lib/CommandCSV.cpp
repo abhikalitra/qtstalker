@@ -41,10 +41,10 @@ CommandCSV::CommandCSV ()
   _delimiterType << "Comma" << "Semicolon";
   _quoteType << "Stock" << "Futures" << "ETF" << "Mutual";
 
-  QStringList l;
-  l << "/tmp/yahoo.csv";
+  QStringList tl;
+  tl << "/tmp/file.csv";
   Data td(TypeData::_FILE);
-  td.set(l);
+  td.set(tl);
   td.setLabel(QObject::tr("CSV File"));
   Entity::set(QString("CSV_FILE"), td);
 

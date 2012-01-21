@@ -35,6 +35,7 @@
 
 DataDialog::DataDialog (QWidget *p, QString id, Entity e) : Dialog (p)
 {
+  _saveFlag = 0;
   _id = id;
   _settings = e;
   _keySize = "data_dialog_window_size";
@@ -52,7 +53,10 @@ DataDialog::~DataDialog ()
   
   // save settings into global area
   g_dataMutex.lock();
-  g_dataList.insert(_id, _settings);
+  if (_saveFlag)
+    g_dataList.insert(_id, _settings);
+  else
+    g_dataList.insert(_id, Entity());
   g_dataMutex.unlock();
   
   g_mutex.lock();
@@ -404,6 +408,8 @@ void DataDialog::done ()
     }
   }
 
+  _saveFlag++;
+  
   saveSettings();
 
   accept();

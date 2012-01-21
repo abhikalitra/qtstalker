@@ -125,7 +125,7 @@ void Script::run ()
     QString rc = command->run(cp, this);
     delete command;
     
-    if (rc == "ERROR")
+    if (rc.contains("ERROR"))
     {
       qDebug() << "Script::run: command error" << cp.command() << rc;
       qDebug() << "Script::run:" << s;
