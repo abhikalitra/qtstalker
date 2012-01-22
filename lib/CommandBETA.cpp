@@ -30,6 +30,7 @@
 #include "CurveBar.h"
 #include "KeyCurveBar.h"
 #include "GlobalSymbol.h"
+#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -45,11 +46,11 @@ CommandBETA::CommandBETA ()
   td.setLabel(QObject::tr("Input"));
   Entity::set(QString("INPUT"), td);
 
-  td = Data(QString("YAHOO:^GSP500"));
+  td = Data(QString("YAHOO:^GSPC"));
   td.setLabel(QObject::tr("Index Symbol"));
   Entity::set(QString("INDEX"), td);
 
-  td = Data(10);
+  td = Data(5);
   td.setLabel(QObject::tr("Period"));
   Entity::set(QString("PERIOD"), td);
 }
@@ -132,9 +133,13 @@ int CommandBETA::getIndex (QString d, Entity &line)
     return 1;
   }
 
+  QList<QString> barKeys;
+  QList<QString> tkeys = bd.ekeys();
+  ScriptVerifyCurveKeys svck;
+  svck.sortKeys(tkeys, barKeys);
+
   KeyCurveBar cbkeys;
   int loop = 0;
-  QList<QString> barKeys = bd.ekeys();
   for (; loop < barKeys.size(); loop++)
   {
     Entity b;

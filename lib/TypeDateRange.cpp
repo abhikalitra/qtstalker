@@ -22,19 +22,20 @@
 #include "TypeDateRange.h"
 
 #include <QDebug>
+#include <QObject>
 
 TypeDateRange::TypeDateRange ()
 {
-  _list << "1 Day";
-  _list << "1 Week";
-  _list << "1 Month";
-  _list << "3 Months";
-  _list << "6 Months";
-  _list << "1 Year";
-  _list << "2 Years";
-  _list << "5 Years";
-  _list << "10 Years";
-  _list << "25 Years";
-  _list << "50 Years";
-  _list << "All";
+  _list << QObject::tr("1 Day");
+  _list << QObject::tr("1 Week");
+  _list << QObject::tr("1 Month");
+  _list << QObject::tr("3 Months");
+  _list << QObject::tr("6 Months");
+  _list << QObject::tr("1 Year");
+  _list << QObject::tr("2 Years");
+  _list << QObject::tr("5 Years");
+  _list << QObject::tr("10 Years");
+  _list << QObject::tr("25 Years");
+  _list << QObject::tr("50 Years");
+  _list << QObject::tr("All");
 }

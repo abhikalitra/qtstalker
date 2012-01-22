@@ -35,9 +35,6 @@ BarLengthButton::BarLengthButton ()
   font.setPointSize(9);
   setFont(font);
 
-  TypeBarLength bl;
-  _list = bl.list();
-
   createMenu();
 
   setPopupMode(QToolButton::InstantPopup);
@@ -59,37 +56,42 @@ void BarLengthButton::createMenu ()
 
   QActionGroup *group = new QActionGroup(this);
 
+  TypeBarLength bl;
+  QStringList tl = bl.list();
+  
   int loop = 0;
-  for (; loop < _list.count(); loop++)
+  for (; loop < tl.size(); loop++)
   {
-    QAction *a = _menu->addAction(_list.at(loop));
+    QAction *a = _menu->addAction(tl.at(loop));
     a->setCheckable(TRUE);
     group->addAction(a);
 
     if (loop == _barLength)
     {
       a->setChecked(TRUE);
-      setText(_list.at(loop));
+      setText(tl.at(loop));
     }
   }
 }
 
 void BarLengthButton::lengthChanged (QAction *d)
 {
-  _barLength = _list.indexOf(d->text());
+  TypeBarLength bl;
+  _barLength = bl.stringToIndex(d->text());
 
   QSettings settings(g_localSettings);
   settings.setValue("bar_length", _barLength);
   settings.sync();
 
-  setText(_list.at(_barLength));
+  setText(bl.indexToString(_barLength));
 
   KeySymbol keys;
   Data symbol;
   g_currentSymbol.toData(keys.indexToString(KeySymbol::_SYMBOL), symbol);
-  
   if (symbol.toString().isEmpty())
     return;
+
+  g_currentSymbol.set(keys.indexToString(KeySymbol::_LENGTH), Data(_barLength));
   
   ChartLoad *cl = new ChartLoad(this, symbol.toString());
   cl->run();

@@ -67,6 +67,7 @@ QString CommandBOP::run (CommandParse &, void *d)
     return _returnCode;
   }
   
+  Entity::toData(QString("HIGH"), td);
   Entity ihigh;
   if (svc.curve(script, td.toString(), ihigh))
   {
@@ -75,6 +76,7 @@ QString CommandBOP::run (CommandParse &, void *d)
   }
 
   Entity ilow;
+  Entity::toData(QString("LOW"), td);
   if (svc.curve(script, td.toString(), ilow))
   {
     qDebug() << "CommandBOP::run: invalid LOW" << td.toString();
@@ -82,6 +84,7 @@ QString CommandBOP::run (CommandParse &, void *d)
   }
 
   Entity iclose;
+  Entity::toData(QString("CLOSE"), td);
   if (svc.curve(script, td.toString(), iclose))
   {
     qDebug() << "CommandBOP::run: invalid CLOSE" << td.toString();

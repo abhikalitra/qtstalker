@@ -44,7 +44,6 @@ class BarLengthButton : public QToolButton
   private:
     int _barLength;
     QMenu *_menu;
-    QStringList _list;
 };
 
 #endif

@@ -60,9 +60,10 @@ QString CommandHT::run (CommandParse &, void *d)
     return _returnCode;
   }
 
-  Entity parms;
   Data method;
   Entity::toData(QString("METHOD"), method);
+  
+  Entity parms;
   TypeTALibFunction fkeys;
   parms.set(QString("FUNCTION"), Data(fkeys.stringToIndex(method.toString())));
   

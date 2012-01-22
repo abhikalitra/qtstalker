@@ -40,7 +40,7 @@ CommandSINE::CommandSINE ()
   
   td = Data(QString("close"));
   td.setLabel(QObject::tr("Input"));
-  Entity::set(QString("Input"), td);
+  Entity::set(QString("INPUT"), td);
 }
 
 QString CommandSINE::run (CommandParse &, void *d)

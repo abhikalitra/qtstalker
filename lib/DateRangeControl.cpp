@@ -35,10 +35,6 @@ DateRangeControl::DateRangeControl ()
   font.setPointSize(9);
   setFont(font);
 
-  TypeDateRange dr;
-  _lengthList = dr.list();
-  _shortList = dr.list();
-
   createMenu();
 
   setPopupMode(QToolButton::InstantPopup);
@@ -60,36 +56,42 @@ void DateRangeControl::createMenu ()
 
   QActionGroup *group = new QActionGroup(this);
 
+  TypeDateRange tdr;
+  QStringList tl = tdr.list();
+  
   int loop = 0;
-  for (; loop < _lengthList.count(); loop++)
+  for (; loop < tl.size(); loop++)
   {
-    QAction *a = _menu->addAction(_lengthList.at(loop));
+    QAction *a = _menu->addAction(tl.at(loop));
     a->setCheckable(TRUE);
     group->addAction(a);
 
     if (loop == _dateRange)
     {
       a->setChecked(TRUE);
-      setText(_shortList.at(loop));
+      setText(tl.at(loop));
     }
   }
 }
 
 void DateRangeControl::rangeChanged (QAction *d)
 {
-  _dateRange = _lengthList.indexOf(d->text());
+  TypeDateRange tdr;
+  _dateRange = tdr.stringToIndex(d->text());
 
   QSettings settings(g_localSettings);
   settings.setValue("date_range", _dateRange);
   settings.sync();
 
-  setText(_shortList.at(_dateRange));
+  setText(tdr.indexToString(_dateRange));
 
   KeySymbol keys;
   Data symbol;
   g_currentSymbol.toData(keys.indexToString(KeySymbol::_SYMBOL), symbol);
   if (symbol.toString().isEmpty())
     return;
+  
+  g_currentSymbol.set(keys.indexToString(KeySymbol::_RANGE), Data(_dateRange));
 
   ChartLoad *cl = new ChartLoad(this, symbol.toString());
   cl->run();

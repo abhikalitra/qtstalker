@@ -149,7 +149,7 @@ int QuoteDataBase::getBars (Symbol &bd)
   }
 
   QHash<QString, CurveBar> bars;
-  QList<CurveBar> order;
+  QStringList order;
   DateRange dr;
   KeyCurveBar cbkeys;
 
@@ -174,7 +174,7 @@ int QuoteDataBase::getBars (Symbol &bd)
       bar.set(cbkeys.indexToString(KeyCurveBar::_OI), Data(q.value(6).toDouble()));
       bar.set(cbkeys.indexToString(KeyCurveBar::_DATE), Data(lastDate));
       bars.insert(s, bar);
-      order.prepend(bar);
+      order.prepend(s);
     }
     else
     {
@@ -207,7 +207,7 @@ int QuoteDataBase::getBars (Symbol &bd)
   // insert bars into Symbol bars in proper order
   int loop = 0;
   for (; loop < order.size(); loop++)
-    bd.setEntity(QString::number(loop), order.at(loop));
+    bd.setEntity(QString::number(loop), bars.value(order.at(loop)));
 
   return 0;
 }

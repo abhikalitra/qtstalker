@@ -44,8 +44,6 @@ class DateRangeControl : public QToolButton
   private:
     int _dateRange;
     QMenu *_menu;
-    QStringList _lengthList;
-    QStringList _shortList;
 };
 
 #endif
