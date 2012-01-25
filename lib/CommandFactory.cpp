@@ -41,11 +41,15 @@
 #include "CommandCompare.h"
 #include "CommandCORREL.h"
 #include "CommandCSV.h"
+#include "CommandDataBase.h"
 #include "CommandDialog.h"
+#include "CommandDialogMessage.h"
+#include "CommandDialogNew.h"
+#include "CommandDialogUser.h"
 #include "CommandFI.h"
 #include "CommandGet.h"
+#include "CommandGroupDataBase.h"
 #include "CommandGroupPanelRefresh.h"
-#include "CommandGroupSave.h"
 #include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandLINEARREG.h"
@@ -71,6 +75,7 @@
 #include "CommandRun.h"
 #include "CommandSAR.h"
 #include "CommandSave.h"
+#include "CommandScriptDataBase.h"
 #include "CommandSell.h"
 #include "CommandSet.h"
 #include "CommandShift.h"
@@ -190,8 +195,20 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_CSV:
       c = new CommandCSV;
       break;
+    case TypeCommand::_DATABASE:
+      c = new CommandDataBase;
+      break;
     case TypeCommand::_DIALOG:
       c = new CommandDialog;
+      break;
+    case TypeCommand::_DIALOG_MESSAGE:
+      c = new CommandDialogMessage;
+      break;
+    case TypeCommand::_DIALOG_NEW:
+      c = new CommandDialogNew;
+      break;
+    case TypeCommand::_DIALOG_USER:
+      c = new CommandDialogUser;
       break;
     case TypeCommand::_FI:
       c = new CommandFI;
@@ -199,11 +216,11 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_GET:
       c = new CommandGet;
       break;
+    case TypeCommand::_GROUP_DATA_BASE:
+      c = new CommandGroupDataBase;
+      break;
     case TypeCommand::_GROUP_PANEL_REFRESH:
       c = new CommandGroupPanelRefresh;
-      break;
-    case TypeCommand::_GROUP_SAVE:
-      c = new CommandGroupSave;
       break;
     case TypeCommand::_HT:
       c = new CommandHT;
@@ -276,6 +293,9 @@ Command * CommandFactory::command (QString type)
       break;
     case TypeCommand::_SAVE:
       c = new CommandSave;
+      break;
+    case TypeCommand::_SCRIPT_DATA_BASE:
+      c = new CommandScriptDataBase;
       break;
     case TypeCommand::_SET:
       c = new CommandSet;

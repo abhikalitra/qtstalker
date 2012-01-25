@@ -19,21 +19,23 @@
  *  USA.
  */
 
-#include "LineStyle.h"
+#ifndef DIALOG_ABOUT_HPP
+#define DIALOG_ABOUT_HPP
 
-#include <QDebug>
+#include <QDialog>
+#include <QTabWidget>
 
-LineStyle::LineStyle ()
+class DialogAbout : public QDialog
 {
-  _styles << "Dash" << "Dot" << "Line";
-}
+  Q_OBJECT
 
-QStringList LineStyle::list ()
-{
-  return _styles;
-}
+  public:
+    DialogAbout ();
+    void createGUI ();
+    void createQTSPage ();
 
-int LineStyle::stringToStyle (QString d)
-{
-  return _styles.indexOf(d);
-}
+  protected:
+    QTabWidget *_tabs;
+};
+
+#endif

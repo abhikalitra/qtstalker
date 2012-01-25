@@ -22,7 +22,7 @@
 #include "SymbolDelete.h"
 #include "QuoteDataBase.h"
 #include "Symbol.h"
-#include "ConfirmDialog.h"
+#include "DialogConfirm.h"
 #include "KeySymbol.h"
 
 #include <QtDebug>
@@ -46,7 +46,7 @@ void SymbolDelete::remove ()
     return;
   }
 
-  ConfirmDialog *dialog = new ConfirmDialog(0);
+  DialogConfirm *dialog = new DialogConfirm(0, QString(), Entity());
   dialog->setMessage(tr("Confirm symbol delete"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(remove2()));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
@@ -65,7 +65,7 @@ void SymbolDelete::remove2 ()
   {
     Symbol bd;
     bd.set(keys.indexToString(KeySymbol::_SYMBOL), Data(_symbols.at(loop)));
-    db.deleteSymbol(bd);
+    db.deleteSymbol(&bd);
   }
 
   db.commit();

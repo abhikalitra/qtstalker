@@ -19,14 +19,16 @@
  *  USA.
  */
 
-#include "ConfirmDialog.h"
+#include "DialogConfirm.h"
 #include "WindowTitle.h"
 
 #include <QtDebug>
 #include <QMessageBox>
 
-ConfirmDialog::ConfirmDialog (QWidget *p) : Dialog (p)
+DialogConfirm::DialogConfirm (QWidget *p, QString id, Entity settings) : Dialog (p)
 {
+  _id = id;
+  _settings = settings;
   _keySize = "confirm_dialog_window_size";
   _keyPos = "confirm_dialog_window_position";
 
@@ -34,11 +36,18 @@ ConfirmDialog::ConfirmDialog (QWidget *p) : Dialog (p)
   setWindowTitle(wt.title(tr("Confirm"), QString()));
 
   createGUI();
+  
+  if (! _id.isEmpty())
+  {
+    Data text;
+    _settings.toData(QString("TEXT"), text);
+    _text->setText(text.toString());
+  }
 
   loadSettings();
 }
 
-void ConfirmDialog::createGUI ()
+void DialogConfirm::createGUI ()
 {
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(2);
@@ -70,7 +79,13 @@ void ConfirmDialog::createGUI ()
   _message->hide();
 }
 
-void ConfirmDialog::setMessage (QString d)
+void DialogConfirm::setMessage (QString d)
 {
   _text->setText(d);
+}
+
+void DialogConfirm::done ()
+{
+  _saveFlag++;
+  Dialog::done();
 }

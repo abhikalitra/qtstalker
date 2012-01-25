@@ -21,8 +21,8 @@
 
 #include "ConfigureButton.h"
 #include "Doc.h"
-#include "AboutDialog.h"
-#include "ConfigureDialog.h"
+#include "DialogAbout.h"
+#include "DialogConfigure.h"
 #include "IndicatorAdd.h"
 
 #include "../pics/about.xpm"
@@ -114,13 +114,13 @@ void ConfigureButton::startDocumentation ()
 
 void ConfigureButton::aboutDialog ()
 {
-  AboutDialog *dialog = new AboutDialog;
+  DialogAbout *dialog = new DialogAbout;
   dialog->show();
 }
 
 void ConfigureButton::configureDialog ()
 {
-  ConfigureDialog *dialog = new ConfigureDialog(this);
+  DialogConfigure *dialog = new DialogConfigure(this);
   dialog->show();
 }
 

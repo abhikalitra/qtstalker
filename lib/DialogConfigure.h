@@ -19,13 +19,45 @@
  *  USA.
  */
 
-#include "IndicatorDataBaseKey.h"
+#ifndef DIALOG_CONFIGURE_HPP
+#define DIALOG_CONFIGURE_HPP
 
-#include <QtDebug>
+#include <QTabWidget>
+#include <QHash>
+#include <QComboBox>
+#include <QCheckBox>
 
-IndicatorDataBaseKey::IndicatorDataBaseKey ()
+#include "ColorButton.h"
+#include "FontButton.h"
+#include "Dialog.h"
+
+class DialogConfigure : public Dialog
 {
-  _list << "SESSION";
-  _list << "FILE";
-  _list << "COMMAND";
-}
+  Q_OBJECT
+
+  public:
+    DialogConfigure (QWidget *);
+    void createGUI ();
+    void createGeneralPage ();
+
+  public slots:
+    void done ();
+    void buttonStatus ();
+    void backgroundChanged ();
+    void appFontChanged ();
+    void plotFontChanged ();
+    void tabPositionChanged ();
+    void antiAliasChanged ();
+
+  private:
+    QTabWidget *_tabs;
+    ColorButton *_background;
+    FontButton *_appFont;
+    FontButton *_plotFont;
+    int _modified;
+    QHash<QString, int> _flags;
+    QComboBox *_tabPosition;
+    QCheckBox *_antiAlias;
+};
+
+#endif

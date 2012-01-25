@@ -51,11 +51,15 @@ TypeCommand::TypeCommand ()
   _list << "COMPARE";
   _list << "CORREL";
   _list << "CSV";
+  _list << "DATABASE";
   _list << "DIALOG";
+  _list << "DIALOG_MESSAGE";
+  _list << "DIALOG_NEW";
+  _list << "DIALOG_USER";
   _list << "FI";
   _list << "GET";
+  _list << "GROUP_DATABASE";
   _list << "GROUP_PANEL_REFRESH";
-  _list << "GROUP_SAVE";
   _list << "HT";
   _list << "HT_PHASOR";
   _list << "HT_SINE";
@@ -80,6 +84,7 @@ TypeCommand::TypeCommand ()
   _list << "RUN";
   _list << "SAR";
   _list << "SAVE";
+  _list << "SCRIPT_DATABASE";
   _list << "SET";
   _list << "SHIFT";
   _list << "STDDEV";

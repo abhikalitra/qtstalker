@@ -21,6 +21,7 @@
 
 #include "Command.h"
 #include "TypeEntity.h"
+#include "TypeData.h"
 
 #include <QtDebug>
 
@@ -33,4 +34,42 @@ Command::Command ()
 QString Command::run (CommandParse &, void *)
 {
   return _returnCode;
+}
+
+int Command::setData (CommandParse &sg)
+{
+  // format object, setting, value...
+  
+  int loop = 1; // skip past object name
+  for (; loop < sg.values(); loop += 2)
+  {
+    int pos = loop;
+    QString settingName = sg.value(pos++);
+    Data setting;
+    if (toData(settingName, setting))
+    {
+      qDebug() << "Command::set: invalid setting name" << settingName;
+      return 1;
+    }
+  
+    QString newValue = sg.value(pos);
+    
+    switch ((TypeData::Key) setting.type())
+    {
+      case TypeData::_FILE:
+	setting.set(newValue.split(";"));
+        break;
+      default:
+        if (setting.set(newValue, setting.type()))
+        {
+          qDebug() << "Command::set: invalid value";
+          return 1;
+        }
+        break;
+    }
+    
+    set(settingName, setting);
+  }
+
+  return 0;
 }

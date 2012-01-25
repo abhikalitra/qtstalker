@@ -19,22 +19,20 @@
  *  USA.
  */
 
-#include "DateRangeType.h"
+#include "TypeData.h"
 
 #include <QDebug>
 
-DateRangeType::DateRangeType ()
+TypeData::TypeData ()
 {
-  _list << "1 Day";
-  _list << "1 Week";
-  _list << "1 Month";
-  _list << "3 Months";
-  _list << "6 Months";
-  _list << "1 Year";
-  _list << "2 Years";
-  _list << "5 Years";
-  _list << "10 Years";
-  _list << "25 Years";
-  _list << "50 Years";
-  _list << "All";
+  _list << "BOOL";
+  _list << "COLOR";
+  _list << "DATETIME";
+  _list << "DOUBLE";
+  _list << "FONT";
+  _list << "INTEGER";
+  _list << "LIST";
+  _list << "STRING";
+  _list << "FILE";
+  _list << "SYMBOL";
 }

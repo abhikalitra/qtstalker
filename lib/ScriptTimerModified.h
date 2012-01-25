@@ -19,11 +19,16 @@
  *  USA.
  */
 
-#include "GroupDataBaseKey.h"
+#ifndef SCRIPT_TIMER_MODIFIED_HPP
+#define SCRIPT_TIMER_MODIFIED_HPP
 
-#include <QtDebug>
+#include <QString>
 
-GroupDataBaseKey::GroupDataBaseKey ()
+class ScriptTimerModified
 {
-  _list << "LIST";
-}
+  public:
+    ScriptTimerModified ();
+    int modified (QString);
+};
+
+#endif

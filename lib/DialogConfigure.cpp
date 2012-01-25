@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "ConfigureDialog.h"
+#include "DialogConfigure.h"
 #include "GlobalPlotGroup.h"
 #include "GlobalParent.h"
 #include "WindowTitle.h"
@@ -29,7 +29,7 @@
 #include <QApplication>
 #include <QSettings>
 
-ConfigureDialog::ConfigureDialog (QWidget *p) : Dialog (p)
+DialogConfigure::DialogConfigure (QWidget *p) : Dialog (p)
 {
   _keySize = "configure_dialog_window_size";
   _keyPos = "configure_dialog_window_position";
@@ -46,7 +46,7 @@ ConfigureDialog::ConfigureDialog (QWidget *p) : Dialog (p)
   buttonStatus();
 }
 
-void ConfigureDialog::createGUI ()
+void DialogConfigure::createGUI ()
 {
   _tabs = new QTabWidget;
   _vbox->insertWidget(0, _tabs);
@@ -55,7 +55,7 @@ void ConfigureDialog::createGUI ()
   _message->hide();
 }
 
-void ConfigureDialog::createGeneralPage ()
+void DialogConfigure::createGeneralPage ()
 {
   QWidget *w = new QWidget;
 
@@ -126,7 +126,7 @@ void ConfigureDialog::createGeneralPage ()
   _tabs->addTab(w, tr("General"));
 }
 
-void ConfigureDialog::buttonStatus ()
+void DialogConfigure::buttonStatus ()
 {
   if (_modified)
     _okButton->setEnabled(TRUE);
@@ -134,7 +134,7 @@ void ConfigureDialog::buttonStatus ()
     _okButton->setEnabled(FALSE);
 }
 
-void ConfigureDialog::done ()
+void DialogConfigure::done ()
 {
   QSettings settings(g_localSettings);
 
@@ -191,35 +191,35 @@ void ConfigureDialog::done ()
   accept();
 }
 
-void ConfigureDialog::backgroundChanged ()
+void DialogConfigure::backgroundChanged ()
 {
   _modified++;
   _flags.insert("background", 1);
   buttonStatus();
 }
 
-void ConfigureDialog::appFontChanged ()
+void DialogConfigure::appFontChanged ()
 {
   _modified++;
   _flags.insert("appFont", 1);
   buttonStatus();
 }
 
-void ConfigureDialog::plotFontChanged ()
+void DialogConfigure::plotFontChanged ()
 {
   _modified++;
   _flags.insert("plotFont", 1);
   buttonStatus();
 }
 
-void ConfigureDialog::tabPositionChanged ()
+void DialogConfigure::tabPositionChanged ()
 {
   _modified++;
   _flags.insert("plotTabPosition", 1);
   buttonStatus();
 }
 
-void ConfigureDialog::antiAliasChanged ()
+void DialogConfigure::antiAliasChanged ()
 {
   _modified++;
   _flags.insert("antialias", 1);

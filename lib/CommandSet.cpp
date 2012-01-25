@@ -32,6 +32,26 @@ CommandSet::CommandSet ()
 QString CommandSet::run (CommandParse &sg, void *scr)
 {
   Script *script = (Script *) scr;
+  int pos = 0;
+  QString name = sg.value(pos);
+  Command *c = script->scriptCommand(name);
+  if (! c)
+  {
+    qDebug() << "CommandSet::run: invalid object name" << name;
+    return _returnCode;
+  }
+
+  if (c->setData(sg))
+    return _returnCode;
+  
+  _returnCode = "OK";
+  return _returnCode;
+}
+
+/*
+QString CommandSet::run (CommandParse &sg, void *scr)
+{
+  Script *script = (Script *) scr;
   int loop = 0;
   for (; loop < sg.values(); loop += 3)
   {
@@ -75,3 +95,4 @@ QString CommandSet::run (CommandParse &sg, void *scr)
   _returnCode = "OK";
   return _returnCode;
 }
+*/

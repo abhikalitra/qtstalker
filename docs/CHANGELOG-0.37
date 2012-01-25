@@ -1324,3 +1324,8 @@
 
            Renamed a bunch of classes to better organize them.
 
+**************************************************************************************************************************
+
+20120123:  Changed the SET() script command syntax. See indicator script for example.
+
+

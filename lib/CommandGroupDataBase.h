@@ -19,21 +19,22 @@
  *  USA.
  */
 
-#include "HistogramStyle.h"
+#ifndef COMMAND_GROUP_DATA_BASE_HPP
+#define COMMAND_GROUP_DATA_BASE_HPP
 
-#include <QDebug>
+#include "Command.h"
 
-HistogramStyle::HistogramStyle ()
+class CommandGroupDataBase : public Command
 {
-  _styles << "Histogram" << "Histogram Bar";
-}
+  public:
+    CommandGroupDataBase ();
+    QString run (CommandParse &, void *);
+    int save ();
+    int remove ();
+    int list ();
+    
+  private:
+    QStringList _method;
+};
 
-QStringList HistogramStyle::list ()
-{
-  return _styles;
-}
-
-int HistogramStyle::stringToStyle (QString d)
-{
-  return _styles.indexOf(d);
-}
+#endif

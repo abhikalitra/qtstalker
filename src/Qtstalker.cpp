@@ -24,6 +24,7 @@
 #include <QSettings>
 #include <QStatusBar>
 #include <QShortcut>
+#include <QTimer>
 
 #include "Qtstalker.h"
 #include "Setup.h"

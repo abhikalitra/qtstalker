@@ -24,7 +24,7 @@
 #include "GlobalSymbol.h"
 #include "GlobalParent.h"
 #include "EAVDataBase.h"
-#include "ConfirmDialog.h"
+#include "DialogConfirm.h"
 #include "ChartObjectFactory.h"
 #include "CurveData.h"
 #include "KeyCurveData.h"
@@ -697,7 +697,7 @@ void Plot::deleteChartObject ()
   if (! _selected)
     return;
 
-  ConfirmDialog *dialog = new ConfirmDialog(g_parent);
+  DialogConfirm *dialog = new DialogConfirm(g_parent, QString(), Entity());
   dialog->setMessage(QObject::tr("Confirm chart object delete"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(deleteChartObject2()));
   dialog->show();

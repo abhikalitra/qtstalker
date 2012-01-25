@@ -22,8 +22,6 @@
 #ifndef COMMAND_HPP
 #define COMMAND_HPP
 
-//#include <QObject>
-
 #include "CommandParse.h"
 #include "Entity.h"
 
@@ -32,6 +30,7 @@ class Command : public Entity
   public:
     Command ();
     virtual QString run (CommandParse &, void *);
+    virtual int setData (CommandParse &);
     
   protected:
     QString _returnCode;

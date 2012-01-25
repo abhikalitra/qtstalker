@@ -19,23 +19,16 @@
  *  USA.
  */
 
-#ifndef ABOUT_DIALOG_HPP
-#define ABOUT_DIALOG_HPP
+#ifndef COMMAND_DIALOG_MESSAGE_HPP
+#define COMMAND_DIALOG_MESSAGE_HPP
 
-#include <QDialog>
-#include <QTabWidget>
+#include "Command.h"
 
-class AboutDialog : public QDialog
+class CommandDialogMessage : public Command
 {
-  Q_OBJECT
-
   public:
-    AboutDialog ();
-    void createGUI ();
-    void createQTSPage ();
-
-  protected:
-    QTabWidget *_tabs;
+    CommandDialogMessage ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

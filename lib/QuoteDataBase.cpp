@@ -101,7 +101,7 @@ int QuoteDataBase::getBars (Symbol &bd)
   Data dateRange;
   bd.toData(symkeys.indexToString(KeySymbol::_RANGE), dateRange);
 
-  if (getSymbol(bd))
+  if (getSymbol(&bd))
     return 1;
 
   QSqlQuery q(_db);
@@ -212,7 +212,7 @@ int QuoteDataBase::getBars (Symbol &bd)
   return 0;
 }
 
-int QuoteDataBase::setBars (Symbol &symbol)
+int QuoteDataBase::setBars (Symbol *symbol)
 {
   // save bars
   KeySymbol symkeys;
@@ -227,21 +227,21 @@ int QuoteDataBase::setBars (Symbol &symbol)
   {
     // check if we need to save the name
     Data name;
-    symbol.toData(symkeys.indexToString(KeySymbol::_NAME), name);
+    symbol->toData(symkeys.indexToString(KeySymbol::_NAME), name);
     if (! name.toString().isEmpty())
       setName(symbol);
   }
 
   Data table;
-  symbol.toData(symkeys.indexToString(KeySymbol::_TABLE), table);
+  symbol->toData(symkeys.indexToString(KeySymbol::_TABLE), table);
 
   KeyCurveBar cbkeys;
-  QList<QString> keys = symbol.ekeys();
+  QList<QString> keys = symbol->ekeys();
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
     Entity bar;
-    if (symbol.toEntity(keys.at(loop), bar))
+    if (symbol->toEntity(keys.at(loop), bar))
       continue;
 
     Data td;
@@ -373,11 +373,11 @@ int QuoteDataBase::setBars (Symbol &symbol)
   return 0;
 }
 
-int QuoteDataBase::newSymbol (Symbol &symbol)
+int QuoteDataBase::newSymbol (Symbol *symbol)
 {
   KeySymbol symkeys;
   Data td;
-  symbol.toData(symkeys.indexToString(KeySymbol::_SYMBOL), td);
+  symbol->toData(symkeys.indexToString(KeySymbol::_SYMBOL), td);
   
   QStringList tl = td.toString().split(":");
   if (tl.size() != 2)
@@ -388,7 +388,7 @@ int QuoteDataBase::newSymbol (Symbol &symbol)
   QString tsymbol = td.toString();
 
   Data type;
-  symbol.toData(symkeys.indexToString(KeySymbol::_TYPE), type);
+  symbol->toData(symkeys.indexToString(KeySymbol::_TYPE), type);
 
   if (! getSymbol(symbol))
   {
@@ -402,15 +402,15 @@ int QuoteDataBase::newSymbol (Symbol &symbol)
   table.remove("{");
   table.remove("}");
   table.remove("-");
-  symbol.set(symkeys.indexToString(KeySymbol::_TABLE), Data(table));
+  symbol->set(symkeys.indexToString(KeySymbol::_TABLE), Data(table));
 
   // set default name to symbol
   Data name;
-  symbol.toData(symkeys.indexToString(KeySymbol::_NAME), name);
+  symbol->toData(symkeys.indexToString(KeySymbol::_NAME), name);
   if (name.toString().isEmpty())
   {
     name.set(tsymbol);
-    symbol.set(symkeys.indexToString(KeySymbol::_NAME), name);
+    symbol->set(symkeys.indexToString(KeySymbol::_NAME), name);
   }
 
   // add new symbol entry into the symbolIndex table
@@ -500,11 +500,11 @@ int QuoteDataBase::newSymbol (Symbol &symbol)
   return 0;
 }
 
-int QuoteDataBase::getSymbol (Symbol &symbol)
+int QuoteDataBase::getSymbol (Symbol *symbol)
 {
   KeySymbol symkeys;
   Data tsymbol;
-  symbol.toData(symkeys.indexToString(KeySymbol::_SYMBOL), tsymbol);
+  symbol->toData(symkeys.indexToString(KeySymbol::_SYMBOL), tsymbol);
 
   QSqlQuery q(_db);
 
@@ -526,13 +526,13 @@ int QuoteDataBase::getSymbol (Symbol &symbol)
     switch ((KeyQuoteDataBase::Key) qkeys.stringToIndex(q.value(0).toString()))
     {
       case KeyQuoteDataBase::_TYPE:
-        symbol.set(symkeys.indexToString(KeySymbol::_TYPE), Data(q.value(1).toString()));
+        symbol->set(symkeys.indexToString(KeySymbol::_TYPE), Data(q.value(1).toString()));
 	break;
       case KeyQuoteDataBase::_NAME:
-        symbol.set(symkeys.indexToString(KeySymbol::_NAME), Data(q.value(1).toString()));
+        symbol->set(symkeys.indexToString(KeySymbol::_NAME), Data(q.value(1).toString()));
 	break;
       case KeyQuoteDataBase::_TABLE:
-        symbol.set(symkeys.indexToString(KeySymbol::_TABLE), Data(q.value(1).toString()));
+        symbol->set(symkeys.indexToString(KeySymbol::_TABLE), Data(q.value(1).toString()));
 	break;
       default:
 	break;
@@ -542,7 +542,7 @@ int QuoteDataBase::getSymbol (Symbol &symbol)
   return rc;
 }
 
-int QuoteDataBase::deleteSymbol (Symbol &bd)
+int QuoteDataBase::deleteSymbol (Symbol *bd)
 {
   if (getSymbol(bd))
   {
@@ -552,7 +552,7 @@ int QuoteDataBase::deleteSymbol (Symbol &bd)
 
   KeySymbol symkeys;
   Data table;
-  bd.toData(symkeys.indexToString(KeySymbol::_TABLE), table);
+  bd->toData(symkeys.indexToString(KeySymbol::_TABLE), table);
 
   // drop quote table
   QSqlQuery q(_db);
@@ -566,7 +566,7 @@ int QuoteDataBase::deleteSymbol (Symbol &bd)
   }
 
   Data symbol;
-  bd.toData(symkeys.indexToString(KeySymbol::_SYMBOL), symbol);
+  bd->toData(symkeys.indexToString(KeySymbol::_SYMBOL), symbol);
 
   // remove index records for symbol
   s = "DELETE FROM symbolIndex WHERE name='" + symbol.toString() + "'";
@@ -722,7 +722,7 @@ int QuoteDataBase::search (QString symbol, QList<Symbol> &l)
     Symbol sym;
     sym.set(symkeys.indexToString(KeySymbol::_SYMBOL), Data(names.at(loop)));
     
-    if (getSymbol(sym))
+    if (getSymbol(&sym))
       continue;
     
     l << sym;
@@ -731,11 +731,11 @@ int QuoteDataBase::search (QString symbol, QList<Symbol> &l)
   return 0;
 }
 
-int QuoteDataBase::setName (Symbol &symbol)
+int QuoteDataBase::setName (Symbol *symbol)
 {
   KeySymbol symkeys;
   Data name;
-  symbol.toData(symkeys.indexToString(KeySymbol::_NAME), name);
+  symbol->toData(symkeys.indexToString(KeySymbol::_NAME), name);
   
   if (name.toString().isEmpty())
   {
@@ -744,7 +744,7 @@ int QuoteDataBase::setName (Symbol &symbol)
   }
 
   Data tsymbol;
-  symbol.toData(symkeys.indexToString(KeySymbol::_SYMBOL), tsymbol);
+  symbol->toData(symkeys.indexToString(KeySymbol::_SYMBOL), tsymbol);
 
   QSqlQuery q(_db);
 

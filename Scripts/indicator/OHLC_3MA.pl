@@ -59,19 +59,19 @@ $|++;  # flush buffers
 # create the chart object
 $command = "NEW(CHART, chart)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the NAME, COL values
 $command = "SET(chart, NAME, $chartName,
-                chart, ROW, 0,
-                chart, COL, 0)";
+                       ROW, 0,
+                       COL, 0)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # create the chart
 $command = "RUN(chart)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  LOAD QUOTES  ################################
@@ -80,14 +80,14 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # create the SYMBOL_CURRENT object
 $command = "NEW(SYMBOL_CURRENT, symbol_current)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # no need to set any values, use the defaults
 
 # load the quotes
 $command = "RUN(symbol_current)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  OHLC BARS  ################################
@@ -96,21 +96,21 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # create the OHLC object
 $command = "NEW(PLOT_OHLC, plot_ohlc)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set values
 $command = "SET(plot_ohlc, OUTPUT, $ohlcName,
-                plot_ohlc, CHART, $chartName,
-                plot_ohlc, LABEL, $ohlcLabel,
-                plot_ohlc, Z, $ohlcZ,
-                plot_ohlc, COLOR, $ohlcColor)";
+                           CHART, $chartName,
+                           LABEL, $ohlcLabel,
+                           Z, $ohlcZ,
+                           COLOR, $ohlcColor)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # create the bars
 $command = "RUN(plot_ohlc)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  COLOR OHLC BARS UP COLOR #####################
@@ -119,37 +119,37 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # create the COMPARE object
 $command = "NEW(COMPARE, compare)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the values
 $command = "SET(compare, INPUT, $closeName,
-                compare, OP, >,
-                compare, INPUT2, $closeName,
-                compare, INPUT2_OFFSET, 1,
-                compare, OUTPUT, $ohlcName,
-                compare, OUTPUT2, $ohlcUpColor)";
+                         OP, >,
+                         INPUT2, $closeName,
+                         INPUT2_OFFSET, 1,
+                         OUTPUT, $ohlcName,
+                         OUTPUT2, $ohlcUpColor)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # do the compare
 $command = "RUN(compare)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  COLOR OHLC BARS DOWN COLOR #####################
 ###################################################################
 
 # set the values
-$command = "SET(compare, OP, <,
-                compare, OUTPUT2, $ohlcDownColor)";
+$command = "SET(compare, OP, <, 
+                         OUTPUT2, $ohlcDownColor)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # do the compare
 $command = "RUN(compare)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  CREATE MA1 #####################
@@ -158,20 +158,20 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # create the MA object
 $command = "NEW(MA, ma)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the values
 $command = "SET(ma, INPUT, $closeName,
-                ma, OUTPUT, $ma1Data,
-                ma, PERIOD, $ma1Period,
-                ma, TYPE, $ma1Type)";
+                    OUTPUT, $ma1Data,
+                    PERIOD, $ma1Period,
+                    TYPE, $ma1Type)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # do the MA
 $command = "RUN(ma)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  CREATE MA2 #####################
@@ -179,15 +179,15 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # set the values
 $command = "SET(ma, OUTPUT, $ma2Data,
-                ma, PERIOD, $ma2Period,
-                ma, TYPE, $ma2Type)";
+                    PERIOD, $ma2Period,
+                    TYPE, $ma2Type)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # do the MA
 $command = "RUN(ma)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  CREATE MA3 #####################
@@ -195,15 +195,15 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # set the values
 $command = "SET(ma, OUTPUT, $ma3Data,
-                ma, PERIOD, $ma3Period,
-                ma, TYPE, $ma3Type)";
+                    PERIOD, $ma3Period,
+                    TYPE, $ma3Type)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # do the MA
 $command = "RUN(ma)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  PLOT MA1 #####################
@@ -212,23 +212,23 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # create the PLOT_LINE object
 $command = "NEW(PLOT_LINE, plot_line)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the values
 $command = "SET(plot_line, OUTPUT, $ma1Name,
-                plot_line, CHART, $chartName,
-                plot_line, LABEL, $ma1Label,
-                plot_line, STYLE, $ma1Style,
-                plot_line, COLOR, $ma1Color,
-                plot_line, Z, $ma1Z,
-                plot_line, INPUT, $ma1Data)";
+                           CHART, $chartName,
+                           LABEL, $ma1Label,
+                           STYLE, $ma1Style,
+                           COLOR, $ma1Color,
+                           Z, $ma1Z,
+                           INPUT, $ma1Data)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # add MA1 to the chart
 $command = "RUN(plot_line)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  PLOT MA2 #####################
@@ -236,18 +236,18 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # set the values
 $command = "SET(plot_line, OUTPUT, $ma2Name,
-                plot_line, LABEL, $ma2Label,
-                plot_line, STYLE, $ma2Style,
-                plot_line, COLOR, $ma2Color,
-                plot_line, Z, $ma2Z,
-                plot_line, INPUT, $ma2Data)";
+                           LABEL, $ma2Label,
+                           STYLE, $ma2Style,
+                           COLOR, $ma2Color,
+                           Z, $ma2Z,
+                           INPUT, $ma2Data)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # add MA2 to the chart
 $command = "RUN(plot_line)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  PLOT MA3 #####################
@@ -255,18 +255,18 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 
 # set the values
 $command = "SET(plot_line, OUTPUT, $ma3Name,
-                plot_line, LABEL, $ma3Label,
-                plot_line, STYLE, $ma3Style,
-                plot_line, COLOR, $ma3Color,
-                plot_line, Z, $ma3Z,
-                plot_line, INPUT, $ma3Data)";
+                           LABEL, $ma3Label,
+                           STYLE, $ma3Style,
+                           COLOR, $ma3Color,
+                           Z, $ma3Z,
+                           INPUT, $ma3Data)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # add MA3 to the chart
 $command = "RUN(plot_line)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  UPDATE CHART #####################
@@ -275,15 +275,15 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
 # create the CHART_UPDATE object
 $command = "NEW(CHART_UPDATE, chart_update)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the values
 $command = "SET(chart_update, CHART, $chartName,
-                chart_update, DATE, $dateName)";
+                              DATE, $dateName)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # update the chart
 $command = "RUN(chart_update)";
 print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") {print STDERR $command; exit; }
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }

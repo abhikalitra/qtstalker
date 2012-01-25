@@ -27,6 +27,8 @@
 #include "ChartNew.h"
 #include "ChartUpdate.h"
 #include "GlobalSidePanel.h"
+#include "DialogMessage.h"
+#include "DialogNew.h"
 
 #include <QtDebug>
 #include <QUuid>
@@ -60,13 +62,24 @@ void ThreadMessage::getMessage (QString id)
   if (e.toData(QString("MESSAGE"), td))
     return;
 
-  if (td.toInteger() == TypeThreadMessage::_DIALOG)
+  switch ((TypeThreadMessage::Key) td.toInteger())
   {
-    DataDialog *dialog = new DataDialog(g_parent, id, e);
-    dialog->show();
+    case TypeThreadMessage::_DIALOG:
+    {
+      DataDialog *dialog = new DataDialog(g_parent, id, e);
+      dialog->show();
+      break;
+    }
+    case TypeThreadMessage::_DIALOG_NEW:
+    {
+      DialogNew *dialog = new DialogNew(g_parent, id, e);
+      dialog->show();
+      break;
+    }
+    default:
+      runMessage(e);
+      break;
   }
-  else
-    runMessage(e);    
 }
 
 void ThreadMessage::runMessage (Entity &e)
@@ -75,7 +88,7 @@ void ThreadMessage::runMessage (Entity &e)
   if (e.toData(QString("MESSAGE"), td))
     return;
   
-  switch ((TypeThreadMessage::Type) td.toInteger())
+  switch ((TypeThreadMessage::Key) td.toInteger())
   {
     case TypeThreadMessage::_CHART_CURVE:
     {
@@ -117,8 +130,18 @@ void ThreadMessage::runMessage (Entity &e)
       break;
     }
     case TypeThreadMessage::_GROUP_PANEL_REFRESH:
-      g_sidePanel->groupPanel()->updateList();
+      g_sidePanel->groupPanel()->updateGroups();
       break;
+    case TypeThreadMessage::_DIALOG_MESSAGE:
+    {
+      Data td;
+      e.toData(QString("TEXT"), td);
+      
+      DialogMessage *md = new DialogMessage(g_parent);
+      md->setMessage(td.toString());
+      md->show();
+      break;
+    }
     default:
       break;
   }

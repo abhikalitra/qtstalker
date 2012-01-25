@@ -22,21 +22,26 @@
 #ifndef TYPE_DATA_HPP
 #define TYPE_DATA_HPP
 
-class TypeData
+#include "Type.h"
+
+class TypeData : public Type
 {
   public:
     enum Key
     {
-      _BOOL = 10,
-      _COLOR = 20,
-      _DATETIME = 30,
-      _DOUBLE = 40,
-      _FONT = 50,
-      _INTEGER = 60,
-      _LIST = 70,
-      _STRING = 80,
-      _FILE = 90
+      _BOOL,
+      _COLOR,
+      _DATETIME,
+      _DOUBLE,
+      _FONT,
+      _INTEGER,
+      _LIST,
+      _STRING,
+      _FILE,
+      _SYMBOL
     };
+    
+    TypeData ();
 };
 
 #endif

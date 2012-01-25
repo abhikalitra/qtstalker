@@ -19,16 +19,24 @@
  *  USA.
  */
 
-#ifndef COMMAND_GROUP_SAVE_HPP
-#define COMMAND_GROUP_SAVE_HPP
+#ifndef DIALOG_MESSAGE_HPP
+#define DIALOG_MESSAGE_HPP
 
-#include "Command.h"
+#include <QTextEdit>
 
-class CommandGroupSave : public Command
+#include "Dialog.h"
+
+class DialogMessage : public Dialog
 {
+  Q_OBJECT
+
   public:
-    CommandGroupSave ();
-    QString run (CommandParse &, void *);
+    DialogMessage (QWidget *);
+    void createGUI ();
+    void setMessage (QString);
+
+  private:
+    QTextEdit *_messages;
 };
 
 #endif

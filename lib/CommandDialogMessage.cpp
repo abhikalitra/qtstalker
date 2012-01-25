@@ -19,13 +19,34 @@
  *  USA.
  */
 
-#include "CurveType.h"
+#include "CommandDialogMessage.h"
+#include "ThreadMessage.h"
+#include "TypeThreadMessage.h"
 
-#include <QDebug>
+#include <QtDebug>
 
-CurveType::CurveType ()
+CommandDialogMessage::CommandDialogMessage ()
 {
-  _list << "Line";
-  _list << "Histogram";
-  _list << "OHLC";
+  _name = "DIALOG_MESSAGE";
+
+  Data td;
+  Entity::set(QString("TEXT"), td);
+}
+
+QString CommandDialogMessage::run (CommandParse &, void *d)
+{
+  Data td;
+  Entity::toData(QString("TEXT"), td);
+  
+  Entity e;
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG_MESSAGE));
+  e.set(QString("TEXT"), td);
+  
+  Script *script = (Script *) d;
+  
+  ThreadMessage tm;
+  tm.sendMessage(e, script);
+  
+  _returnCode = "OK";
+  return _returnCode;
 }

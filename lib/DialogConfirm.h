@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2007 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2010 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,18 +19,30 @@
  *  USA.
  */
 
-#include "MAType.h"
+#ifndef DIALOG_CONFIRM_HPP
+#define DIALOG_CONFIRM_HPP
 
-#include <QDebug>
+#include <QTextEdit>
 
-MAType::MAType ()
+#include "Dialog.h"
+
+class DialogConfirm : public Dialog
 {
-  _list << "SMA";
-  _list << "EMA";
-  _list << "WMA";
-  _list << "DEMA";
-  _list << "TEMA";
-  _list << "TRIMA";
-  _list << "KAMA";
-  _list << "WILDER";
-}
+  Q_OBJECT
+
+  signals:
+    void signalDone (int);
+
+  public:
+    DialogConfirm (QWidget *, QString id, Entity);
+    void createGUI ();
+    void setMessage (QString);
+
+  public slots:
+    void done ();
+    
+  private:
+    QTextEdit *_text;
+};
+
+#endif

@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "CommandDialog.h"
+#include "CommandDialogNew.h"
 #include "Script.h"
 #include "GlobalMutex.h"
 #include "GlobalData.h"
@@ -28,41 +28,29 @@
 #include <QtDebug>
 #include <QUuid>
 
-CommandDialog::CommandDialog ()
+CommandDialogNew::CommandDialogNew ()
 {
-  _name = "DIALOG";
+  _name = "DIALOG_NEW";
+
+  Data td(TypeData::_LIST);
+  Entity::set(QString("LIST"), td);
+
+  td = Data(QString("New Item"));
+  Entity::set(QString("NAME"), td);
 }
 
-QString CommandDialog::run (CommandParse &sg, void *scr)
+QString CommandDialogNew::run (CommandParse &, void *scr)
 {
-  if (sg.values() != 1)
-  {
-    qDebug() << "CommandDialog::run: invalid number of values";
-    return _returnCode;
-  }
-  
   Script *script = (Script *) scr;
   
-  int pos = 0;
-  QString name = sg.value(pos++);
-  Command *c = script->scriptCommand(name);
-  if (! c)
-  {
-    qDebug() << "CommandDialog::run: invalid entity" << name;
-    return _returnCode;
-  }
-
-  Entity dialog;
-  dialog.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG));
+  Data list, name;
+  Entity::toData(QString("LIST"), list);
+  Entity::toData(QString("NAME"), name);
   
-  QList<QString> keys = c->dkeys();
-  int loop = 0;
-  for (; loop < keys.size(); loop++)
-  {
-    Data td;
-    c->toData(keys.at(loop), td);
-    dialog.set(keys.at(loop), td);
-  }
+  Entity dialog;
+  dialog.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG_NEW));
+  dialog.set(QString("LIST"), list);
+  dialog.set(QString("NAME"), name);
   
   QString id = QUuid::createUuid().toString();
   
@@ -103,13 +91,8 @@ QString CommandDialog::run (CommandParse &sg, void *scr)
   if (! dialog.dkeyCount())
     return _returnCode;
   
-  // copy new data into entity
-  for (loop = 0; loop < keys.size(); loop++)
-  {
-    Data td;
-    dialog.toData(keys.at(loop), td);
-    c->set(keys.at(loop), td);
-  }
+  dialog.toData(QString("NAME"), name);
+  set(QString("NAME"), name);
 
   _returnCode = "OK";
   return _returnCode;

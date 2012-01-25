@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "SelectDialog.h"
+#include "DialogSelect.h"
 #include "WindowTitle.h"
 
 #include "../pics/select_all.xpm"
@@ -29,8 +29,10 @@
 #include <QToolBar>
 #include <QToolButton>
 
-SelectDialog::SelectDialog (QWidget *p) : Dialog (p)
+DialogSelect::DialogSelect (QWidget *p, QString id, Entity settings) : Dialog (p)
 {
+  _id = id;
+  _settings = settings;
   _keySize = "select_dialog_window_size";
   _keyPos = "select_dialog_window_position";
 
@@ -38,13 +40,25 @@ SelectDialog::SelectDialog (QWidget *p) : Dialog (p)
   setWindowTitle(wt.title(tr("Select"), QString()));
 
   createGUI();
-
+  
+  if (! _id.isEmpty())
+  {
+    Data list, title, mode;
+    _settings.toData(QString("LIST"), list);
+    _settings.toData(QString("TITLE"), title);
+    _settings.toData(QString("MODE"), mode);
+    
+    setItems(list.toList());
+    setTitle(title.toString());
+    setMode(mode.toInteger());
+  }
+  
   loadSettings();
 
   selectionChanged();
 }
 
-void SelectDialog::createGUI ()
+void DialogSelect::createGUI ()
 {
   int pos = 0;
   _title = new QLabel;
@@ -84,13 +98,13 @@ void SelectDialog::createGUI ()
   _message->hide();
 }
 
-void SelectDialog::selectionChanged ()
+void DialogSelect::selectionChanged ()
 {
   QList<QListWidgetItem *> sl = _list->selectedItems();
   _okButton->setEnabled(sl.count());
 }
 
-void SelectDialog::done ()
+void DialogSelect::done ()
 {
   QList<QListWidgetItem *> sl = _list->selectedItems();
 
@@ -99,6 +113,9 @@ void SelectDialog::done ()
   for (; loop < sl.count(); loop++)
     l << sl.at(loop)->text();
 
+  _saveFlag++;
+  _settings.set(QString("LIST"), Data(l));
+  
   saveSettings();
 
   emit signalDone(l);
@@ -107,24 +124,24 @@ void SelectDialog::done ()
   accept();
 }
 
-void SelectDialog::setItems (QStringList l)
+void DialogSelect::setItems (QStringList l)
 {
   _list->clear();
   _list->addItems(l);
 }
 
-void SelectDialog::setMode (int mode)
+void DialogSelect::setMode (int mode)
 {
   if (mode)
     _list->setSelectionMode(QAbstractItemView::SingleSelection);
 }
 
-void SelectDialog::setTitle (QString d)
+void DialogSelect::setTitle (QString d)
 {
   _title->setText(d);
 }
 
-QStringList SelectDialog::selected ()
+QStringList DialogSelect::selected ()
 {
   return _selected;
 }

@@ -25,7 +25,7 @@
 class TypeThreadMessage
 {
   public:
-    enum Type
+    enum Key
     {
       _CHART_CURVE,
       _CHART_DATE,
@@ -35,6 +35,8 @@ class TypeThreadMessage
       _CHART_PANEL_REFRESH,
       _CHART_UPDATE,
       _DIALOG,
+      _DIALOG_MESSAGE,
+      _DIALOG_NEW,
       _GROUP_PANEL_REFRESH
     };
 };

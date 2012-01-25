@@ -41,11 +41,18 @@ int CommandParse::parse (QString d)
     return 1;
   }
 
+  if (! tl.at(1).contains(")"))
+  {
+    qDebug() << "CommandParse::parse: missing )" << d;
+    return 1;
+  }
+  
   // get values
   QString s = tl.at(1);
   s = s.remove(")");
   s = s.trimmed();
   QStringList vl = s.split(",");
+  
   int loop = 0;
   for (; loop < vl.count(); loop++)
     _values << vl.at(loop).trimmed();

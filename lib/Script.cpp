@@ -46,7 +46,7 @@ void Script::run ()
 {
   QProcess _proc(0);
 //  connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-//  connect(&_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+  connect(&_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
 //  connect(&_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 //  connect(&_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
 //  connect(&_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
@@ -61,6 +61,8 @@ void Script::run ()
   if (! _proc.waitForStarted())
   {
     qDebug() << "Script::run: error timed out" << _file;
+    done(0, _proc.exitStatus());
+    deleteLater();
     return;
   }
 
@@ -84,7 +86,7 @@ void Script::run ()
     // wait until we have some input from _process
     _proc.waitForReadyRead(-1);
     QByteArray ba = _proc.readAllStandardOutput();
-//    qDebug() << _file << ba;
+    qDebug() << _file << ba;
 
     // check for end of script
     QString s(ba);
@@ -155,19 +157,19 @@ void Script::done (int, QProcess::ExitStatus)
   {
     l << tr("cancelled");
 //    qDebug() << l.join(" ");
-    emit signalStopped(_file);
+    emit signalStopped(_id);
   }
   else
   {
     l << tr("completed");
 //    qDebug() << l.join(" ");
-    emit signalDone(_file);
+    emit signalDone(_id);
   }
 }
 
 void Script::readFromStderr ()
 {
-//  qDebug() << "Script::readFromStderr:" << _proc->readAllStandardError();
+  qDebug() << "Script::readFromStderr:" << _proc->readAllStandardError();
 }
 
 void Script::stopScript ()
@@ -274,8 +276,8 @@ void Script::error (QProcess::ProcessError)
   l << tr("Script");
   l << _file;
   l << tr("error");
-  qDebug() << l.join(" ");
-  emit signalDone(_file);
+//  qDebug() << l.join(" ");
+  emit signalDone(_id);
   deleteLater();
 }
 

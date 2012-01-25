@@ -21,6 +21,8 @@
 
 #include "CommandGet.h"
 #include "Script.h"
+#include "TypeEntity.h"
+#include "KeyCurveBar.h"
 
 #include <QtDebug>
 
@@ -43,7 +45,9 @@ QString CommandGet::run (CommandParse &sg, void *scr)
   Command *c = script->scriptCommand(name);
   if (! c)
   {
-    qDebug() << "CommandGet::run: invalid object name" << name;
+    if (commandGetValue(sg, scr))
+      qDebug() << "CommandGet::run: invalid object/data name" << name;
+    
     return _returnCode;
   }
 
@@ -54,10 +58,9 @@ QString CommandGet::run (CommandParse &sg, void *scr)
     qDebug() << "CommandGet::run: invalid setting name" << settingName;
     return _returnCode;
   }
-  
+
   switch ((TypeData::Key) setting.type())
   {
-//    case TypeData::_LIST:
     case TypeData::_FILE:
       _returnCode = setting.toList().join(";");
       break;
@@ -67,4 +70,102 @@ QString CommandGet::run (CommandParse &sg, void *scr)
   }
   
   return _returnCode;
+}
+
+int CommandGet::commandGetValue (CommandParse &sg, void *scr)
+{
+  Script *script = (Script *) scr;
+  int pos = 0;
+  QString name = sg.value(pos++);
+  
+  Entity data;
+  if (script->data(name, data))
+  {
+    qDebug() << "CommandGet::getData: invalid data name" << name;
+    return 1;
+  }
+  
+  QString settingName = sg.value(pos++);
+  
+  switch ((TypeEntity::Key) data.type())
+  {
+    case TypeEntity::_CURVE:
+    {
+      QStringList tl = settingName.split(".");
+      if (tl.size() != 2)
+      {
+        qDebug() << "CommandGet::getData: invalid setting format, must be INDEX.X or OFFSET.X" << settingName;
+        return 1;
+      }
+      
+      QStringList tkeys;
+      tkeys << "INDEX" << "OFFSET";
+      
+      Entity bar;
+      switch (tkeys.indexOf(tl.at(0)))
+      {
+	case 0: // INDEX
+          if (data.toEntity(tl.at(1), bar))
+          {
+            qDebug() << "CommandGet::getData: invalid INDEX value" << settingName;
+            return 1;
+          }
+	  break;
+	case 1: // OFFSET
+        {
+	  bool ok;
+	  int offset = tl.at(1).toInt(&ok);
+	  if (! ok)
+	  {
+            qDebug() << "CommandGet::getData: invalid OFFSET value" << settingName;
+            return 1;
+	  }
+	  
+	  int start, end;
+	  data.ekeyRange(start, end);
+	  
+	  int index = end - offset;
+	  if (index < start)
+            return 1;
+
+	  QList<QString> ekeys = data.ekeys();
+          if (data.toEntity(ekeys.at(index), bar))
+          {
+            qDebug() << "CommandGet::getData: invalid setting name" << settingName;
+            return 1;
+          }
+	  break;
+	}
+	default: // INVALID
+          qDebug() << "CommandGet::getData: invalid setting" << settingName;
+          return 1;
+	  break;
+      }
+      
+      KeyCurveBar keys;
+      Data td;
+      if (bar.toData(keys.indexToString(KeyCurveBar::_VALUE), td))
+      {
+        qDebug() << "CommandGet::getData: invalid bar" << settingName;
+        return 1;
+      }
+      
+      _returnCode = td.toString();
+      break;
+    }
+    default:
+    {
+      Data setting;
+      if (data.toData(settingName, setting))
+      {
+        qDebug() << "CommandGet::getData: invalid setting name" << settingName;
+        return 1;
+      }
+      
+      _returnCode = setting.toString();
+      break;
+    }
+  }
+  
+  return 0;
 }

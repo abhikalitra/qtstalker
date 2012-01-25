@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "AboutDialog.h"
+#include "DialogAbout.h"
 #include "WindowTitle.h"
 
 #include "../pics/qtstalker.xpm"
@@ -30,7 +30,7 @@
 #include <QLabel>
 #include <QPushButton>
 
-AboutDialog::AboutDialog ()
+DialogAbout::DialogAbout ()
 {
   createGUI();
   createQTSPage();
@@ -41,7 +41,7 @@ AboutDialog::AboutDialog ()
   setWindowTitle(wt.title(tr("About QtStalker"), QString()));
 }
 
-void AboutDialog::createGUI ()
+void DialogAbout::createGUI ()
 {
   QVBoxLayout *vbox = new QVBoxLayout;
   vbox->setSpacing(2);
@@ -58,7 +58,7 @@ void AboutDialog::createGUI ()
   connect(b, SIGNAL(clicked()), this, SLOT(accept()));
 }
 
-void AboutDialog::createQTSPage ()
+void DialogAbout::createQTSPage ()
 {
   QWidget *w = new QWidget;
 

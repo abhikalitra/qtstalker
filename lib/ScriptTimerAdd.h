@@ -19,45 +19,16 @@
  *  USA.
  */
 
-#ifndef CONFIGURE_DIALOG_HPP
-#define CONFIGURE_DIALOG_HPP
+#ifndef SCRIPT_TIMER_ADD_HPP
+#define SCRIPT_TIMER_ADD_HPP
 
-#include <QTabWidget>
-#include <QHash>
-#include <QComboBox>
-#include <QCheckBox>
+#include "Entity.h"
 
-#include "ColorButton.h"
-#include "FontButton.h"
-#include "Dialog.h"
-
-class ConfigureDialog : public Dialog
+class ScriptTimerAdd
 {
-  Q_OBJECT
-
   public:
-    ConfigureDialog (QWidget *);
-    void createGUI ();
-    void createGeneralPage ();
-
-  public slots:
-    void done ();
-    void buttonStatus ();
-    void backgroundChanged ();
-    void appFontChanged ();
-    void plotFontChanged ();
-    void tabPositionChanged ();
-    void antiAliasChanged ();
-
-  private:
-    QTabWidget *_tabs;
-    ColorButton *_background;
-    FontButton *_appFont;
-    FontButton *_plotFont;
-    int _modified;
-    QHash<QString, int> _flags;
-    QComboBox *_tabPosition;
-    QCheckBox *_antiAlias;
+    ScriptTimerAdd ();
+    int add (Entity &);
 };
 
 #endif

@@ -19,37 +19,22 @@
  *  USA.
  */
 
-#ifndef SELECT_DIALOG_HPP
-#define SELECT_DIALOG_HPP
+#ifndef COMMAND_SCRIPT_DATA_BASE_HPP
+#define COMMAND_SCRIPT_DATA_BASE_HPP
 
-#include <QListWidget>
-#include <QStringList>
+#include "Command.h"
 
-#include "Dialog.h"
-
-class SelectDialog : public Dialog
+class CommandScriptDataBase : public Command
 {
-  Q_OBJECT
-
-  signals:
-    void signalDone (QStringList);
-
   public:
-    SelectDialog (QWidget *);
-    void createGUI ();
-    void setItems (QStringList);
-    void setMode (int);
-    void setTitle (QString);
-    QStringList selected ();
-
-  public slots:
-    void done ();
-    void selectionChanged ();
-
+    CommandScriptDataBase ();
+    QString run (CommandParse &, void *);
+    int save ();
+    int remove ();
+    int list ();
+    
   private:
-    QListWidget *_list;
-    QLabel *_title;
-    QStringList _selected;
+    QStringList _method;
 };
 
 #endif

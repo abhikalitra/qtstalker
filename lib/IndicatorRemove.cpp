@@ -20,7 +20,7 @@
  */
 
 #include "IndicatorRemove.h"
-#include "ConfirmDialog.h"
+#include "DialogConfirm.h"
 #include "GlobalPlotGroup.h"
 #include "EAVDataBase.h"
 
@@ -44,7 +44,7 @@ void IndicatorRemove::remove ()
   QStringList mess;
   mess << tr("Confirm indicator removal") << _indicator;
 
-  ConfirmDialog *dialog = new ConfirmDialog(0);
+  DialogConfirm *dialog = new DialogConfirm(0, QString(), Entity());
   dialog->setMessage(mess.join(" "));
   connect(dialog, SIGNAL(accepted()), this, SLOT(remove2()));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));

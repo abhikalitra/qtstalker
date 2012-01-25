@@ -53,10 +53,6 @@ CommandVIDYA::CommandVIDYA ()
   td = Data(10);
   td.setLabel(QObject::tr("Period V"));
   Entity::set(QString("PERIODV"), td);
-
-  TA_RetCode rc = TA_Initialize();
-  if (rc != TA_SUCCESS)
-    qDebug("CommandVIDYA::CommandVIDYA: error on TA_Initialize");
 }
 
 QString CommandVIDYA::run (CommandParse &, void *d)

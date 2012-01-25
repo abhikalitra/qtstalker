@@ -30,7 +30,7 @@
 #include <QHash>
 #include <QToolBar>
 
-#include "ScriptTimer.h"
+//#include "ScriptTimer.h"
 #include "Script.h"
 
 class ScriptPage : public QWidget
@@ -80,7 +80,6 @@ class ScriptPage : public QWidget
     void deleteScriptTimer ();
     void deleteScriptTimer2 (QStringList);
     void runStartupScripts ();
-    void addScriptTimer (QString name, QString file, QString interval, QString command);
     void scriptThreadMessage (QString);
 
   protected:
@@ -89,7 +88,7 @@ class ScriptPage : public QWidget
     QHash<int, QAction *> _actions;
     QHash<QString, QListWidgetItem *> _itemList;
     QHash<QString, Script *> _scripts;
-    QHash<QString, ScriptTimer *> _timers;
+//    QHash<QString, ScriptTimer *> _timers;
 };
 
 #endif

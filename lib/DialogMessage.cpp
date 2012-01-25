@@ -19,12 +19,13 @@
  *  USA.
  */
 
-#include "MessageDialog.h"
+#include "DialogMessage.h"
+#include "WindowTitle.h"
 
 #include <QtDebug>
 #include <QGroupBox>
 
-MessageDialog::MessageDialog (QWidget *p) : Dialog (p)
+DialogMessage::DialogMessage (QWidget *p) : Dialog (p)
 {
   _keySize = "message_dialog_window_size";
   _keyPos = "message_dialog_window_position";
@@ -32,9 +33,12 @@ MessageDialog::MessageDialog (QWidget *p) : Dialog (p)
   createGUI();
 
   loadSettings();
+  
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("Message"), QString()));
 }
 
-void MessageDialog::createGUI ()
+void DialogMessage::createGUI ()
 {
   QGroupBox *gbox = new QGroupBox(tr("Messages"));
   _vbox->insertWidget(0, gbox);
@@ -51,7 +55,9 @@ void MessageDialog::createGUI ()
   _message->hide();
 }
 
-void MessageDialog::setMessage (QString d)
+void DialogMessage::setMessage (QString d)
 {
-  _messages->setText(d);
+  QDateTime dt = QDateTime::currentDateTime();
+  QString s = dt.toString(Qt::ISODate) + "\n\n" + d;
+  _messages->setText(s);
 }

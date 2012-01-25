@@ -19,27 +19,16 @@
  *  USA.
  */
 
-#ifndef CONFIRM_DIALOG_HPP
-#define CONFIRM_DIALOG_HPP
+#ifndef COMMAND_DIALOG_USER_HPP
+#define COMMAND_DIALOG_USER_HPP
 
-#include <QTextEdit>
+#include "Command.h"
 
-#include "Dialog.h"
-
-class ConfirmDialog : public Dialog
+class CommandDialogUser : public Command
 {
-  Q_OBJECT
-
-  signals:
-    void signalDone (int);
-
   public:
-    ConfirmDialog (QWidget *);
-    void createGUI ();
-    void setMessage (QString);
-
-  private:
-    QTextEdit *_text;
+    CommandDialogUser ();
+    int setData (CommandParse &);
 };
 
 #endif

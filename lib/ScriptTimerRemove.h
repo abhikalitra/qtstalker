@@ -19,37 +19,16 @@
  *  USA.
  */
 
-#ifndef NEW_DIALOG_HPP
-#define NEW_DIALOG_HPP
+#ifndef SCRIPT_TIMER_REMOVE_HPP
+#define SCRIPT_TIMER_REMOVE_HPP
 
 #include <QStringList>
-#include <QComboBox>
 
-#include "Dialog.h"
-#include "LineEdit.h"
-
-class NewDialog : public Dialog
+class ScriptTimerRemove
 {
-  Q_OBJECT
-
-  signals:
-    void signalDone (QString);
-
   public:
-    NewDialog (QWidget *);
-    void createGUI ();
-    void setItems (QStringList);
-    void setTitle (QString);
-
-  public slots:
-    void done ();
-    void nameChanged (const QString &);
-
-  private:
-    QLabel *_title;
-    QStringList _items;
-    QComboBox *_name;
-    LineEdit *_edit;
+    ScriptTimerRemove ();
+    int remove (QStringList);
 };
 
 #endif

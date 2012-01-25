@@ -19,17 +19,26 @@
  *  USA.
  */
 
-#include "NewDialog.h"
+#include "DialogNew.h"
 
 #include <QtDebug>
 
-NewDialog::NewDialog (QWidget *p) : Dialog (p)
+DialogNew::DialogNew (QWidget *p, QString id, Entity settings) : Dialog (p)
 {
+  _id = id;
+  _settings = settings;
   _keySize = "new_dialog_window_size";
   _keyPos = "new_dialog_window_position";
 
   createGUI();
-
+  
+  if (! _id.isEmpty())
+  {
+    Data list;
+    _settings.toData(QString("LIST"), list);
+    setItems(list.toList());
+  }
+  
   _name->setFocus();
 
   loadSettings();
@@ -37,9 +46,9 @@ NewDialog::NewDialog (QWidget *p) : Dialog (p)
   nameChanged(QString());
 }
 
-void NewDialog::createGUI ()
+void DialogNew::createGUI ()
 {
-  _title = new QLabel;
+  _title = new QLabel(tr("Enter new item name"));
   _vbox->insertWidget(0, _title);
 
   _edit = new LineEdit(this);
@@ -51,7 +60,7 @@ void NewDialog::createGUI ()
   _vbox->insertWidget(1, _name);
 }
 
-void NewDialog::nameChanged (const QString &text)
+void DialogNew::nameChanged (const QString &text)
 {
   int status = 0;
   if (text.length())
@@ -60,7 +69,7 @@ void NewDialog::nameChanged (const QString &text)
   _okButton->setEnabled(status);
 }
 
-void NewDialog::done ()
+void DialogNew::done ()
 {
   QString name = _edit->text();
   if (_items.contains(name))
@@ -69,6 +78,9 @@ void NewDialog::done ()
     return;
   }
 
+  _saveFlag++;
+  _settings.set(QString("NAME"), Data(name));
+
   saveSettings();
 
   emit signalDone(name);
@@ -76,7 +88,7 @@ void NewDialog::done ()
   accept();
 }
 
-void NewDialog::setItems (QStringList l)
+void DialogNew::setItems (QStringList l)
 {
   _items = l;
   _name->clear();
@@ -84,7 +96,7 @@ void NewDialog::setItems (QStringList l)
   _name->clearEditText();
 }
 
-void NewDialog::setTitle (QString d)
+void DialogNew::setTitle (QString d)
 {
   _title->setText(d);
 }

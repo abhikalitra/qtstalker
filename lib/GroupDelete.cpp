@@ -20,7 +20,7 @@
  */
 
 #include "GroupDelete.h"
-#include "SelectDialog.h"
+#include "DialogSelect.h"
 #include "WindowTitle.h"
 #include "EAVDataBase.h"
 
@@ -43,7 +43,7 @@ void GroupDelete::remove ()
   db.names(names);
 
   WindowTitle wt;
-  SelectDialog *dialog = new SelectDialog(0);
+  DialogSelect *dialog = new DialogSelect(0, QString(), Entity());
   dialog->setWindowTitle(wt.title(tr("Delete Group"), QString()));
   dialog->setItems(names);
   dialog->setTitle(tr("Groups"));

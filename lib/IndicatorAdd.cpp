@@ -24,7 +24,7 @@
 #include "EAVDataBase.h"
 #include "ScriptRunDialog.h"
 #include "KeyIndicatorDataBase.h"
-#include "NewDialog.h"
+#include "DialogNew.h"
 #include "GlobalSidePanel.h"
 #include "WindowTitle.h"
 #include "Global.h"
@@ -48,7 +48,7 @@ void IndicatorAdd::add ()
   QStringList names;
   db.names(names);
   
-  NewDialog *dialog = new NewDialog(g_parent);
+  DialogNew *dialog = new DialogNew(g_parent, QString(), Entity());
   dialog->setTitle(tr("New indicator name"));
   dialog->setItems(names);
 

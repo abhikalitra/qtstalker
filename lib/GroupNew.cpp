@@ -20,7 +20,7 @@
  */
 
 #include "GroupNew.h"
-#include "NewDialog.h"
+#include "DialogNew.h"
 #include "WindowTitle.h"
 #include "EAVDataBase.h"
 #include "GroupEditDialog.h"
@@ -44,7 +44,7 @@ void GroupNew::run2 ()
   QStringList l;
   db.names(l);
 
-  NewDialog *dialog = new NewDialog(0);
+  DialogNew *dialog = new DialogNew(0, QString(), Entity());
   dialog->setItems(l);
   dialog->setTitle(tr("Enter new group name"));
   connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(run3(QString)));

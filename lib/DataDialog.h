@@ -29,7 +29,6 @@
 #include <QTabWidget>
 
 #include "Dialog.h"
-#include "Entity.h"
 
 class DataDialog : public Dialog
 {
@@ -37,7 +36,6 @@ class DataDialog : public Dialog
   
   public:
     DataDialog (QWidget *, QString id, Entity);
-    ~DataDialog ();
     void createGUI ();
     void setSettings (Entity);
     Entity settings ();
@@ -51,6 +49,7 @@ class DataDialog : public Dialog
     int setList (int tab, QString key, QString label, QString v, QStringList l, QString tt);
     int setDateTime (int tab, QString key, QString label, QDateTime v, QString tt);
     int setFile (int tab, QString key, QString label, QStringList v, QString tt);
+    int setSymbol (int tab, QString key, QString label, QStringList v, QString tt);
     void setTabTitle (int pos, QString);
     void setSettings (Entity *);
 
@@ -60,10 +59,7 @@ class DataDialog : public Dialog
   protected:
     QHash<int, QFormLayout *> _formList;
     QHash<QString, void *> _widgets;
-    Entity _settings;
     QTabWidget *_tabs;
-    QString _id;
-    int _saveFlag;
 };
 
 #endif

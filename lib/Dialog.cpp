@@ -21,12 +21,15 @@
 
 #include "Dialog.h"
 #include "Doc.h"
+#include "GlobalData.h"
+#include "GlobalMutex.h"
 
 #include <QtDebug>
 #include <QSettings>
 
 Dialog::Dialog (QWidget *p) : QDialog (p)
 {
+  _saveFlag = 0;
   _helpFile = "main.html";
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 
@@ -66,6 +69,26 @@ Dialog::Dialog (QWidget *p) : QDialog (p)
   QPushButton *b = _buttonBox->button(QDialogButtonBox::Help);
   b->setText(tr("&Help"));
   connect(b, SIGNAL(clicked()), this, SLOT(help()));
+}
+
+Dialog::~Dialog ()
+{
+  if (_id.isEmpty())
+    return;
+  
+  // save settings into global area
+  g_dataMutex.lock();
+  if (_saveFlag)
+    g_dataList.insert(_id, _settings);
+  else
+    g_dataList.insert(_id, Entity());
+  g_dataMutex.unlock();
+  
+  g_mutex.lock();
+  QMutex *mutex = g_mutexList.value(_id);
+  g_mutex.unlock();
+
+  mutex->unlock();
 }
 
 // virtual

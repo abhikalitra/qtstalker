@@ -19,21 +19,37 @@
  *  USA.
  */
 
-#include "OHLCStyle.h"
+#ifndef DIALOG_NEW_HPP
+#define DIALOG_NEW_HPP
 
-#include <QDebug>
+#include <QStringList>
+#include <QComboBox>
 
-OHLCStyle::OHLCStyle ()
+#include "Dialog.h"
+#include "LineEdit.h"
+
+class DialogNew : public Dialog
 {
-  _styles << "OHLC" << "Candle";
-}
+  Q_OBJECT
 
-QStringList OHLCStyle::list ()
-{
-  return _styles;
-}
+  signals:
+    void signalDone (QString);
 
-int OHLCStyle::stringToStyle (QString d)
-{
-  return _styles.indexOf(d);
-}
+  public:
+    DialogNew (QWidget *, QString id, Entity);
+    void createGUI ();
+    void setItems (QStringList);
+    void setTitle (QString);
+
+  public slots:
+    void done ();
+    void nameChanged (const QString &);
+
+  private:
+    QLabel *_title;
+    QStringList _items;
+    QComboBox *_name;
+    LineEdit *_edit;
+};
+
+#endif

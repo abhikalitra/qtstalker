@@ -19,24 +19,37 @@
  *  USA.
  */
 
-#ifndef MESSAGE_DIALOG_HPP
-#define MESSAGE_DIALOG_HPP
+#ifndef DIALOG_SELECT_HPP
+#define DIALOG_SELECT_HPP
 
-#include <QTextEdit>
+#include <QListWidget>
+#include <QStringList>
 
 #include "Dialog.h"
 
-class MessageDialog : public Dialog
+class DialogSelect : public Dialog
 {
   Q_OBJECT
 
+  signals:
+    void signalDone (QStringList);
+
   public:
-    MessageDialog (QWidget *);
+    DialogSelect (QWidget *, QString id, Entity);
     void createGUI ();
-    void setMessage (QString);
+    void setItems (QStringList);
+    void setMode (int);
+    void setTitle (QString);
+    QStringList selected ();
+
+  public slots:
+    void done ();
+    void selectionChanged ();
 
   private:
-    QTextEdit *_messages;
+    QListWidget *_list;
+    QLabel *_title;
+    QStringList _selected;
 };
 
 #endif

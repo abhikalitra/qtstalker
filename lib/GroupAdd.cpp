@@ -20,7 +20,7 @@
  */
 
 #include "GroupAdd.h"
-#include "SelectDialog.h"
+#include "DialogSelect.h"
 #include "WindowTitle.h"
 #include "EAVDataBase.h"
 #include "KeyGroupDataBase.h"
@@ -52,7 +52,7 @@ void GroupAdd::add ()
   EAVDataBase db("groups");
   db.names(l);
 
-  SelectDialog *dialog = new SelectDialog(g_parent);
+  DialogSelect *dialog = new DialogSelect(g_parent, QString(), Entity());
   dialog->setItems(l);
   dialog->setTitle(tr("Groups"));
   dialog->setMode(1);

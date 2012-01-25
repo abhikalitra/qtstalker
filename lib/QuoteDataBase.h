@@ -34,16 +34,16 @@ class QuoteDataBase
     QuoteDataBase ();
     void init ();
     int getBars (Symbol &);
-    int setBars (Symbol &);
-    int newSymbol (Symbol &);
-    int getSymbol (Symbol &);
+    int setBars (Symbol *);
+    int newSymbol (Symbol *);
+    int getSymbol (Symbol *);
     int transaction ();
     int commit ();
-    int deleteSymbol (Symbol &);
+    int deleteSymbol (Symbol *);
     int getExchange (QStringList &);
 //    int rename (Symbol *osymbol, Symbol *nsymbol);
     int search (QString symbol, QList<Symbol> &l);
-    int setName (Symbol &);
+    int setName (Symbol *);
 //    int dump (DataGroup *, QString);
 
   private:

@@ -2,43 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.0">
 <context>
-    <name>AboutDialog</name>
-    <message>
-        <source>
-Built using Qt </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>
-
-Qtstalker is licensed with GNU General Public License (GPL) version 2.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>
-Qt Assistant is licensed with GNU General Public License (GPL) version 3.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>
-(C) 2001-2011 by Stefan Stratigakos
-qtstalker.sourceforge.net</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>About QtStalker</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>QtStalker version 0.37-dev (working title)</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>BarLengthButton</name>
     <message>
         <source>Bar Length</source>
@@ -174,73 +137,6 @@ qtstalker.sourceforge.net</source>
     </message>
 </context>
 <context>
-    <name>ConfigureDialog</name>
-    <message>
-        <source>Configure</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Background</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>North</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>South</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>West</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>East</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Tab Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>App Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Antialias Plotting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Plot Background Color</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indicator Tab Position</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set plot antialiasing.
-App restart required to take effect</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ConfirmDialog</name>
-    <message>
-        <source>Confirm</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ControlPanel</name>
     <message>
         <source>Scroll Chart</source>
@@ -315,6 +211,147 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>&amp;OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogAbout</name>
+    <message>
+        <source>About QtStalker</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>QtStalker version 0.37-dev (working title)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+Built using Qt </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+(C) 2001-2011 by Stefan Stratigakos
+qtstalker.sourceforge.net</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+
+Qtstalker is licensed with GNU General Public License (GPL) version 2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+Qt Assistant is licensed with GNU General Public License (GPL) version 3.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>About</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogConfigure</name>
+    <message>
+        <source>Configure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Background Color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Background</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>App Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plot Font</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>North</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>South</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>West</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>East</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indicator Tab Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set plot antialiasing.
+App restart required to take effect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Antialias Plotting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogConfirm</name>
+    <message>
+        <source>Confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogMessage</name>
+    <message>
+        <source>Message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Messages</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogNew</name>
+    <message>
+        <source>already exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter new item name</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DialogSelect</name>
+    <message>
+        <source>Select</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unselect All</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -502,20 +539,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Set Number &amp;Precision</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>MessageDialog</name>
-    <message>
-        <source>Messages</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>NewDialog</name>
-    <message>
-        <source>already exists</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -921,14 +944,6 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Output MACD</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1136,6 +1151,78 @@ App restart required to take effect</source>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>1 Day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1 Week</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1 Month</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>3 Months</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>6 Months</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1 Year</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>2 Years</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>5 Years</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>10 Years</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>25 Years</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>50 Years</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Startup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Table</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -1220,14 +1307,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Set Launch Button Columns</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1322,21 +1401,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Edit Script Timer</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SelectDialog</name>
-    <message>
-        <source>Select</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unselect All</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

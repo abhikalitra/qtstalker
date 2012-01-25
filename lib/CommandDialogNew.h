@@ -19,14 +19,16 @@
  *  USA.
  */
 
-#include "QuoteDataBaseKey.h"
+#ifndef COMMAND_DIALOG_NEW_HPP
+#define COMMAND_DIALOG_NEW_HPP
 
-#include <QtDebug>
+#include "Command.h"
 
-QuoteDataBaseKey::QuoteDataBaseKey ()
+class CommandDialogNew : public Command
 {
-  _list << "SYMBOL";
-  _list << "TYPE";
-  _list << "NAME";
-  _list << "TABLE";
-}
+  public:
+    CommandDialogNew ();
+    QString run (CommandParse &, void *);
+};
+
+#endif

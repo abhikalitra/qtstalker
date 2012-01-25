@@ -23,6 +23,7 @@
 #include "EAVDataBase.h"
 #include "WindowTitle.h"
 #include "KeyScriptDataBase.h"
+#include "ScriptTimerAdd.h"
 
 #include <QtDebug>
 
@@ -77,24 +78,21 @@ void ScriptTimerDialog::done ()
     return;
   }
 
-  EAVDataBase db("scripts");
-  db.transaction();
-
-  KeyScriptDataBase skeys;
-  Entity data;
-  data.setName(_name);
-  data.set(skeys.indexToString(KeyScriptDataBase::_FILE), Data(file));
-  data.set(skeys.indexToString(KeyScriptDataBase::_STARTUP), Data(_startup->isChecked()));
-  data.set(skeys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), Data(_interval->value()));
-  data.set(skeys.indexToString(KeyScriptDataBase::_COMMAND), Data(_command->text()));
-  if (db.set(data))
+  KeyScriptDataBase keys;
+  Entity timer;
+  timer.setName(_name);
+  timer.set(keys.indexToString(KeyScriptDataBase::_FILE), Data(file));
+  timer.set(keys.indexToString(KeyScriptDataBase::_STARTUP), Data(_startup->isChecked()));
+  timer.set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), Data(_interval->value()));
+  timer.set(keys.indexToString(KeyScriptDataBase::_COMMAND), Data(_command->text()));
+  
+  ScriptTimerAdd sta;
+  if (sta.add(timer))
   {
     qDebug() << "ScriptTimerDialog::done: error saving timer" << _name;
     return;
   }
-
-  db.commit();
-
+  
   saveSettings();
 
   emit signalDone(_name);

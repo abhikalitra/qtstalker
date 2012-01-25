@@ -20,7 +20,7 @@
  */
 
 #include "ChartObjectDeleteAll.h"
-#include "ConfirmDialog.h"
+#include "DialogConfirm.h"
 #include "GlobalPlotGroup.h"
 
 #include <QtDebug>
@@ -42,7 +42,7 @@ void ChartObjectDeleteAll::remove ()
   QStringList mess;
   mess << tr("Confirm delete all chart objects from selected indicator") << _chart;
 
-  ConfirmDialog *dialog = new ConfirmDialog(0);
+  DialogConfirm *dialog = new DialogConfirm(0, QString(), Entity());
   dialog->setMessage(mess.join(" "));
   connect(dialog, SIGNAL(accepted()), this, SLOT(remove2()));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));

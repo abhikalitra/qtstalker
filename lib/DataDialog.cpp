@@ -23,8 +23,7 @@
 #include "LineEdit.h"
 #include "ColorButton.h"
 #include "FileButton.h"
-#include "GlobalData.h"
-#include "GlobalMutex.h"
+#include "SymbolButton.h"
 
 #include <QtDebug>
 #include <QComboBox>
@@ -35,7 +34,6 @@
 
 DataDialog::DataDialog (QWidget *p, QString id, Entity e) : Dialog (p)
 {
-  _saveFlag = 0;
   _id = id;
   _settings = e;
   _keySize = "data_dialog_window_size";
@@ -44,26 +42,6 @@ DataDialog::DataDialog (QWidget *p, QString id, Entity e) : Dialog (p)
   createGUI();
   
   setGUI();
-}
-
-DataDialog::~DataDialog ()
-{
-  if (_id.isEmpty())
-    return;
-  
-  // save settings into global area
-  g_dataMutex.lock();
-  if (_saveFlag)
-    g_dataList.insert(_id, _settings);
-  else
-    g_dataList.insert(_id, Entity());
-  g_dataMutex.unlock();
-  
-  g_mutex.lock();
-  QMutex *mutex = g_mutexList.value(_id);
-  g_mutex.unlock();
-//qDebug() << "DataDialog::~DataDialog: unlocking mutex";   
-  mutex->unlock();
 }
 
 void DataDialog::createGUI ()
@@ -132,6 +110,9 @@ void DataDialog::setGUI ()
         break;
       case TypeData::_FILE:
         setFile(tab, key, label, d.toList(), QString());
+        break;
+      case TypeData::_SYMBOL:
+        setSymbol(tab, key, label, d.toList(), QString());
         break;
       default:
         break;
@@ -298,7 +279,6 @@ int DataDialog::setFile (int tab, QString key, QString label, QStringList v, QSt
   return 0;
 }
 
-/*
 int DataDialog::setSymbol (int tab, QString key, QString label, QStringList v, QString tt)
 {
   QFormLayout *form = _formList.value(tab);
@@ -316,7 +296,6 @@ int DataDialog::setSymbol (int tab, QString key, QString label, QStringList v, Q
 
   return 0;
 }
-*/
 
 void DataDialog::done ()
 {
@@ -400,6 +379,15 @@ void DataDialog::done ()
 	if (! w)
 	  continue;
         d.set(w->files());
+	_settings.set(keys.at(loop), d);
+        break;
+      }
+      case TypeData::_SYMBOL:
+      {
+        SymbolButton *w = (SymbolButton *) _widgets.value(keys.at(loop));
+	if (! w)
+	  continue;
+        d.set(w->symbols());
 	_settings.set(keys.at(loop), d);
         break;
       }

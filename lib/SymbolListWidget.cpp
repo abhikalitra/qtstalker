@@ -56,7 +56,7 @@ void SymbolListWidget::setSymbols (QStringList &l)
     Symbol symbol;
     symbol.set(keys.indexToString(KeySymbol::_SYMBOL), Data(l.at(loop)));
 
-    if (db.getSymbol(symbol))
+    if (db.getSymbol(&symbol))
       continue;
 
     addSymbol(symbol);

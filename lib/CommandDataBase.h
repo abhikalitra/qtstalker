@@ -19,15 +19,24 @@
  *  USA.
  */
 
-#include "ScriptDataBaseKey.h"
+#ifndef COMMAND_DATA_BASE_HPP
+#define COMMAND_DATA_BASE_HPP
 
-#include <QtDebug>
+#include "Command.h"
 
-ScriptDataBaseKey::ScriptDataBaseKey ()
+class CommandDataBase : public Command
 {
-  _list << "NAME";
-  _list << "FILE";
-  _list << "STARTUP";
-  _list << "RUN_INTERVAL";
-  _list << "COMMAND";
-}
+  public:
+    CommandDataBase ();
+    QString run (CommandParse &, void *);
+    int save ();
+    int remove ();
+    int list ();
+    int load ();
+    int setData (CommandParse &);
+    
+  private:
+    QStringList _method;
+};
+
+#endif

@@ -28,12 +28,15 @@
 #include <QDialogButtonBox>
 #include <QFormLayout>
 
+#include "Entity.h"
+
 class Dialog : public QDialog
 {
   Q_OBJECT
 
   public:
     Dialog (QWidget *);
+    ~Dialog ();
 
   public slots:
     virtual void done ();
@@ -53,6 +56,9 @@ class Dialog : public QDialog
     QLabel *_message;
     QString _keySize;
     QString _keyPos;
+    QString _id;
+    Entity _settings;
+    int _saveFlag;
 };
 
 #endif

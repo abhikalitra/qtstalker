@@ -19,45 +19,35 @@
  *  USA.
  */
 
-#include "CommandGroupSave.h"
+#include "ScriptTimerRemove.h"
+#include "GlobalScriptTimer.h"
 #include "EAVDataBase.h"
-#include "KeyGroupDataBase.h"
 
 #include <QtDebug>
 
-CommandGroupSave::CommandGroupSave ()
+ScriptTimerRemove::ScriptTimerRemove ()
 {
-  _name = "GROUP_SAVE";
-
-  Data td;
-  td.setLabel(QObject::tr("Group"));
-  Entity::set(QString("GROUP"), td);
-  
-  td = Data(QStringList());
-  td.setLabel(QObject::tr("Symbols"));
-  Entity::set(QString("SYMBOLS"), td);
 }
 
-QString CommandGroupSave::run (CommandParse &, void *)
+int ScriptTimerRemove::remove (QStringList l)
 {
-  Data group, symbols;
-  Entity::toData(QString("GROUP"), group);
-  Entity::toData(QString("SYMBOLS"), symbols);
-  
-  KeyGroupDataBase keys;
-  Entity i;
-  i.setName(group.toString());
-  i.set(keys.indexToString(KeyGroupDataBase::_LIST), symbols);
-  
-  EAVDataBase db("groups");
-  db.transaction();
-  if (db.set(i))
+  int loop = 0;
+  for (; loop < l.size(); loop++)
   {
-    qDebug() << "CommandGroupSave::run: EAVDataBase error";
-    return _returnCode;
-  }
-  db.commit();
+    ScriptTimer *st = g_scriptTimerList.value(l.at(loop));
+    if (! st)
+      continue;
 
-  _returnCode = "OK";
-  return _returnCode;
+    st->stop();
+  
+    g_scriptTimerList.remove(l.at(loop));
+    delete st;
+  }
+
+  EAVDataBase db("scripts");
+  db.transaction();
+  db.remove(l);
+  db.commit();
+  
+  return 0;
 }
