@@ -90,7 +90,7 @@ QString CommandPlotOHLC::run (CommandParse &, void *d)
   }
 
   // keys
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys4(iopen, ihigh, ilow, iclose, keys))
   {
@@ -125,28 +125,28 @@ QString CommandPlotOHLC::run (CommandParse &, void *d)
   for (; loop < keys.size(); loop++)
   {
     Entity obar;
-    if (iopen.toEntity(keys.at(loop), obar))
+    if (iopen.toIndex(keys.at(loop), obar))
       continue;
     Data ovalue;
     if (obar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), ovalue))
       continue;
     
     Entity hbar;
-    if (ihigh.toEntity(keys.at(loop), hbar))
+    if (ihigh.toIndex(keys.at(loop), hbar))
       continue;
     Data hvalue;
     if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), hvalue))
       continue;
 
     Entity lbar;
-    if (ilow.toEntity(keys.at(loop), lbar))
+    if (ilow.toIndex(keys.at(loop), lbar))
       continue;
     Data lvalue;
     if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), lvalue))
       continue;
 
     Entity cbar;
-    if (iclose.toEntity(keys.at(loop), cbar))
+    if (iclose.toIndex(keys.at(loop), cbar))
       continue;
     Data cvalue;
     if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), cvalue))

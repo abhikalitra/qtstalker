@@ -125,21 +125,17 @@ QString CommandSymbol::run (CommandParse &, void *d)
   Entity::toData(QString("CLOSE"), close);
   Entity::toData(QString("VOLUME"), volume);
   Entity::toData(QString("OI"), oi);
+
+  QList<int> keys;
+  bd.ekeys(keys);
   
-  CurveData dline;
-  CurveData oline;
-  CurveData hline;
-  CurveData lline;
-  CurveData cline;
-  CurveData vline;
-  CurveData iline;
+  CurveData dline, oline, hline, lline, cline, vline, iline;
   KeyCurveBar cbkeys;
   int loop = 0;
-  QList<QString> keys = bd.ekeys();
   for (; loop < keys.size(); loop++)
   {
     Entity b;
-    bd.toEntity(keys.at(loop), b);
+    bd.toIndex(keys.at(loop), b);
     
     // date
     Data td;

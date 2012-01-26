@@ -99,7 +99,8 @@ int EAVDataBase::set (Entity &data)
 
   QSqlQuery q(_db);
 
-  QList<QString> keys = data.dkeys();
+  QList<QString> keys;
+  data.dkeys(keys);
 
   int loop = 0;
   for (; loop < keys.size(); loop++)

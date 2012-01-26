@@ -84,7 +84,7 @@ QString CommandFI::run (CommandParse &, void *d)
 
 int CommandFI::getFI (Entity &in, Entity &in2, Entity &line)
 {
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys2(in, in2, keys))
     return 1;
@@ -95,21 +95,21 @@ int CommandFI::getFI (Entity &in, Entity &in2, Entity &line)
   for (; loop < keys.size(); loop++)
   {
     Entity cbar;
-    if (in.toEntity(keys.at(loop), cbar))
+    if (in.toIndex(keys.at(loop), cbar))
       continue;
     Data close;
     if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), close))
       continue;
 
     Entity ycbar;
-    if (in.toEntity(keys.at(loop - 1), ycbar))
+    if (in.toIndex(keys.at(loop - 1), ycbar))
       continue;
     Data yclose;
     if (ycbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), yclose))
       continue;
 
     Entity vbar;
-    if (in2.toEntity(keys.at(loop), vbar))
+    if (in2.toIndex(keys.at(loop), vbar))
       continue;
     Data vol;
     if (vbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), vol))

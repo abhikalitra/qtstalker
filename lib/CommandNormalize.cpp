@@ -73,7 +73,7 @@ QString CommandNormalize::run (CommandParse &, void *d)
 
 int CommandNormalize::getNORM (Entity &in, Entity &line)
 {
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys1(in, keys))
     return 1;
@@ -90,7 +90,7 @@ int CommandNormalize::getNORM (Entity &in, Entity &line)
   for (; loop < keys.size(); loop++)
   {
     Entity bar;
-    in.toEntity(keys.at(loop), bar);
+    in.toIndex(keys.at(loop), bar);
     Data v;
     if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), v))
       continue;

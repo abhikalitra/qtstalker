@@ -42,7 +42,7 @@ int MA::getMA (Entity &in, int period, int method, Entity &line)
     return getWilder(in, period, line);
 
   // verify curve keys
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys1(in, keys))
   {
@@ -61,7 +61,7 @@ int MA::getMA (Entity &in, int period, int method, Entity &line)
   for (; loop < size; loop++)
   {
     Entity bar;
-    in.toEntity(keys.at(loop), bar);
+    in.toIndex(keys.at(loop), bar);
     
     Data td;
     bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
@@ -93,7 +93,7 @@ int MA::getMA (Entity &in, int period, int method, Entity &line)
 int MA::getWilder (Entity &in, int period, Entity &line)
 {
   // verify curve keys
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys1(in, keys))
   {
@@ -107,7 +107,7 @@ int MA::getWilder (Entity &in, int period, Entity &line)
   for (; loop < period; loop++)
   {
     Entity bar;
-    in.toEntity(keys.at(loop), bar);
+    in.toIndex(keys.at(loop), bar);
     
     Data td;
     bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td);
@@ -122,7 +122,7 @@ int MA::getWilder (Entity &in, int period, Entity &line)
   for (; loop < keys.size(); loop++)
   {
     Entity bar;
-    in.toEntity(keys.at(loop), bar);
+    in.toIndex(keys.at(loop), bar);
     
     Data td;
     bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), td);

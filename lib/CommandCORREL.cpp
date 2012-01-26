@@ -30,7 +30,6 @@
 #include "CurveBar.h"
 #include "KeyCurveBar.h"
 #include "GlobalSymbol.h"
-#include "ScriptVerifyCurveKeys.h"
 
 #include <QtDebug>
 
@@ -133,17 +132,15 @@ int CommandCORREL::getIndex (QString d, Entity &line)
     return 1;
   }
 
-  QList<QString> barKeys;
-  QList<QString> tkeys = bd.ekeys();
-  ScriptVerifyCurveKeys svck;
-  svck.sortKeys(tkeys, barKeys);
+  QList<int> barKeys;
+  bd.ekeys(barKeys);
   
   KeyCurveBar cbkeys;
   int loop = 0;
   for (; loop < barKeys.size(); loop++)
   {
     Entity b;
-    bd.toEntity(barKeys.at(loop), b);
+    bd.toIndex(barKeys.at(loop), b);
     
     Data close;
     if (b.toData(cbkeys.indexToString(KeyCurveBar::_CLOSE), close))

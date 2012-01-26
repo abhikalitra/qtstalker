@@ -27,7 +27,7 @@ TALibOutput::TALibOutput ()
 {
 }
 
-int TALibOutput::fillOutputDouble1 (Entity &line, QList<QString> &keys, int outNb, TA_Real out[])
+int TALibOutput::fillOutputDouble1 (Entity &line, QList<int> &keys, int outNb, TA_Real out[])
 {
   KeyCurveBar cbkeys;
   int keyLoop = keys.size() - 1;
@@ -45,7 +45,7 @@ int TALibOutput::fillOutputDouble1 (Entity &line, QList<QString> &keys, int outN
   return 0;
 }
 
-int TALibOutput::fillOutputDouble2 (Entity &line, Entity &line2, QList<QString> &keys, int outNb, TA_Real out[], TA_Real out2[])
+int TALibOutput::fillOutputDouble2 (Entity &line, Entity &line2, QList<int> &keys, int outNb, TA_Real out[], TA_Real out2[])
 {
   KeyCurveBar cbkeys;
   int keyLoop = keys.size() - 1;
@@ -66,7 +66,7 @@ int TALibOutput::fillOutputDouble2 (Entity &line, Entity &line2, QList<QString> 
   return 0;
 }
 
-int TALibOutput::fillOutputDouble3 (Entity &line, Entity &line2, Entity &line3, QList<QString> &keys,
+int TALibOutput::fillOutputDouble3 (Entity &line, Entity &line2, Entity &line3, QList<int> &keys,
 			      int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[])
 {
   KeyCurveBar cbkeys;
@@ -91,7 +91,7 @@ int TALibOutput::fillOutputDouble3 (Entity &line, Entity &line2, Entity &line3, 
   return 0;
 }
 
-int TALibOutput::fillOutputInteger1 (Entity &line, QList<QString> &keys, int outNb, TA_Integer out[])
+int TALibOutput::fillOutputInteger1 (Entity &line, QList<int> &keys, int outNb, TA_Integer out[])
 {
   KeyCurveBar cbkeys;
   int keyLoop = keys.size() - 1;

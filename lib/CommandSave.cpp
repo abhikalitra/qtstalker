@@ -53,7 +53,9 @@ QString CommandSave::run (CommandParse &sg, void *scr)
 
   QString table = sg.value(pos++);
   
-  QList<QString> keys = c->dkeys();
+  QList<QString> keys;
+  c->dkeys(keys);
+  
   Entity settings;
   settings.setName(name);
   int loop = 0;

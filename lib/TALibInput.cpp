@@ -27,7 +27,7 @@ TALibInput::TALibInput ()
 {
 }
 
-int TALibInput::fillInput (Entity &in, QList<QString> &keys, TA_Real out[])
+int TALibInput::fillInput (Entity &in, QList<int> &keys, TA_Real out[])
 {
   KeyCurveBar cbkeys;
   int ipos = 0;
@@ -35,7 +35,7 @@ int TALibInput::fillInput (Entity &in, QList<QString> &keys, TA_Real out[])
   for (; ipos < keys.size(); ipos++)
   {
     Entity bar;
-    if (in.toEntity(keys.at(ipos), bar))
+    if (in.toIndex(keys.at(ipos), bar))
       continue;
 
     Data td;
@@ -47,7 +47,7 @@ int TALibInput::fillInput (Entity &in, QList<QString> &keys, TA_Real out[])
   return opos;
 }
 
-int TALibInput::fillInput2 (Entity &in, Entity &in2, QList<QString> &keys, TA_Real out[], TA_Real out2[])
+int TALibInput::fillInput2 (Entity &in, Entity &in2, QList<int> &keys, TA_Real out[], TA_Real out2[])
 {
   KeyCurveBar cbkeys;
   int ipos = 0;
@@ -55,11 +55,11 @@ int TALibInput::fillInput2 (Entity &in, Entity &in2, QList<QString> &keys, TA_Re
   for (; ipos < keys.size(); ipos++)
   {
     Entity bar;
-    if (in.toEntity(keys.at(ipos), bar))
+    if (in.toIndex(keys.at(ipos), bar))
       continue;
 
     Entity bar2;
-    if (in2.toEntity(keys.at(ipos), bar2))
+    if (in2.toIndex(keys.at(ipos), bar2))
       continue;
 
     Data td;
@@ -74,7 +74,7 @@ int TALibInput::fillInput2 (Entity &in, Entity &in2, QList<QString> &keys, TA_Re
   return opos;
 }
 
-int TALibInput::fillInput3 (Entity &in, Entity &in2, Entity &in3, QList<QString> &keys,
+int TALibInput::fillInput3 (Entity &in, Entity &in2, Entity &in3, QList<int> &keys,
 			    TA_Real out[], TA_Real out2[], TA_Real out3[])
 {
   KeyCurveBar cbkeys;
@@ -83,15 +83,15 @@ int TALibInput::fillInput3 (Entity &in, Entity &in2, Entity &in3, QList<QString>
   for (; ipos < keys.size(); ipos++)
   {
     Entity bar;
-    if (in.toEntity(keys.at(ipos), bar))
+    if (in.toIndex(keys.at(ipos), bar))
       continue;
 
     Entity bar2;
-    if (in2.toEntity(keys.at(ipos), bar2))
+    if (in2.toIndex(keys.at(ipos), bar2))
       continue;
 
     Entity bar3;
-    if (in3.toEntity(keys.at(ipos), bar3))
+    if (in3.toIndex(keys.at(ipos), bar3))
       continue;
 
     Data td;
@@ -110,7 +110,7 @@ int TALibInput::fillInput3 (Entity &in, Entity &in2, Entity &in3, QList<QString>
   return opos;
 }
 
-int TALibInput::fillInput4 (Entity &in, Entity &in2, Entity &in3, Entity &in4, QList<QString> &keys,
+int TALibInput::fillInput4 (Entity &in, Entity &in2, Entity &in3, Entity &in4, QList<int> &keys,
 			    TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[])
 {
   KeyCurveBar cbkeys;
@@ -119,19 +119,19 @@ int TALibInput::fillInput4 (Entity &in, Entity &in2, Entity &in3, Entity &in4, Q
   for (; ipos < keys.size(); ipos++)
   {
     Entity bar;
-    if (in.toEntity(keys.at(ipos), bar))
+    if (in.toIndex(keys.at(ipos), bar))
       continue;
 
     Entity bar2;
-    if (in2.toEntity(keys.at(ipos), bar2))
+    if (in2.toIndex(keys.at(ipos), bar2))
       continue;
 
     Entity bar3;
-    if (in3.toEntity(keys.at(ipos), bar3))
+    if (in3.toIndex(keys.at(ipos), bar3))
       continue;
 
     Entity bar4;
-    if (in4.toEntity(keys.at(ipos), bar4))
+    if (in4.toIndex(keys.at(ipos), bar4))
       continue;
 
     Data td;

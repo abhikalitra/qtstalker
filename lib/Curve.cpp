@@ -74,7 +74,7 @@ int Curve::highLowRange (int start, int end, double &h, double &l)
   for (; loop < end; loop++)
   {
     CurveBar r;
-    if (_settings.toEntity(QString::number(loop), r))
+    if (_settings.toIndex(loop, r))
       continue;
 
     double th, tl;
@@ -104,7 +104,7 @@ int Curve::highLowRange (int start, int end, double &h, double &l)
 int Curve::info (int index, Entity &data)
 {
   Entity b;
-  if (_settings.toEntity(QString::number(index), b))
+  if (_settings.toIndex(index, b))
     return 1;
   
   KeyCurveBar cbkeys;
@@ -125,9 +125,9 @@ int Curve::info (int index, Entity &data)
   return 0;
 }
 
-QList<QString> Curve::keys ()
+void Curve::keys (QList<int> &d)
 {
-  return _settings.ekeys();
+  _settings.ekeys(d);
 }
 
 void Curve::keyRange (int &startIndex, int &endIndex)
@@ -140,12 +140,13 @@ void Curve::keyRange (int &startIndex, int &endIndex)
 int Curve::setAllColor (QColor color)
 {
   KeyCurveBar cbkeys;
-  QList<QString> keys = _settings.ekeys();
+  QList<int> keys;
+  _settings.ekeys(keys);
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
     Entity bar;
-    if (_settings.toEntity(keys.at(loop), bar))
+    if (_settings.toIndex(keys.at(loop), bar))
       continue;
     
     bar.set(cbkeys.indexToString(KeyCurveBar::_COLOR), Data(color));
@@ -173,7 +174,7 @@ Entity & Curve::settings ()
 int Curve::scalePoint (int i, QColor &color, double &v)
 {
   Entity bar;
-  if (_settings.toEntity(QString::number(i), bar))
+  if (_settings.toIndex(i, bar))
     return 1;
 
   KeyCurveBar keys;

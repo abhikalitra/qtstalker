@@ -31,10 +31,10 @@ class TALibInput
 {
   public:
     TALibInput ();
-    int fillInput (Entity &, QList<QString> &, TA_Real out[]);
-    int fillInput2 (Entity &, Entity &, QList<QString> &, TA_Real out[], TA_Real out2[]);
-    int fillInput3 (Entity &, Entity &, Entity &, QList<QString> &, TA_Real out[], TA_Real out2[], TA_Real out3[]);
-    int fillInput4 (Entity &, Entity &, Entity &, Entity &, QList<QString> &, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[]);
+    int fillInput (Entity &, QList<int> &, TA_Real out[]);
+    int fillInput2 (Entity &, Entity &, QList<int> &, TA_Real out[], TA_Real out2[]);
+    int fillInput3 (Entity &, Entity &, Entity &, QList<int> &, TA_Real out[], TA_Real out2[], TA_Real out3[]);
+    int fillInput4 (Entity &, Entity &, Entity &, Entity &, QList<int> &, TA_Real out[], TA_Real out2[], TA_Real out3[], TA_Real out4[]);
 };
 
 #endif

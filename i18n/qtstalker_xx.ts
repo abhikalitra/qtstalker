@@ -339,6 +339,10 @@ App restart required to take effect</source>
         <source>Enter new item name</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>New Item</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>DialogSelect</name>
@@ -511,10 +515,6 @@ App restart required to take effect</source>
 </context>
 <context>
     <name>IndicatorAdd</name>
-    <message>
-        <source>New indicator name</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Add Indicator</source>
         <translation type="unfinished"></translation>
@@ -1141,14 +1141,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Indicators</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Setting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

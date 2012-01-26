@@ -102,7 +102,7 @@ int CommandVIDYA::getVIDYA (Entity &in, int period, int vperiod, Entity &out)
     return 1;
   }
   
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys1(in, keys))
     return 1;
@@ -125,24 +125,28 @@ int CommandVIDYA::getVIDYA (Entity &in, int period, int vperiod, Entity &out)
   for (; loop < keys.size(); loop++)
   {
     Entity bar;
-    in.toEntity(keys.at(loop), bar);
+    in.toIndex(keys.at(loop), bar);
+    
     Data tv;
     if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv))
       continue;
+    
     inSeries[loop] = tv.toDouble();
   }
 
-  keys = cmo.ekeys();
+  cmo.ekeys(keys);
 
   int index = inSeries.size() -1;
   loop = keys.size() - 1;
   for (; loop > -1; loop--)
   {
     Entity bar;
-    cmo.toEntity(keys.at(loop), bar);
+    cmo.toIndex(keys.at(loop), bar);
+    
     Data tv;
     if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv))
       continue;
+    
     absCmo[index] = fabs(tv.toDouble() / 100);
     index--;
   }
@@ -154,7 +158,7 @@ int CommandVIDYA::getVIDYA (Entity &in, int period, int vperiod, Entity &out)
 
     CurveBar b;
     b.set(cbkeys.indexToString(KeyCurveBar::_VALUE), Data(vidya.at(loop)));
-    out.setEntity(QString::number(loop), b);
+    out.setEntity(loop, b);
   }
 
   return 0;

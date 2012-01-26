@@ -31,11 +31,11 @@ class TALibOutput
 {
   public:
     TALibOutput ();
-    int fillOutputDouble1 (Entity &, QList<QString> &keys, int outNb, TA_Real out[]);
-    int fillOutputDouble2 (Entity &, Entity &, QList<QString> &keys, int outNb, TA_Real out[], TA_Real out2[]);
-    int fillOutputDouble3 (Entity &, Entity &, Entity &, QList<QString> &keys,
+    int fillOutputDouble1 (Entity &, QList<int> &keys, int outNb, TA_Real out[]);
+    int fillOutputDouble2 (Entity &, Entity &, QList<int> &keys, int outNb, TA_Real out[], TA_Real out2[]);
+    int fillOutputDouble3 (Entity &, Entity &, Entity &, QList<int> &keys,
 		           int outNb, TA_Real out[], TA_Real out2[], TA_Real out3[]);
-    int fillOutputInteger1 (Entity &, QList<QString> &keys, int outNb, TA_Integer out[]);
+    int fillOutputInteger1 (Entity &, QList<int> &keys, int outNb, TA_Integer out[]);
 };
 
 #endif

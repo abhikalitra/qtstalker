@@ -79,7 +79,7 @@ QString CommandPlotHistogram::run (CommandParse &, void *d)
   }
 
   // keys
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys2(ihigh, ilow, keys))
   {

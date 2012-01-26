@@ -65,7 +65,8 @@ void InfoPanel::showInfo (Entity d)
     d.remove(l.at(loop));
   }
 
-  QList<QString> kl = d.dkeys();
+  QList<QString> kl;
+  d.dkeys(kl);
   qSort(kl);
 
   Strip strip;

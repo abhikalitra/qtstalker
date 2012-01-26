@@ -31,7 +31,7 @@ ScriptVerifyCurveValue::ScriptVerifyCurveValue ()
 {
 }
 
-int ScriptVerifyCurveValue::getValue (Entity &in, QList<QString> &keys, int index, int offset, double &v)
+int ScriptVerifyCurveValue::getValue (Entity &in, QList<int> &keys, int index, int offset, double &v)
 {
   KeyCurveBar cbkeys;
   switch ((TypeEntity::Key) in.type())
@@ -56,7 +56,7 @@ int ScriptVerifyCurveValue::getValue (Entity &in, QList<QString> &keys, int inde
         return 1;
 
       Entity bar;
-      if (in.toEntity(keys.at(pos), bar))
+      if (in.toIndex(keys.at(pos), bar))
         return 1;
 
       Data td;
@@ -72,7 +72,7 @@ int ScriptVerifyCurveValue::getValue (Entity &in, QList<QString> &keys, int inde
   return 0;
 }
 
-int ScriptVerifyCurveValue::setValue (Entity &out, Entity &bar, QString pos)
+int ScriptVerifyCurveValue::setValue (Entity &out, Entity &bar, int pos)
 {
   KeyCurveBar keys;  
   switch ((TypeEntity::Key) out.type())
@@ -100,7 +100,7 @@ int ScriptVerifyCurveValue::setValue (Entity &out, Entity &bar, QString pos)
     case TypeEntity::_CURVE:
     {
       Entity b;
-      if (out.toEntity(pos, b))
+      if (out.toIndex(pos, b))
         return 1;
 
       Data td;

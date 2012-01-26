@@ -23,6 +23,9 @@
 #include "GlobalPlotGroup.h"
 #include "GlobalControlPanel.h"
 #include "GlobalInfoPanel.h"
+#include "EAVDataBase.h"
+#include "KeyIndicatorDataBase.h"
+#include "Global.h"
 
 #include <QtDebug>
 #include <QObject>
@@ -33,17 +36,19 @@ ChartNew::ChartNew ()
 
 int ChartNew::run (Entity &e)
 {
-  Data name, file, date, log, row, col;
+  Data name, command, file, date, log, row, col;
   e.toData(QString("NAME"), name);
+  e.toData(QString("COMMAND"), command);
   e.toData(QString("FILE"), file);
   e.toData(QString("DATE"), date);
   e.toData(QString("LOG"), log);
   e.toData(QString("ROW"), row);
   e.toData(QString("COL"), col);
-  return run(name.toString(), file.toString(), row.toInteger(), col.toInteger(), date.toBool(), log.toBool());
+  return run(name.toString(), command.toString(), file.toString(), row.toInteger(),
+	     col.toInteger(), date.toBool(), log.toBool());
 }
 
-int ChartNew::run (QString chart, QString script, int row, int col, bool date, bool log)
+int ChartNew::run (QString chart, QString command, QString script, int row, int col, bool date, bool log)
 {
   Plot *plot = g_plotGroup->plot(chart);
   if (! plot)
@@ -61,6 +66,21 @@ int ChartNew::run (QString chart, QString script, int row, int col, bool date, b
     QObject::connect(plot, SIGNAL(signalIndex(int)), g_controlPanel, SLOT(setStartValue(int)));
 
     g_plotGroup->setPlot(plot);
+
+    // test start
+    KeyIndicatorDataBase keys;
+    Entity i;
+    i.setName(chart);
+    i.set(keys.indexToString(KeyIndicatorDataBase::_SESSION), Data(g_session));
+    i.set(keys.indexToString(KeyIndicatorDataBase::_FILE), Data(script));
+    i.set(keys.indexToString(KeyIndicatorDataBase::_COMMAND), Data(command));
+
+    EAVDataBase db("indicators");
+    db.transaction();
+    if (db.set(i))
+      qDebug() << "ChartNew::run: indicators db error";
+    db.commit();
+    // test end
   }
 
   plot->showDate(date);

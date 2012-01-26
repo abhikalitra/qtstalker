@@ -125,7 +125,7 @@ QString CommandCompare::run (CommandParse &, void *d)
     }
   }
 
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys2(in, in2, keys))
   {
@@ -151,7 +151,7 @@ QString CommandCompare::run (CommandParse &, void *d)
       continue;
 
     Entity b;
-    out.toEntity(keys.at(loop), b); // try to load existing bar if it exists
+    out.toIndex(keys.at(loop), b); // try to load existing bar if it exists
 
     if (svcv.setValue(out2, b, keys.at(loop)))
       continue;

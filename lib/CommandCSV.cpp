@@ -274,8 +274,7 @@ QString CommandCSV::run (CommandParse &, void *)
         symbols.insert(key, bd);
       }
 
-      QString ts = QString::number(bd->ekeyCount() + 1);
-      bd->setEntity(ts, bar);
+      bd->setEntity(bd->ekeyCount() + 1, bar);
     }
 
     f.close();

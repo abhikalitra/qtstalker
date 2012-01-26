@@ -166,8 +166,8 @@ void PlotMenu::setCOMenuStatus (bool status)
 
 void PlotMenu::addIndicator ()
 {
-  IndicatorAdd *ai = new IndicatorAdd(this);
-  ai->run();
+  IndicatorAdd *ai = new IndicatorAdd(0);
+  ai->add();
 }
 
 void PlotMenu::removeIndicator ()

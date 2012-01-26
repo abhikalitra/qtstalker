@@ -28,7 +28,7 @@ ScriptVerifyCurveKeys::ScriptVerifyCurveKeys ()
 {
 }
 
-int ScriptVerifyCurveKeys::keys1 (Entity &in, QList<QString> &keys)
+int ScriptVerifyCurveKeys::keys1 (Entity &in, QList<int> &keys)
 {
   int minKey = 99999999;
   int pos = -1;
@@ -37,14 +37,12 @@ int ScriptVerifyCurveKeys::keys1 (Entity &in, QList<QString> &keys)
   if (pos == -1)
     return 1;
   
-  QList<QString> skeys = in.ekeys();
+  in.ekeys(keys);
 
-  sortKeys(skeys, keys);
-    
   return 0;
 }
 
-int ScriptVerifyCurveKeys::keys2 (Entity &in, Entity &in2, QList<QString> &keys)
+int ScriptVerifyCurveKeys::keys2 (Entity &in, Entity &in2, QList<int> &keys)
 {
   int minKey = 99999999;
   int pos = -1;
@@ -54,26 +52,23 @@ int ScriptVerifyCurveKeys::keys2 (Entity &in, Entity &in2, QList<QString> &keys)
   if (pos == -1)
     return 1;
   
-  QList<QString> skeys;
   switch (pos)
   {
     case 0:
-      skeys = in.ekeys();
+      in.ekeys(keys);
       break;
     case 1:
-      skeys = in2.ekeys();
+      in2.ekeys(keys);
       break;
     default:
       return 1;
       break;
   }
 
-  sortKeys(skeys, keys);
-  
   return 0;
 }
 
-int ScriptVerifyCurveKeys::keys3 (Entity &in, Entity &in2, Entity &in3, QList<QString> &keys)
+int ScriptVerifyCurveKeys::keys3 (Entity &in, Entity &in2, Entity &in3, QList<int> &keys)
 {
   int minKey = 99999999;
   int pos = -1;
@@ -84,29 +79,26 @@ int ScriptVerifyCurveKeys::keys3 (Entity &in, Entity &in2, Entity &in3, QList<QS
   if (pos == -1)
     return 1;
   
-  QList<QString> skeys;
   switch (pos)
   {
     case 0:
-      skeys = in.ekeys();
+      in.ekeys(keys);
       break;
     case 1:
-      skeys = in2.ekeys();
+      in2.ekeys(keys);
       break;
     case 2:
-      skeys = in3.ekeys();
+      in3.ekeys(keys);
       break;
     default:
       return 1;
       break;
   }
 
-  sortKeys(skeys, keys);
-  
   return 0;
 }
 
-int ScriptVerifyCurveKeys::keys4 (Entity &in, Entity &in2, Entity &in3, Entity &in4, QList<QString> &keys)
+int ScriptVerifyCurveKeys::keys4 (Entity &in, Entity &in2, Entity &in3, Entity &in4, QList<int> &keys)
 {
   int minKey = 99999999;
   int pos = -1;
@@ -118,28 +110,25 @@ int ScriptVerifyCurveKeys::keys4 (Entity &in, Entity &in2, Entity &in3, Entity &
   if (pos == -1)
     return 1;
   
-  QList<QString> skeys;
   switch (pos)
   {
     case 0:
-      skeys = in.ekeys();
+      in.ekeys(keys);
       break;
     case 1:
-      skeys = in2.ekeys();
+      in2.ekeys(keys);
       break;
     case 2:
-      skeys = in3.ekeys();
+      in3.ekeys(keys);
       break;
     case 3:
-      skeys = in4.ekeys();
+      in4.ekeys(keys);
       break;
     default:
       return 1;
       break;
   }
 
-  sortKeys(skeys, keys);
-  
   return 0;
 }
 
@@ -155,18 +144,4 @@ int ScriptVerifyCurveKeys::verifyKeys (Entity &e, int &minKey, int &pos)
   }
   
   return 0;
-}
-
-void ScriptVerifyCurveKeys::sortKeys (QList<QString> &inKeys, QList<QString> &outKeys)
-{
-  outKeys.clear();
-  
-  QList<int> ikeys;
-  int loop = 0;
-  for (; loop < inKeys.size(); loop++)
-    ikeys << inKeys.at(loop).toInt();
-  qSort(ikeys);
-    
-  for (loop = 0; loop < ikeys.size(); loop++)
-    outKeys << QString::number(ikeys.at(loop));
 }

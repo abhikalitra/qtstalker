@@ -75,7 +75,7 @@ int CommandNewHighLow::getNewHighLow (Entity &in, int method, int &flag)
 {
   flag = 0;
 
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys1(in, keys))
     return 1;
@@ -83,7 +83,7 @@ int CommandNewHighLow::getNewHighLow (Entity &in, int method, int &flag)
   KeyCurveBar cbkeys;
   int loop = 0;
   Entity bar;
-  in.toEntity(keys.at(loop++), bar);
+  in.toIndex(keys.at(loop++), bar);
   Data val;
   bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), val);
   double v = val.toDouble();
@@ -92,7 +92,7 @@ int CommandNewHighLow::getNewHighLow (Entity &in, int method, int &flag)
   {
     for (; loop < keys.size() - 2; loop++)
     {
-      in.toEntity(keys.at(loop), bar);
+      in.toIndex(keys.at(loop), bar);
       bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), val);
       double tv = val.toDouble();
       if (tv > v)
@@ -103,7 +103,7 @@ int CommandNewHighLow::getNewHighLow (Entity &in, int method, int &flag)
   {
     for (; loop < keys.size() - 2; loop++)
     {
-      in.toEntity(keys.at(loop), bar);
+      in.toIndex(keys.at(loop), bar);
       bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), val);
       double tv = val.toDouble();
       if (tv < v)
@@ -111,7 +111,7 @@ int CommandNewHighLow::getNewHighLow (Entity &in, int method, int &flag)
     }
   }
 
-  in.toEntity(keys.at(keys.size() - 1), bar);
+  in.toIndex(keys.at(keys.size() - 1), bar);
   bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), val);
   if (method == 0)
   {

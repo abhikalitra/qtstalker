@@ -26,7 +26,6 @@
 #include "KeySymbol.h"
 #include "KeyCurveData.h"
 #include "KeyCurveBar.h"
-#include "ScriptVerifyCurveKeys.h"
 #include "WindowTitle.h"
 
 #include <QtDebug>
@@ -80,13 +79,14 @@ void DataWindow::setPlot (Plot *p)
     Data curveType;
     settings.toData(cdkeys.indexToString(KeyCurveData::_TYPE), curveType);
       
-    QList<QString> keys = settings.ekeys();
+    QList<int> keys;
+    settings.ekeys(keys);
 
     int loop = 0;
     for (; loop < keys.size(); loop++)
     {
       Entity cbar;
-      settings.toEntity(keys.at(loop), cbar);
+      settings.toIndex(keys.at(loop), cbar);
 
       Entity dwBar = _bars.value(keys.at(loop));
 
@@ -153,8 +153,10 @@ void DataWindow::setPlot (Plot *p)
 
 void DataWindow::scrollToBottom ()
 {
-  QList<QString> hkeys = _headers.dkeys();
+  QList<QString> hkeys;
+  _headers.dkeys(hkeys);
   qSort(hkeys);
+  
   hkeys.removeAll("Date");
   hkeys.prepend("Date");
 
@@ -166,10 +168,7 @@ void DataWindow::scrollToBottom ()
     _table->setHorizontalHeaderItem(_table->columnCount() - 1, item);
   }
 
-  ScriptVerifyCurveKeys svck;
-  QList<QString> tkeys = _bars.keys();
-  QList<QString> keys;
-  svck.sortKeys(tkeys, keys);
+  QList<int> keys = _bars.keys();
 
   _table->setRowCount(keys.size());
 
@@ -184,7 +183,7 @@ void DataWindow::scrollToBottom ()
       bar.toData(hkeys.at(loop2), td);
        
       QTableWidgetItem *item = new QTableWidgetItem(td.toString());
-      _table->setItem(keys.at(loop).toInt(), loop2, item);
+      _table->setItem(keys.at(loop), loop2, item);
     }
   }
 
@@ -207,7 +206,7 @@ void DataWindow::setDates (Plot *p)
   {
     Entity bar;
     bar.set(QString("Date"), dates.at(loop));
-    _bars.insert(QString::number(loop), bar);
+    _bars.insert(loop, bar);
   }
     
   _dateFlag++;

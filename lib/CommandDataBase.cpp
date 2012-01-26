@@ -89,7 +89,8 @@ int CommandDataBase::save ()
   Entity record;
   record.setName(name.toString());
   
-  QList<QString> keys = Entity::dkeys();
+  QList<QString> keys;
+  Entity::dkeys(keys);
   
   QStringList skipKeys;
   skipKeys << "METHOD" << "TABLE" << "NAME" << "LIST";
@@ -176,8 +177,8 @@ int CommandDataBase::load ()
     return 1;
   }
 
-  QList<QString> keys = record.dkeys();
-qDebug() << "CommandDataBase::load:" << keys;
+  QList<QString> keys;
+  record.dkeys(keys);
 
   int loop = 0;
   for (; loop < keys.size(); loop++)

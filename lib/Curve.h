@@ -49,7 +49,7 @@ class Curve : public QwtPlotCurve
     void init ();
     void setSettings (Entity &);
     Entity & settings ();
-    QList<QString> keys ();
+    void keys (QList<int> &);
     void keyRange (int &startIndex, int &endIndex);
     int setAllColor (QColor color);
 

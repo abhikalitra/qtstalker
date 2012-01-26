@@ -55,7 +55,9 @@ QString CommandDialog::run (CommandParse &sg, void *scr)
   Entity dialog;
   dialog.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG));
   
-  QList<QString> keys = c->dkeys();
+  QList<QString> keys;
+  c->dkeys(keys);
+  
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {

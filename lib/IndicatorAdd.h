@@ -30,16 +30,11 @@ class IndicatorAdd : public QObject
 
   public:
     IndicatorAdd (QObject *p);
-    void run ();
 
   public slots:
     void add ();
-    void add2 (QString);
-    void add3 (QString command, QString file);
+    void add2 (QString command, QString file);
     void done ();
-    
-  private:
-    QString _name;
 };
 
 #endif

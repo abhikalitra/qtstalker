@@ -89,7 +89,7 @@ QString CommandMedianPrice::run (CommandParse &, void *d)
 
 int CommandMedianPrice::getMP (Entity &in, Entity &in2, Entity &line)
 {
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys2(in, in2, keys))
     return 1;

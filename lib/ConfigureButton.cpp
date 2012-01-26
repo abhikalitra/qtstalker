@@ -127,5 +127,5 @@ void ConfigureButton::configureDialog ()
 void ConfigureButton::addIndicator ()
 {
   IndicatorAdd *ai = new IndicatorAdd(this);
-  ai->run();
+  ai->add();
 }

@@ -94,7 +94,7 @@ QString CommandTHERM::run (CommandParse &, void *d)
 
 int CommandTHERM::getTHERM (Entity &ihigh, Entity &ilow, Entity &line)
 {
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys2(ihigh, ilow, keys))
     return 1;
@@ -105,28 +105,28 @@ int CommandTHERM::getTHERM (Entity &ihigh, Entity &ilow, Entity &line)
   for (; loop < keys.count(); loop++)
   {
     Entity hbar;
-    if (ihigh.toEntity(keys.at(loop), hbar))
+    if (ihigh.toIndex(keys.at(loop), hbar))
       continue;
     Data high;
     if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), high))
       continue;
 
     Entity phbar;
-    if (ihigh.toEntity(keys.at(loop - 1), phbar))
+    if (ihigh.toIndex(keys.at(loop - 1), phbar))
       continue;
     Data phigh;
     if (phbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), phigh))
       continue;
 
     Entity lbar;
-    if (ilow.toEntity(keys.at(loop), lbar))
+    if (ilow.toIndex(keys.at(loop), lbar))
       continue;
     Data low;
     if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), low))
       continue;
 
     Entity plbar;
-    if (ilow.toEntity(keys.at(loop - 1), plbar))
+    if (ilow.toIndex(keys.at(loop - 1), plbar))
       continue;
     Data plow;
     if (plbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), plow))

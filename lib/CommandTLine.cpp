@@ -37,7 +37,9 @@ CommandTLine::CommandTLine ()
   Data td;
   settings.set(QString("CHART"), td);
   
-  Entity::set(settings.data());
+  QHash<QString, Data> tdata;
+  settings.data(tdata);
+  Entity::set(tdata);
 }
 
 QString CommandTLine::run (CommandParse &, void *d)
@@ -45,7 +47,9 @@ QString CommandTLine::run (CommandParse &, void *d)
   Script *script = (Script *) d;
 
   Entity co;
-  co.set(Entity::data());
+  QHash<QString, Data> tdata;
+  Entity::data(tdata);
+  co.set(tdata);
   co.setType(TypeEntity::_CHART_OBJECT);
   
   KeyChartObject keys;

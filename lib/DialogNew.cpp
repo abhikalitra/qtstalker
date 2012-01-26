@@ -20,6 +20,7 @@
  */
 
 #include "DialogNew.h"
+#include "WindowTitle.h"
 
 #include <QtDebug>
 
@@ -44,6 +45,9 @@ DialogNew::DialogNew (QWidget *p, QString id, Entity settings) : Dialog (p)
   loadSettings();
 
   nameChanged(QString());
+  
+  WindowTitle wt;
+  setWindowTitle(wt.title(tr("New Item"), QString()));
 }
 
 void DialogNew::createGUI ()

@@ -52,11 +52,11 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
     for (; loop < size; loop++)
     {
       Entity yb;
-      if (_settings.toEntity(QString::number(loop - 1), yb))
+      if (_settings.toIndex(loop - 1, yb))
         continue;
 
       Entity b;
-      if (_settings.toEntity(QString::number(loop), b))
+      if (_settings.toIndex(loop, b))
         continue;
 
       QPolygon poly;
@@ -100,7 +100,7 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
     for (; loop < size; loop++)
     {
       Entity b;
-      if (_settings.toEntity(QString::number(loop), b))
+      if (_settings.toIndex(loop, b))
         continue;
 
       Data high;
@@ -180,7 +180,7 @@ void CurveHistogram::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtS
 int CurveHistogram::info (int index, Entity &data)
 {
   Entity bar;
-  if (_settings.toEntity(QString::number(index), bar))
+  if (_settings.toIndex(index, bar))
     return 1;
 
   KeyCurveBar cbkeys;
@@ -205,7 +205,7 @@ int CurveHistogram::info (int index, Entity &data)
 int CurveHistogram::scalePoint (int i, QColor &color, double &v)
 {
   Entity bar;
-  if (_settings.toEntity(QString::number(i), bar))
+  if (_settings.toIndex(i, bar))
     return 1;
 
   KeyCurveBar cbkeys;

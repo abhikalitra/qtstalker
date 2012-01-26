@@ -24,7 +24,7 @@
 
 #include <QDialog>
 #include <QTableWidget>
-#include <QHash>
+#include <QMap>
 
 #include "Plot.h"
 #include "Entity.h"
@@ -41,7 +41,7 @@ class DataWindow : public QDialog
 
   private:
     QTableWidget *_table;
-    QHash<QString, Entity> _bars;
+    QMap<int, Entity> _bars;
     Entity _headers;
     int _dateFlag;
 };

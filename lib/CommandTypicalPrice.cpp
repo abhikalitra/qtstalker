@@ -96,7 +96,7 @@ QString CommandTypicalPrice::run (CommandParse &, void *d)
 
 int CommandTypicalPrice::getTP (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &line)
 {
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys3(ihigh, ilow, iclose, keys))
     return 1;
@@ -106,21 +106,21 @@ int CommandTypicalPrice::getTP (Entity &ihigh, Entity &ilow, Entity &iclose, Ent
   for (; loop < keys.size(); loop++)
   {
     Entity hbar;
-    if (ihigh.toEntity(keys.at(loop), hbar))
+    if (ihigh.toIndex(keys.at(loop), hbar))
       continue;
     Data high;
     if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), high))
       continue;
     
     Entity lbar;
-    if (ilow.toEntity(keys.at(loop), lbar))
+    if (ilow.toIndex(keys.at(loop), lbar))
       continue;
     Data low;
     if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), low))
       continue;
 
     Entity cbar;
-    if (iclose.toEntity(keys.at(loop), cbar))
+    if (iclose.toIndex(keys.at(loop), cbar))
       continue;
     Data close;
     if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), close))

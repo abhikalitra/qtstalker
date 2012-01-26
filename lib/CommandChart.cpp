@@ -56,7 +56,9 @@ QString CommandChart::run (CommandParse &, void *d)
   Script *script = (Script *) d;
   
   Entity e;
-  QList<QString> keys = Entity::dkeys();
+  QList<QString> keys;
+  Entity::dkeys(keys);
+  
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
@@ -66,6 +68,7 @@ QString CommandChart::run (CommandParse &, void *d)
   }
   e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_NEW));
   e.set(QString("FILE"), Data(script->file()));
+  e.set(QString("COMMAND"), Data(script->command()));
 
   ThreadMessage tm;
   tm.sendMessage(e, script);

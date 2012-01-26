@@ -78,7 +78,7 @@ QString CommandShift::run (CommandParse &, void *d)
 
 int CommandShift::getShift (Entity &in, int period, Entity &line)
 {
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys1(in, keys))
     return 1;
@@ -87,15 +87,15 @@ int CommandShift::getShift (Entity &in, int period, Entity &line)
   for (; loop < keys.size(); loop++)
   {
     Entity bar;
-    in.toEntity(keys.at(loop), bar);
+    in.toIndex(keys.at(loop), bar);
 
     int index = loop + period;
     if (index < 0)
       continue;
     
-    QString key;
+    int key;
     if (index >= keys.size())
-      key = QString::number(index);
+      key = index;
     else
       key = keys.at(index);
 

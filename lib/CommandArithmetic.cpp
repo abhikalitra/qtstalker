@@ -110,7 +110,7 @@ QString CommandArithmetic::run (CommandParse &, void *d)
 
 int CommandArithmetic::getArithmetic (Entity &in, int offset, Entity &in2, int offset2, int method, Entity &line)
 {
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys2(in, in2, keys))
   {

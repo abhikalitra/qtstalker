@@ -116,7 +116,7 @@ QString CommandVFI::run (CommandParse &, void *d)
 
 int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivol, int period, Entity &line)
 {
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys4(ihigh, ilow, iclose, ivol, keys))
     return 1;
@@ -126,21 +126,21 @@ int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivo
   for (; loop < keys.size(); loop++)
   {
     Entity hbar;
-    if (ihigh.toEntity(keys.at(loop - period), hbar))
+    if (ihigh.toIndex(keys.at(loop - period), hbar))
       continue;
     Data thigh;
     if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), thigh))
       continue;
     
     Entity lbar;
-    if (ilow.toEntity(keys.at(loop - period), lbar))
+    if (ilow.toIndex(keys.at(loop - period), lbar))
       continue;
     Data tlow;
     if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tlow))
       continue;
 
     Entity cbar;
-    if (iclose.toEntity(keys.at(loop - period), cbar))
+    if (iclose.toIndex(keys.at(loop - period), cbar))
       continue;
     Data tclose;
     if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tclose))
@@ -156,28 +156,28 @@ int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivo
     for (i = loop - period + 1; i <= loop; i++)
     {
       Entity hbar;
-      if (ihigh.toEntity(keys.at(i), hbar))
+      if (ihigh.toIndex(keys.at(i), hbar))
         continue;
       Data thigh;
       if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), thigh))
         continue;
     
       Entity lbar;
-      if (ilow.toEntity(keys.at(i), lbar))
+      if (ilow.toIndex(keys.at(i), lbar))
         continue;
       Data tlow;
       if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tlow))
         continue;
 
       Entity cbar;
-      if (iclose.toEntity(keys.at(i), cbar))
+      if (iclose.toIndex(keys.at(i), cbar))
         continue;
       Data tclose;
       if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tclose))
         continue;
 
       Entity vbar;
-      if (ivol.toEntity(keys.at(i), vbar))
+      if (ivol.toIndex(keys.at(i), vbar))
         continue;
       Data tvol;
       if (vbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tvol))
@@ -195,17 +195,17 @@ int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivo
     inter = 0.2 * sqrt(inter / (double) period) * typical;
     sma_vol /= (double) period;
 
-    if (ihigh.toEntity(keys.at(loop - period), hbar))
+    if (ihigh.toIndex(keys.at(loop - period), hbar))
       continue;
     if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), thigh))
       continue;
     
-    if (ilow.toEntity(keys.at(loop - period), lbar))
+    if (ilow.toIndex(keys.at(loop - period), lbar))
       continue;
     if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tlow))
       continue;
 
-    if (iclose.toEntity(keys.at(loop - period), cbar))
+    if (iclose.toIndex(keys.at(loop - period), cbar))
       continue;
     if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tclose))
       continue;
@@ -218,28 +218,28 @@ int CommandVFI::getVFI (Entity &ihigh, Entity &ilow, Entity &iclose, Entity &ivo
     for (i = loop - period + 1; i <= loop; i++)
     {
       Entity hbar;
-      if (ihigh.toEntity(keys.at(i), hbar))
+      if (ihigh.toIndex(keys.at(i), hbar))
         continue;
       Data thigh;
       if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), thigh))
         continue;
     
       Entity lbar;
-      if (ilow.toEntity(keys.at(i), lbar))
+      if (ilow.toIndex(keys.at(i), lbar))
         continue;
       Data tlow;
       if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tlow))
         continue;
 
       Entity cbar;
-      if (iclose.toEntity(keys.at(i), cbar))
+      if (iclose.toIndex(keys.at(i), cbar))
         continue;
       Data tclose;
       if (cbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tclose))
         continue;
 
       Entity vbar;
-      if (ivol.toEntity(keys.at(i), vbar))
+      if (ivol.toIndex(keys.at(i), vbar))
         continue;
       Data tvol;
       if (vbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tvol))

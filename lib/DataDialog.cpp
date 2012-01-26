@@ -70,7 +70,8 @@ void DataDialog::addTab (int pos)
 
 void DataDialog::setGUI ()
 {
-  QList<QString> keys = _settings.dkeys();
+  QList<QString> keys;
+  _settings.dkeys(keys);
   qSort(keys);
   
   int loop = 0;
@@ -299,7 +300,8 @@ int DataDialog::setSymbol (int tab, QString key, QString label, QStringList v, Q
 
 void DataDialog::done ()
 {
-  QList<QString> keys = _settings.dkeys();
+  QList<QString> keys;
+  _settings.dkeys(keys);
 //qDebug() << "DataDialog::done" << keys;
   
   int loop = 0;

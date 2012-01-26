@@ -38,8 +38,21 @@ QString Command::run (CommandParse &, void *)
 
 int Command::setData (CommandParse &sg)
 {
-  // format object, setting, value...
+  // format object, setting, value, setting, value...
   
+  if (sg.values() < 3)
+  {
+    qDebug() << "Command::set: invalid number of parms";
+    return 1;
+  }
+  
+  int rem = (sg.values() - 1) % 2;
+  if (rem != 0)
+  {
+    qDebug() << "Command::set: invalid number of parms";
+    return 1;
+  }
+
   int loop = 1; // skip past object name
   for (; loop < sg.values(); loop += 2)
   {

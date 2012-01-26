@@ -30,8 +30,8 @@ class ScriptVerifyCurveValue
 {
   public:
     ScriptVerifyCurveValue ();
-    int getValue (Entity &in, QList<QString> &keys, int index, int offset, double &v);
-    int setValue (Entity &out, Entity &bar, QString pos);
+    int getValue (Entity &in, QList<int> &keys, int index, int offset, double &v);
+    int setValue (Entity &out, Entity &bar, int pos);
 };
 
 #endif

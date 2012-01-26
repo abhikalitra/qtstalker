@@ -50,7 +50,7 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
     for (; loop < size; loop++)
     {
       Entity b;
-      if (_settings.toEntity(QString::number(loop), b))
+      if (_settings.toIndex(loop, b))
         continue;
 
       Data td;
@@ -96,7 +96,7 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
     for (; loop < size; loop++)
     {
       Entity b;
-      if (_settings.toEntity(QString::number(loop), b))
+      if (_settings.toIndex(loop, b))
         continue;
 
       Data close;
@@ -157,7 +157,7 @@ void CurveOHLC::draw(QPainter *painter, const QwtScaleMap &xMap, const QwtScaleM
 int CurveOHLC::info (int index, Entity &data)
 {
   Entity bar;
-  if (_settings.toEntity(QString::number(index), bar))
+  if (_settings.toIndex(index, bar))
     return 1;
 
   Strip strip;
@@ -191,7 +191,7 @@ int CurveOHLC::info (int index, Entity &data)
 int CurveOHLC::scalePoint (int i, QColor &color, double &v)
 {
   Entity bar;
-  if (_settings.toEntity(QString::number(i), bar))
+  if (_settings.toIndex(i, bar))
     return 1;
 
   KeyCurveBar cbkeys;

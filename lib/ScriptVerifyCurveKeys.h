@@ -30,12 +30,11 @@ class ScriptVerifyCurveKeys
 {
   public:
     ScriptVerifyCurveKeys ();
-    int keys1 (Entity &in, QList<QString> &keys);
-    int keys2 (Entity &in, Entity &in2, QList<QString> &keys);
-    int keys3 (Entity &in, Entity &in2, Entity &in3, QList<QString> &keys);
-    int keys4 (Entity &in, Entity &in2, Entity &in3, Entity &in4, QList<QString> &keys);
+    int keys1 (Entity &in, QList<int> &keys);
+    int keys2 (Entity &in, Entity &in2, QList<int> &keys);
+    int keys3 (Entity &in, Entity &in2, Entity &in3, QList<int> &keys);
+    int keys4 (Entity &in, Entity &in2, Entity &in3, Entity &in4, QList<int> &keys);
     int verifyKeys (Entity &e, int &minKey, int &pos);
-    void sortKeys (QList<QString> &inKeys, QList<QString> &outKeys);
     
 };
 

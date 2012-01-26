@@ -111,7 +111,7 @@ QString CommandSZ::run (CommandParse &, void *d)
 int CommandSZ::getSZ (Entity &ihigh, Entity &ilow, int method, int period, int no_decline_period,
 		      double coefficient, Entity &line)
 {
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys2(ihigh, ilow, keys))
     return 1;
@@ -163,28 +163,28 @@ int CommandSZ::getSZ (Entity &ihigh, Entity &ilow, int method, int period, int n
     for (lbloop = lbstart; lbloop < ipos; lbloop++)
     {
       Entity hbar;
-      if (ihigh.toEntity(keys.at(lbloop), hbar))
+      if (ihigh.toIndex(keys.at(lbloop), hbar))
         continue;
       Data high;
       if (hbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), high))
         continue;
       
       Entity phbar;
-      if (ihigh.toEntity(keys.at(lbloop - 1), phbar))
+      if (ihigh.toIndex(keys.at(lbloop - 1), phbar))
         continue;
       Data phigh;
       if (phbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), phigh))
         continue;
 
       Entity lbar;
-      if (ilow.toEntity(keys.at(lbloop), lbar))
+      if (ilow.toIndex(keys.at(lbloop), lbar))
         continue;
       Data low;
       if (lbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), low))
         continue;
       
       Entity plbar;
-      if (ilow.toEntity(keys.at(lbloop - 1), plbar))
+      if (ilow.toIndex(keys.at(lbloop - 1), plbar))
         continue;
       Data plow;
       if (plbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), plow))
@@ -212,14 +212,14 @@ int CommandSZ::getSZ (Entity &ihigh, Entity &ilow, int method, int period, int n
       dntrend_noise_avg /= dntrend_noise_cnt;
 
     Entity phbar;
-    if (ihigh.toEntity(keys.at(ipos - 1), phbar))
+    if (ihigh.toIndex(keys.at(ipos - 1), phbar))
       continue;
     Data phigh;
     if (phbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), phigh))
       continue;
 
     Entity plbar;
-    if (ilow.toEntity(keys.at(ipos - 1), plbar))
+    if (ilow.toIndex(keys.at(ipos - 1), plbar))
       continue;
     Data plow;
     if (plbar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), plow))

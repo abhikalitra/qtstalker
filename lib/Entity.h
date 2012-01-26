@@ -28,6 +28,7 @@
 #include <QStringList>
 //#include <QMetaType>
 #include <QHash>
+#include <QMap>
 
 #include "Data.h"
 
@@ -39,28 +40,27 @@ class Entity
     int type ();
     void setName (QString);
     QString name ();
-    QHash<QString, Data> data ();
+    void data (QHash<QString, Data> &);
     void remove (QString);
     int set (QString, Data);
-    int set (QHash<QString, Data>);
-    int setEntity (QString, Entity);
+    int set (QHash<QString, Data> &);
+    int setEntity (int, Entity &);
     int toData (QString, Data &);
-    int toEntity (QString, Entity &);
+    int toIndex (int, Entity &);
+    int toOffset (int, Entity &);
     int highLow (double &, double &);
-    QList<QString> dkeys ();
-    QList<QString> ekeys ();
+    void dkeys (QList<QString> &);
+    void ekeys (QList<int> &);
     int dkeyCount ();
     int ekeyCount ();
     void ekeyRange (int &, int &);
     void merge (Entity &);
 
   protected:
-    int _startIndex;
-    int _endIndex;
     QString _name;
     int _type;
     QHash<QString, Data> _data;
-    QHash<QString, Entity> _bars;
+    QMap<int, Entity> _bars;
 };
 
 //Q_DECLARE_METATYPE(Entity)

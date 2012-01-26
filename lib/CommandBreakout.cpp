@@ -86,7 +86,7 @@ int CommandBreakout::breakout (Entity &in, Entity &in2, int method, int &flag)
 {
   flag = 0;
 
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys2(in, in2, keys))
     return 1;
@@ -102,14 +102,14 @@ int CommandBreakout::breakout (Entity &in, Entity &in2, int method, int &flag)
     for (; loop < end - 1; loop++)
     {
       Entity bar;
-      if (in.toEntity(keys.at(loop), bar))
+      if (in.toIndex(keys.at(loop), bar))
         continue;
       Data tv;
       if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv))
         continue;
 
       Entity bar2;
-      if (in2.toEntity(keys.at(loop), bar2))
+      if (in2.toIndex(keys.at(loop), bar2))
         continue;
       Data tv2;
       if (bar2.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv2))
@@ -126,14 +126,14 @@ int CommandBreakout::breakout (Entity &in, Entity &in2, int method, int &flag)
     for (; loop < end - 1; loop++)
     {
       Entity bar;
-      if (in.toEntity(keys.at(loop), bar))
+      if (in.toIndex(keys.at(loop), bar))
         continue;
       Data tv;
       if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv))
         continue;
 
       Entity bar2;
-      if (in2.toEntity(keys.at(loop), bar2))
+      if (in2.toIndex(keys.at(loop), bar2))
         continue;
       Data tv2;
       if (bar2.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv2))
@@ -148,14 +148,14 @@ int CommandBreakout::breakout (Entity &in, Entity &in2, int method, int &flag)
 
   // compare last bar to confirm breakout
   Entity bar;
-  if (in.toEntity(keys.at(end), bar))
+  if (in.toIndex(keys.at(end), bar))
     return 0;
   Data tv;
   if (bar.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv))
     return 0;
 
   Entity bar2;
-  if (in2.toEntity(keys.at(end), bar2))
+  if (in2.toIndex(keys.at(end), bar2))
     return 0;
   Data tv2;
   if (bar2.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), tv2))

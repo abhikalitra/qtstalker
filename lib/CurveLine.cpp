@@ -71,11 +71,11 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
     for (; loop < size; loop++)
     {
       Entity yb;
-      if (_settings.toEntity(QString::number(loop - 1), yb))
+      if (_settings.toIndex(loop - 1, yb))
         continue;
 
       Entity b;
-      if (_settings.toEntity(QString::number(loop), b))
+      if (_settings.toIndex(loop, b))
         continue;
 
       int x = xMap.transform(loop - 1);
@@ -104,7 +104,7 @@ void CurveLine::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScale
     for (; loop < size; loop++)
     {
       Entity b;
-      if (_settings.toEntity(QString::number(loop), b))
+      if (_settings.toIndex(loop, b))
         continue;
 
       int x = xMap.transform(loop);

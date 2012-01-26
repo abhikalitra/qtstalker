@@ -207,7 +207,10 @@ int QuoteDataBase::getBars (Symbol &bd)
   // insert bars into Symbol bars in proper order
   int loop = 0;
   for (; loop < order.size(); loop++)
-    bd.setEntity(QString::number(loop), bars.value(order.at(loop)));
+  {
+    CurveBar bar = bars.value(order.at(loop));
+    bd.setEntity(loop, bar);
+  }
 
   return 0;
 }
@@ -236,12 +239,13 @@ int QuoteDataBase::setBars (Symbol *symbol)
   symbol->toData(symkeys.indexToString(KeySymbol::_TABLE), table);
 
   KeyCurveBar cbkeys;
-  QList<QString> keys = symbol->ekeys();
+  QList<int> keys;
+  symbol->ekeys(keys);
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
     Entity bar;
-    if (symbol->toEntity(keys.at(loop), bar))
+    if (symbol->toIndex(keys.at(loop), bar))
       continue;
 
     Data td;

@@ -105,12 +105,22 @@ int CommandGet::commandGetValue (CommandParse &sg, void *scr)
       switch (tkeys.indexOf(tl.at(0)))
       {
 	case 0: // INDEX
-          if (data.toEntity(tl.at(1), bar))
+        {
+	  bool ok;
+	  int index = tl.at(1).toInt(&ok);
+	  if (! ok)
+	  {
+            qDebug() << "CommandGet::getData: invalid INDEX value" << settingName;
+            return 1;
+	  }
+
+          if (data.toIndex(index, bar))
           {
             qDebug() << "CommandGet::getData: invalid INDEX value" << settingName;
             return 1;
           }
 	  break;
+	}
 	case 1: // OFFSET
         {
 	  bool ok;
@@ -121,15 +131,7 @@ int CommandGet::commandGetValue (CommandParse &sg, void *scr)
             return 1;
 	  }
 	  
-	  int start, end;
-	  data.ekeyRange(start, end);
-	  
-	  int index = end - offset;
-	  if (index < start)
-            return 1;
-
-	  QList<QString> ekeys = data.ekeys();
-          if (data.toEntity(ekeys.at(index), bar))
+          if (data.toOffset(offset, bar))
           {
             qDebug() << "CommandGet::getData: invalid setting name" << settingName;
             return 1;

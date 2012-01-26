@@ -63,7 +63,7 @@ QString CommandPlotLine::run (CommandParse &, void *d)
     return _returnCode;
   }
 
-  QList<QString> keys;
+  QList<int> keys;
   ScriptVerifyCurveKeys svck;
   if (svck.keys1(in, keys))
   {
@@ -96,7 +96,7 @@ QString CommandPlotLine::run (CommandParse &, void *d)
   for (; loop < keys.count(); loop++)
   {
     Entity ibar;
-    if (in.toEntity(keys.at(loop), ibar))
+    if (in.toIndex(keys.at(loop), ibar))
       continue;
     
     Data value;

@@ -27,8 +27,6 @@
 Entity::Entity ()
 {
   _type = TypeEntity::_SETTING;
-  _startIndex = 99999999;
-  _endIndex = -99999999;
 }
 
 void Entity::setType (int d)
@@ -56,9 +54,9 @@ void Entity::remove (QString d)
   _data.remove(d);
 }
 
-QHash<QString, Data> Entity::data ()
+void Entity::data (QHash<QString, Data> &d)
 {
-  return _data;
+  d = _data;
 }
 
 int Entity::set (QString k, Data d)
@@ -67,27 +65,15 @@ int Entity::set (QString k, Data d)
   return 0;
 }
 
-int Entity::set (QHash<QString, Data> d)
+int Entity::set (QHash<QString, Data> &d)
 {
   _data = d;
   return 0;
 }
 
-int Entity::setEntity (QString k, Entity d)
+int Entity::setEntity (int k, Entity &d)
 {
-  bool ok;
-  int index = k.toInt(&ok);
-  if (! ok)
-    return 1;
-  
   _bars.insert(k, d);
-
-  if (index < _startIndex)
-    _startIndex = index;
-  
-  if (index > _endIndex)
-    _endIndex = index;
-
   return 0;
 }
 
@@ -103,7 +89,7 @@ int Entity::toData (QString k, Data &d)
   return rc;
 }
 
-int Entity::toEntity (QString k, Entity &d)
+int Entity::toIndex (int k, Entity &d)
 {
   int rc = 0;
   
@@ -113,6 +99,28 @@ int Entity::toEntity (QString k, Entity &d)
     rc++;
   
   return rc;
+}
+
+int Entity::toOffset (int k, Entity &d)
+{
+  if (k < 0)
+    return 1;
+  
+  int count = k;
+  QMapIterator<int, Entity> it(_bars);
+  it.toBack();
+  while (it.hasPrevious() && count > -1)
+  {
+    it.previous();
+    count--;
+  }
+  
+  if (! it.hasPrevious())
+    return 1;
+  
+  d = it.value();  
+  
+  return 0;
 }
 
 int Entity::highLow (double &h, double &l)
@@ -150,14 +158,14 @@ int Entity::highLow (double &h, double &l)
   return rc;
 }
 
-QList<QString> Entity::ekeys ()
+void Entity::ekeys (QList<int> &d)
 {
-  return _bars.keys();
+  d = _bars.keys();
 }
 
-QList<QString> Entity::dkeys ()
+void Entity::dkeys (QList<QString> &d)
 {
-  return _data.keys();
+  d = _data.keys();
 }
 
 int Entity::dkeyCount ()
@@ -172,13 +180,31 @@ int Entity::ekeyCount ()
 
 void Entity::ekeyRange (int &start, int &end)
 {
-  start = _startIndex;
-  end = _endIndex;
+  start = -1;
+  end = -1;
+  
+  QMapIterator<int, Entity> it(_bars);
+  it.toFront();
+  if (it.hasNext())
+  {
+    it.next();
+    start = it.key();
+    end = start;
+  }
+  
+  it.toBack();
+  if (it.hasPrevious())
+  {
+    it.previous();
+    end = it.key();
+  }
 }
 
 void Entity::merge (Entity &osettings)
 {
-  QList<QString> keys = dkeys();
+  QList<QString> keys;
+  dkeys(keys);
+  
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {

@@ -43,7 +43,8 @@ void DateScaleDraw::clear ()
 
 void DateScaleDraw::setDates (Entity &d)
 {
-  QList<QString> keys = d.ekeys();
+  QList<int> keys;
+  d.ekeys(keys);
   
   KeyCurveBar cbkeys;
   KeySymbol symkeys;
@@ -55,7 +56,7 @@ void DateScaleDraw::setDates (Entity &d)
   for (; loop < keys.size(); loop++)
   {
     Entity cb;
-    d.toEntity(keys.at(loop), cb);
+    d.toIndex(keys.at(loop), cb);
     
     Data td;
     cb.toData(cbkeys.indexToString(KeyCurveBar::_DATE), td);
@@ -64,9 +65,9 @@ void DateScaleDraw::setDates (Entity &d)
     dr.dateInterval(td.toDateTime(), (TypeBarLength::Key) length.toInteger(), tsd, ted);
     QString s = dr.rangeKey(tsd, ted);
 
-    _data.insert(s, keys.at(loop).toInt());
+    _data.insert(s, keys.at(loop));
 
-    _dates.insert(keys.at(loop).toInt(), td.toDateTime());
+    _dates.insert(keys.at(loop), td.toDateTime());
   }
 }
 

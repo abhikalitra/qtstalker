@@ -41,7 +41,6 @@ class Script : public QThread
     void signalStopped (QString);
     void signalKill ();
     void signalDeleted (QString);
-    
     void signalMessage (QString);
 
   public:

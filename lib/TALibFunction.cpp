@@ -38,7 +38,7 @@ int TALibFunction::run (Entity &parms, int inNum, Entity &input, Entity &input2,
 			Entity &input4, int outNum, Entity &line, Entity &line2, Entity &line3)
 {
   ScriptVerifyCurveKeys svck;
-  QList<QString> keys;
+  QList<int> keys;
   int rc = 1;
   switch (inNum)
   {

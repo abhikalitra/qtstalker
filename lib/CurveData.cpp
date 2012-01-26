@@ -28,8 +28,6 @@
 CurveData::CurveData ()
 {
   _type = TypeEntity::_CURVE;
-  _startIndex = 99999999;
-  _endIndex = -1;
   
   KeyCurveData keys;
   Entity::set(keys.indexToString(KeyCurveData::_PEN), Data(1));
