@@ -37,7 +37,6 @@ class GroupDelete : public QObject
     void run ();
 
   public slots:
-    void remove ();
     void remove2 (QStringList);
     void done ();
 };

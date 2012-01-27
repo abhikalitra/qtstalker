@@ -57,6 +57,7 @@ ChartPage::ChartPage (QWidget *p) : QWidget (p)
   _nav->setSortingEnabled(TRUE);
   connect(_nav, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(itemClicked(QListWidgetItem *)));
   connect(_nav, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(rightClick(const QPoint &)));
+  connect(_nav, SIGNAL(itemSelectionChanged()), this, SLOT(itemSelectionChanged()));
   vbox->addWidget(_nav);
 
   // update to last symbol search before displaying
@@ -68,6 +69,9 @@ ChartPage::ChartPage (QWidget *p) : QWidget (p)
   createMenu();
 
   refresh();
+
+  // set menu starting status
+  itemSelectionChanged();
 }
 
 void ChartPage::createActions ()
@@ -161,7 +165,7 @@ void ChartPage::updateList ()
   
   _nav->setSymbols(l);
 
-  buttonStatus();
+  itemSelectionChanged();
 }
 
 void ChartPage::symbolSearch ()
@@ -198,12 +202,6 @@ void ChartPage::allButtonPressed ()
   updateList();
 }
 
-void ChartPage::buttonStatus ()
-{
-  int status = _nav->count();
-  _actions.value(_ADD_GROUP)->setEnabled(status);
-}
-
 void ChartPage::selected (QStringList &l)
 {
   l.clear();
@@ -230,7 +228,7 @@ void ChartPage::deleteSymbol ()
 
   SymbolDelete *sd = new SymbolDelete(this, tl);
   connect(sd, SIGNAL(signalDone()), this, SLOT(updateList()));
-  sd->run();
+  sd->remove();
 }
 
 void ChartPage::itemClicked (QListWidgetItem *d)
@@ -253,4 +251,15 @@ void ChartPage::refresh ()
     return;
 
   chartOpened(td.toString());
+}
+
+void ChartPage::itemSelectionChanged ()
+{
+  bool status = FALSE;
+  QList<QListWidgetItem *> l = _nav->selectedItems();
+  if (l.count())
+    status = TRUE;
+
+  _actions.value(_ADD_GROUP)->setEnabled(status);
+  _actions.value(_DELETE)->setEnabled(status);
 }

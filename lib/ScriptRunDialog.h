@@ -26,7 +26,7 @@
 
 #include "Dialog.h"
 #include "FileButton.h"
-#include "LineEdit.h"
+#include "WidgetLineEdit.h"
 
 class ScriptRunDialog : public Dialog
 {
@@ -41,10 +41,11 @@ class ScriptRunDialog : public Dialog
 
   public slots:
     void done ();
+    void buttonStatus ();
 
   private:
     FileButton *_file;
-    LineEdit *_text;
+    WidgetLineEdit *_text;
 };
 
 #endif

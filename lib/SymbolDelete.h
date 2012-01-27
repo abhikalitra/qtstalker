@@ -34,10 +34,9 @@ class SymbolDelete : public QObject
 
   public:
     SymbolDelete (QObject *p, QStringList);
-    void run ();
+    void remove ();
 
   public slots:
-    void remove ();
     void remove2 ();
     void done ();
 

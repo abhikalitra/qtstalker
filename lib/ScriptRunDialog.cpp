@@ -34,21 +34,28 @@ ScriptRunDialog::ScriptRunDialog (QWidget *p, QString file, QString command) : D
 
   createGUI();
 
-  QStringList l;
-  l << file;
-  _file->setFiles(l);
+  if (! file.isEmpty())
+  {
+    QStringList l;
+    l << file;
+    _file->setFiles(l);
+  }
 
   _text->setText(command);
 
   loadSettings();
+  
+  buttonStatus();
 }
 
 void ScriptRunDialog::createGUI ()
 {
   _file = new FileButton(this);
+  connect(_file, SIGNAL(signalSelectionChanged()), this, SLOT(buttonStatus()));
   _form->addRow(tr("Script File"), _file);
 
-  _text = new LineEdit(this);
+  _text = new WidgetLineEdit(this);
+  connect(_text, SIGNAL(signalStatus(bool)), this, SLOT(buttonStatus()));
   _form->addRow(tr("Command"), _text);
 }
 
@@ -75,4 +82,21 @@ void ScriptRunDialog::done ()
   emit signalDone(_text->text(), file);
 
   accept();
+}
+
+void ScriptRunDialog::buttonStatus ()
+{
+  bool status = FALSE;
+  int count = 0;
+  
+  if (_file->fileCount())
+    count++;
+  
+  if (! _text->text().isEmpty())
+    count++;
+  
+  if (count == 2)
+    status = TRUE;
+  
+  _okButton->setEnabled(status);
 }

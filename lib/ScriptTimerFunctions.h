@@ -19,28 +19,21 @@
  *  USA.
  */
 
-#ifndef GROUP_NEW_HPP
-#define GROUP_NEW_HPP
+#ifndef SCRIPT_TIMER_FUNCTIONS_HPP
+#define SCRIPT_TIMER_FUNCTIONS_HPP
 
-#include <QString>
-#include <QObject>
+#include <QStringList>
 
-class GroupNew : public QObject
+#include "Entity.h"
+
+class ScriptTimerFunctions
 {
-  Q_OBJECT
-
-  signals:
-    void signalDone();
-
   public:
-    GroupNew (QObject *p);
-    void run ();
-
-  public slots:
-    void run2 ();
-    void run3 (QString);
-    void run4 ();
-    void done ();
+    ScriptTimerFunctions ();
+    int add (Entity &);
+    int save (Entity &);
+    int remove (QStringList);
+    int modified (QString);
 };
 
 #endif

@@ -36,7 +36,11 @@
 
 GroupEditDialog::GroupEditDialog (QWidget *p, QString n) : Dialog (p)
 {
+  _newFlag = FALSE;
   _name = n;
+  if (_name.isEmpty())
+    _newFlag = TRUE;
+  
   _keySize = "group_edit_dialog_window_size";
   _keyPos = "group_edit_dialog_window_position";
 
@@ -45,30 +49,38 @@ GroupEditDialog::GroupEditDialog (QWidget *p, QString n) : Dialog (p)
 
   createGUI();
 
-  Entity g;
-  g.setName(_name);
-  
-  EAVDataBase db("groups");
-  db.get(g);
-
-  KeyGroupDataBase gkeys;
-  Data td;
-  g.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), td);
-
-  _list->clear();
-  _list->addItems(td.toString().split(";", QString::SkipEmptyParts));
-
   loadSettings();
 
+  loadGroup();
+
   selectionChanged();
+  
+  if (_newFlag)
+    nameEditStatusChanged(FALSE);
+  else
+    nameEditStatusChanged(TRUE);
 }
 
 void GroupEditDialog::createGUI ()
 {
-  int pos = 0;
-  QLabel *label = new QLabel(tr("Group Symbols"));
-  _vbox->insertWidget(pos++, label);
-
+  _nameEdit = new WidgetLineEdit(this);
+  connect(_nameEdit, SIGNAL(signalStatus(bool)), this, SLOT(nameEditStatusChanged(bool)));
+  _form->addRow(tr("Name"), _nameEdit);
+  
+  if (_newFlag)
+  {
+    EAVDataBase db("groups");
+    QStringList l;
+    db.names(l);
+    _nameEdit->setItems(l);
+  }
+  else
+  {
+    _nameEdit->setText(_name);
+    _nameEdit->setEnabled(FALSE);
+  }
+    
+  int pos = 1;
   QHBoxLayout *hbox = new QHBoxLayout;
   hbox->setSpacing(0);
   _vbox->insertLayout(pos++, hbox);
@@ -111,7 +123,7 @@ void GroupEditDialog::createGUI ()
   tb->addWidget(b);
 
   // clear some unused space
-  _message->hide();
+//  _message->hide();
 }
 
 void GroupEditDialog::selectionChanged ()
@@ -134,6 +146,8 @@ void GroupEditDialog::done ()
   KeyGroupDataBase gkeys;
   Entity g;
   g.setName(_name);
+  if (_newFlag)
+    g.setName(_nameEdit->text());
   
   Data dl(l.join(";"));
   g.set(gkeys.indexToString(KeyGroupDataBase::_LIST), dl);
@@ -143,7 +157,8 @@ void GroupEditDialog::done ()
   if (db.set(g))
   {
     qDebug() << "GroupEditDialog::done: GroupDataBase error";
-    cancel();
+    _message->setText(tr("Database error. Group not saved."));
+//    cancel();
     return;
   }
   db.commit();
@@ -175,4 +190,28 @@ void GroupEditDialog::deleteButtonPressed ()
     QListWidgetItem *item = l.at(loop);
     delete item;
   }
+}
+
+void GroupEditDialog::nameEditStatusChanged (bool status)
+{
+  _okButton->setEnabled(status);
+}
+
+void GroupEditDialog::loadGroup ()
+{
+  if (_name.isEmpty())
+    return;
+  
+  Entity g;
+  g.setName(_name);
+  
+  EAVDataBase db("groups");
+  db.get(g);
+
+  KeyGroupDataBase gkeys;
+  Data td;
+  g.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), td);
+
+  _list->clear();
+  _list->addItems(td.toString().split(";", QString::SkipEmptyParts));
 }

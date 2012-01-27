@@ -26,6 +26,7 @@
 #include <QToolButton>
 
 #include "Dialog.h"
+#include "WidgetLineEdit.h"
 
 class GroupEditDialog : public Dialog
 {
@@ -34,6 +35,7 @@ class GroupEditDialog : public Dialog
   public:
     GroupEditDialog (QWidget *, QString);
     void createGUI ();
+    void loadGroup ();
 
   public slots:
     void done ();
@@ -41,11 +43,14 @@ class GroupEditDialog : public Dialog
     void addButtonPressed ();
     void addButtonPressed2 (QString, QString, QStringList);
     void deleteButtonPressed ();
+    void nameEditStatusChanged (bool);
 
   private:
     QListWidget *_list;
     QToolButton *_deleteButton;
     QString _name;
+    WidgetLineEdit *_nameEdit;
+    bool _newFlag;
 };
 
 #endif

@@ -27,8 +27,8 @@
 #include <QToolButton>
 
 #include "Dialog.h"
-#include "LineEdit.h"
 #include "SymbolListWidget.h"
+#include "WidgetLineEdit.h"
 
 class SymbolDialog : public Dialog
 {
@@ -49,11 +49,12 @@ class SymbolDialog : public Dialog
     void searchButtonPressed ();
     void addButtonPressed ();
     void deleteButtonPressed ();
+    void okButtonStatus ();
 
   private:
     SymbolListWidget *_searchList;
     SymbolListWidget *_symbolList;
-    LineEdit *_search;
+    WidgetLineEdit *_search;
     QPushButton *_searchButton;
     QToolButton *_addButton;
     QToolButton *_deleteButton;

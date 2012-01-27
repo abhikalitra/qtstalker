@@ -84,3 +84,8 @@ void FileButton::updateButtonText ()
 
   emit signalSelectionChanged();
 }
+
+int FileButton::fileCount ()
+{
+  return _files.size();
+}

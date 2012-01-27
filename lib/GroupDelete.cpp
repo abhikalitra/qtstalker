@@ -25,18 +25,12 @@
 #include "EAVDataBase.h"
 
 #include <QtDebug>
-#include <QTimer>
 
 GroupDelete::GroupDelete (QObject *p) : QObject (p)
 {
 }
 
 void GroupDelete::run ()
-{
-  QTimer::singleShot(0, this, SLOT(remove()));
-}
-
-void GroupDelete::remove ()
 {
   QStringList names;
   EAVDataBase db("groups");

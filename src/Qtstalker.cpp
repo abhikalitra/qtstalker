@@ -64,6 +64,9 @@ QtstalkerApp::QtstalkerApp (QString session, QString asset)
   QString s = "QtStalker" + g_session;
   setWindowTitle(s);
 
+  g_sidePanel->scriptPanel()->runStartupScripts();
+  g_sidePanel->scriptPanel()->setupScriptTimers();
+  
   QTimer::singleShot(100, this, SLOT(afterStartup()));
 }
 

@@ -23,13 +23,12 @@
 #define SCRIPT_TIMER_DIALOG_HPP
 
 #include <QStringList>
-#include <QComboBox>
 #include <QSpinBox>
 #include <QCheckBox>
 
 #include "Dialog.h"
 #include "FileButton.h"
-#include "LineEdit.h"
+#include "WidgetLineEdit.h"
 
 class ScriptTimerDialog : public Dialog
 {
@@ -45,13 +44,16 @@ class ScriptTimerDialog : public Dialog
 
   public slots:
     void done ();
+    void okButtonStatus ();
 
   private:
     QString _name;
     FileButton *_file;
-    LineEdit *_command;
+    WidgetLineEdit *_command;
     QCheckBox *_startup;
     QSpinBox *_interval;
+    WidgetLineEdit *_nameEdit;
+    bool _newFlag;
 };
 
 #endif

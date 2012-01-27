@@ -23,7 +23,7 @@
 #include "EAVDataBase.h"
 #include "WindowTitle.h"
 #include "KeyScriptDataBase.h"
-#include "ScriptTimerAdd.h"
+#include "ScriptTimerFunctions.h"
 
 #include <QtDebug>
 
@@ -35,18 +35,39 @@ ScriptTimerDialog::ScriptTimerDialog (QWidget *p, QString name) : Dialog (p)
 
   WindowTitle wt;
   setWindowTitle(wt.title(tr("Edit Script Timer"), _name));
+  
+  _newFlag = FALSE;
+  if (_name.isEmpty())
+    _newFlag = TRUE;
 
   createGUI();
   loadSettings();
   setGUI();
+  okButtonStatus();
 }
 
 void ScriptTimerDialog::createGUI ()
 {
+  _nameEdit = new WidgetLineEdit(this);
+  _form->addRow(tr("Name"), _nameEdit);
+  
+  if (_newFlag)
+  {
+    EAVDataBase db("scripts");
+    QStringList l;
+    db.names(l);
+    _nameEdit->setItems(l);
+  }
+  else
+  {
+    _nameEdit->setText(_name);
+    _nameEdit->setEnabled(FALSE);
+  }
+
   _file = new FileButton(this);
   _form->addRow(tr("Script File"), _file);
 
-  _command = new LineEdit(this);
+  _command = new WidgetLineEdit(this);
   _form->addRow(tr("Command"), _command);
 
   _interval = new QSpinBox;
@@ -55,53 +76,56 @@ void ScriptTimerDialog::createGUI ()
 
   _startup = new QCheckBox;
   _form->addRow(tr("Launch at application start"), _startup);
+
+  // avoid conflict from signals/slots until all objects have been created
+  connect(_nameEdit, SIGNAL(signalStatus(bool)), this, SLOT(okButtonStatus()));
+  connect(_file, SIGNAL(signalSelectionChanged()), this, SLOT(okButtonStatus()));
+  connect(_command, SIGNAL(signalStatus(bool)), this, SLOT(okButtonStatus()));
 }
 
 void ScriptTimerDialog::done ()
 {
-  QString startup = QString::number(_startup->isChecked());
-  QString interval = _interval->text();
-
-  QString file;
-  QStringList l = _file->files();
-  if (! l.count())
-  {
-    _message->setText(tr("No script file selected"));
-    return;
-  }
-  else
-    file = l.at(0);
-
-  if (_command->text().isEmpty())
-  {
-    _message->setText(tr("Command missing"));
-    return;
-  }
-
   KeyScriptDataBase keys;
   Entity timer;
-  timer.setName(_name);
-  timer.set(keys.indexToString(KeyScriptDataBase::_FILE), Data(file));
+  QString name = _name;
+  if (_newFlag)
+    name = _nameEdit->text();
+  timer.setName(name);
+  
+  QStringList l = _file->files();
+  timer.set(keys.indexToString(KeyScriptDataBase::_FILE), Data(l.at(0)));
+  
   timer.set(keys.indexToString(KeyScriptDataBase::_STARTUP), Data(_startup->isChecked()));
   timer.set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), Data(_interval->value()));
   timer.set(keys.indexToString(KeyScriptDataBase::_COMMAND), Data(_command->text()));
   
-  ScriptTimerAdd sta;
-  if (sta.add(timer))
+  ScriptTimerFunctions stf;
+  if (stf.save(timer))
   {
-    qDebug() << "ScriptTimerDialog::done: error saving timer" << _name;
+    qDebug() << "ScriptTimerDialog::done: error saving timer"; 
+    _message->setText(tr("Database error. Timer not saved."));
+    return;
+  }
+  
+  if (stf.add(timer))
+  {
+    qDebug() << "ScriptTimerDialog::done: error adding timer"; 
+    _message->setText(tr("Database error. Timer not added."));
     return;
   }
   
   saveSettings();
 
-  emit signalDone(_name);
+  emit signalDone(name);
 
   accept();
 }
 
 void ScriptTimerDialog::setGUI ()
 {
+  if (_newFlag)
+    return;
+  
   EAVDataBase db("scripts");
   Entity data;
   data.setName(_name);
@@ -126,4 +150,24 @@ void ScriptTimerDialog::setGUI ()
 
   data.toData(skeys.indexToString(KeyScriptDataBase::_COMMAND), td);
   _command->setText(td.toString());
+}
+
+void ScriptTimerDialog::okButtonStatus ()
+{
+  int count = 0;
+  bool status = FALSE;
+  
+  if (! _nameEdit->text().isEmpty())
+    count++;
+    
+  if (! _command->text().isEmpty())
+    count++;
+  
+  if (_file->fileCount())
+    count++;
+
+  if (count == 3)
+    status = TRUE;
+  
+  _okButton->setEnabled(status);
 }

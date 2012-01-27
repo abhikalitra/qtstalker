@@ -162,7 +162,6 @@ HEADERS += GridButton.h
 HEADERS += GroupAdd.h
 HEADERS += GroupDelete.h
 HEADERS += GroupEditDialog.h
-HEADERS += GroupNew.h
 HEADERS += GroupPage.h
 
 HEADERS += IconButton.h
@@ -201,10 +200,8 @@ HEADERS += ScriptLaunchButtonDialog.h
 HEADERS += ScriptPage.h
 HEADERS += ScriptRunDialog.h
 HEADERS += ScriptTimer.h
-HEADERS += ScriptTimerAdd.h
 HEADERS += ScriptTimerDialog.h
-HEADERS += ScriptTimerModified.h
-HEADERS += ScriptTimerRemove.h
+HEADERS += ScriptTimerFunctions.h
 HEADERS += ScriptVerifyCurve.h
 HEADERS += ScriptVerifyCurveKeys.h
 HEADERS += ScriptVerifyCurveValue.h
@@ -239,6 +236,7 @@ HEADERS += TypeThreadMessage.h
 HEADERS += TypeTALibFunction.h
 HEADERS += TypeVerb.h
 
+HEADERS += WidgetLineEdit.h
 HEADERS += WindowTitle.h
 
 ######################################################
@@ -398,7 +396,6 @@ SOURCES += GridButton.cpp
 SOURCES += GroupAdd.cpp
 SOURCES += GroupDelete.cpp
 SOURCES += GroupEditDialog.cpp
-SOURCES += GroupNew.cpp
 SOURCES += GroupPage.cpp
 
 SOURCES += IconButton.cpp
@@ -437,10 +434,8 @@ SOURCES += ScriptLaunchButtonDialog.cpp
 SOURCES += ScriptPage.cpp
 SOURCES += ScriptRunDialog.cpp
 SOURCES += ScriptTimer.cpp
-SOURCES += ScriptTimerAdd.cpp
 SOURCES += ScriptTimerDialog.cpp
-SOURCES += ScriptTimerModified.cpp
-SOURCES += ScriptTimerRemove.cpp
+SOURCES += ScriptTimerFunctions.cpp
 SOURCES += ScriptVerifyCurve.cpp
 SOURCES += ScriptVerifyCurveKeys.cpp
 SOURCES += ScriptVerifyCurveValue.cpp
@@ -473,6 +468,7 @@ SOURCES += TypeOperator.cpp
 SOURCES += TypeTALibFunction.cpp
 SOURCES += TypeVerb.cpp
 
+SOURCES += WidgetLineEdit.cpp
 SOURCES += WindowTitle.cpp
 
 

@@ -19,19 +19,81 @@
  *  USA.
  */
 
-#include "ScriptTimerModified.h"
+#include "ScriptTimerFunctions.h"
 #include "GlobalScriptTimer.h"
+#include "GlobalParent.h"
+#include "GlobalSidePanel.h"
 #include "EAVDataBase.h"
 #include "KeyScriptDataBase.h"
-#include "ScriptTimerAdd.h"
 
 #include <QtDebug>
+#include <QObject>
 
-ScriptTimerModified::ScriptTimerModified ()
+ScriptTimerFunctions::ScriptTimerFunctions ()
 {
 }
 
-int ScriptTimerModified::modified (QString d)
+int ScriptTimerFunctions::add (Entity &timer)
+{
+  KeyScriptDataBase keys;
+  Data file, command, interval;
+  timer.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  timer.toData(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  timer.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+  
+  ScriptTimer *st = new ScriptTimer(g_parent);
+  QObject::connect(st, SIGNAL(signalStartScript(QString, QString)),
+		   g_sidePanel->scriptPanel(), SLOT(runScript(QString, QString)));
+  st->setName(timer.name());
+  st->setFile(file.toString());
+  st->setCommand(command.toString());
+  st->setIntervalString(interval.toString());
+  g_scriptTimerMutex.lock();
+  g_scriptTimerList.insert(timer.name(), st);
+  g_scriptTimerMutex.unlock();
+  st->start();
+  
+  return 0;
+}
+
+int ScriptTimerFunctions::save (Entity &timer)
+{
+  EAVDataBase db("scripts");
+  db.transaction();
+  if (db.set(timer))
+  {
+    qDebug() << "ScriptTimerFunctions::save: EAVDataBase error" << timer.name();
+    return 1;
+  }
+  db.commit();
+  
+  return 0;
+}
+
+int ScriptTimerFunctions::remove (QStringList l)
+{
+  int loop = 0;
+  for (; loop < l.size(); loop++)
+  {
+    ScriptTimer *st = g_scriptTimerList.value(l.at(loop));
+    if (! st)
+      continue;
+
+    st->stop();
+  
+    g_scriptTimerList.remove(l.at(loop));
+    delete st;
+  }
+
+  EAVDataBase db("scripts");
+  db.transaction();
+  db.remove(l);
+  db.commit();
+  
+  return 0;
+}
+
+int ScriptTimerFunctions::modified (QString d)
 {
   KeyScriptDataBase keys;
   EAVDataBase db("scripts");
@@ -49,10 +111,7 @@ int ScriptTimerModified::modified (QString d)
   if (! st)
   {
     if (interval.toInteger() > 0)
-    {
-      ScriptTimerAdd sta;
-      sta.add(data);
-    }
+      add(data);
   }
   else
   {

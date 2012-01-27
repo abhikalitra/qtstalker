@@ -61,10 +61,10 @@ class ChartPage : public QWidget
     void setSearch (QString symbol);
     void setSearchDummy (QString symbol, QString, QStringList);
     void allButtonPressed ();
-    void buttonStatus ();
     void deleteSymbol ();
     void itemClicked (QListWidgetItem *);
     void updateList ();
+    void itemSelectionChanged ();
 
   protected:
     QString _searchString;

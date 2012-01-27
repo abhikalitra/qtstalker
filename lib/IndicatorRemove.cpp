@@ -27,7 +27,6 @@
 #include <QtDebug>
 #include <QSettings>
 #include <QStringList>
-#include <QTimer>
 
 IndicatorRemove::IndicatorRemove (QObject *p, QString indicator) : QObject (p)
 {
@@ -36,16 +35,12 @@ IndicatorRemove::IndicatorRemove (QObject *p, QString indicator) : QObject (p)
 
 void IndicatorRemove::run ()
 {
-  QTimer::singleShot(0, this, SLOT(remove()));
-}
-
-void IndicatorRemove::remove ()
-{
   QStringList mess;
-  mess << tr("Confirm indicator removal") << _indicator;
+  mess << tr("Confirm indicator removal") + "\n";
+  mess << _indicator;
 
   DialogConfirm *dialog = new DialogConfirm(0, QString(), Entity());
-  dialog->setMessage(mess.join(" "));
+  dialog->setMessage(mess.join("\n"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(remove2()));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
   dialog->show();
@@ -64,11 +59,13 @@ void IndicatorRemove::remove2 ()
   l << _indicator;
   
   EAVDataBase db("indicators");
+  db.transaction();
   if (db.remove(l))
   {
     done();
     return;
   }
+  db.commit();
 
   g_plotGroup->removePlot(_indicator);
 

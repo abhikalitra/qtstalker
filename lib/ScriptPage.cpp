@@ -24,7 +24,6 @@
 #include "WindowTitle.h"
 #include "GlobalSymbol.h"
 #include "GlobalParent.h"
-#include "DialogNew.h"
 #include "DialogSelect.h"
 #include "ScriptTimerDialog.h"
 #include "ScriptRunDialog.h"
@@ -33,9 +32,7 @@
 #include "EAVDataBase.h"
 #include "EAVSearch.h"
 #include "KeyScriptDataBase.h"
-#include "ScriptTimerAdd.h"
-#include "ScriptTimerModified.h"
-#include "ScriptTimerRemove.h"
+#include "ScriptTimerFunctions.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -48,6 +45,7 @@
 #include <QSettings>
 #include <QInputDialog>
 #include <QStatusBar>
+//#include <QTimer>
 
 ScriptPage::ScriptPage (QWidget *p) : QWidget (p)
 {
@@ -55,11 +53,10 @@ ScriptPage::ScriptPage (QWidget *p) : QWidget (p)
 
   createGUI();
 
-  runStartupScripts();
-
-  setupScriptTimers();
-
   queStatus();
+  
+//  QTimer::singleShot(1000, this, SLOT(runStartupScripts()));  
+//  QTimer::singleShot(1000, this, SLOT(setupScriptTimers()));  
 }
 
 void ScriptPage::createGUI ()
@@ -292,7 +289,7 @@ void ScriptPage::setupScriptTimers ()
     return;
   }
 
-  ScriptTimerAdd sta;
+  ScriptTimerFunctions stf;
   int loop = 0;
   for (; loop < l.size(); loop++)
   {
@@ -302,7 +299,7 @@ void ScriptPage::setupScriptTimers ()
     if (db.get(st))
       continue;
 
-    sta.add(st);
+    stf.add(st);
   }
 }
 
@@ -313,20 +310,8 @@ QListWidget * ScriptPage::list ()
 
 void ScriptPage::newScriptTimer ()
 {
-  EAVDataBase db("scripts");
-  QStringList sl;
-  if (db.names(sl))
-  {
-    qDebug() << "ScriptPage::newScriptTimer: db error";
-    return;
-  }
-
-  WindowTitle wt;
-  DialogNew *dialog = new DialogNew(this, QString(), Entity());
-  dialog->setWindowTitle(wt.title(tr("New Script Timer"), QString()));
-  dialog->setTitle(tr("Enter script timer name"));
-  dialog->setItems(sl);
-  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(editScriptTimer(QString)));
+  ScriptTimerDialog *dialog = new ScriptTimerDialog(this, QString());
+  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(editScriptTimer3(QString)));
   dialog->show();
 }
 
@@ -368,8 +353,8 @@ void ScriptPage::editScriptTimer2 (QStringList l)
 
 void ScriptPage::editScriptTimer3 (QString d)
 {
-  ScriptTimerModified stm;
-  stm.modified(d);
+  ScriptTimerFunctions stf;
+  stf.modified(d);
 }
 
 void ScriptPage::deleteScriptTimer ()
@@ -391,8 +376,8 @@ void ScriptPage::deleteScriptTimer ()
 
 void ScriptPage::deleteScriptTimer2 (QStringList l)
 {
-  ScriptTimerRemove str;
-  str.remove(l);
+  ScriptTimerFunctions stf;
+  stf.remove(l);
 }
 
 void ScriptPage::runStartupScripts ()

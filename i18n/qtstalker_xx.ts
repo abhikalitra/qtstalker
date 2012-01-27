@@ -444,10 +444,6 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Group Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select All</source>
         <translation type="unfinished"></translation>
     </message>
@@ -455,15 +451,12 @@ App restart required to take effect</source>
         <source>Unselect All</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>GroupNew</name>
     <message>
-        <source>Enter new group name</source>
+        <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>New Group</source>
+        <source>Database error. Group not saved.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1330,10 +1323,6 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Enter script timer name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select script timer to edit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1380,19 +1369,23 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No script file selected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Edit Script Timer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database error. Timer not saved.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database error. Timer not added.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1432,14 +1425,6 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Symbol pattern</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Symbol</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1453,10 +1438,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Search Results</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Symbols</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1477,6 +1458,10 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Enter a partial search like %OOG% or % for all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selected Symbols</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

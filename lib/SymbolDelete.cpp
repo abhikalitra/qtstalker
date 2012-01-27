@@ -26,16 +26,10 @@
 #include "KeySymbol.h"
 
 #include <QtDebug>
-#include <QTimer>
 
 SymbolDelete::SymbolDelete (QObject *p, QStringList symbols) : QObject (p)
 {
   _symbols = symbols;
-}
-
-void SymbolDelete::run ()
-{
-  QTimer::singleShot(0, this, SLOT(remove()));
 }
 
 void SymbolDelete::remove ()
@@ -46,8 +40,15 @@ void SymbolDelete::remove ()
     return;
   }
 
+  QStringList message;
+  message << tr("Confirm symbol delete") + ":\n";
+  
+  int loop = 0;
+  for (; loop < _symbols.size(); loop++)
+    message << _symbols.at(loop);
+  
   DialogConfirm *dialog = new DialogConfirm(0, QString(), Entity());
-  dialog->setMessage(tr("Confirm symbol delete"));
+  dialog->setMessage(message.join("\n"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(remove2()));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
   dialog->show();

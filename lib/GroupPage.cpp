@@ -25,7 +25,6 @@
 #include "QuoteDataBase.h"
 #include "GroupEditDialog.h"
 #include "GroupAdd.h"
-#include "GroupNew.h"
 #include "GroupDelete.h"
 #include "ChartLoad.h"
 #include "KeyGroupDataBase.h"
@@ -118,9 +117,9 @@ void GroupPage::createButtonMenu ()
 
 void GroupPage::newGroup ()
 {
-  GroupNew *gn = new GroupNew(this);
-  connect(gn, SIGNAL(signalDone()), this, SLOT(updateGroups()));
-  gn->run();
+  GroupEditDialog *dialog = new GroupEditDialog(this, QString());
+  connect(dialog, SIGNAL(accepted()), this, SLOT(updateGroups()));
+  dialog->show();
 }
 
 void GroupPage::editDialog (QString d)

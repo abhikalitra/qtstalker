@@ -37,6 +37,7 @@ class FileButton : public QPushButton
     QStringList files ();
     void updateButtonText ();
     void setPath (QString);
+    int fileCount ();
 
   public slots:
     void fileDialog ();

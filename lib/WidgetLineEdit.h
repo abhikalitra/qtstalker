@@ -19,35 +19,33 @@
  *  USA.
  */
 
-#include "ScriptTimerRemove.h"
-#include "GlobalScriptTimer.h"
-#include "EAVDataBase.h"
+#ifndef WIDGET_LINE_EDIT_HPP
+#define WIDGET_LINE_EDIT_HPP
 
-#include <QtDebug>
+#include <QStringList>
+#include <QComboBox>
+#include <QLineEdit>
 
-ScriptTimerRemove::ScriptTimerRemove ()
+class WidgetLineEdit : public QComboBox
 {
-}
+  Q_OBJECT
 
-int ScriptTimerRemove::remove (QStringList l)
-{
-  int loop = 0;
-  for (; loop < l.size(); loop++)
-  {
-    ScriptTimer *st = g_scriptTimerList.value(l.at(loop));
-    if (! st)
-      continue;
+  signals:
+    void signalStatus (bool);
 
-    st->stop();
-  
-    g_scriptTimerList.remove(l.at(loop));
-    delete st;
-  }
+  public:
+    WidgetLineEdit (QWidget *);
+    void createGUI ();
+    void setItems (QStringList);
+    void setText (QString);
+    QString text ();
 
-  EAVDataBase db("scripts");
-  db.transaction();
-  db.remove(l);
-  db.commit();
-  
-  return 0;
-}
+  public slots:
+    void textChanged (const QString &);
+
+  private:
+    QStringList _items;
+    QLineEdit *_edit;
+};
+
+#endif

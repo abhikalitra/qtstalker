@@ -50,23 +50,35 @@ SymbolDialog::SymbolDialog (QWidget *p) : Dialog (p)
   symbolSelectionChanged();
 
   _search->setFocus();
+  
+  okButtonStatus();
 }
 
 void SymbolDialog::createGUI ()
 {
-  _search = new LineEdit(this);
+  // search area
+  int pos = 1;
+  QHBoxLayout *hbox = new QHBoxLayout;
+  hbox->setSpacing(2);
+  hbox->setMargin(0);
+  _vbox->insertLayout(pos++, hbox);
+  
+  // search edit
+  _search = new WidgetLineEdit(this);
   _search->setText("%");
   _search->setToolTip(tr("Enter a partial search like %OOG% or % for all"));
-  _form->addRow(tr("Symbol pattern"), _search);
+  hbox->addWidget(_search, 1);
 
+  // search button
   _searchButton = new QPushButton;
   _searchButton->setIcon(QIcon(search_xpm));
   _searchButton->setToolTip(tr("Perform search"));
   connect(_searchButton, SIGNAL(clicked()), this, SLOT(searchButtonPressed()));
-  _form->addRow(tr("Search"), _searchButton);
-
-  int pos = 1;
-  QHBoxLayout *hbox = new QHBoxLayout;
+  connect(_search, SIGNAL(signalStatus(bool)), _searchButton, SLOT(setEnabled(bool)));
+  hbox->addWidget(_searchButton);
+  
+  // list area
+  hbox = new QHBoxLayout;
   hbox->setSpacing(2);
   hbox->setMargin(0);
   _vbox->insertLayout(pos++, hbox);
@@ -127,7 +139,7 @@ void SymbolDialog::createGUI ()
   tvbox->addStretch(1);
 
   gbox = new QGroupBox;
-  gbox->setTitle(tr("Symbols"));
+  gbox->setTitle(tr("Selected Symbols"));
   hbox->addWidget(gbox);
 
   tvbox = new QVBoxLayout;
@@ -140,6 +152,9 @@ void SymbolDialog::createGUI ()
   _symbolList->setSelectionMode(QAbstractItemView::ExtendedSelection);
   connect(_symbolList, SIGNAL(itemSelectionChanged()), this, SLOT(symbolSelectionChanged()));
   tvbox->addWidget(_symbolList);
+  
+  // save some unused space
+  _message->hide();
 }
 
 void SymbolDialog::searchSelectionChanged ()
@@ -192,6 +207,8 @@ void SymbolDialog::addButtonPressed ()
     
     _symbolList->addSymbol(symbol);
   }
+  
+  okButtonStatus();
 }
 
 void SymbolDialog::deleteButtonPressed ()
@@ -206,6 +223,7 @@ void SymbolDialog::deleteButtonPressed ()
   }
 
   symbolSelectionChanged();
+  okButtonStatus();
 }
 
 void SymbolDialog::searchButtonPressed ()
@@ -221,3 +239,9 @@ QStringList SymbolDialog::symbols ()
 {
   return _symbols;
 }
+
+void SymbolDialog::okButtonStatus ()
+{
+  _okButton->setEnabled((bool) _symbolList->count());
+}
+

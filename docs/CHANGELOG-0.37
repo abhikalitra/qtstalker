@@ -1328,4 +1328,23 @@
 
 20120123:  Changed the SET() script command syntax. See indicator script for example.
 
+*********************************************************************************************************************
 
+20120127:  So far I am happy with the current code. Now that everything has been stripped down to basics, things
+           are progressing quickly. Scripting is working well and faster than a month ago. We have a framework
+           now that is easily extendable with scripts and new commands to the library. Eventually the entire app
+           will be scriptable right down to what gui elements are chosen to display.
+
+           Here is the roadmap to an official release:
+
+           1) Polish up dialogs and gui. (working on this now)
+           2) Refine script syntax if needed.
+           3) Annouce beta for user testing and comments.
+           4) Fix beta bugs.
+           5) Release 0.37
+           6) Work on documentation and update the website.
+
+           Once the website has been updated it will be the central repository for everything qtstalker. Hopefully
+           we can build a user community there.
+
+           

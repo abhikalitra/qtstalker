@@ -25,7 +25,6 @@
 
 #include <QtDebug>
 #include <QStringList>
-#include <QTimer>
 
 ChartObjectDeleteAll::ChartObjectDeleteAll (QObject *p, QString chart) : QObject (p)
 {
@@ -34,16 +33,12 @@ ChartObjectDeleteAll::ChartObjectDeleteAll (QObject *p, QString chart) : QObject
 
 void ChartObjectDeleteAll::run ()
 {
-  QTimer::singleShot(0, this, SLOT(remove()));
-}
-
-void ChartObjectDeleteAll::remove ()
-{
   QStringList mess;
-  mess << tr("Confirm delete all chart objects from selected indicator") << _chart;
+  mess << tr("Confirm delete all chart objects from selected indicator") + "\n";
+  mess << _chart;
 
   DialogConfirm *dialog = new DialogConfirm(0, QString(), Entity());
-  dialog->setMessage(mess.join(" "));
+  dialog->setMessage(mess.join("\n"));
   connect(dialog, SIGNAL(accepted()), this, SLOT(remove2()));
   connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
   dialog->show();

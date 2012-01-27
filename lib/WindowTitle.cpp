@@ -36,7 +36,7 @@ WindowTitle::WindowTitle ()
 QString WindowTitle::title (QString name, QString item)
 {
   QStringList l;
-  l << "QtStalker" + g_session;
+  l << "QtStalker:" + g_session;
   l << "-";
   l << name;
   
@@ -49,7 +49,7 @@ QString WindowTitle::title (QString name, QString item)
 QString WindowTitle::mainWindowTitle (int length)
 {
   QStringList l;
-  l << "QtStalker" + g_session;
+  l << "QtStalker:" + g_session;
   l << "-";
 
   KeySymbol keys;
@@ -77,7 +77,7 @@ QString WindowTitle::dataWindowTitle ()
   g_currentSymbol.toData(keys.indexToString(KeySymbol::_SYMBOL), name);
   
   QStringList l;
-  l << "QtStalker" + g_session;
+  l << "QtStalker:" + g_session;
   l << "-";
   l << symbol.toString();
   l << "(" + name.toString() + ")";

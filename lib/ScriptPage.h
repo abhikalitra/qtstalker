@@ -30,7 +30,6 @@
 #include <QHash>
 #include <QToolBar>
 
-//#include "ScriptTimer.h"
 #include "Script.h"
 
 class ScriptPage : public QWidget
@@ -88,7 +87,6 @@ class ScriptPage : public QWidget
     QHash<int, QAction *> _actions;
     QHash<QString, QListWidgetItem *> _itemList;
     QHash<QString, Script *> _scripts;
-//    QHash<QString, ScriptTimer *> _timers;
 };
 
 #endif
