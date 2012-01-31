@@ -34,11 +34,11 @@ $rc = <STDIN>; chomp($rc);
 if ($rc eq 'ERROR') { if ($DEBUG) { doDebug('ERROR'); } doExit(); }
 
 # specify some settings
-$command = "SET(chart, NAME, $chartName,
-                ROW, 0,
-                COL, 0,
-                DATE, 1,
-                LOG, 0)";
+$command = "SET(chart.NAME, $chartName,
+                chart.ROW, 0,
+                chart.COL, 0,
+                chart.DATE, 1,
+                chart.LOG, 0)";
 if ($DEBUG) { doDebug("$command"); }
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc);
@@ -75,14 +75,14 @@ $rc = <STDIN>; chomp($rc);
 if ($rc eq 'ERROR') { if ($DEBUG) { doDebug('ERROR'); } doExit(); }
 
 # set the attributes
-$command = "SET(plot_line, OUTPUT, $c0Name,
-                CHART, $chartName,
-                LABEL, $c0Label,
-                STYLE, $c0Style,
-                COLOR, $c0Colour,
-                Z, $c0Z,
-                PEN, $c0Pen,
-                INPUT, $c0Data)";
+$command = "SET(plot_line.OUTPUT, $c0Name,
+                plot_line.CHART, $chartName,
+                plot_line.LABEL, $c0Label,
+                plot_line.STYLE, $c0Style,
+                plot_line.COLOR, $c0Colour,
+                plot_line.Z, $c0Z,
+                plot_line.PEN, $c0Pen,
+                plot_line.INPUT, $c0Data)";
 if ($DEBUG) { doDebug("$command"); }
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc);
@@ -103,7 +103,7 @@ $rc = <STDIN>; chomp($rc);
 if ($rc eq 'ERROR') { if ($DEBUG) { doDebug('ERROR'); } doExit(); }
 
 # set the values
-$command = "SET(chart_update, CHART, $chartName, DATE, date)";
+$command = "SET(chart_update.CHART, $chartName, chart_update.DATE, date)";
 if ($DEBUG) { doDebug("$command"); }
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc);
