@@ -36,6 +36,7 @@
 #include "CommandCCI.h"
 #include "CommandChart.h"
 #include "CommandChartPanelRefresh.h"
+#include "CommandChartRemove.h"
 #include "CommandChartUpdate.h"
 #include "CommandCMO.h"
 #include "CommandCompare.h"
@@ -45,6 +46,8 @@
 #include "CommandDialog.h"
 #include "CommandDialogMessage.h"
 #include "CommandDialogNew.h"
+#include "CommandDialogScript.h"
+#include "CommandDialogSelect.h"
 #include "CommandDialogUser.h"
 #include "CommandFI.h"
 #include "CommandGet.h"
@@ -52,6 +55,7 @@
 #include "CommandGroupPanelRefresh.h"
 #include "CommandHLine.h"
 #include "CommandHT.h"
+#include "CommandIndicator.h"
 #include "CommandLINEARREG.h"
 #include "CommandLoad.h"
 #include "CommandMA.h"
@@ -75,6 +79,7 @@
 #include "CommandRun.h"
 #include "CommandSAR.h"
 #include "CommandSave.h"
+#include "CommandScript.h"
 #include "CommandScriptDataBase.h"
 #include "CommandSell.h"
 #include "CommandSet.h"
@@ -180,6 +185,9 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_CHART_PANEL_REFRESH:
       c = new CommandChartPanelRefresh;
       break;
+    case TypeCommand::_CHART_REMOVE:
+      c = new CommandChartRemove;
+      break;
     case TypeCommand::_CHART_UPDATE:
       c = new CommandChartUpdate;
       break;
@@ -207,6 +215,12 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_DIALOG_NEW:
       c = new CommandDialogNew;
       break;
+    case TypeCommand::_DIALOG_SCRIPT:
+      c = new CommandDialogScript;
+      break;
+    case TypeCommand::_DIALOG_SELECT:
+      c = new CommandDialogSelect;
+      break;
     case TypeCommand::_DIALOG_USER:
       c = new CommandDialogUser;
       break;
@@ -230,6 +244,9 @@ Command * CommandFactory::command (QString type)
       break;
     case TypeCommand::_HT_SINE:
       c = new CommandSINE;
+      break;
+    case TypeCommand::_INDICATOR:
+      c = new CommandIndicator;
       break;
     case TypeCommand::_LINEARREG:
       c = new CommandLINEARREG;
@@ -293,6 +310,9 @@ Command * CommandFactory::command (QString type)
       break;
     case TypeCommand::_SAVE:
       c = new CommandSave;
+      break;
+    case TypeCommand::_SCRIPT:
+      c = new CommandScript;
       break;
     case TypeCommand::_SCRIPT_DATA_BASE:
       c = new CommandScriptDataBase;

@@ -25,6 +25,7 @@
 #include <QStringList>
 
 #include "Entity.h"
+#include "EAVDataBase.h"
 
 class ScriptTimerFunctions
 {
@@ -34,6 +35,11 @@ class ScriptTimerFunctions
     int save (Entity &);
     int remove (QStringList);
     int modified (QString);
+    int setup ();
+    int names (QStringList &);
+    
+  private:
+    EAVDataBase _db;
 };
 
 #endif

@@ -62,9 +62,9 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the NAME, COL values
-$command = "SET(chart, NAME, $chartName,
-                       ROW, 0,
-                       COL, 0)";
+$command = "SET(chart.NAME, $chartName,
+                chart.ROW, 0,
+                chart.COL, 0)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -99,11 +99,11 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set values
-$command = "SET(plot_ohlc, OUTPUT, $ohlcName,
-                           CHART, $chartName,
-                           LABEL, $ohlcLabel,
-                           Z, $ohlcZ,
-                           COLOR, $ohlcColor)";
+$command = "SET(plot_ohlc.OUTPUT, $ohlcName,
+                plot_ohlc.CHART, $chartName,
+                plot_ohlc.LABEL, $ohlcLabel,
+                plot_ohlc.Z, $ohlcZ,
+                plot_ohlc.COLOR, $ohlcColor)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -122,12 +122,12 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the values
-$command = "SET(compare, INPUT, $closeName,
-                         OP, >,
-                         INPUT2, $closeName,
-                         INPUT2_OFFSET, 1,
-                         OUTPUT, $ohlcName,
-                         OUTPUT2, $ohlcUpColor)";
+$command = "SET(compare.INPUT, $closeName,
+                compare.OP, >,
+                compare.INPUT2, $closeName,
+                compare.INPUT2_OFFSET, 1,
+                compare.OUTPUT, $ohlcName,
+                compare.OUTPUT2, $ohlcUpColor)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -141,8 +141,8 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 ###################################################################
 
 # set the values
-$command = "SET(compare, OP, <, 
-                         OUTPUT2, $ohlcDownColor)";
+$command = "SET(compare.OP, <, 
+                compare.OUTPUT2, $ohlcDownColor)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -161,10 +161,10 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the values
-$command = "SET(ma, INPUT, $closeName,
-                    OUTPUT, $ma1Data,
-                    PERIOD, $ma1Period,
-                    TYPE, $ma1Type)";
+$command = "SET(ma.INPUT, $closeName,
+                ma.OUTPUT, $ma1Data,
+                ma.PERIOD, $ma1Period,
+                ma.TYPE, $ma1Type)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -178,9 +178,9 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 ###################################################################
 
 # set the values
-$command = "SET(ma, OUTPUT, $ma2Data,
-                    PERIOD, $ma2Period,
-                    TYPE, $ma2Type)";
+$command = "SET(ma.OUTPUT, $ma2Data,
+                ma.PERIOD, $ma2Period,
+                ma.TYPE, $ma2Type)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -194,9 +194,9 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 ###################################################################
 
 # set the values
-$command = "SET(ma, OUTPUT, $ma3Data,
-                    PERIOD, $ma3Period,
-                    TYPE, $ma3Type)";
+$command = "SET(ma.OUTPUT, $ma3Data,
+                ma.PERIOD, $ma3Period,
+                ma.TYPE, $ma3Type)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -215,13 +215,13 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the values
-$command = "SET(plot_line, OUTPUT, $ma1Name,
-                           CHART, $chartName,
-                           LABEL, $ma1Label,
-                           STYLE, $ma1Style,
-                           COLOR, $ma1Color,
-                           Z, $ma1Z,
-                           INPUT, $ma1Data)";
+$command = "SET(plot_line.OUTPUT, $ma1Name,
+                plot_line.CHART, $chartName,
+                plot_line.LABEL, $ma1Label,
+                plot_line.STYLE, $ma1Style,
+                plot_line.COLOR, $ma1Color,
+                plot_line.Z, $ma1Z,
+                plot_line.INPUT, $ma1Data)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -235,12 +235,12 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 ###################################################################
 
 # set the values
-$command = "SET(plot_line, OUTPUT, $ma2Name,
-                           LABEL, $ma2Label,
-                           STYLE, $ma2Style,
-                           COLOR, $ma2Color,
-                           Z, $ma2Z,
-                           INPUT, $ma2Data)";
+$command = "SET(plot_line.OUTPUT, $ma2Name,
+                plot_line.LABEL, $ma2Label,
+                plot_line.STYLE, $ma2Style,
+                plot_line.COLOR, $ma2Color,
+                plot_line.Z, $ma2Z,
+                plot_line.INPUT, $ma2Data)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -254,12 +254,12 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 ###################################################################
 
 # set the values
-$command = "SET(plot_line, OUTPUT, $ma3Name,
-                           LABEL, $ma3Label,
-                           STYLE, $ma3Style,
-                           COLOR, $ma3Color,
-                           Z, $ma3Z,
-                           INPUT, $ma3Data)";
+$command = "SET(plot_line.OUTPUT, $ma3Name,
+                plot_line.LABEL, $ma3Label,
+                plot_line.STYLE, $ma3Style,
+                plot_line.COLOR, $ma3Color,
+                plot_line.Z, $ma3Z,
+                plot_line.INPUT, $ma3Data)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
@@ -278,8 +278,8 @@ print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the values
-$command = "SET(chart_update, CHART, $chartName,
-                              DATE, $dateName)";
+$command = "SET(chart_update.CHART, $chartName,
+                chart_update.DATE, $dateName)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 

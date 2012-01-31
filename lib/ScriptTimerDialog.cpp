@@ -53,9 +53,9 @@ void ScriptTimerDialog::createGUI ()
   
   if (_newFlag)
   {
-    EAVDataBase db("scripts");
+    ScriptTimerFunctions stf;
     QStringList l;
-    db.names(l);
+    stf.names(l);
     _nameEdit->setItems(l);
   }
   else

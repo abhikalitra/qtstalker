@@ -19,26 +19,25 @@
  *  USA.
  */
 
-#ifndef GROUP_DELETE_HPP
-#define GROUP_DELETE_HPP
+#ifndef GROUP_FUNCTIONS_HPP
+#define GROUP_FUNCTIONS_HPP
 
 #include <QStringList>
-#include <QObject>
 
-class GroupDelete : public QObject
+#include "EAVDataBase.h"
+
+class GroupFunctions
 {
-  Q_OBJECT
-
-  signals:
-    void signalDone();
-
   public:
-    GroupDelete (QObject *p);
-    void run ();
-
-  public slots:
-    void remove2 (QStringList);
-    void done ();
+    GroupFunctions ();
+    int add (QString);
+    int remove (QStringList);
+    int names (QStringList &);
+    int get (Entity &);
+    int set (Entity &);
+    
+  private:
+    EAVDataBase _db;
 };
 
 #endif

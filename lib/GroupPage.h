@@ -57,11 +57,13 @@ class GroupPage : public QWidget
     void editDialog (QString);
     void editGroup ();
     void deleteGroup ();
+    void deleteGroup2 (QStringList);
     void groupSelected (int);
     void rightClick (const QPoint &);
     void chartOpened (QString);
     void updateGroups ();
     void addToGroup ();
+    void addToGroup2 (QStringList);
     void loadGroups ();
     void selectionChanged ();
     void itemClicked (QListWidgetItem *);

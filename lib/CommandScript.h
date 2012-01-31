@@ -19,16 +19,16 @@
  *  USA.
  */
 
-#include "CurveDataKey.h"
+#ifndef COMMAND_SCRIPT_HPP
+#define COMMAND_SCRIPT_HPP
 
-#include <QtDebug>
+#include "Command.h"
 
-CurveDataKey::CurveDataKey ()
+class CommandScript : public Command
 {
-  _list << "LABEL";
-  _list << "TYPE";
-  _list << "CHART";
-  _list << "Z";
-  _list << "PEN";
-  _list << "STYLE";
-}
+  public:
+    CommandScript ();
+    QString run (CommandParse &, void *);
+};
+
+#endif

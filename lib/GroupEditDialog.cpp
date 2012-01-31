@@ -20,10 +20,10 @@
  */
 
 #include "GroupEditDialog.h"
-#include "EAVDataBase.h"
 #include "SymbolDialog.h"
 #include "KeyGroupDataBase.h"
 #include "WindowTitle.h"
+#include "GroupFunctions.h"
 
 #include "../pics/add.xpm"
 #include "../pics/delete.xpm"
@@ -69,9 +69,9 @@ void GroupEditDialog::createGUI ()
   
   if (_newFlag)
   {
-    EAVDataBase db("groups");
+    GroupFunctions gf;
     QStringList l;
-    db.names(l);
+    gf.names(l);
     _nameEdit->setItems(l);
   }
   else
@@ -151,17 +151,15 @@ void GroupEditDialog::done ()
   
   Data dl(l.join(";"));
   g.set(gkeys.indexToString(KeyGroupDataBase::_LIST), dl);
-  
-  EAVDataBase db("groups");
-  db.transaction();
-  if (db.set(g))
+
+  GroupFunctions gf;
+  if (gf.set(g))
   {
     qDebug() << "GroupEditDialog::done: GroupDataBase error";
     _message->setText(tr("Database error. Group not saved."));
 //    cancel();
     return;
   }
-  db.commit();
 
   saveSettings();
 
@@ -204,9 +202,14 @@ void GroupEditDialog::loadGroup ()
   
   Entity g;
   g.setName(_name);
-  
-  EAVDataBase db("groups");
-  db.get(g);
+
+  GroupFunctions gf;
+  if (gf.get(g))
+  {
+    qDebug() << "GroupEditDialog::loadGroup: database error";
+    _message->setText(tr("Database error. Group not saved."));
+    return;
+  }
 
   KeyGroupDataBase gkeys;
   Data td;

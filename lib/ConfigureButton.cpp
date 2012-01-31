@@ -23,7 +23,8 @@
 #include "Doc.h"
 #include "DialogAbout.h"
 #include "DialogConfigure.h"
-#include "IndicatorAdd.h"
+#include "GlobalSidePanel.h"
+#include "Global.h"
 
 #include "../pics/about.xpm"
 #include "../pics/help.xpm"
@@ -126,6 +127,10 @@ void ConfigureButton::configureDialog ()
 
 void ConfigureButton::addIndicator ()
 {
-  IndicatorAdd *ai = new IndicatorAdd(this);
-  ai->add();
+  QSettings settings(g_globalSettings);
+  
+  QString file = settings.value("system_script_directory").toString();
+  file.append("IndicatorAdd.pl");
+  
+  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
 }

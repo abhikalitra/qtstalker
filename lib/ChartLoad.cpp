@@ -21,37 +21,38 @@
 
 
 #include "ChartLoad.h"
-#include "SymbolLoad.h"
-#include "GlobalControlPanel.h"
-#include "GlobalParent.h"
-#include "GlobalSymbol.h"
+#include "SymbolFunctions.h"
+#include "WindowTitle.h"
 #include "ChartRefresh.h"
 #include "KeySymbol.h"
+#include "GlobalSymbol.h"
+#include "GlobalControlPanel.h"
+#include "GlobalParent.h"
 
-ChartLoad::ChartLoad (QObject *p, QString symbol) : QObject (p)
+#include <QtDebug>
+
+ChartLoad::ChartLoad ()
 {
-  _symbol = symbol;
 }
 
-void ChartLoad::run ()
+void ChartLoad::run (QString symbol)
 {
-  SymbolLoad *sl = new SymbolLoad(this, _symbol);
-  connect(sl, SIGNAL(signalDone(QString, int)), this, SLOT(symbolLoadDone(QString, int)));
-  connect(sl, SIGNAL(signalError()), this, SLOT(deleteLater()));
-  sl->start();
-}
-
-void ChartLoad::symbolLoadDone (QString title, int bars)
-{
+  SymbolFunctions sf;
+  if (sf.load(symbol))
+    return;
+  
+  WindowTitle wt;
   KeySymbol keys;
-  Data tds;
+  Data tds, length;
   g_currentSymbol.toData(keys.indexToString(KeySymbol::_SYMBOL), tds);
+  g_currentSymbol.toData(keys.indexToString(KeySymbol::_LENGTH), length);
 
   g_controlPanel->recentCharts()->addRecentChart(tds.toString());
-  g_parent->setWindowTitle(title);
-  g_controlPanel->setStart(bars, 0, 0);
+  
+  g_parent->setWindowTitle(wt.mainWindowTitle(length.toInteger()));
+  
+  g_controlPanel->setStart(g_currentSymbol.ekeyCount(), 0, 0);
 
-  ChartRefresh *cr = new ChartRefresh(this);
-  connect(cr, SIGNAL(signalDone()), this, SLOT(deleteLater()));
-  cr->run();
+  ChartRefresh cr;
+  cr.run();
 }

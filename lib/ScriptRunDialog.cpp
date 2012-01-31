@@ -24,8 +24,10 @@
 
 #include <QtDebug>
 
-ScriptRunDialog::ScriptRunDialog (QWidget *p, QString file, QString command) : Dialog (p)
+ScriptRunDialog::ScriptRunDialog (QWidget *p, QString file, QString command, QString id, Entity settings) : Dialog (p)
 {
+  _id = id;
+  _settings = settings;
   _keySize = "script_run_dialog_window_size";
   _keyPos = "script_run_dialog_window_position";
 
@@ -34,14 +36,29 @@ ScriptRunDialog::ScriptRunDialog (QWidget *p, QString file, QString command) : D
 
   createGUI();
 
-  if (! file.isEmpty())
+  if (! _id.isEmpty())
   {
-    QStringList l;
-    l << file;
-    _file->setFiles(l);
-  }
+    Data tfile, tcommand;
+    _settings.toData(QString("FILE"), tfile);
+    _settings.toData(QString("COMMAND"), tcommand);
 
-  _text->setText(command);
+    QStringList l = tfile.toList();
+    if (l.size())
+      _file->setFiles(l);
+    
+    _text->setText(tcommand.toString());
+  }
+  else
+  {
+    if (! file.isEmpty())
+    {
+      QStringList l;
+      l << file;
+      _file->setFiles(l);
+    }
+    
+    _text->setText(command);
+  }
 
   loadSettings();
   
@@ -76,6 +93,21 @@ void ScriptRunDialog::done ()
     _message->setText(tr("Command missing"));
     return;
   }
+  
+  _saveFlag++;
+  
+  Data dfile, dcommand;
+  _settings.toData(QString("FILE"), dfile);
+  _settings.toData(QString("COMMAND"), dcommand);
+  
+  dcommand.set(_text->text());
+  
+  QStringList tl;
+  tl << file;
+  dfile.set(tl);
+  
+  _settings.set(QString("FILE"), dfile);
+  _settings.set(QString("COMMAND"), dcommand);
 
   saveSettings();
 

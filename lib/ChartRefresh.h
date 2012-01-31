@@ -22,29 +22,11 @@
 #ifndef CHART_REFRESH_HPP
 #define CHART_REFRESH_HPP
 
-#include <QObject>
-#include <QString>
-#include <QHash>
-
-#include "Script.h"
-
-class ChartRefresh : public QObject
+class ChartRefresh
 {
-  Q_OBJECT
-
-  signals:
-    void signalDone ();
-
   public:
-    ChartRefresh (QObject *);
-    ~ChartRefresh ();
+    ChartRefresh ();
     int run ();
-
-  public slots:
-//    void scriptDone (QString);
-
-  private:
-    QHash<QString, Script *> _scripts;
 };
 
 #endif

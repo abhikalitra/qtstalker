@@ -19,29 +19,39 @@
  *  USA.
  */
 
-#ifndef SYMBOL_DELETE_HPP
-#define SYMBOL_DELETE_HPP
+#include "CommandScript.h"
+#include "ThreadMessage.h"
+#include "TypeThreadMessage.h"
 
-#include <QStringList>
-#include <QObject>
+#include <QtDebug>
 
-class SymbolDelete : public QObject
+CommandScript::CommandScript ()
 {
-  Q_OBJECT
+  _name = "SCRIPT";
 
-  signals:
-    void signalDone();
+  Data td(QString("perl"));
+  Entity::set(QString("COMMAND"), td);
+  
+  td = Data(TypeData::_FILE);
+  Entity::set(QString("FILE"), td);
+}
 
-  public:
-    SymbolDelete (QObject *p, QStringList);
-    void remove ();
-
-  public slots:
-    void remove2 ();
-    void done ();
-
-  private:
-    QStringList _symbols;
-};
-
-#endif
+QString CommandScript::run (CommandParse &, void *d)
+{
+  Script *script = (Script *) d;
+  
+  Data file, command;
+  Entity::toData(QString("FILE"), file);
+  Entity::toData(QString("COMMAND"), command);
+  
+  Entity e;
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_SCRIPT));
+  e.set(QString("FILE"), file);
+  e.set(QString("COMMAND"), command);
+  
+  ThreadMessage tm;
+  tm.sendMessage(e, script);
+  
+  _returnCode = "OK";
+  return _returnCode;
+}

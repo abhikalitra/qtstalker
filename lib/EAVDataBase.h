@@ -33,6 +33,7 @@
 class EAVDataBase : public DataBase
 {
   public:
+    EAVDataBase ();
     EAVDataBase (QString);
     void init ();
     int remove (QStringList);

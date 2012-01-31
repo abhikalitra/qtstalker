@@ -19,28 +19,31 @@
  *  USA.
  */
 
-#include "CommandGroupDataBase.h"
-#include "EAVDataBase.h"
-#include "KeyGroupDataBase.h"
+#include "CommandIndicator.h"
+#include "Global.h"
+#include "IndicatorFunctions.h"
 
 #include <QtDebug>
 
-CommandGroupDataBase::CommandGroupDataBase ()
+CommandIndicator::CommandIndicator ()
 {
-  _name = "GROUP_DATABASE";
-  _method << "LIST" << "SAVE" << "REMOVE";
+  _name = "INDICATOR";
+  _method << "LIST" << "ADD" << "REMOVE";
   
   Data td(_method, _method.at(0));
   Entity::set(QString("METHOD"), td);
   
-  td = Data(QString());
-  Entity::set(QString("NAME"), td);
+  td = Data(TypeData::_FILE);
+  Entity::set(QString("FILE"), td);
   
   td = Data(QString());
+  Entity::set(QString("COMMAND"), td);
+  
+  td = Data(TypeData::_LIST);
   Entity::set(QString("LIST"), td);
 }
 
-QString CommandGroupDataBase::run (CommandParse &, void *)
+QString CommandIndicator::run (CommandParse &, void *)
 {
   Data method;
   Entity::toData(QString("METHOD"), method);
@@ -51,8 +54,8 @@ QString CommandGroupDataBase::run (CommandParse &, void *)
       if (list())
         return _returnCode;
       break;
-    case 1: // SAVE
-      if (save())
+    case 1: // ADD
+      if (add())
         return _returnCode;
       break;
     case 2: // REMOVE
@@ -60,7 +63,7 @@ QString CommandGroupDataBase::run (CommandParse &, void *)
         return _returnCode;
       break;
     default:
-      qDebug() << "CommandGroupDataBase::run: invalid method" << method.toString();
+      qDebug() << "CommandIndicator::run: invalid method" << method.toString();
       return _returnCode;
       break;
   }
@@ -69,63 +72,48 @@ QString CommandGroupDataBase::run (CommandParse &, void *)
   return _returnCode;
 }
 
-int CommandGroupDataBase::save ()
+int CommandIndicator::add ()
 {
-  Data name, list;
-  Entity::toData(QString("NAME"), name);
+  Data file, command;
+  Entity::toData(QString("FILE"), file);
+  Entity::toData(QString("COMMAND"), command);
+  
+  QStringList l = file.toList();
+  if (! l.size())
+    return 1;
+  
+  QString ts = l.at(0);
+  
+  IndicatorFunctions func;
+  if (func.add(command.toString(), ts))
+    return 1;
+  
+  return 0;
+}
+
+int CommandIndicator::remove ()
+{
+  Data list;
   Entity::toData(QString("LIST"), list);
-
-  KeyGroupDataBase keys;
-  Entity data;
-  data.setName(name.toString());
-  data.set(keys.indexToString(KeyGroupDataBase::_LIST), list);
   
-  EAVDataBase db("groups");
-  db.transaction();
-  if (db.set(data))
-  {
-    qDebug() << "CommandGroupDataBase::save: DataBase error" << name.toString();
+  IndicatorFunctions func;
+  if (func.remove(list.toList()))
     return 1;
-  }
-  db.commit();
   
   return 0;
 }
 
-int CommandGroupDataBase::remove ()
+int CommandIndicator::list ()
 {
-  Data name;
-  Entity::toData(QString("NAME"), name);
-
-  QStringList tl;
-  tl << name.toString();
-  
-  EAVDataBase db("groups");
-  db.transaction();
-  if (db.remove(tl))
-  {
-    qDebug() << "CommandGroupDataBase::remove: DataBase error" << tl;
+  QStringList l;
+  IndicatorFunctions func;
+  if (func.list(l))
     return 1;
-  }
-  db.commit();
-  
-  return 0;
-}
-
-int CommandGroupDataBase::list ()
-{
-  QStringList tl;
-  EAVDataBase db("groups");
-  if (db.names(tl))
-  {
-    qDebug() << "CommandGroupDataBase::list: DataBase error";
-    return 1;
-  }
 
   Data list;
   Entity::toData(QString("LIST"), list);
-  list.set(tl.join(";"));
+  list.set(l);
   Entity::set(QString("LIST"), list);
-  
+
   return 0;
 }

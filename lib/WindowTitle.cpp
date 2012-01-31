@@ -51,7 +51,7 @@ QString WindowTitle::mainWindowTitle (int length)
   QStringList l;
   l << "QtStalker:" + g_session;
   l << "-";
-
+  
   KeySymbol keys;
   Data name;
   g_currentSymbol.toData(keys.indexToString(KeySymbol::_NAME), name);

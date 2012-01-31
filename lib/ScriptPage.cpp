@@ -45,7 +45,6 @@
 #include <QSettings>
 #include <QInputDialog>
 #include <QStatusBar>
-//#include <QTimer>
 
 ScriptPage::ScriptPage (QWidget *p) : QWidget (p)
 {
@@ -54,9 +53,6 @@ ScriptPage::ScriptPage (QWidget *p) : QWidget (p)
   createGUI();
 
   queStatus();
-  
-//  QTimer::singleShot(1000, this, SLOT(runStartupScripts()));  
-//  QTimer::singleShot(1000, this, SLOT(setupScriptTimers()));  
 }
 
 void ScriptPage::createGUI ()
@@ -181,7 +177,9 @@ void ScriptPage::runScript ()
 
   ScriptRunDialog *dialog = new ScriptRunDialog(this,
                                                 settings.value("script_panel_last_external_script").toString(),
-                                                QString("perl"));
+                                                QString("perl"),
+						QString(),
+						Entity());
   connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(runScript(QString, QString)));
   dialog->show();
 }
@@ -210,7 +208,7 @@ void ScriptPage::runScript (QString command, QString file)
   QSettings settings(g_localSettings);
   settings.setValue("script_panel_last_external_script", file);
   settings.sync();
-  
+
   script->start();
 }
 
@@ -275,34 +273,6 @@ void ScriptPage::launchButtonCols2 (int d)
   settings.sync();
 }
 
-void ScriptPage::setupScriptTimers ()
-{
-  KeyScriptDataBase skeys;
-  EAVSearch search;
-  search.append(skeys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), ">", "0");
-
-  EAVDataBase db("scripts");
-  QStringList l;
-  if (db.search(search, l))
-  {
-    qDebug() << "ScriptPage::setupScriptTimers: db error";
-    return;
-  }
-
-  ScriptTimerFunctions stf;
-  int loop = 0;
-  for (; loop < l.size(); loop++)
-  {
-    Entity st;
-    st.setName(l.at(loop));
-
-    if (db.get(st))
-      continue;
-
-    stf.add(st);
-  }
-}
-
 QListWidget * ScriptPage::list ()
 {
   return _queList;
@@ -317,18 +287,17 @@ void ScriptPage::newScriptTimer ()
 
 void ScriptPage::editScriptTimer ()
 {
-  WindowTitle wt;
-  DialogSelect *dialog = new DialogSelect(this, QString(), Entity());
-  dialog->setWindowTitle(wt.title(tr("Select script timer to edit"), QString()));
-
+  ScriptTimerFunctions stf;
   QStringList l;
-  EAVDataBase db("scripts");
-  if (db.names(l))
+  if (stf.names(l))
   {
     qDebug() << "ScriptPage::editScriptTimer: db error";
     return;
   }
 
+  WindowTitle wt;
+  DialogSelect *dialog = new DialogSelect(this, QString(), Entity());
+  dialog->setWindowTitle(wt.title(tr("Select script timer to edit"), QString()));
   dialog->setItems(l);
   dialog->setTitle(tr("Scripts"));
   dialog->setMode(1);
@@ -359,15 +328,18 @@ void ScriptPage::editScriptTimer3 (QString d)
 
 void ScriptPage::deleteScriptTimer ()
 {
+  ScriptTimerFunctions stf;
+  QStringList l;
+  if (stf.names(l))
+  {
+    qDebug() << "ScriptPage::deleteScriptTimer: db error";
+    return;
+  }
+
   WindowTitle wt;
   DialogSelect *dialog = new DialogSelect(this, QString(), Entity());
   dialog->setWindowTitle(wt.title(tr("Select script timer to delete"), QString()));
-
-  QStringList l;
-  EAVDataBase db("scripts");
-  db.names(l);
   dialog->setItems(l);
-
   dialog->setTitle(tr("Scripts"));
   dialog->setMode(1);
   connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(deleteScriptTimer2(QStringList)));

@@ -19,40 +19,22 @@
  *  USA.
  */
 
-#include "IndicatorAdd.h"
+#include "IndicatorFunctions.h"
 #include "GlobalParent.h"
-//#include "EAVDataBase.h"
-#include "ScriptRunDialog.h"
-//#include "KeyIndicatorDataBase.h"
-//#include "DialogNew.h"
 #include "GlobalSidePanel.h"
-#include "WindowTitle.h"
 #include "Global.h"
+#include "EAVSearch.h"
+#include "KeyIndicatorDataBase.h"
 
 #include <QtDebug>
 #include <QSettings>
 
-IndicatorAdd::IndicatorAdd (QObject *p) : QObject (p)
+IndicatorFunctions::IndicatorFunctions ()
 {
+  _db = EAVDataBase("indicators");
 }
 
-void IndicatorAdd::add ()
-{
-  QSettings settings(g_localSettings);
-
-  ScriptRunDialog *dialog = new ScriptRunDialog(g_parent,
-                                                settings.value("add_indicator_last_script").toString(),
-                                                settings.value("add_indicator_last_command", "perl").toString());
-  connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(add2(QString, QString)));
-  connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
-  
-  WindowTitle wt;
-  dialog->setWindowTitle(wt.title(tr("Add Indicator"), QString()));
-  
-  dialog->show();
-}
-
-void IndicatorAdd::add2 (QString command, QString file)
+int IndicatorFunctions::add (QString command, QString file)
 {
   QSettings settings(g_localSettings);
   settings.setValue("add_indicator_last_script", file);
@@ -60,12 +42,36 @@ void IndicatorAdd::add2 (QString command, QString file)
   settings.sync();
 
   // launch indicator
-  g_sidePanel->scriptPanel()->runScript(command, file);
-
-  done();
+//  g_sidePanel->scriptPanel()->runScript(command, file);
+  
+  return 0;
 }
 
-void IndicatorAdd::done ()
+int IndicatorFunctions::remove (QStringList l)
 {
-  deleteLater();
+  _db.transaction();
+  if (_db.remove(l))
+  {
+    qDebug() << "IndicatorFunctions::remove: database error";
+    return 1;
+  }
+  _db.commit();
+
+//  g_plotGroup->removePlot(_indicator);
+
+  return 0;
+}
+
+int IndicatorFunctions::list (QStringList &l)
+{
+  l.clear();
+  
+  KeyIndicatorDataBase keys;
+  EAVSearch search;
+  search.append(keys.indexToString(KeyIndicatorDataBase::_SESSION), "=", g_session);
+  
+  if (_db.search(search, l))
+    return 1;
+  
+  return 0;
 }

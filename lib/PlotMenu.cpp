@@ -21,9 +21,9 @@
 
 #include "PlotMenu.h"
 #include "GlobalParent.h"
-#include "IndicatorRemove.h"
-#include "IndicatorAdd.h"
 #include "ChartObjectDeleteAll.h"
+#include "Global.h"
+#include "GlobalSidePanel.h"
 
 #include "../pics/buyarrow.xpm"
 #include "../pics/sellarrow.xpm"
@@ -36,6 +36,7 @@
 #include "../pics/add.xpm"
 
 #include <QtDebug>
+#include <QSettings>
 
 PlotMenu::PlotMenu (QWidget *p, QString pn) : QMenu (p)
 {
@@ -166,12 +167,20 @@ void PlotMenu::setCOMenuStatus (bool status)
 
 void PlotMenu::addIndicator ()
 {
-  IndicatorAdd *ai = new IndicatorAdd(0);
-  ai->add();
+  QSettings settings(g_globalSettings);
+  
+  QString file = settings.value("system_script_directory").toString();
+  file.append("IndicatorAdd.pl");
+  
+  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
 }
 
 void PlotMenu::removeIndicator ()
 {
-  IndicatorRemove *ri = new IndicatorRemove(g_parent, _plotName);
-  ri->run();
+  QSettings settings(g_globalSettings);
+  
+  QString file = settings.value("system_script_directory").toString();
+  file.append("IndicatorRemove.pl");
+
+  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
 }

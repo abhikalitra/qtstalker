@@ -19,25 +19,16 @@
  *  USA.
  */
 
-#include "Keys.h"
+#ifndef COMMAND_CHART_REMOVE_HPP
+#define COMMAND_CHART_REMOVE_HPP
 
-#include <QtDebug>
+#include "Command.h"
 
-Keys::Keys ()
+class CommandChartRemove : public Command
 {
-}
+  public:
+    CommandChartRemove ();
+    QString run (CommandParse &, void *);
+};
 
-QStringList Keys::list ()
-{
-  return _list;
-}
-
-QString Keys::indexToString (int k)
-{
-  return _list.at(k);
-}
-
-int Keys::stringToIndex (QString d)
-{
-  return _list.indexOf(d);
-}
+#endif

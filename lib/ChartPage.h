@@ -57,11 +57,13 @@ class ChartPage : public QWidget
     void rightClick (const QPoint &);
     void chartOpened (QString);
     void addToGroup ();
+    void addToGroup2 (QStringList);
     void symbolSearch ();
     void setSearch (QString symbol);
     void setSearchDummy (QString symbol, QString, QStringList);
     void allButtonPressed ();
     void deleteSymbol ();
+    void deleteSymbol2 ();
     void itemClicked (QListWidgetItem *);
     void updateList ();
     void itemSelectionChanged ();

@@ -21,13 +21,13 @@
 
 #include "GroupPage.h"
 #include "Global.h"
-#include "EAVDataBase.h"
 #include "QuoteDataBase.h"
 #include "GroupEditDialog.h"
-#include "GroupAdd.h"
-#include "GroupDelete.h"
 #include "ChartLoad.h"
 #include "KeyGroupDataBase.h"
+#include "GroupFunctions.h"
+#include "DialogSelect.h"
+#include "WindowTitle.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -136,9 +136,32 @@ void GroupPage::editGroup ()
 
 void GroupPage::deleteGroup ()
 {
-  GroupDelete *gd = new GroupDelete(this);
-  connect(gd, SIGNAL(signalDone()), this, SLOT(updateGroups()));
-  gd->run();
+  GroupFunctions gf;
+  QStringList names;
+  gf.names(names);
+  
+  if (! names.size())
+    return;
+
+  WindowTitle wt;
+  DialogSelect *dialog = new DialogSelect(0, QString(), Entity());
+  dialog->setWindowTitle(wt.title(tr("Delete Group"), QString()));
+  dialog->setItems(names);
+  dialog->setTitle(tr("Groups"));
+  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(deleteGroup2(QStringList)));
+  dialog->show();
+}
+
+void GroupPage::deleteGroup2 (QStringList l)
+{
+  GroupFunctions gf;
+  if (gf.remove(l))
+  {
+    qDebug() << "GroupPage::deleteGroup2: error removing groups";
+    return;
+  }
+  
+  updateGroups();
 }
 
 void GroupPage::groupSelected (int i)
@@ -157,8 +180,8 @@ void GroupPage::groupSelected (int i)
 
 void GroupPage::chartOpened (QString d)
 {
-  ChartLoad *cl = new ChartLoad(this, d);
-  cl->run();
+  ChartLoad cl;
+  cl.run(d);
 }
 
 void GroupPage::rightClick (const QPoint &)
@@ -170,14 +193,14 @@ void GroupPage::loadGroups ()
 {
   _groups->clear();
 
-  EAVDataBase db("groups");
-  QStringList l;
-  db.names(l);
+  GroupFunctions gf;
+  QStringList names;
+  gf.names(names);
 
-  if (! l.size())
+  if (! names.size())
     return;
 
-  _groups->addItems(l);
+  _groups->addItems(names);
 }
 
 void GroupPage::updateGroups ()
@@ -204,6 +227,12 @@ void GroupPage::updateGroups ()
 
 void GroupPage::addToGroup ()
 {
+  GroupFunctions gf;
+  QStringList names;
+  gf.names(names);
+  if (! names.size())
+    return;
+  
   QList<QListWidgetItem *> l = _nav->selectedItems();
   if (! l.size())
     return;
@@ -213,9 +242,30 @@ void GroupPage::addToGroup ()
   for (; loop < l.size(); loop++)
     tl << l.at(loop)->text();
 
-  GroupAdd *ga = new GroupAdd(this, tl);
-  connect(ga, SIGNAL(signalDone()), this, SLOT(updateList()));
-  ga->run();
+  WindowTitle wt;
+  DialogSelect *dialog = new DialogSelect(this, QString(), Entity());
+  dialog->setItems(names);
+  dialog->setTitle(tr("Groups"));
+  dialog->setMode(1);
+  dialog->setWindowTitle(wt.title(tr("Add To Group"), QString()));
+  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(addToGroup2(QStringList)));
+  dialog->show();
+}
+
+void GroupPage::addToGroup2 (QStringList l)
+{
+  if (! l.size())
+    return;
+    
+  GroupFunctions gf;
+  int loop = 0;
+  for (; loop < l.size(); loop++)
+  {
+    if (gf.add(l.at(loop)))
+      qDebug() << "GroupPage::addToGroup2: database error item" << l.at(loop);
+  }
+  
+  updateList();
 }
 
 void GroupPage::updateList ()
@@ -228,8 +278,8 @@ void GroupPage::updateList ()
   Entity group;
   group.setName(_groups->currentText());
   
-  EAVDataBase db("groups");
-  if (db.get(group))
+  GroupFunctions gf;
+  if (gf.get(group))
   {
     qDebug() << "GroupPage::updateList: EAVDataBase error for" << _groups->currentText();
     return;

@@ -31,68 +31,9 @@ CommandSet::CommandSet ()
 
 QString CommandSet::run (CommandParse &sg, void *scr)
 {
-  Script *script = (Script *) scr;
-  int pos = 0;
-  QString name = sg.value(pos);
-  Command *c = script->scriptCommand(name);
-  if (! c)
-  {
-    qDebug() << "CommandSet::run: invalid object name" << name;
-    return _returnCode;
-  }
-
-  if (c->setData(sg))
+  if (Command::setData(sg, scr))
     return _returnCode;
   
   _returnCode = "OK";
   return _returnCode;
 }
-
-/*
-QString CommandSet::run (CommandParse &sg, void *scr)
-{
-  Script *script = (Script *) scr;
-  int loop = 0;
-  for (; loop < sg.values(); loop += 3)
-  {
-    int pos = loop;
-    QString name = sg.value(pos++);
-    Command *c = script->scriptCommand(name);
-    if (! c)
-    {
-      qDebug() << "CommandSet::run: invalid object name" << name;
-      return _returnCode;
-    }
-
-    QString settingName = sg.value(pos++);
-    Data setting;
-    if (c->toData(settingName, setting))
-    {
-      qDebug() << "CommandSet::run: invalid setting name" << settingName;
-      return _returnCode;
-    }
-  
-    QString newValue = sg.value(pos++);
-    
-    switch ((TypeData::Key) setting.type())
-    {
-//      case TypeData::_LIST:
-      case TypeData::_FILE:
-	setting.set(newValue.split(";"));
-        break;
-      default:
-        if (setting.set(newValue, setting.type()))
-        {
-          qDebug() << "CommandSet::run: invalid value";
-          return _returnCode;
-        }
-        break;
-    }
-    
-    c->set(settingName, setting);
-  }
-
-  _returnCode = "OK";
-  return _returnCode;
-}
-*/

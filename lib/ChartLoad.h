@@ -22,26 +22,13 @@
 #ifndef CHART_LOAD_HPP
 #define CHART_LOAD_HPP
 
-#include <QObject>
 #include <QString>
-#include <QHash>
 
-#include "Script.h"
-
-class ChartLoad : public QObject
+class ChartLoad
 {
-  Q_OBJECT
-
   public:
-    ChartLoad (QObject *, QString);
-    void run ();
-
-  public slots:
-    void symbolLoadDone (QString, int);
-
-  private:
-    QString _symbol;
-    QHash<QString, Script *> _scripts;
+    ChartLoad ();
+    void run (QString);
 };
 
 #endif

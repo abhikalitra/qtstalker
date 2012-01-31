@@ -86,7 +86,7 @@ void Script::run ()
     // wait until we have some input from _process
     _proc.waitForReadyRead(-1);
     QByteArray ba = _proc.readAllStandardOutput();
-//    qDebug() << _file << ba;
+    qDebug() << _file << ba;
 
     // check for end of script
     QString s(ba);

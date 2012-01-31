@@ -23,14 +23,15 @@
 #include "GlobalScriptTimer.h"
 #include "GlobalParent.h"
 #include "GlobalSidePanel.h"
-#include "EAVDataBase.h"
 #include "KeyScriptDataBase.h"
+#include "EAVSearch.h"
 
 #include <QtDebug>
 #include <QObject>
 
 ScriptTimerFunctions::ScriptTimerFunctions ()
 {
+  _db = EAVDataBase("scripts");
 }
 
 int ScriptTimerFunctions::add (Entity &timer)
@@ -58,14 +59,13 @@ int ScriptTimerFunctions::add (Entity &timer)
 
 int ScriptTimerFunctions::save (Entity &timer)
 {
-  EAVDataBase db("scripts");
-  db.transaction();
-  if (db.set(timer))
+  _db.transaction();
+  if (_db.set(timer))
   {
     qDebug() << "ScriptTimerFunctions::save: EAVDataBase error" << timer.name();
     return 1;
   }
-  db.commit();
+  _db.commit();
   
   return 0;
 }
@@ -85,10 +85,9 @@ int ScriptTimerFunctions::remove (QStringList l)
     delete st;
   }
 
-  EAVDataBase db("scripts");
-  db.transaction();
-  db.remove(l);
-  db.commit();
+  _db.transaction();
+  _db.remove(l);
+  _db.commit();
   
   return 0;
 }
@@ -96,12 +95,10 @@ int ScriptTimerFunctions::remove (QStringList l)
 int ScriptTimerFunctions::modified (QString d)
 {
   KeyScriptDataBase keys;
-  EAVDataBase db("scripts");
-
   Entity data;
   data.setName(d);
 
-  if (db.get(data))
+  if (_db.get(data))
     return 1;
 
   Data interval;
@@ -136,5 +133,46 @@ int ScriptTimerFunctions::modified (QString d)
     }
   }
   
+  return 0;
+}
+
+int ScriptTimerFunctions::setup ()
+{
+  QStringList l;
+  if (names(l))
+  {
+    qDebug() << "ScriptTimerFunctions::setup: db error";
+    return 1;
+  }
+
+  int loop = 0;
+  for (; loop < l.size(); loop++)
+  {
+    Entity st;
+    st.setName(l.at(loop));
+
+    if (_db.get(st))
+      continue;
+
+    add(st);
+  }
+  
+  return 0;
+}
+
+int ScriptTimerFunctions::names (QStringList &l)
+{
+  l.clear();
+  
+  KeyScriptDataBase skeys;
+  EAVSearch search;
+  search.append(skeys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), ">", "0");
+
+  if (_db.search(search, l))
+  {
+    qDebug() << "ScriptTimerFunctions::names: db error";
+    return 1;
+  }
+
   return 0;
 }

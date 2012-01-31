@@ -19,30 +19,16 @@
  *  USA.
  */
 
-#ifndef GROUP_ADD_HPP
-#define GROUP_ADD_HPP
+#ifndef COMMAND_DIALOG_SCRIPT_HPP
+#define COMMAND_DIALOG_SCRIPT_HPP
 
-#include <QStringList>
-#include <QObject>
+#include "Command.h"
 
-class GroupAdd : public QObject
+class CommandDialogScript : public Command
 {
-  Q_OBJECT
-
-  signals:
-    void signalDone();
-
   public:
-    GroupAdd (QObject *p, QStringList);
-    void run ();
-
-  public slots:
-    void add ();
-    void add2 (QStringList);
-    void done ();
-
-  private:
-    QStringList _symbols;
+    CommandDialogScript ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

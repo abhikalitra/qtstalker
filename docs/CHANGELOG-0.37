@@ -1347,4 +1347,11 @@
            Once the website has been updated it will be the central repository for everything qtstalker. Hopefully
            we can build a user community there.
 
+*********************************************************************************************************************
+
+20120130:  Changed the script GET and SET() command format to allow for referencing command objects directly
+           rather than having to GET() and SET() between command objects. Scripts have been updated to new
+           format. These changes allow for reducing commands and faster execution overall.
+
+
            

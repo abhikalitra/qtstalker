@@ -36,7 +36,7 @@ class ScriptRunDialog : public Dialog
     void signalDone (QString, QString);
 
   public:
-    ScriptRunDialog (QWidget *, QString file, QString command);
+    ScriptRunDialog (QWidget *, QString file, QString command, QString id, Entity);
     void createGUI ();
 
   public slots:

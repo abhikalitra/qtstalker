@@ -38,6 +38,8 @@
 #include "DockWidget.h"
 #include "ChartLoad.h"
 #include "KeySymbol.h"
+#include "ScriptTimerFunctions.h"
+#include "WindowTitle.h"
 
 #include "../pics/qtstalker.xpm"
 
@@ -61,12 +63,9 @@ QtstalkerApp::QtstalkerApp (QString session, QString asset)
 
   loadSettings();
 
-  QString s = "QtStalker" + g_session;
-  setWindowTitle(s);
+  WindowTitle wt;
+  setWindowTitle(wt.mainWindowTitle(-1));
 
-  g_sidePanel->scriptPanel()->runStartupScripts();
-  g_sidePanel->scriptPanel()->setupScriptTimers();
-  
   QTimer::singleShot(100, this, SLOT(afterStartup()));
 }
 
@@ -221,12 +220,19 @@ void QtstalkerApp::commandLineAsset ()
     return;
   }
 
-  ChartLoad *cl = new ChartLoad(this, _clAsset);
-  cl->run();
+  ChartLoad cl;
+  cl.run(_clAsset);
 }
 
 void QtstalkerApp::afterStartup ()
 {
+  // run startup scripts
+  g_sidePanel->scriptPanel()->runStartupScripts();
+  
+  // setup script timers
+  ScriptTimerFunctions stf;
+  stf.setup();
+  
   // check if we are going to display a chart from the command line
   if (! _clAsset.isEmpty())
     commandLineAsset();
@@ -238,7 +244,7 @@ void QtstalkerApp::afterStartup ()
     if (symbol.isEmpty())
       return;
 
-    ChartLoad *cl = new ChartLoad(this, symbol);
-    cl->run();
+    ChartLoad cl;
+    cl.run(symbol);
   }
 }

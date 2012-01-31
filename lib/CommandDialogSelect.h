@@ -19,26 +19,16 @@
  *  USA.
  */
 
-#ifndef INDICATOR_REMOVE_HPP
-#define INDICATOR_REMOVE_HPP
+#ifndef COMMAND_DIALOG_SELECT_HPP
+#define COMMAND_DIALOG_SELECT_HPP
 
-#include <QString>
-#include <QObject>
+#include "Command.h"
 
-class IndicatorRemove : public QObject
+class CommandDialogSelect : public Command
 {
-  Q_OBJECT
-
   public:
-    IndicatorRemove (QObject *p, QString indicator);
-    void run ();
-
-  public slots:
-    void remove2 ();
-    void done ();
-
-  private:
-    QString _indicator;
+    CommandDialogSelect ();
+    QString run (CommandParse &, void *);
 };
 
 #endif

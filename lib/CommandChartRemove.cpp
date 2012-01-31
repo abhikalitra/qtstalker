@@ -19,18 +19,36 @@
  *  USA.
  */
 
-#include "SymbolKey.h"
+#include "CommandChartRemove.h"
+#include "TypeThreadMessage.h"
+#include "Script.h"
+#include "ThreadMessage.h"
 
 #include <QtDebug>
 
-SymbolKey::SymbolKey ()
+CommandChartRemove::CommandChartRemove ()
 {
-  _list << "SYMBOL";
-  _list << "NAME";
-  _list << "LENGTH";
-  _list << "RANGE";
-  _list << "START_DATE";
-  _list << "END_DATE";
-  _list << "TABLE";
-  _list << "TYPE";
+  _name = "CHART_REMOVE";
+
+  Data td(TypeData::_LIST);
+  td.setLabel(QObject::tr("Charts"));
+  Entity::set(QString("LIST"), td);
+}
+
+QString CommandChartRemove::run (CommandParse &, void *d)
+{
+  Script *script = (Script *) d;
+  
+  Data list;
+  Entity::toData(QString("LIST"), list);
+
+  Entity e;
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_REMOVE));
+  e.set(QString("LIST"), list);
+
+  ThreadMessage tm;
+  tm.sendMessage(e, script);
+  
+  _returnCode = "OK";
+  return _returnCode;
 }

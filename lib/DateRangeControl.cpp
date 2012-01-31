@@ -93,8 +93,8 @@ void DateRangeControl::rangeChanged (QAction *d)
   
   g_currentSymbol.set(keys.indexToString(KeySymbol::_RANGE), Data(_dateRange));
 
-  ChartLoad *cl = new ChartLoad(this, symbol.toString());
-  cl->run();
+  ChartLoad cl;
+  cl.run(symbol.toString());
 
 //  emit signalDateRangeChanged();
 }

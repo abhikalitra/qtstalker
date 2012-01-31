@@ -34,6 +34,9 @@ QStringList Type::list ()
 
 QString Type::indexToString (int k)
 {
+  if (k < 0 || k >= _list.size())
+    return QString();
+  
   return _list.at(k);
 }
 

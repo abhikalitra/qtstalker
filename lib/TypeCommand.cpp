@@ -46,6 +46,7 @@ TypeCommand::TypeCommand ()
   _list << "CHART_OBJECT_TLINE";
   _list << "CHART_OBJECT_VLINE";
   _list << "CHART_PANEL_REFRESH";
+  _list << "CHART_REMOVE";
   _list << "CHART_UPDATE";
   _list << "CMO";
   _list << "COMPARE";
@@ -55,6 +56,8 @@ TypeCommand::TypeCommand ()
   _list << "DIALOG";
   _list << "DIALOG_MESSAGE";
   _list << "DIALOG_NEW";
+  _list << "DIALOG_SCRIPT";
+  _list << "DIALOG_SELECT";
   _list << "DIALOG_USER";
   _list << "FI";
   _list << "GET";
@@ -63,6 +66,7 @@ TypeCommand::TypeCommand ()
   _list << "HT";
   _list << "HT_PHASOR";
   _list << "HT_SINE";
+  _list << "INDICATOR";
   _list << "LINEARREG";
   _list << "LOAD";
   _list << "MA";
@@ -84,6 +88,7 @@ TypeCommand::TypeCommand ()
   _list << "RUN";
   _list << "SAR";
   _list << "SAVE";
+  _list << "SCRIPT";
   _list << "SCRIPT_DATABASE";
   _list << "SET";
   _list << "SHIFT";

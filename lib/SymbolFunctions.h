@@ -19,21 +19,17 @@
  *  USA.
  */
 
-#include "CurveBarKey.h"
+#ifndef SYMBOL_FUNCTIONS_HPP
+#define SYMBOL_FUNCTIONS_HPP
 
-#include <QtDebug>
+#include <QStringList>
 
-CurveBarKey::CurveBarKey ()
+class SymbolFunctions
 {
-  _list << "DATE";
-  _list << "OPEN";
-  _list << "HIGH";
-  _list << "LOW";
-  _list << "CLOSE";
-  _list << "VOLUME";
-  _list << "OI";
-  _list << "COLOR";
-  _list << "VALUE";
-  _list << "UP";
-  _list << "DOWN";
-}
+  public:
+    SymbolFunctions ();
+    int load (QString);
+    int remove (QStringList);
+};
+
+#endif

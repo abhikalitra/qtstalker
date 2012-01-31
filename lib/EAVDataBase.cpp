@@ -24,6 +24,10 @@
 
 #include <QtDebug>
 
+EAVDataBase::EAVDataBase ()
+{
+}
+
 EAVDataBase::EAVDataBase (QString table)
 {
   _table = table;

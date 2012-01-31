@@ -54,13 +54,8 @@ $command = "LOAD($csvCommandName, $csvDialogSettingsKey)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-# get the yahoo csv file location
-$command = "GET($yahooCommandName, CSV_FILE)";
-print STDOUT $command;
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
-
 # set the csv dialog csv file location
-$command = "SET($csvCommandName, CSV_FILE, $rc)";
+$command = "SET($csvCommandName.CSV_FILE, $yahooCommandName.CSV_FILE)";
 print STDOUT $command;
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 

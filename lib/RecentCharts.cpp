@@ -91,8 +91,8 @@ void RecentCharts::addRecentChart (QString d)
 void RecentCharts::itemSelected (QAction *d)
 {
   // load chart
-  ChartLoad *cl = new ChartLoad(this, _symbols.value(d->text()));
-  cl->run();
+  ChartLoad cl;
+  cl.run(_symbols.value(d->text()));
 
 //  emit signalChartSelected(_symbols.value(d->text()));
 }

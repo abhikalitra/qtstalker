@@ -93,8 +93,8 @@ void BarLengthButton::lengthChanged (QAction *d)
 
   g_currentSymbol.set(keys.indexToString(KeySymbol::_LENGTH), Data(_barLength));
   
-  ChartLoad *cl = new ChartLoad(this, symbol.toString());
-  cl->run();
+  ChartLoad cl;
+  cl.run(symbol.toString());
 
 //  emit signalBarLengthChanged(_barLength);
 }

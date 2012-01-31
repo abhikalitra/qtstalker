@@ -84,6 +84,18 @@
         <source>Unselect All</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add To Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm symbol delete</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ConfigureButton</name>
@@ -408,28 +420,6 @@ App restart required to take effect</source>
     </message>
 </context>
 <context>
-    <name>GroupAdd</name>
-    <message>
-        <source>Groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add To Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>GroupDelete</name>
-    <message>
-        <source>Delete Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>GroupEditDialog</name>
     <message>
         <source>Edit Group</source>
@@ -498,25 +488,23 @@ App restart required to take effect</source>
         <source>&amp;Delete Group</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Delete Group</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Groups</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add To Group</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>IconButton</name>
     <message>
         <source>Select Icon</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>IndicatorAdd</name>
-    <message>
-        <source>Add Indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>IndicatorRemove</name>
-    <message>
-        <source>Confirm indicator removal</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1208,6 +1196,10 @@ App restart required to take effect</source>
         <source>Table</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Charts</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtstalkerApp</name>
@@ -1408,13 +1400,6 @@ App restart required to take effect</source>
     <name>SymbolButton</name>
     <message>
         <source> Symbols</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SymbolDelete</name>
-    <message>
-        <source>Confirm symbol delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

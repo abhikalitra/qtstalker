@@ -29,6 +29,9 @@
 #include "GlobalSidePanel.h"
 #include "DialogMessage.h"
 #include "DialogNew.h"
+#include "ScriptRunDialog.h"
+#include "DialogSelect.h"
+#include "GlobalPlotGroup.h"
 
 #include <QtDebug>
 #include <QUuid>
@@ -73,6 +76,18 @@ void ThreadMessage::getMessage (QString id)
     case TypeThreadMessage::_DIALOG_NEW:
     {
       DialogNew *dialog = new DialogNew(g_parent, id, e);
+      dialog->show();
+      break;
+    }
+    case TypeThreadMessage::_DIALOG_SCRIPT:
+    {
+      ScriptRunDialog *dialog = new ScriptRunDialog(g_parent, QString(), QString(), id, e);
+      dialog->show();
+      break;
+    }
+    case TypeThreadMessage::_DIALOG_SELECT:
+    {
+      DialogSelect *dialog = new DialogSelect(g_parent, id, e);
       dialog->show();
       break;
     }
@@ -123,15 +138,22 @@ void ThreadMessage::runMessage (Entity &e)
     case TypeThreadMessage::_CHART_PANEL_REFRESH:
       g_sidePanel->chartPanel()->updateList();
       break;
+    case TypeThreadMessage::_CHART_REMOVE:
+    {
+      Data list;
+      e.toData(QString("LIST"), list);
+      QStringList l = list.toList();
+      int loop = 0;
+      for (; loop < l.size(); loop++)
+        g_plotGroup->removePlot(l.at(loop));
+      break;
+    }
     case TypeThreadMessage::_CHART_UPDATE:
     {
       ChartUpdate cu;
       cu.update(e);
       break;
     }
-    case TypeThreadMessage::_GROUP_PANEL_REFRESH:
-      g_sidePanel->groupPanel()->updateGroups();
-      break;
     case TypeThreadMessage::_DIALOG_MESSAGE:
     {
       Data td;
@@ -140,6 +162,18 @@ void ThreadMessage::runMessage (Entity &e)
       DialogMessage *md = new DialogMessage(g_parent);
       md->setMessage(td.toString());
       md->show();
+      break;
+    }
+    case TypeThreadMessage::_GROUP_PANEL_REFRESH:
+      g_sidePanel->groupPanel()->updateGroups();
+      break;
+    case TypeThreadMessage::_SCRIPT:
+    {
+      Data file, command;
+      e.toData(QString("FILE"), file);
+      e.toData(QString("COMMAND"), command);
+    
+      g_sidePanel->scriptPanel()->runScript(command.toString(), file.toString());
       break;
     }
     default:

@@ -29,6 +29,7 @@
 #include "ThreadMessage.h"
 
 #include <QtDebug>
+#include <QObject>
 
 CommandChartUpdate::CommandChartUpdate ()
 {

@@ -19,31 +19,28 @@
  *  USA.
  */
 
-
-#include "SymbolLoad.h"
-#include "Global.h"
-#include "GlobalSymbol.h"
+#include "SymbolFunctions.h"
 #include "QuoteDataBase.h"
+#include "Symbol.h"
 #include "KeySymbol.h"
-#include "WindowTitle.h"
+#include "GlobalSymbol.h"
+#include "Global.h"
 
-#include <QStringList>
+#include <QtDebug>
+#include <QMutexLocker>
 #include <QSettings>
 
-SymbolLoad::SymbolLoad (QObject *p, QString symbol) : QThread (p)
+SymbolFunctions::SymbolFunctions ()
 {
-  _symbol = symbol;
 }
 
-void SymbolLoad::run ()
+int SymbolFunctions::load (QString symbol)
 {
-  // do all the stuff we need to do to load a chart
-
   QMutexLocker locker(&g_currentSymbolMutex);
 
   KeySymbol skeys;
   g_currentSymbol = Symbol();
-  g_currentSymbol.set(skeys.indexToString(KeySymbol::_SYMBOL), Data(_symbol));
+  g_currentSymbol.set(skeys.indexToString(KeySymbol::_SYMBOL), Data(symbol));
 
   QSettings settings(g_localSettings);
   int length = settings.value("bar_length").toInt();
@@ -54,17 +51,31 @@ void SymbolLoad::run ()
   if (db.getBars(g_currentSymbol))
   {
     qDebug() << "SymbolLoad::run: QuoteDataBase error";
-    emit signalError();
-    deleteLater();
-    return;
+    return 1;
   }
 
   // update settings file
-  settings.setValue("current_symbol", _symbol);
+  settings.setValue("current_symbol", symbol);
   settings.sync();
 
-  WindowTitle wt;
-  emit signalDone(wt.mainWindowTitle(length), g_currentSymbol.ekeyCount());
+  return 0;
+}
 
-  deleteLater();
+int SymbolFunctions::remove (QStringList l)
+{
+  QuoteDataBase db;
+  db.transaction();
+
+  KeySymbol keys;
+  int loop = 0;
+  for (; loop < l.size(); loop++)
+  {
+    Symbol bd;
+    bd.set(keys.indexToString(KeySymbol::_SYMBOL), Data(l.at(loop)));
+    db.deleteSymbol(&bd);
+  }
+
+  db.commit();
+
+  return 0;
 }

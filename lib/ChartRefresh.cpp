@@ -21,22 +21,17 @@
 
 
 #include "ChartRefresh.h"
-#include "Global.h"
-#include "GlobalPlotGroup.h"
+#include "KeyIndicatorDataBase.h"
 #include "EAVDataBase.h"
 #include "EAVSearch.h"
-#include "KeyIndicatorDataBase.h"
+#include "GlobalPlotGroup.h"
 #include "GlobalSidePanel.h"
+#include "Global.h"
 
 #include <QStringList>
 
-ChartRefresh::ChartRefresh (QObject *p) : QObject (p)
+ChartRefresh::ChartRefresh ()
 {
-}
-
-ChartRefresh::~ChartRefresh ()
-{
-  emit signalDone();
 }
 
 int ChartRefresh::run ()
@@ -77,8 +72,6 @@ int ChartRefresh::run ()
     // launch indicator
     g_sidePanel->scriptPanel()->runScript(command.toString(), file.toString());
   }
-
-  deleteLater();
 
   return 0;
 }

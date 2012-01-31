@@ -29,7 +29,7 @@ class CommandGet : public Command
   public:
     CommandGet ();
     QString run (CommandParse &, void *);
-    int commandGetValue (CommandParse &, void *);
+    int commandGetValue (QStringList &, void *);
 };
 
 #endif

@@ -31,15 +31,15 @@ i18n.files = ../i18n/*.qm
 INSTALLS += i18n
 
 # install the db update files
-dbUpdate.path = "$${INSTALL_DATA_DIR}/qtstalker/db"
-dbUpdate.files = *.csv
-dbUpdate.files += default_indicators
-INSTALLS += dbUpdate
+#dbUpdate.path = "$${INSTALL_DATA_DIR}/qtstalker/db"
+#dbUpdate.files = *.csv
+#dbUpdate.files += default_indicators
+#INSTALLS += dbUpdate
 
 # install the alert script files
-alert.path = "$${INSTALL_DATA_DIR}/qtstalker/alert"
-alert.files = ../Scripts/alert/*.pl
-INSTALLS += alert
+#alert.path = "$${INSTALL_DATA_DIR}/qtstalker/alert"
+#alert.files = ../Scripts/alert/*.pl
+#INSTALLS += alert
 
 # install the indicator script files
 indicator.path = "$${INSTALL_DATA_DIR}/qtstalker/indicator"
@@ -52,9 +52,9 @@ quote.files = ../Scripts/quote/*.pl
 INSTALLS += quote
 
 # install the scanner script files
-scanner.path = "$${INSTALL_DATA_DIR}/qtstalker/scanner"
-scanner.files = ../Scripts/scanner/*.pl
-INSTALLS += scanner
+#scanner.path = "$${INSTALL_DATA_DIR}/qtstalker/scanner"
+#scanner.files = ../Scripts/scanner/*.pl
+#INSTALLS += scanner
 
 # install the system script files
 system.path = "$${INSTALL_DATA_DIR}/qtstalker/system"
@@ -62,6 +62,6 @@ system.files = ../Scripts/system/*.pl
 INSTALLS += system
 
 # install the test script files
-tester.path = "$${INSTALL_DATA_DIR}/qtstalker/test"
-tester.files = ../Scripts/test/*.pl
-INSTALLS += tester
+#tester.path = "$${INSTALL_DATA_DIR}/qtstalker/test"
+#tester.files = ../Scripts/test/*.pl
+#INSTALLS += tester

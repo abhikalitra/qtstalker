@@ -19,27 +19,23 @@
  *  USA.
  */
 
-#ifndef SYMBOL_LOAD_HPP
-#define SYMBOL_LOAD_HPP
+#ifndef INDICATOR_FUNCTIONS_HPP
+#define INDICATOR_FUNCTIONS_HPP
 
-#include <QThread>
-#include <QString>
+#include <QObject>
 
-class SymbolLoad : public QThread
+#include "EAVDataBase.h"
+
+class IndicatorFunctions
 {
-  Q_OBJECT
-
-  signals:
-    void signalDone (QString, int);
-    void signalError ();
-
   public:
-    SymbolLoad (QObject *, QString);
-    void run ();
-    QString getWindowCaption (int length);
-
+    IndicatorFunctions ();
+    int add (QString command, QString file);
+    int remove (QStringList);
+    int list (QStringList &);
+    
   private:
-    QString _symbol;
+    EAVDataBase _db;
 };
 
 #endif

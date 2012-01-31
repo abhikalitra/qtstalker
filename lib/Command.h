@@ -30,7 +30,10 @@ class Command : public Entity
   public:
     Command ();
     virtual QString run (CommandParse &, void *);
-    virtual int setData (CommandParse &);
+    virtual int setData (CommandParse &, void *);
+    
+    int copySetting (Data &, Data &);
+    int parseValue (Data &, QString &);
     
   protected:
     QString _returnCode;

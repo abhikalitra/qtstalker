@@ -19,22 +19,22 @@
  *  USA.
  */
 
-#ifndef INDICATOR_ADD_HPP
-#define INDICATOR_ADD_HPP
+#ifndef COMMAND_INDICATOR_HPP
+#define COMMAND_INDICATOR_HPP
 
-#include <QObject>
+#include "Command.h"
 
-class IndicatorAdd : public QObject
+class CommandIndicator : public Command
 {
-  Q_OBJECT
-
   public:
-    IndicatorAdd (QObject *p);
-
-  public slots:
-    void add ();
-    void add2 (QString command, QString file);
-    void done ();
+    CommandIndicator ();
+    QString run (CommandParse &, void *);
+    int add ();
+    int remove ();
+    int list ();
+    
+  private:
+    QStringList _method;
 };
 
 #endif
