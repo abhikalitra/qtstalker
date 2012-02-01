@@ -143,17 +143,12 @@ void GroupEditDialog::done ()
   for (; loop < _list->count(); loop++)
     l << _list->item(loop)->text();
 
-  KeyGroupDataBase gkeys;
-  Entity g;
-  g.setName(_name);
+  QString name = _name;
   if (_newFlag)
-    g.setName(_nameEdit->text());
+    name = _nameEdit->text();
   
-  Data dl(l.join(";"));
-  g.set(gkeys.indexToString(KeyGroupDataBase::_LIST), dl);
-
   GroupFunctions gf;
-  if (gf.set(g))
+  if (gf.set(name, l))
   {
     qDebug() << "GroupEditDialog::done: GroupDataBase error";
     _message->setText(tr("Database error. Group not saved."));
@@ -212,9 +207,9 @@ void GroupEditDialog::loadGroup ()
   }
 
   KeyGroupDataBase gkeys;
-  Data td;
-  g.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), td);
+  Data list;
+  g.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), list);
 
   _list->clear();
-  _list->addItems(td.toString().split(";", QString::SkipEmptyParts));
+  _list->addItems(list.toList());
 }

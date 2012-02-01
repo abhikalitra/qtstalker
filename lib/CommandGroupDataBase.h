@@ -32,6 +32,7 @@ class CommandGroupDataBase : public Command
     int save ();
     int remove ();
     int list ();
+    int add ();
     
   private:
     QStringList _method;

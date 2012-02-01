@@ -26,15 +26,15 @@
 #define THREAD_MESSAGE_HPP
 
 #include "Entity.h"
-#include "Script.h"
+
+#include <QString>
 
 class ThreadMessage
 {
   public:
     ThreadMessage ();
-    void sendMessage (Entity &, Script *);
     void getMessage (QString id);
-    void runMessage (Entity &);
+    void runMessage (Entity &, QString);
 };
 
 #endif

@@ -20,7 +20,7 @@
  */
 
 #include "CommandDialogMessage.h"
-#include "ThreadMessage.h"
+#include "ThreadMessageFunctions.h"
 #include "TypeThreadMessage.h"
 
 #include <QtDebug>
@@ -44,8 +44,8 @@ QString CommandDialogMessage::run (CommandParse &, void *d)
   
   Script *script = (Script *) d;
   
-  ThreadMessage tm;
-  tm.sendMessage(e, script);
+  ThreadMessageFunctions tmf;
+  tmf.send(e, script);
   
   _returnCode = "OK";
   return _returnCode;

@@ -19,26 +19,22 @@
  *  USA.
  */
 
-#ifndef CHART_OBJECT_DELETE_ALL_HPP
-#define CHART_OBJECT_DELETE_ALL_HPP
+// *************************************************************************************************
+// *************************************************************************************************
 
-#include <QString>
-#include <QObject>
+#ifndef THREAD_MESSAGE_FUNCTIONS_HPP
+#define THREAD_MESSAGE_FUNCTIONS_HPP
 
-class ChartObjectDeleteAll : public QObject
+#include "Entity.h"
+#include "Script.h"
+
+class ThreadMessageFunctions
 {
-  Q_OBJECT
-
   public:
-    ChartObjectDeleteAll (QObject *p, QString chart);
-    void run ();
-
-  public slots:
-    void remove2 ();
-    void done ();
-
-  private:
-    QString _chart;
+    ThreadMessageFunctions ();
+    int send (Entity &, Script *);
+    int sendReturn (QString &id, Entity &, Script *);
+    int sendRelease (QString &id, Entity &);
 };
 
 #endif

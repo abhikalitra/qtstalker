@@ -27,11 +27,6 @@
 #include "ChartLoad.h"
 #include "KeySymbol.h"
 #include "GlobalSidePanel.h"
-#include "GroupFunctions.h"
-#include "DialogSelect.h"
-#include "SymbolFunctions.h"
-#include "WindowTitle.h"
-#include "DialogConfirm.h"
 
 #include "../pics/add.xpm"
 #include "../pics/search.xpm"
@@ -146,45 +141,12 @@ void ChartPage::rightClick (const QPoint &)
 
 void ChartPage::addToGroup ()
 {
-  QList<QListWidgetItem *> l = _nav->selectedItems();
-  if (! l.count())
-    return;
-
-  GroupFunctions gf;
-  QStringList names;
-  gf.names(names);
-  if (! names.size())
-    return;
+  QSettings settings(g_globalSettings);
   
-  QStringList tl;
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-    tl << l.at(loop)->text();
+  QString file = settings.value("system_script_directory").toString();
+  file.append("ChartPanelAddToGroup.pl");
 
-  WindowTitle wt;
-  DialogSelect *dialog = new DialogSelect(this, QString(), Entity());
-  dialog->setItems(names);
-  dialog->setTitle(tr("Groups"));
-  dialog->setMode(1);
-  dialog->setWindowTitle(wt.title(tr("Add To Group"), QString()));
-  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(addToGroup2(QStringList)));
-  dialog->show();
-}
-
-void ChartPage::addToGroup2 (QStringList l)
-{
-  if (! l.size())
-    return;
-    
-  GroupFunctions gf;
-  int loop = 0;
-  for (; loop < l.size(); loop++)
-  {
-    if (gf.add(l.at(loop)))
-      qDebug() << "ChartPage::addToGroup2: database error item" << l.at(loop);
-  }
-  
-  updateList();
+  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
 }
 
 void ChartPage::updateList ()
@@ -247,42 +209,12 @@ void ChartPage::selected (QStringList &l)
 
 void ChartPage::deleteSymbol ()
 {
-  QList<QListWidgetItem *> l = _nav->selectedItems();
-  if (! l.count())
-    return;
-
-  QStringList message;
-  message << tr("Confirm symbol delete") + ":\n";
-
-  int loop = 0;
-  for (; loop < l.size(); loop++)
-    message << l.at(loop)->text();
+  QSettings settings(g_globalSettings);
   
-  DialogConfirm *dialog = new DialogConfirm(0, QString(), Entity());
-  dialog->setMessage(message.join("\n"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(deleteSymbol2()));
-  dialog->show();
-}
+  QString file = settings.value("system_script_directory").toString();
+  file.append("ChartPanelRemoveSymbol.pl");
 
-void ChartPage::deleteSymbol2 ()
-{
-  QList<QListWidgetItem *> l = _nav->selectedItems();
-  if (! l.count())
-    return;
-
-  QStringList tl;
-  int loop = 0;
-  for (; loop < l.count(); loop++)
-    tl << l.at(loop)->text();
-
-  SymbolFunctions sf;
-  if (sf.remove(tl))
-  {
-    qDebug() << "ChartPage::deleteSymbol2: database error";
-    return;
-  }
-  
-  updateList();
+  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
 }
 
 void ChartPage::itemClicked (QListWidgetItem *d)

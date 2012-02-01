@@ -21,7 +21,6 @@
 
 #include "PlotMenu.h"
 #include "GlobalParent.h"
-#include "ChartObjectDeleteAll.h"
 #include "Global.h"
 #include "GlobalSidePanel.h"
 
@@ -151,8 +150,12 @@ void PlotMenu::createMenus ()
 
 void PlotMenu::deleteAllChartObjects ()
 {
-  ChartObjectDeleteAll *d = new ChartObjectDeleteAll(g_parent, _plotName);
-  d->run();
+  QSettings settings(g_globalSettings);
+  
+  QString file = settings.value("system_script_directory").toString();
+  file.append("IndicatorChartObjectRemove.pl");
+
+  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
 }
 
 void PlotMenu::chartObjectMenuSelected (QAction *a)

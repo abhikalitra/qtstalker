@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "CommandDialog.h"
+#include "CommandDialogConfirm.h"
 #include "Script.h"
 #include "TypeThreadMessage.h"
 #include "ThreadMessageFunctions.h"
@@ -27,57 +27,30 @@
 #include <QtDebug>
 #include <QUuid>
 
-CommandDialog::CommandDialog ()
+CommandDialogConfirm::CommandDialogConfirm ()
 {
-  _name = "DIALOG";
+  _name = "DIALOG_CONFIRM";
+
+  Data td;
+  Entity::set(QString("TEXT"), td);
 }
 
-QString CommandDialog::run (CommandParse &sg, void *scr)
+QString CommandDialogConfirm::run (CommandParse &, void *scr)
 {
-  if (sg.values() != 1)
-  {
-    qDebug() << "CommandDialog::run: invalid number of values";
-    return _returnCode;
-  }
-  
   Script *script = (Script *) scr;
   
-  int pos = 0;
-  QString name = sg.value(pos++);
-  Command *c = script->scriptCommand(name);
-  if (! c)
-  {
-    qDebug() << "CommandDialog::run: invalid entity" << name;
-    return _returnCode;
-  }
-
+  Data text;
+  Entity::toData(QString("TEXT"), text);
+  
   Entity dialog;
-  dialog.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG));
-  
-  QList<QString> keys;
-  c->dkeys(keys);
-  
-  int loop = 0;
-  for (; loop < keys.size(); loop++)
-  {
-    Data td;
-    c->toData(keys.at(loop), td);
-    dialog.set(keys.at(loop), td);
-  }
+  dialog.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG_CONFIRM));
+  dialog.set(QString("TEXT"), text);
   
   QString id = QUuid::createUuid().toString();
   
   ThreadMessageFunctions tmf;
   if (tmf.sendReturn(id, dialog, script))
     return _returnCode;
-  
-  // copy new data into entity
-  for (loop = 0; loop < keys.size(); loop++)
-  {
-    Data td;
-    dialog.toData(keys.at(loop), td);
-    c->set(keys.at(loop), td);
-  }
 
   _returnCode = "OK";
   return _returnCode;

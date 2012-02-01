@@ -35,8 +35,10 @@
 #include "CommandCandlePattern.h"
 #include "CommandCCI.h"
 #include "CommandChart.h"
+#include "CommandChartObjectRemove.h"
 #include "CommandChartPanelRefresh.h"
 #include "CommandChartRemove.h"
+#include "CommandChartPanelSelect.h"
 #include "CommandChartUpdate.h"
 #include "CommandCMO.h"
 #include "CommandCompare.h"
@@ -44,6 +46,7 @@
 #include "CommandCSV.h"
 #include "CommandDataBase.h"
 #include "CommandDialog.h"
+#include "CommandDialogConfirm.h"
 #include "CommandDialogMessage.h"
 #include "CommandDialogNew.h"
 #include "CommandDialogScript.h"
@@ -53,6 +56,7 @@
 #include "CommandGet.h"
 #include "CommandGroupDataBase.h"
 #include "CommandGroupPanelRefresh.h"
+#include "CommandGroupPanelSelect.h"
 #include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandIndicator.h"
@@ -92,6 +96,7 @@
 #include "CommandSZ.h"
 #include "CommandSymbol.h"
 #include "CommandSymbolCurrent.h"
+#include "CommandSymbolDataBase.h"
 #include "CommandT3.h"
 //#include "CommandTest.h"
 #include "CommandText.h"
@@ -167,6 +172,9 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_CHART_OBJECT_HLINE:
       c = new CommandHLine;
       break;
+    case TypeCommand::_CHART_OBJECT_REMOVE:
+      c = new CommandChartObjectRemove;
+      break;
     case TypeCommand::_CHART_OBJECT_RETRACEMENT:
       c = new CommandRetracement;
       break;
@@ -188,6 +196,9 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_CHART_REMOVE:
       c = new CommandChartRemove;
       break;
+    case TypeCommand::_CHART_PANEL_SELECT:
+      c = new CommandChartPanelSelect;
+      break;
     case TypeCommand::_CHART_UPDATE:
       c = new CommandChartUpdate;
       break;
@@ -208,6 +219,9 @@ Command * CommandFactory::command (QString type)
       break;
     case TypeCommand::_DIALOG:
       c = new CommandDialog;
+      break;
+    case TypeCommand::_DIALOG_CONFIRM:
+      c = new CommandDialogConfirm;
       break;
     case TypeCommand::_DIALOG_MESSAGE:
       c = new CommandDialogMessage;
@@ -235,6 +249,9 @@ Command * CommandFactory::command (QString type)
       break;
     case TypeCommand::_GROUP_PANEL_REFRESH:
       c = new CommandGroupPanelRefresh;
+      break;
+    case TypeCommand::_GROUP_PANEL_SELECT:
+      c = new CommandGroupPanelSelect;
       break;
     case TypeCommand::_HT:
       c = new CommandHT;
@@ -343,6 +360,9 @@ Command * CommandFactory::command (QString type)
       break;
     case TypeCommand::_SYMBOL_CURRENT:
       c = new CommandSymbolCurrent;
+      break;
+    case TypeCommand::_SYMBOL_DATA_BASE:
+      c = new CommandSymbolDataBase;
       break;
     case TypeCommand::_T3:
       c = new CommandT3;

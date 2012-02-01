@@ -19,36 +19,55 @@
  *  USA.
  */
 
-#include "CommandChartRemove.h"
-#include "TypeThreadMessage.h"
-#include "Script.h"
-#include "ThreadMessageFunctions.h"
+#include "CommandSymbolDataBase.h"
+#include "SymbolFunctions.h"
 
 #include <QtDebug>
 
-CommandChartRemove::CommandChartRemove ()
+CommandSymbolDataBase::CommandSymbolDataBase ()
 {
-  _name = "CHART_REMOVE";
-
-  Data td(TypeData::_LIST);
-  td.setLabel(QObject::tr("Charts"));
+  _name = "SYMBOL_DATABASE";
+  _method << "REMOVE";
+  
+  Data td(_method, _method.at(0));
+  Entity::set(QString("METHOD"), td);
+  
+  td = Data(TypeData::_LIST);
   Entity::set(QString("LIST"), td);
 }
 
-QString CommandChartRemove::run (CommandParse &, void *d)
+QString CommandSymbolDataBase::run (CommandParse &, void *)
 {
-  Script *script = (Script *) d;
+  Data method;
+  Entity::toData(QString("METHOD"), method);
   
-  Data list;
-  Entity::toData(QString("LIST"), list);
-
-  Entity e;
-  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_REMOVE));
-  e.set(QString("LIST"), list);
-
-  ThreadMessageFunctions tmf;
-  tmf.send(e, script);
+  switch (_method.indexOf(method.toString()))
+  {
+    case 0: // REMOVE
+      if (remove())
+        return _returnCode;
+      break;
+    default:
+      qDebug() << "CommandSymbolDataBase::run: invalid method" << method.toString();
+      return _returnCode;
+      break;
+  }
   
   _returnCode = "OK";
   return _returnCode;
+}
+
+int CommandSymbolDataBase::remove ()
+{
+  Data list;
+  Entity::toData(QString("LIST"), list);
+
+  SymbolFunctions sf;
+  if (sf.remove(list.toList()))
+  {
+    qDebug() << "CommandSymbolDataBase::remove: DataBase error" << list.toList();
+    return 1;
+  }
+  
+  return 0;
 }

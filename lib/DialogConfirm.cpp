@@ -65,16 +65,9 @@ void DialogConfirm::createGUI ()
   vbox->addWidget(label);
   vbox->addStretch(1);
 
-//  vbox = new QVBoxLayout;
-//  vbox->setSpacing(0);
-//  hbox->addLayout(vbox);
-
   _text = new QTextEdit;
   _text->setReadOnly(TRUE);
   hbox->addWidget(_text);
-//  vbox->addStretch(1);
-
-//  hbox->addStretch(1);
 
   _message->hide();
 }

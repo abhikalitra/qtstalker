@@ -40,12 +40,14 @@ TypeCommand::TypeCommand ()
   _list << "CHART";
   _list << "CHART_OBJECT_BUY";
   _list << "CHART_OBJECT_HLINE";
+  _list << "CHART_OBJECT_REMOVE";
   _list << "CHART_OBJECT_RETRACEMENT";
   _list << "CHART_OBJECT_SELL";
   _list << "CHART_OBJECT_TEXT";
   _list << "CHART_OBJECT_TLINE";
   _list << "CHART_OBJECT_VLINE";
   _list << "CHART_PANEL_REFRESH";
+  _list << "CHART_PANEL_SELECT";
   _list << "CHART_REMOVE";
   _list << "CHART_UPDATE";
   _list << "CMO";
@@ -54,6 +56,7 @@ TypeCommand::TypeCommand ()
   _list << "CSV";
   _list << "DATABASE";
   _list << "DIALOG";
+  _list << "DIALOG_CONFIRM";
   _list << "DIALOG_MESSAGE";
   _list << "DIALOG_NEW";
   _list << "DIALOG_SCRIPT";
@@ -63,6 +66,7 @@ TypeCommand::TypeCommand ()
   _list << "GET";
   _list << "GROUP_DATABASE";
   _list << "GROUP_PANEL_REFRESH";
+  _list << "GROUP_PANEL_SELECT";
   _list << "HT";
   _list << "HT_PHASOR";
   _list << "HT_SINE";
@@ -99,6 +103,7 @@ TypeCommand::TypeCommand ()
   _list << "SZ";
   _list << "SYMBOL";
   _list << "SYMBOL_CURRENT";
+  _list << "SYMBOL_DATABASE";
   _list << "T3";
   _list << "TEST";
   _list << "THERM";

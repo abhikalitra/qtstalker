@@ -19,39 +19,16 @@
  *  USA.
  */
 
-#include "CommandScript.h"
-#include "ThreadMessageFunctions.h"
-#include "TypeThreadMessage.h"
+#ifndef COMMAND_GROUP_PANEL_SELECT_HPP
+#define COMMAND_GROUP_PANEL_SELECT_HPP
 
-#include <QtDebug>
+#include "Command.h"
 
-CommandScript::CommandScript ()
+class CommandGroupPanelSelect : public Command
 {
-  _name = "SCRIPT";
+  public:
+    CommandGroupPanelSelect ();
+    QString run (CommandParse &, void *);
+};
 
-  Data td(QString("perl"));
-  Entity::set(QString("COMMAND"), td);
-  
-  td = Data(TypeData::_FILE);
-  Entity::set(QString("FILE"), td);
-}
-
-QString CommandScript::run (CommandParse &, void *d)
-{
-  Script *script = (Script *) d;
-  
-  Data file, command;
-  Entity::toData(QString("FILE"), file);
-  Entity::toData(QString("COMMAND"), command);
-  
-  Entity e;
-  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_SCRIPT));
-  e.set(QString("FILE"), file);
-  e.set(QString("COMMAND"), command);
-  
-  ThreadMessageFunctions tmf;
-  tmf.send(e, script);
-  
-  _returnCode = "OK";
-  return _returnCode;
-}
+#endif

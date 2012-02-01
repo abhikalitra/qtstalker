@@ -22,7 +22,7 @@
 #include "CommandChart.h"
 #include "TypeThreadMessage.h"
 #include "Script.h"
-#include "ThreadMessage.h"
+#include "ThreadMessageFunctions.h"
 
 #include <QtDebug>
 
@@ -70,8 +70,8 @@ QString CommandChart::run (CommandParse &, void *d)
   e.set(QString("FILE"), Data(script->file()));
   e.set(QString("COMMAND"), Data(script->command()));
 
-  ThreadMessage tm;
-  tm.sendMessage(e, script);
+  ThreadMessageFunctions tmf;
+  tmf.send(e, script);
   
   _returnCode = "OK";
   return _returnCode;

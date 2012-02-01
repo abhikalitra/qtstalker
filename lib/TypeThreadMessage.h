@@ -32,15 +32,19 @@ class TypeThreadMessage
       _CHART_LOAD_OBJECT,
       _CHART_NEW,
       _CHART_OBJECT,
+      _CHART_OBJECT_REMOVE,
       _CHART_PANEL_REFRESH,
+      _CHART_PANEL_SELECT,
       _CHART_REMOVE,
       _CHART_UPDATE,
       _DIALOG,
+      _DIALOG_CONFIRM,
       _DIALOG_MESSAGE,
       _DIALOG_NEW,
       _DIALOG_SCRIPT,
       _DIALOG_SELECT,
       _GROUP_PANEL_REFRESH,
+      _GROUP_PANEL_SELECT,
       _SCRIPT
     };
 };

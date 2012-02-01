@@ -21,13 +21,11 @@
 
 #include "GroupPage.h"
 #include "Global.h"
-#include "QuoteDataBase.h"
 #include "GroupEditDialog.h"
 #include "ChartLoad.h"
 #include "KeyGroupDataBase.h"
 #include "GroupFunctions.h"
-#include "DialogSelect.h"
-#include "WindowTitle.h"
+#include "GlobalSidePanel.h"
 
 #include "../pics/edit.xpm"
 #include "../pics/delete.xpm"
@@ -136,32 +134,12 @@ void GroupPage::editGroup ()
 
 void GroupPage::deleteGroup ()
 {
-  GroupFunctions gf;
-  QStringList names;
-  gf.names(names);
+  QSettings settings(g_globalSettings);
   
-  if (! names.size())
-    return;
+  QString file = settings.value("system_script_directory").toString();
+  file.append("GroupRemove.pl");
 
-  WindowTitle wt;
-  DialogSelect *dialog = new DialogSelect(0, QString(), Entity());
-  dialog->setWindowTitle(wt.title(tr("Delete Group"), QString()));
-  dialog->setItems(names);
-  dialog->setTitle(tr("Groups"));
-  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(deleteGroup2(QStringList)));
-  dialog->show();
-}
-
-void GroupPage::deleteGroup2 (QStringList l)
-{
-  GroupFunctions gf;
-  if (gf.remove(l))
-  {
-    qDebug() << "GroupPage::deleteGroup2: error removing groups";
-    return;
-  }
-  
-  updateGroups();
+  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
 }
 
 void GroupPage::groupSelected (int i)
@@ -227,45 +205,12 @@ void GroupPage::updateGroups ()
 
 void GroupPage::addToGroup ()
 {
-  GroupFunctions gf;
-  QStringList names;
-  gf.names(names);
-  if (! names.size())
-    return;
+  QSettings settings(g_globalSettings);
   
-  QList<QListWidgetItem *> l = _nav->selectedItems();
-  if (! l.size())
-    return;
+  QString file = settings.value("system_script_directory").toString();
+  file.append("GroupPanelAddToGroup.pl");
 
-  QStringList tl;
-  int loop = 0;
-  for (; loop < l.size(); loop++)
-    tl << l.at(loop)->text();
-
-  WindowTitle wt;
-  DialogSelect *dialog = new DialogSelect(this, QString(), Entity());
-  dialog->setItems(names);
-  dialog->setTitle(tr("Groups"));
-  dialog->setMode(1);
-  dialog->setWindowTitle(wt.title(tr("Add To Group"), QString()));
-  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(addToGroup2(QStringList)));
-  dialog->show();
-}
-
-void GroupPage::addToGroup2 (QStringList l)
-{
-  if (! l.size())
-    return;
-    
-  GroupFunctions gf;
-  int loop = 0;
-  for (; loop < l.size(); loop++)
-  {
-    if (gf.add(l.at(loop)))
-      qDebug() << "GroupPage::addToGroup2: database error item" << l.at(loop);
-  }
-  
-  updateList();
+  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
 }
 
 void GroupPage::updateList ()
@@ -286,9 +231,9 @@ void GroupPage::updateList ()
   }
 
   KeyGroupDataBase keys;
-  Data td;
-  group.toData(keys.indexToString(KeyGroupDataBase::_LIST), td);
-  QStringList l = td.toString().split(";");
+  Data list;
+  group.toData(keys.indexToString(KeyGroupDataBase::_LIST), list);
+  QStringList l = list.toList();
   
   _nav->setSymbols(l);
 }
@@ -314,4 +259,17 @@ void GroupPage::itemClicked (QListWidgetItem *d)
     return;
 
   chartOpened(d->text());
+}
+
+void GroupPage::selected (QStringList &l)
+{
+  l.clear();
+
+  QList<QListWidgetItem *> sel = _nav->selectedItems();
+  if (! sel.count())
+    return;
+
+  int loop = 0;
+  for (; loop < sel.count(); loop++)
+    l << sel.at(loop)->text();
 }

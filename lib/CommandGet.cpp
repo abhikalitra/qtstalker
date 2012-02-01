@@ -40,6 +40,7 @@ QString CommandGet::run (CommandParse &sg, void *scr)
   }
   
   Script *script = (Script *) scr;
+  
   QString s = sg.value(0);
   QStringList l = s.split(".", QString::SkipEmptyParts);
   if (l.size() < 2)
@@ -67,6 +68,7 @@ QString CommandGet::run (CommandParse &sg, void *scr)
   switch ((TypeData::Key) setting.type())
   {
     case TypeData::_FILE:
+    case TypeData::_LIST:
       _returnCode = setting.toList().join(";");
       break;
     default:

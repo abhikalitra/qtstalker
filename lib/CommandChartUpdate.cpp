@@ -26,7 +26,7 @@
 #include "KeyChartObject.h"
 #include "Script.h"
 #include "TypeThreadMessage.h"
-#include "ThreadMessage.h"
+#include "ThreadMessageFunctions.h"
 
 #include <QtDebug>
 #include <QObject>
@@ -63,8 +63,8 @@ QString CommandChartUpdate::run (CommandParse &, void *d)
   date.set(QString("CHART"), chartName);
 
   // send chart date
-  ThreadMessage tm;
-  tm.sendMessage(date, script);
+  ThreadMessageFunctions tmf;
+  tmf.send(date, script);
   
   QList<QString> keys = script->dataKeys();
 
@@ -90,7 +90,7 @@ QString CommandChartUpdate::run (CommandParse &, void *d)
           break;
         dg.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_CURVE));
         dg.set(QString("CHART"), chartName);
-        tm.sendMessage(dg, script);
+        tmf.send(dg, script);
         break;
       }
       case TypeEntity::_CHART_OBJECT:
@@ -107,7 +107,7 @@ QString CommandChartUpdate::run (CommandParse &, void *d)
           break;
         dg.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_OBJECT));
         dg.set(QString("CHART"), chartName);
-        tm.sendMessage(dg, script);
+        tmf.send(dg, script);
         break;
       }
       default:
@@ -119,11 +119,11 @@ QString CommandChartUpdate::run (CommandParse &, void *d)
   Entity e;
   e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_LOAD_OBJECT));
   e.set(QString("CHART"), chartName);
-  tm.sendMessage(e, script);
+  tmf.send(e, script);
   
   // update chart
   e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_UPDATE));
-  tm.sendMessage(e, script);
+  tmf.send(e, script);
 
   _returnCode = "OK";
   return _returnCode;

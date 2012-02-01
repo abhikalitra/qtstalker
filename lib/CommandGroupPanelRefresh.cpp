@@ -20,7 +20,7 @@
  */
 
 #include "CommandGroupPanelRefresh.h"
-#include "ThreadMessage.h"
+#include "ThreadMessageFunctions.h"
 #include "TypeThreadMessage.h"
 
 #include <QtDebug>
@@ -37,8 +37,8 @@ QString CommandGroupPanelRefresh::run (CommandParse &, void *d)
   Entity e;
   e.set(QString("MESSAGE"), Data(TypeThreadMessage::_GROUP_PANEL_REFRESH));
   
-  ThreadMessage tm;
-  tm.sendMessage(e, script);
+  ThreadMessageFunctions tmf;
+  tmf.send(e, script);
   
   _returnCode = "OK";
   return _returnCode;

@@ -30,11 +30,11 @@ class GroupFunctions
 {
   public:
     GroupFunctions ();
-    int add (QString);
+    int add (QString, QStringList);
     int remove (QStringList);
     int names (QStringList &);
     int get (Entity &);
-    int set (Entity &);
+    int set (QString, QStringList);
     
   private:
     EAVDataBase _db;

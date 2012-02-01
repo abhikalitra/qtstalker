@@ -21,9 +21,8 @@
 
 #include "CommandDialogScript.h"
 #include "Script.h"
-#include "GlobalMutex.h"
-#include "GlobalData.h"
 #include "TypeThreadMessage.h"
+#include "ThreadMessageFunctions.h"
 
 #include <QtDebug>
 #include <QUuid>
@@ -54,41 +53,8 @@ QString CommandDialogScript::run (CommandParse &, void *scr)
   
   QString id = QUuid::createUuid().toString();
   
-  // create new mutex
-  QMutex *mutex = new QMutex;
-  mutex->lock();
-  
-  g_mutex.lock();
-  g_mutexList.insert(id, mutex);
-  g_mutex.unlock();
-  
-  // put data into global area
-  g_dataMutex.lock();
-  g_dataList.insert(id, dialog);
-  g_dataMutex.unlock();
-
-  // emit the message signal
-  script->threadMessage(id);
-
-  // pause thread until main app releases the mutex
-  // remove the mutex
-//qDebug() << "CommandDialog::run: thread paused" << id;  
-  mutex->lock();
-//qDebug() << "CommandDialog::run: thread resumed" << id;  
-  mutex->unlock();
-  g_mutex.lock();
-  delete mutex;
-  g_mutexList.remove(id);
-  g_mutex.unlock();
-  
-  // remove data from global area
-  g_dataMutex.lock();
-  dialog = g_dataList.value(id);
-  g_dataList.remove(id);
-  g_dataMutex.unlock();
-  
-  // check if dialog was cancelled
-  if (! dialog.dkeyCount())
+  ThreadMessageFunctions tmf;
+  if (tmf.sendReturn(id, dialog, script))
     return _returnCode;
   
   dialog.toData(QString("FILE"), file);

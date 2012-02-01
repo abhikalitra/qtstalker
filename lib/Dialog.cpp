@@ -21,8 +21,9 @@
 
 #include "Dialog.h"
 #include "Doc.h"
-#include "GlobalData.h"
-#include "GlobalMutex.h"
+//#include "GlobalData.h"
+//#include "GlobalMutex.h"
+#include "ThreadMessageFunctions.h"
 
 #include <QtDebug>
 #include <QSettings>
@@ -75,20 +76,15 @@ Dialog::~Dialog ()
 {
   if (_id.isEmpty())
     return;
-  
-  // save settings into global area
-  g_dataMutex.lock();
-  if (_saveFlag)
-    g_dataList.insert(_id, _settings);
-  else
-    g_dataList.insert(_id, Entity());
-  g_dataMutex.unlock();
-  
-  g_mutex.lock();
-  QMutex *mutex = g_mutexList.value(_id);
-  g_mutex.unlock();
 
-  mutex->unlock();
+  ThreadMessageFunctions tmf;
+  if (_saveFlag)
+    tmf.sendRelease(_id, _settings);
+  else
+  {
+    Entity e;
+    tmf.sendRelease(_id, e);
+  }
 }
 
 // virtual

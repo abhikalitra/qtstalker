@@ -19,46 +19,34 @@
  *  USA.
  */
 
-#include "ChartObjectDeleteAll.h"
-#include "DialogConfirm.h"
-#include "GlobalPlotGroup.h"
+#include "CommandChartObjectRemove.h"
+#include "ThreadMessageFunctions.h"
+#include "TypeThreadMessage.h"
 
 #include <QtDebug>
-#include <QStringList>
 
-ChartObjectDeleteAll::ChartObjectDeleteAll (QObject *p, QString chart) : QObject (p)
+CommandChartObjectRemove::CommandChartObjectRemove ()
 {
-  _chart = chart;
+  _name = "CHART_OBJECT_REMOVE";
+  
+  Data td(TypeData::_LIST);
+  Entity::set(QString("LIST"), td);
 }
 
-void ChartObjectDeleteAll::run ()
+QString CommandChartObjectRemove::run (CommandParse &, void *d)
 {
-  QStringList mess;
-  mess << tr("Confirm delete all chart objects from selected indicator") + "\n";
-  mess << _chart;
+  Script *script = (Script *) d;
 
-  DialogConfirm *dialog = new DialogConfirm(0, QString(), Entity());
-  dialog->setMessage(mess.join("\n"));
-  connect(dialog, SIGNAL(accepted()), this, SLOT(remove2()));
-  connect(dialog, SIGNAL(rejected()), this, SLOT(done()));
-  dialog->show();
-}
-
-void ChartObjectDeleteAll::remove2 ()
-{
-  Plot *p = g_plotGroup->plot(_chart);
-  if (! p)
-  {
-    done();
-    return;
-  }
-
-  p->deleteAllChartObjects();
-
-  done();
-}
-
-void ChartObjectDeleteAll::done ()
-{
-  deleteLater();
+  Data list;
+  Entity::toData(QString("LIST"), list);
+  
+  Entity e;
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_OBJECT_REMOVE));
+  e.set(QString("LIST"), list);
+  
+  ThreadMessageFunctions tmf;
+  tmf.send(e, script);
+  
+  _returnCode = "OK";
+  return _returnCode;
 }

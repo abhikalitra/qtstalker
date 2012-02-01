@@ -32,25 +32,13 @@
 #include "ScriptRunDialog.h"
 #include "DialogSelect.h"
 #include "GlobalPlotGroup.h"
+#include "DialogConfirm.h"
+#include "ThreadMessageFunctions.h"
 
 #include <QtDebug>
-#include <QUuid>
 
 ThreadMessage::ThreadMessage ()
 {
-}
-
-void ThreadMessage::sendMessage (Entity &e, Script *script)
-{
-  QString id = QUuid::createUuid().toString();
-  
-  // put data into global area
-  g_dataMutex.lock();
-  g_dataList.insert(id, e);
-  g_dataMutex.unlock();
-
-  // emit the message signal
-  script->threadMessage(id);
 }
 
 void ThreadMessage::getMessage (QString id)
@@ -73,6 +61,12 @@ void ThreadMessage::getMessage (QString id)
       dialog->show();
       break;
     }
+    case TypeThreadMessage::_DIALOG_CONFIRM:
+    {
+      DialogConfirm *dialog = new DialogConfirm(g_parent, id, e);
+      dialog->show();
+      break;
+    }
     case TypeThreadMessage::_DIALOG_NEW:
     {
       DialogNew *dialog = new DialogNew(g_parent, id, e);
@@ -92,12 +86,12 @@ void ThreadMessage::getMessage (QString id)
       break;
     }
     default:
-      runMessage(e);
+      runMessage(e, id);
       break;
   }
 }
 
-void ThreadMessage::runMessage (Entity &e)
+void ThreadMessage::runMessage (Entity &e, QString id)
 {
   Data td;
   if (e.toData(QString("MESSAGE"), td))
@@ -135,9 +129,44 @@ void ThreadMessage::runMessage (Entity &e)
       cu.object(e);
       break;
     }
+    case TypeThreadMessage::_CHART_OBJECT_REMOVE:
+    {
+      Data list;
+      e.toData(QString("LIST"), list);
+      QStringList l = list.toList();
+      int loop = 0;
+      for (; loop < l.size(); loop++)
+      {
+        Plot *p = g_plotGroup->plot(l.at(loop));
+        if (! p)
+          continue;
+        p->deleteAllChartObjects();
+      }
+      break;
+    }
     case TypeThreadMessage::_CHART_PANEL_REFRESH:
       g_sidePanel->chartPanel()->updateList();
       break;
+    case TypeThreadMessage::_CHART_PANEL_SELECT:
+    {
+      ThreadMessageFunctions tmf;
+      QStringList l;
+      g_sidePanel->chartPanel()->selected(l);
+      if (! l.size())
+      {
+	Entity te;
+        tmf.sendRelease(id, te);
+      }
+      else
+      {
+        Data list;
+        e.toData(QString("LIST"), list);
+        list.set(l);
+        e.set(QString("LIST"), list);
+        tmf.sendRelease(id, e);
+      }
+      break;
+    }
     case TypeThreadMessage::_CHART_REMOVE:
     {
       Data list;
@@ -167,6 +196,26 @@ void ThreadMessage::runMessage (Entity &e)
     case TypeThreadMessage::_GROUP_PANEL_REFRESH:
       g_sidePanel->groupPanel()->updateGroups();
       break;
+    case TypeThreadMessage::_GROUP_PANEL_SELECT:
+    {
+      ThreadMessageFunctions tmf;
+      QStringList l;
+      g_sidePanel->groupPanel()->selected(l);
+      if (! l.size())
+      {
+	Entity te;
+        tmf.sendRelease(id, te);
+      }
+      else
+      {
+        Data list;
+        e.toData(QString("LIST"), list);
+        list.set(l);
+        e.set(QString("LIST"), list);
+        tmf.sendRelease(id, e);
+      }
+      break;
+    }
     case TypeThreadMessage::_SCRIPT:
     {
       Data file, command;

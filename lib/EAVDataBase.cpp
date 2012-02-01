@@ -75,9 +75,21 @@ int EAVDataBase::get (Entity &data)
   while (q.next())
   {
     Data d((TypeData::Key) q.value(2).toInt());
-    if (d.set(q.value(1).toString(), q.value(2).toInt()))
-      continue;
-
+    
+    switch ((TypeData::Key) d.type())
+    {
+      case TypeData::_LIST:
+      case TypeData::_FILE:
+      {
+	QStringList l = q.value(1).toString().split(";", QString::SkipEmptyParts);
+	d.set(l);
+	break;
+      }
+      default:
+        d.set(q.value(1).toString(), q.value(2).toInt());
+	break;
+    }
+    
     data.set(q.value(0).toString(), d);
   }
 
@@ -117,7 +129,18 @@ int EAVDataBase::set (Entity &data)
     s.append("NULL"); // auto increment
     s.append(",'" + name + "'");
     s.append(",'" + keys.at(loop) + "'");
-    s.append(",'" + d.toString() + "'");
+    
+    switch ((TypeData::Key) d.type())
+    {
+      case TypeData::_LIST:
+      case TypeData::_FILE:
+        s.append(",'" + d.toList().join(";") + "'");
+	break;
+      default:
+        s.append(",'" + d.toString() + "'");
+	break;
+    }
+    
     s.append(",'" + QString::number(d.type()) + "'");
     s.append(")");
     q.exec(s);

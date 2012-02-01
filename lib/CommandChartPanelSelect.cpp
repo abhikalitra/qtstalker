@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "CommandDialog.h"
+#include "CommandChartPanelSelect.h"
 #include "Script.h"
 #include "TypeThreadMessage.h"
 #include "ThreadMessageFunctions.h"
@@ -27,57 +27,33 @@
 #include <QtDebug>
 #include <QUuid>
 
-CommandDialog::CommandDialog ()
+CommandChartPanelSelect::CommandChartPanelSelect ()
 {
-  _name = "DIALOG";
+  _name = "CHART_PANEL_SELECT";
+
+  Data td(TypeData::_LIST);
+  Entity::set(QString("LIST"), td);
 }
 
-QString CommandDialog::run (CommandParse &sg, void *scr)
+QString CommandChartPanelSelect::run (CommandParse &, void *scr)
 {
-  if (sg.values() != 1)
-  {
-    qDebug() << "CommandDialog::run: invalid number of values";
-    return _returnCode;
-  }
-  
   Script *script = (Script *) scr;
   
-  int pos = 0;
-  QString name = sg.value(pos++);
-  Command *c = script->scriptCommand(name);
-  if (! c)
-  {
-    qDebug() << "CommandDialog::run: invalid entity" << name;
-    return _returnCode;
-  }
-
-  Entity dialog;
-  dialog.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG));
+  Data list;
+  Entity::toData(QString("LIST"), list);
   
-  QList<QString> keys;
-  c->dkeys(keys);
-  
-  int loop = 0;
-  for (; loop < keys.size(); loop++)
-  {
-    Data td;
-    c->toData(keys.at(loop), td);
-    dialog.set(keys.at(loop), td);
-  }
+  Entity e;
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_PANEL_SELECT));
+  e.set(QString("LIST"), list);
   
   QString id = QUuid::createUuid().toString();
   
   ThreadMessageFunctions tmf;
-  if (tmf.sendReturn(id, dialog, script))
+  if (tmf.sendReturn(id, e, script))
     return _returnCode;
   
-  // copy new data into entity
-  for (loop = 0; loop < keys.size(); loop++)
-  {
-    Data td;
-    dialog.toData(keys.at(loop), td);
-    c->set(keys.at(loop), td);
-  }
+  e.toData(QString("LIST"), list);
+  Entity::set(QString("LIST"), list);
 
   _returnCode = "OK";
   return _returnCode;

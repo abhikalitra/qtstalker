@@ -36,13 +36,6 @@
     </message>
 </context>
 <context>
-    <name>ChartObjectDeleteAll</name>
-    <message>
-        <source>Confirm delete all chart objects from selected indicator</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ChartPage</name>
     <message>
         <source>Symbol Search</source>
@@ -82,18 +75,6 @@
     </message>
     <message>
         <source>Unselect All</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add To Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Confirm symbol delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -486,10 +467,6 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>&amp;Delete Group</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

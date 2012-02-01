@@ -30,30 +30,33 @@ GroupFunctions::GroupFunctions ()
   _db = EAVDataBase("groups");
 }
 
-int GroupFunctions::add (QString name)
+int GroupFunctions::add (QString name, QStringList al)
 {
-  Entity g;
-  g.setName(name);
+  Entity group;
+  group.setName(name);
   
-  if (_db.get(g))
+  if (_db.get(group))
   {
     qDebug() << "GroupFunctions::add: invalid name" << name;
     return 1;
   }
 
   KeyGroupDataBase gkeys;
-  Data td;
-  g.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), td);
-  QStringList l = td.toString().split(";", QString::SkipEmptyParts);
+  Data glist;
+  group.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), glist);
+  QStringList l = glist.toList();
 
-  l << name;
+  int loop = 0;
+  for (; loop < al.size(); loop++)
+    l << al.at(loop);
+  
   l.removeDuplicates();
 
-  td.set(l.join(";"));
-  g.set(gkeys.indexToString(KeyGroupDataBase::_LIST), td);
+  glist.set(l);
+  group.set(gkeys.indexToString(KeyGroupDataBase::_LIST), glist);
 
   _db.transaction();
-  if (_db.set(g))
+  if (_db.set(group))
   {
     qDebug() << "GroupFunctions::add: database error";
     return 1;
@@ -104,8 +107,13 @@ int GroupFunctions::get (Entity &group)
   return 0;
 }
 
-int GroupFunctions::set (Entity &group)
+int GroupFunctions::set (QString name, QStringList l)
 {
+  KeyGroupDataBase keys;
+  Entity group;
+  group.setName(name);
+  group.set(keys.indexToString(KeyGroupDataBase::_LIST), Data(l));
+  
   _db.transaction();
   if (_db.set(group))
   {
