@@ -23,9 +23,9 @@
 #include "GlobalPlotGroup.h"
 #include "GlobalControlPanel.h"
 #include "GlobalInfoPanel.h"
-#include "EAVDataBase.h"
 #include "KeyIndicatorDataBase.h"
 #include "Global.h"
+#include "IndicatorFunctions.h"
 
 #include <QtDebug>
 #include <QObject>
@@ -67,7 +67,6 @@ int ChartNew::run (QString chart, QString command, QString script, int row, int 
 
     g_plotGroup->setPlot(plot);
 
-    // test start
     KeyIndicatorDataBase keys;
     Entity i;
     i.setName(chart);
@@ -75,12 +74,9 @@ int ChartNew::run (QString chart, QString command, QString script, int row, int 
     i.set(keys.indexToString(KeyIndicatorDataBase::_FILE), Data(script));
     i.set(keys.indexToString(KeyIndicatorDataBase::_COMMAND), Data(command));
 
-    EAVDataBase db("indicators");
-    db.transaction();
-    if (db.set(i))
+    IndicatorFunctions ifunc;
+    if (ifunc.set(i))
       qDebug() << "ChartNew::run: indicators db error";
-    db.commit();
-    // test end
   }
 
   plot->showDate(date);

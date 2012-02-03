@@ -20,8 +20,8 @@
  */
 
 #include "CommandScriptDataBase.h"
-#include "EAVDataBase.h"
 #include "KeyScriptDataBase.h"
+#include "ScriptFunctions.h"
 
 #include <QtDebug>
 
@@ -29,6 +29,8 @@ CommandScriptDataBase::CommandScriptDataBase ()
 {
   _name = "SCRIPT_DATABASE";
   _method << "LIST" << "SAVE" << "REMOVE";
+
+  KeyScriptDataBase keys;
   
   Data td(_method, _method.at(0));
   td.setLabel(QObject::tr("Method"));
@@ -36,23 +38,23 @@ CommandScriptDataBase::CommandScriptDataBase ()
   
   td = Data(QString());
   td.setLabel(QObject::tr("Name"));
-  Entity::set(QString("NAME"), td);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_NAME), td);
   
   td = Data(TypeData::_FILE);
   td.setLabel(QObject::tr("File"));
-  Entity::set(QString("FILE"), td);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_FILE), td);
   
   td = Data(FALSE);
   td.setLabel(QObject::tr("Startup"));
-  Entity::set(QString("STARTUP"), td);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_STARTUP), td);
   
   td = Data(0);
   td.setLabel(QObject::tr("Run Interval"));
-  Entity::set(QString("INTERVAL"), td);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), td);
   
   td = Data(QString("perl"));
   td.setLabel(QObject::tr("Command"));
-  Entity::set(QString("COMMAND"), td);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_COMMAND), td);
   
   td = Data(TypeData::_LIST);
   Entity::set(QString("LIST"), td);
@@ -89,59 +91,53 @@ QString CommandScriptDataBase::run (CommandParse &, void *)
 
 int CommandScriptDataBase::save ()
 {
+  KeyScriptDataBase keys;
   Data file, startup, interval, command, name;
-  Entity::toData(QString("NAME"), name);
-  Entity::toData(QString("FILE"), file);
-  Entity::toData(QString("STARTUP"), startup);
-  Entity::toData(QString("INTERVAL"), interval);
-  Entity::toData(QString("COMMAND"), command);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_NAME), name);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
   
-  EAVDataBase db("scripts");
-  db.transaction();
-
-  KeyScriptDataBase skeys;
+  ScriptFunctions db;
   Entity data;
   data.setName(name.toString());
-  data.set(skeys.indexToString(KeyScriptDataBase::_FILE), file);
-  data.set(skeys.indexToString(KeyScriptDataBase::_STARTUP), startup);
-  data.set(skeys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
-  data.set(skeys.indexToString(KeyScriptDataBase::_COMMAND), command);
-  if (db.set(data))
+  data.set(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  data.set(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
+  data.set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  data.set(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+  if (db.save(data))
   {
     qDebug() << "CommandScriptDataBase::save: EAVDataBase error" << name.toString();
     return 1;
   }
 
-  db.commit();
-  
   return 0;
 }
 
 int CommandScriptDataBase::remove ()
 {
+  KeyScriptDataBase keys;
   Data name;
-  Entity::toData(QString("NAME"), name);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_NAME), name);
 
   QStringList tl;
   tl << name.toString();
-  
-  EAVDataBase db("scripts");
-  db.transaction();
+
+  ScriptFunctions db;
   if (db.remove(tl))
   {
     qDebug() << "CommandScriptDataBase::remove: EAVDataBase error" << tl;
     return 1;
   }
 
-  db.commit();
-  
   return 0;
 }
 
 int CommandScriptDataBase::list ()
 {
   QStringList tl;
-  EAVDataBase db("scripts");
+  ScriptFunctions db;
   if (db.names(tl))
   {
     qDebug() << "CommandScriptDataBase::list: EAVDataBase error";

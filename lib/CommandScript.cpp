@@ -22,6 +22,7 @@
 #include "CommandScript.h"
 #include "ThreadMessageFunctions.h"
 #include "TypeThreadMessage.h"
+#include "KeyScriptDataBase.h"
 
 #include <QtDebug>
 
@@ -29,25 +30,28 @@ CommandScript::CommandScript ()
 {
   _name = "SCRIPT";
 
+  KeyScriptDataBase keys;
+
   Data td(QString("perl"));
-  Entity::set(QString("COMMAND"), td);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_COMMAND), td);
   
   td = Data(TypeData::_FILE);
-  Entity::set(QString("FILE"), td);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_FILE), td);
 }
 
 QString CommandScript::run (CommandParse &, void *d)
 {
   Script *script = (Script *) d;
   
+  KeyScriptDataBase keys;
   Data file, command;
-  Entity::toData(QString("FILE"), file);
-  Entity::toData(QString("COMMAND"), command);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
   
   Entity e;
   e.set(QString("MESSAGE"), Data(TypeThreadMessage::_SCRIPT));
-  e.set(QString("FILE"), file);
-  e.set(QString("COMMAND"), command);
+  e.set(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  e.set(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
   
   ThreadMessageFunctions tmf;
   tmf.send(e, script);

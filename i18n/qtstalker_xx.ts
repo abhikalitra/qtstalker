@@ -469,14 +469,6 @@ App restart required to take effect</source>
         <source>&amp;Delete Group</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Groups</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add To Group</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>IconButton</name>
@@ -1199,10 +1191,6 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>started</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>cancelled</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1212,6 +1200,10 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>timeout</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1264,23 +1256,7 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Scripts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Run Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>New Script Timer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Script Timer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete Script Timer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1291,21 +1267,9 @@ App restart required to take effect</source>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>Select script timer to edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select script timer to delete</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>ScriptRunDialog</name>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Script File</source>
         <translation type="unfinished"></translation>
@@ -1315,22 +1279,7 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>No script file selected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command missing</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ScriptTimerDialog</name>
-    <message>
-        <source>Script File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Launch at application start</source>
+        <source>Script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1338,23 +1287,7 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Command</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit Script Timer</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Database error. Timer not saved.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Database error. Timer not added.</source>
+        <source>Launch at application start</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

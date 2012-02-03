@@ -38,7 +38,6 @@
 #include "DockWidget.h"
 #include "ChartLoad.h"
 #include "KeySymbol.h"
-#include "ScriptTimerFunctions.h"
 #include "WindowTitle.h"
 
 #include "../pics/qtstalker.xpm"
@@ -228,10 +227,6 @@ void QtstalkerApp::afterStartup ()
 {
   // run startup scripts
   g_sidePanel->scriptPanel()->runStartupScripts();
-  
-  // setup script timers
-  ScriptTimerFunctions stf;
-  stf.setup();
   
   // check if we are going to display a chart from the command line
   if (! _clAsset.isEmpty())

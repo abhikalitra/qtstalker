@@ -22,21 +22,18 @@
 #include "ScriptPage.h"
 #include "ScriptLaunchButton.h"
 #include "WindowTitle.h"
-#include "GlobalSymbol.h"
 #include "GlobalParent.h"
-#include "DialogSelect.h"
-#include "ScriptTimerDialog.h"
 #include "ScriptRunDialog.h"
 #include "ThreadMessage.h"
 #include "Global.h"
 #include "EAVDataBase.h"
 #include "EAVSearch.h"
 #include "KeyScriptDataBase.h"
-#include "ScriptTimerFunctions.h"
+#include "ScriptFunctions.h"
 
-#include "../pics/edit.xpm"
-#include "../pics/delete.xpm"
-#include "../pics/new.xpm"
+//#include "../pics/edit.xpm"
+//#include "../pics/delete.xpm"
+//#include "../pics/new.xpm"
 #include "../pics/script.xpm"
 #include "../pics/configure.xpm"
 #include "../pics/cancel.xpm"
@@ -51,8 +48,11 @@ ScriptPage::ScriptPage (QWidget *p) : QWidget (p)
   createActions();
 
   createGUI();
-
+  
   queStatus();
+  
+  _timer.setInterval(60000);
+  connect(&_timer, SIGNAL(timeout()), this, SLOT(runIntervalScripts()));
 }
 
 void ScriptPage::createGUI ()
@@ -96,25 +96,7 @@ void ScriptPage::createGUI ()
 
 void ScriptPage::createActions ()
 {
-  QAction *action = new QAction(QIcon(new_xpm), tr("New Script Timer") + "...", this);
-  action->setToolTip(tr("New Script Timer") + "...");
-  action->setStatusTip(tr("New Script Timer") + "...");
-  connect(action, SIGNAL(activated()), this, SLOT(newScriptTimer()));
-  _actions.insert(_NewScriptTimer, action);
-
-  action = new QAction(QIcon(edit_xpm), tr("Edit Script Timer") + "...", this);
-  action->setToolTip(tr("Edit Script Timer") + "...");
-  action->setStatusTip(tr("Edit Script Timer") + "...");
-  connect(action, SIGNAL(activated()), this, SLOT(editScriptTimer()));
-  _actions.insert(_EditScriptTimer, action);
-
-  action = new QAction(QIcon(delete_xpm), tr("Delete Script Timer") + "...", this);
-  action->setToolTip(tr("Delete Script Timer") + "...");
-  action->setStatusTip(tr("Delete Script Timer") + "...");
-  connect(action, SIGNAL(activated()), this, SLOT(deleteScriptTimer()));
-  _actions.insert(_DeleteScriptTimer, action);
-
-  action = new QAction(QIcon(cancel_xpm), tr("&Cancel") + "...", this);
+  QAction *action = new QAction(QIcon(cancel_xpm), tr("&Cancel") + "...", this);
   action->setToolTip(tr("Cancel") + "...");
   action->setStatusTip(tr("Cancel") + "...");
   connect(action, SIGNAL(activated()), this, SLOT(cancel()));
@@ -146,10 +128,6 @@ void ScriptPage::createButtonMenu ()
   _queMenu->addAction(_actions.value(_RunScript));
   _queMenu->addAction(_actions.value(_Cancel));
   _queMenu->addSeparator();
-  _queMenu->addAction(_actions.value(_NewScriptTimer));
-  _queMenu->addAction(_actions.value(_EditScriptTimer));
-  _queMenu->addAction(_actions.value(_DeleteScriptTimer));
-  _queMenu->addSeparator();
   _queMenu->addAction(_actions.value(_LaunchButtonRows));
   _queMenu->addAction(_actions.value(_LaunchButtonCols));
 }
@@ -171,17 +149,18 @@ void ScriptPage::queStatus ()
 
 void ScriptPage::runScript ()
 {
-  QSettings settings(g_localSettings);
-  QStringList l;
-  l << settings.value("script_panel_last_external_script").toString();
+  QSettings settings(g_globalSettings);
+  
+  QString file = settings.value("system_script_directory").toString();
+  file.append("ScriptPanelScriptRun.pl");
 
-  ScriptRunDialog *dialog = new ScriptRunDialog(this,
-                                                settings.value("script_panel_last_external_script").toString(),
-                                                QString("perl"),
-						QString(),
-						Entity());
-  connect(dialog, SIGNAL(signalDone(QString, QString)), this, SLOT(runScript(QString, QString)));
-  dialog->show();
+  QFileInfo fi(file);
+  Script *script = new Script(g_parent);
+  connect(script, SIGNAL(signalMessage(QString)), this, SLOT(scriptThreadMessage(QString)));
+  script->setName(fi.baseName());
+  script->setFile(file);
+  script->setCommand(QString("perl"));
+  script->start();
 }
 
 void ScriptPage::runScript (QString command, QString file)
@@ -192,7 +171,6 @@ void ScriptPage::runScript (QString command, QString file)
   script->setName(fi.baseName());
   script->setFile(file);
   script->setCommand(command);
-  script->setSymbol(g_currentSymbol);
   connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
   connect(script, SIGNAL(signalMessage(QString)), this, SLOT(scriptThreadMessage(QString)));
   _scripts.insert(script->id(), script);
@@ -201,14 +179,10 @@ void ScriptPage::runScript (QString command, QString file)
   item->setText(fi.fileName());
   _itemList.insert(script->id(), item);
 
-//  QStringList l;
-//  l << tr("Script") << file << tr("started");
-//  g_parent->statusBar()->showMessage(l.join(" "));
-
   QSettings settings(g_localSettings);
   settings.setValue("script_panel_last_external_script", file);
   settings.sync();
-
+  
   script->start();
 }
 
@@ -278,106 +252,27 @@ QListWidget * ScriptPage::list ()
   return _queList;
 }
 
-void ScriptPage::newScriptTimer ()
-{
-  ScriptTimerDialog *dialog = new ScriptTimerDialog(this, QString());
-  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(editScriptTimer3(QString)));
-  dialog->show();
-}
-
-void ScriptPage::editScriptTimer ()
-{
-  ScriptTimerFunctions stf;
-  QStringList l;
-  if (stf.names(l))
-  {
-    qDebug() << "ScriptPage::editScriptTimer: db error";
-    return;
-  }
-
-  WindowTitle wt;
-  DialogSelect *dialog = new DialogSelect(this, QString(), Entity());
-  dialog->setWindowTitle(wt.title(tr("Select script timer to edit"), QString()));
-  dialog->setItems(l);
-  dialog->setTitle(tr("Scripts"));
-  dialog->setMode(1);
-  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(editScriptTimer2(QStringList)));
-  dialog->show();
-}
-
-void ScriptPage::editScriptTimer (QString d)
-{
-  ScriptTimerDialog *dialog = new ScriptTimerDialog(this, d);
-  connect(dialog, SIGNAL(signalDone(QString)), this, SLOT(editScriptTimer3(QString)));
-  dialog->show();
-}
-
-void ScriptPage::editScriptTimer2 (QStringList l)
-{
-  if (! l.count())
-    return;
-
-  editScriptTimer(l.at(0));
-}
-
-void ScriptPage::editScriptTimer3 (QString d)
-{
-  ScriptTimerFunctions stf;
-  stf.modified(d);
-}
-
-void ScriptPage::deleteScriptTimer ()
-{
-  ScriptTimerFunctions stf;
-  QStringList l;
-  if (stf.names(l))
-  {
-    qDebug() << "ScriptPage::deleteScriptTimer: db error";
-    return;
-  }
-
-  WindowTitle wt;
-  DialogSelect *dialog = new DialogSelect(this, QString(), Entity());
-  dialog->setWindowTitle(wt.title(tr("Select script timer to delete"), QString()));
-  dialog->setItems(l);
-  dialog->setTitle(tr("Scripts"));
-  dialog->setMode(1);
-  connect(dialog, SIGNAL(signalDone(QStringList)), this, SLOT(deleteScriptTimer2(QStringList)));
-  dialog->show();
-}
-
-void ScriptPage::deleteScriptTimer2 (QStringList l)
-{
-  ScriptTimerFunctions stf;
-  stf.remove(l);
-}
-
 void ScriptPage::runStartupScripts ()
 {
-  KeyScriptDataBase skeys;
-  EAVSearch search;
-  search.append(skeys.indexToString(KeyScriptDataBase::_STARTUP), "=", "true");
-
-  EAVDataBase db("scripts");
+  KeyScriptDataBase keys;
+  ScriptFunctions sf;
   QStringList l;
-  if (db.search(search, l))
-  {
-    qDebug() << "ScriptPage::runStartupScripts: db error";
-    return;
-  }
+  sf.startupNames(l);
 
   int loop = 0;
   for (; loop < l.size(); loop++)
   {
-    Entity data;
-    data.setName(l.at(loop));
+    Entity settings;
+    settings.setName(l.at(loop));
 
-    if (db.get(data))
+    if (sf.load(settings))
       continue;
 
-    Data td;
-    data.toData(skeys.indexToString(KeyScriptDataBase::_COMMAND), td);
-    runScript(td.toString(), l.at(loop));
+    Data command, file;
+    settings.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+    settings.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+    
+    runScript(command.toString(), file.toString());
   }
 }
 
@@ -385,4 +280,28 @@ void ScriptPage::scriptThreadMessage (QString id)
 {
   ThreadMessage tm;
   tm.getMessage(id);
+}
+
+void ScriptPage::runIntervalScripts ()
+{
+  KeyScriptDataBase keys;
+  ScriptFunctions sf;
+  QStringList l;
+  sf.names(l);
+  
+  int loop = 0;
+  for (; loop < l.size(); loop++)
+  {
+    Entity settings;
+    settings.setName(l.at(loop));
+    
+    if (sf.load(settings))
+      continue;
+
+    Data command, file;
+    settings.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+    settings.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+    
+    runScript(command.toString(), file.toString());
+  }
 }

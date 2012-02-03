@@ -47,7 +47,7 @@ QString CommandSymbolCurrent::run (CommandParse &, void *d)
   Script *script = (Script *) d;
   
   g_currentSymbolMutex.lock();
-  Symbol bd = script->symbol();
+  Symbol bd = g_currentSymbol;
   g_currentSymbolMutex.unlock();
 
   // date

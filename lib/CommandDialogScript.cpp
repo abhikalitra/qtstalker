@@ -23,6 +23,7 @@
 #include "Script.h"
 #include "TypeThreadMessage.h"
 #include "ThreadMessageFunctions.h"
+#include "KeyScriptDataBase.h"
 
 #include <QtDebug>
 #include <QUuid>
@@ -31,25 +32,38 @@ CommandDialogScript::CommandDialogScript ()
 {
   _name = "DIALOG_SCRIPT";
 
+  KeyScriptDataBase keys;
+  
   Data td(TypeData::_FILE);
-  Entity::set(QString("FILE"), td);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_FILE), td);
 
   td = Data(QString("perl"));
-  Entity::set(QString("COMMAND"), td);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_COMMAND), td);
+
+  td = Data(FALSE);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_STARTUP), td);
+
+  td = Data(0);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), td);
 }
 
 QString CommandDialogScript::run (CommandParse &, void *scr)
 {
   Script *script = (Script *) scr;
   
-  Data file, command;
-  Entity::toData(QString("FILE"), file);
-  Entity::toData(QString("COMMAND"), command);
+  KeyScriptDataBase keys;
+  Data file, command, startup, interval;
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
   
   Entity dialog;
   dialog.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG_SCRIPT));
-  dialog.set(QString("FILE"), file);
-  dialog.set(QString("COMMAND"), command);
+  dialog.set(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  dialog.set(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+  dialog.set(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
+  dialog.set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
   
   QString id = QUuid::createUuid().toString();
   
@@ -57,11 +71,16 @@ QString CommandDialogScript::run (CommandParse &, void *scr)
   if (tmf.sendReturn(id, dialog, script))
     return _returnCode;
   
-  dialog.toData(QString("FILE"), file);
-  dialog.toData(QString("COMMAND"), command);
-  set(QString("FILE"), file);
-  set(QString("COMMAND"), command);
-
+  dialog.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  dialog.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+  dialog.toData(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
+  dialog.toData(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  
+  Entity::set(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  
   _returnCode = "OK";
   return _returnCode;
 }

@@ -19,41 +19,26 @@
  *  USA.
  */
 
-#ifndef SCRIPT_TIMER_DIALOG_HPP
-#define SCRIPT_TIMER_DIALOG_HPP
+#ifndef SCRIPT_FUNCTIONS_HPP
+#define SCRIPT_FUNCTIONS_HPP
 
 #include <QStringList>
-#include <QSpinBox>
-#include <QCheckBox>
 
-#include "Dialog.h"
-#include "FileButton.h"
-#include "WidgetLineEdit.h"
+#include "Entity.h"
+#include "EAVDataBase.h"
 
-class ScriptTimerDialog : public Dialog
+class ScriptFunctions
 {
-  Q_OBJECT
-
-  signals:
-    void signalDone (QString);
-
   public:
-    ScriptTimerDialog (QWidget *, QString);
-    void createGUI ();
-    void setGUI ();
-
-  public slots:
-    void done ();
-    void okButtonStatus ();
-
+    ScriptFunctions ();
+    int save (Entity &);
+    int remove (QStringList);
+    int names (QStringList &);
+    int startupNames (QStringList &);
+    int load (Entity &);
+    
   private:
-    QString _name;
-    FileButton *_file;
-    WidgetLineEdit *_command;
-    QCheckBox *_startup;
-    QSpinBox *_interval;
-    WidgetLineEdit *_nameEdit;
-    bool _newFlag;
+    EAVDataBase _db;
 };
 
 #endif

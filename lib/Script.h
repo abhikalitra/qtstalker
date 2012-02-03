@@ -29,7 +29,6 @@
 #include <QProcess>
 
 #include "Entity.h"
-#include "Symbol.h"
 #include "Command.h"
 
 class Script : public QThread
@@ -38,12 +37,18 @@ class Script : public QThread
 
   signals:
     void signalDone (QString);
-    void signalStopped (QString);
-    void signalKill ();
     void signalDeleted (QString);
     void signalMessage (QString);
 
   public:
+    enum ReturnCode
+    {
+      _OK,
+      _CANCEL,
+      _TIMEOUT,
+      _ERROR
+    };
+    
     Script (QObject *);
     ~Script ();
     void setData (QString, Entity &);
@@ -56,21 +61,15 @@ class Script : public QThread
     QString & file ();
     int count ();
     QList<QString> dataKeys ();
-    int nextROID ();
     void setCommand (QString);
     QString command ();
-    void setSymbol (Symbol &);
-    Symbol & symbol ();
     QString id ();
     void run ();
-    int run2 ();
     void threadMessage (QString);
 
   public slots:
-    void readFromStderr ();
-    void done (int, QProcess::ExitStatus);
+    void done (int);
     void stopScript ();
-    void error (QProcess::ProcessError);
 
   protected:
     QProcess *_proc;
@@ -80,7 +79,6 @@ class Script : public QThread
     QHash<QString, Entity> _data;
     QHash<QString, Command *> _commands;
     int _killFlag;
-    Symbol _symbol;
     QString _id;
 };
 

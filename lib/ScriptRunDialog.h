@@ -23,6 +23,8 @@
 #define SCRIPT_RUN_DIALOG_HPP
 
 #include <QStringList>
+#include <QSpinBox>
+#include <QCheckBox>
 
 #include "Dialog.h"
 #include "FileButton.h"
@@ -33,11 +35,12 @@ class ScriptRunDialog : public Dialog
   Q_OBJECT
 
   signals:
-    void signalDone (QString, QString);
+    void signalDone (QString, QString, bool, int);
 
   public:
-    ScriptRunDialog (QWidget *, QString file, QString command, QString id, Entity);
+    ScriptRunDialog (QWidget *, QString id, Entity);
     void createGUI ();
+    void setGUI ();
 
   public slots:
     void done ();
@@ -46,6 +49,8 @@ class ScriptRunDialog : public Dialog
   private:
     FileButton *_file;
     WidgetLineEdit *_text;
+    QCheckBox *_startup;
+    QSpinBox *_interval;
 };
 
 #endif

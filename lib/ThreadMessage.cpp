@@ -34,6 +34,7 @@
 #include "GlobalPlotGroup.h"
 #include "DialogConfirm.h"
 #include "ThreadMessageFunctions.h"
+#include "KeyScriptDataBase.h"
 
 #include <QtDebug>
 
@@ -75,7 +76,7 @@ void ThreadMessage::getMessage (QString id)
     }
     case TypeThreadMessage::_DIALOG_SCRIPT:
     {
-      ScriptRunDialog *dialog = new ScriptRunDialog(g_parent, QString(), QString(), id, e);
+      ScriptRunDialog *dialog = new ScriptRunDialog(g_parent, id, e);
       dialog->show();
       break;
     }
@@ -218,10 +219,10 @@ void ThreadMessage::runMessage (Entity &e, QString id)
     }
     case TypeThreadMessage::_SCRIPT:
     {
+      KeyScriptDataBase keys;
       Data file, command;
-      e.toData(QString("FILE"), file);
-      e.toData(QString("COMMAND"), command);
-    
+      e.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+      e.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
       g_sidePanel->scriptPanel()->runScript(command.toString(), file.toString());
       break;
     }

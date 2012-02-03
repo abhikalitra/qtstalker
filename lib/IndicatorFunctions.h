@@ -33,6 +33,8 @@ class IndicatorFunctions
     int add (QString command, QString file);
     int remove (QStringList);
     int list (QStringList &);
+    int get (Entity &i);
+    int set (Entity &i);
     
   private:
     EAVDataBase _db;

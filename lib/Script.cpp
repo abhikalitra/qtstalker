@@ -20,8 +20,6 @@
  */
 
 #include "Script.h"
-#include "KeyChartObject.h"
-#include "TypeEntity.h"
 #include "CommandParse.h"
 #include "CommandFactory.h"
 #include "TypeVerb.h"
@@ -46,7 +44,7 @@ void Script::run ()
 {
   QProcess _proc(0);
 //  connect(_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(readFromStdout()));
-  connect(&_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
+//  connect(&_proc, SIGNAL(readyReadStandardError()), this, SLOT(readFromStderr()));
 //  connect(&_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(done(int, QProcess::ExitStatus)));
 //  connect(&_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(deleteLater()));
 //  connect(&_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(deleteLater()));
@@ -56,29 +54,30 @@ void Script::run ()
 
   // start the _process
   _proc.start(command, QIODevice::ReadWrite);
+  int rc = _ERROR;
 
   // make sure _process starts error free
   if (! _proc.waitForStarted())
   {
     qDebug() << "Script::run: error timed out" << _file;
-    done(0, _proc.exitStatus());
+    done(_TIMEOUT);
     deleteLater();
     return;
   }
-
-  TypeVerb verbs;
   
-  QStringList l;
-  l << QDateTime::currentDateTime().toString();
-  l << _file;
-  l << tr("started");
+//  QStringList l;
+//  l << QDateTime::currentDateTime().toString();
+//  l << _file;
+//  l << tr("started");
 //  qDebug() << l.join(" ");
 
+  TypeVerb verbs;
   while (_proc.state() == QProcess::Running)
   {
     if (_killFlag)
     {
       qDebug() << "Script::run: script terminated";
+      rc = _CANCEL;
       _proc.kill();
       break;
     }
@@ -94,6 +93,7 @@ void Script::run ()
     if (! s.length())
     {
       _proc.kill();
+      rc = _OK;
       break;
     }
     
@@ -141,41 +141,41 @@ void Script::run ()
     _proc.waitForBytesWritten(-1);
   }
   
-  done(0, _proc.exitStatus());
+  done(rc);
   
   deleteLater();
 }
 
-void Script::done (int, QProcess::ExitStatus)
+void Script::done (int rc)
 {
   QStringList l;
   l << QDateTime::currentDateTime().toString();
   l << tr("Script");
   l << _file;
 
-  if (_killFlag)
+  switch ((ReturnCode) rc)
   {
-    l << tr("cancelled");
-//    qDebug() << l.join(" ");
-    emit signalStopped(_id);
+    case _CANCEL:
+      l << tr("cancelled");
+      break;
+    case _TIMEOUT:
+      l << tr("timeout");
+      break;
+    case _ERROR:
+      l << tr("error");
+      break;
+    default:
+      l << tr("completed");
+      break;
   }
-  else
-  {
-    l << tr("completed");
-//    qDebug() << l.join(" ");
-    emit signalDone(_id);
-  }
-}
 
-void Script::readFromStderr ()
-{
-  qDebug() << "Script::readFromStderr:" << _proc->readAllStandardError();
+  qDebug() << l.join(" ");
+  emit signalDone(_id);
 }
 
 void Script::stopScript ()
 {
   _killFlag = TRUE;
-  emit signalKill();
 //qDebug() << "Script::stopScript";
 }
 
@@ -187,31 +187,6 @@ int Script::count ()
 QList<QString> Script::dataKeys ()
 {
   return _data.keys();
-}
-
-int Script::nextROID ()
-{
-  KeyChartObject cokeys;
-  int low = 0;
-  QHashIterator<QString, Entity> it(_data);
-  while (it.hasNext())
-  {
-    it.next();
-
-    Entity dg = it.value();
-    if (dg.type() != TypeEntity::_CHART_OBJECT)
-      continue;
-
-    Data td;
-    dg.toData(cokeys.indexToString(KeyChartObject::_ID), td);
-    int t = td.toInteger();
-    if (t < low)
-      low = t;
-  }
-
-  low--;
-
-  return low;
 }
 
 void Script::setCommand (QString d)
@@ -257,28 +232,6 @@ void Script::setFile (QString d)
 QString & Script::file ()
 {
   return _file;
-}
-
-void Script::setSymbol (Symbol &d)
-{
-  _symbol = d;
-}
-
-Symbol & Script::symbol ()
-{
-  return _symbol;
-}
-
-void Script::error (QProcess::ProcessError)
-{
-  QStringList l;
-  l << QDateTime::currentDateTime().toString();
-  l << tr("Script");
-  l << _file;
-  l << tr("error");
-//  qDebug() << l.join(" ");
-  emit signalDone(_id);
-  deleteLater();
 }
 
 QString Script::id ()

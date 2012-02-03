@@ -75,3 +75,25 @@ int IndicatorFunctions::list (QStringList &l)
   
   return 0;
 }
+
+int IndicatorFunctions::get (Entity &i)
+{
+  if (_db.get(i))
+  {
+    qDebug() << "IndicatorFunctions::get: EAVDataBase error" << i.name();
+    return 1;
+  }
+  
+  return 0;
+}
+
+int IndicatorFunctions::set (Entity &i)
+{
+  if (_db.set(i))
+  {
+    qDebug() << "IndicatorFunctions::set: EAVDataBase error" << i.name();
+    return 1;
+  }
+  
+  return 0;
+}

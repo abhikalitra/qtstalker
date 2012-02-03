@@ -21,10 +21,11 @@
 
 #include "ScriptRunDialog.h"
 #include "WindowTitle.h"
+#include "KeyScriptDataBase.h"
 
 #include <QtDebug>
 
-ScriptRunDialog::ScriptRunDialog (QWidget *p, QString file, QString command, QString id, Entity settings) : Dialog (p)
+ScriptRunDialog::ScriptRunDialog (QWidget *p, QString id, Entity settings) : Dialog (p)
 {
   _id = id;
   _settings = settings;
@@ -32,33 +33,11 @@ ScriptRunDialog::ScriptRunDialog (QWidget *p, QString file, QString command, QSt
   _keyPos = "script_run_dialog_window_position";
 
   WindowTitle wt;
-  setWindowTitle(wt.title(tr("Run Script"), QString()));
+  setWindowTitle(wt.title(tr("Script"), QString()));
 
   createGUI();
-
-  if (! _id.isEmpty())
-  {
-    Data tfile, tcommand;
-    _settings.toData(QString("FILE"), tfile);
-    _settings.toData(QString("COMMAND"), tcommand);
-
-    QStringList l = tfile.toList();
-    if (l.size())
-      _file->setFiles(l);
-    
-    _text->setText(tcommand.toString());
-  }
-  else
-  {
-    if (! file.isEmpty())
-    {
-      QStringList l;
-      l << file;
-      _file->setFiles(l);
-    }
-    
-    _text->setText(command);
-  }
+  
+  setGUI();
 
   loadSettings();
   
@@ -74,44 +53,44 @@ void ScriptRunDialog::createGUI ()
   _text = new WidgetLineEdit(this);
   connect(_text, SIGNAL(signalStatus(bool)), this, SLOT(buttonStatus()));
   _form->addRow(tr("Command"), _text);
+
+  _interval = new QSpinBox;
+  _interval->setMinimum(0);
+  _interval->setValue(0);
+  _form->addRow(tr("Launch every X seconds"), _interval);
+
+  _startup = new QCheckBox;
+  _form->addRow(tr("Launch at application start"), _startup);
 }
 
 void ScriptRunDialog::done ()
 {
-  QString file;
-  QStringList l = _file->files();
-  if (! l.count())
-  {
-    _message->setText(tr("No script file selected"));
-    return;
-  }
-  else
-    file = l.at(0);
-
-  if (_text->text().isEmpty())
-  {
-    _message->setText(tr("Command missing"));
-    return;
-  }
-  
   _saveFlag++;
-  
-  Data dfile, dcommand;
-  _settings.toData(QString("FILE"), dfile);
-  _settings.toData(QString("COMMAND"), dcommand);
-  
-  dcommand.set(_text->text());
-  
-  QStringList tl;
-  tl << file;
-  dfile.set(tl);
-  
-  _settings.set(QString("FILE"), dfile);
-  _settings.set(QString("COMMAND"), dcommand);
 
+  KeyScriptDataBase keys;
+  Data file, command, startup, interval;
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  
+  QStringList l = _file->files();
+  QString tfile = l.at(0);
+  file.set(l);
+  _settings.set(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  
+  command.set(_text->text());
+  _settings.set(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+  
+  startup.set(_startup->isChecked());
+  _settings.set(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
+  
+  interval.set(_interval->value());
+  _settings.set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  
   saveSettings();
 
-  emit signalDone(_text->text(), file);
+  emit signalDone(command.toString(), tfile, startup.toBool(), interval.toInteger());
 
   accept();
 }
@@ -131,4 +110,24 @@ void ScriptRunDialog::buttonStatus ()
     status = TRUE;
   
   _okButton->setEnabled(status);
+}
+
+void ScriptRunDialog::setGUI ()
+{
+  KeyScriptDataBase keys;
+  Data file, command, startup, interval;
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  
+  QStringList l = file.toList();
+  if (l.size())
+    _file->setFiles(l);
+    
+  _text->setText(command.toString());
+    
+  _startup->setChecked(startup.toBool());
+    
+  _interval->setValue(interval.toInteger());
 }

@@ -29,6 +29,7 @@
 #include <QAction>
 #include <QHash>
 #include <QToolBar>
+#include <QTimer>
 
 #include "Script.h"
 
@@ -46,9 +47,6 @@ class ScriptPage : public QWidget
       _Cancel,
       _LaunchButtonRows,
       _LaunchButtonCols,
-      _NewScriptTimer,
-      _EditScriptTimer,
-      _DeleteScriptTimer
     };
 
     ScriptPage (QWidget *);
@@ -70,15 +68,9 @@ class ScriptPage : public QWidget
     void launchButtonRows2 (int);
     void launchButtonCols ();
     void launchButtonCols2 (int);
-    void newScriptTimer ();
-    void editScriptTimer ();
-    void editScriptTimer (QString);
-    void editScriptTimer2 (QStringList);
-    void editScriptTimer3 (QString);
-    void deleteScriptTimer ();
-    void deleteScriptTimer2 (QStringList);
     void runStartupScripts ();
     void scriptThreadMessage (QString);
+    void runIntervalScripts ();
 
   protected:
     QListWidget *_queList;
@@ -86,6 +78,7 @@ class ScriptPage : public QWidget
     QHash<int, QAction *> _actions;
     QHash<QString, QListWidgetItem *> _itemList;
     QHash<QString, Script *> _scripts;
+    QTimer _timer;
 };
 
 #endif

@@ -22,13 +22,15 @@
 
 #include "ChartRefresh.h"
 #include "KeyIndicatorDataBase.h"
-#include "EAVDataBase.h"
-#include "EAVSearch.h"
 #include "GlobalPlotGroup.h"
+#include "GlobalParent.h"
+#include "IndicatorFunctions.h"
+#include "Script.h"
 #include "GlobalSidePanel.h"
-#include "Global.h"
 
 #include <QStringList>
+#include <QFileInfo>
+#include <QObject>
 
 ChartRefresh::ChartRefresh ()
 {
@@ -37,14 +39,10 @@ ChartRefresh::ChartRefresh ()
 int ChartRefresh::run ()
 {
   // do all the stuff we need to do to load a chart
-  KeyIndicatorDataBase keys;
-  EAVSearch search;
-  search.append(keys.indexToString(KeyIndicatorDataBase::_SESSION), "=", g_session);
-  
-  EAVDataBase db("indicators");
+  IndicatorFunctions ifunc;
   QStringList il;
-  db.search(search, il);
-
+  ifunc.list(il);
+  
   // move displayed plots to the top of the list
   // so they update first for user speed
   QStringList ft = g_plotGroup->frontTabs();
@@ -58,19 +56,26 @@ int ChartRefresh::run ()
     il.move(i, 0);
   }
 
+  KeyIndicatorDataBase keys;
   for (loop = 0; loop < il.size(); loop++)
   {
     Entity i;
     i.setName(il.at(loop));
-    if (db.get(i))
+    if (ifunc.get(i))
       continue;
     
     Data command, file;
     i.toData(keys.indexToString(KeyIndicatorDataBase::_COMMAND), command);
     i.toData(keys.indexToString(KeyIndicatorDataBase::_FILE), file);
-
-    // launch indicator
-    g_sidePanel->scriptPanel()->runScript(command.toString(), file.toString());
+    
+    QFileInfo fi(file.toString());
+    
+    Script *script = new Script(g_parent);
+    QObject::connect(script, SIGNAL(signalMessage(QString)), g_sidePanel->scriptPanel(), SLOT(scriptThreadMessage(QString)));
+    script->setName(fi.baseName());
+    script->setFile(file.toString());
+    script->setCommand(command.toString());
+    script->start();
   }
 
   return 0;
