@@ -1154,10 +1154,6 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Run Interval</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1167,6 +1163,29 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Charts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloads historical quotes from yahoo finance.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Symbols to download are kept in a file maintained </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>by the user. One yahoo symbol per line. For example:
+
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1225,11 +1244,7 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Script File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Command</source>
+        <source>Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1267,6 +1282,30 @@ App restart required to take effect</source>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;New Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Edit Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Delete Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete Script</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptRunDialog</name>
@@ -1283,11 +1322,23 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Launch every X seconds</source>
+        <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Launch at application start</source>
+        <source>Interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Launch when app starts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Comment</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Script name already exists. Enter a unique name.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -19,17 +19,25 @@
  *  USA.
  */
 
-#include "KeyScriptDataBase.h"
+// *************************************************************************************************
+// *************************************************************************************************
 
-#include <QtDebug>
+#ifndef KEY_SCRIPT_LAUNCH_BUTTON_HPP
+#define KEY_SCRIPT_LAUNCH_BUTTON_HPP
 
-KeyScriptDataBase::KeyScriptDataBase ()
+#include "Type.h"
+
+class KeyScriptLaunchButton : public Type
 {
-  _list << "NAME";
-  _list << "FILE";
-  _list << "STARTUP";
-  _list << "INTERVAL";
-  _list << "COMMAND";
-  _list << "LAST_RUN";
-  _list << "COMMENT";
-}
+  public:
+    enum Key
+    {
+      _NAME,
+      _ICON,
+      _ICON_USE
+    };
+    
+    KeyScriptLaunchButton ();
+};
+
+#endif

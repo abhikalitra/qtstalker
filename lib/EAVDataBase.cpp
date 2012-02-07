@@ -72,8 +72,11 @@ int EAVDataBase::get (Entity &data)
     return 1;
   }
 
+  int flag = 0;
   while (q.next())
   {
+    flag++;
+    
     Data d((TypeData::Key) q.value(2).toInt());
     
     switch ((TypeData::Key) d.type())
@@ -92,6 +95,9 @@ int EAVDataBase::get (Entity &data)
     
     data.set(q.value(0).toString(), d);
   }
+  
+  if (! flag)
+    return 1;
 
   return 0;
 }

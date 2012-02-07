@@ -59,7 +59,8 @@ QString CommandLoad::run (CommandParse &sg, void *scr)
   EAVDataBase db(table);
   if (db.get(settings))
   {
-    qDebug() << "CommandLoad::run: EAVDataBase error";
+//    qDebug() << "CommandLoad::run: EAVDataBase error";
+    _returnCode = "OK";
     return _returnCode;
   }
 

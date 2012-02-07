@@ -22,11 +22,13 @@
 #include "ScriptRunDialog.h"
 #include "WindowTitle.h"
 #include "KeyScriptDataBase.h"
+#include "ScriptFunctions.h"
 
 #include <QtDebug>
 
 ScriptRunDialog::ScriptRunDialog (QWidget *p, QString id, Entity settings) : Dialog (p)
 {
+  _newFlag = 0;
   _id = id;
   _settings = settings;
   _keySize = "script_run_dialog_window_size";
@@ -38,6 +40,11 @@ ScriptRunDialog::ScriptRunDialog (QWidget *p, QString id, Entity settings) : Dia
   createGUI();
   
   setGUI();
+  
+  if (_newFlag)
+    _name->setFocus();
+  else
+    _comment->setFocus();
 
   loadSettings();
   
@@ -46,51 +53,80 @@ ScriptRunDialog::ScriptRunDialog (QWidget *p, QString id, Entity settings) : Dia
 
 void ScriptRunDialog::createGUI ()
 {
+  _name = new WidgetLineEdit(this);
+  connect(_name, SIGNAL(signalStatus(bool)), this, SLOT(buttonStatus()));
+  _form->addRow(tr("Name"), _name);
+  
+  _command = new WidgetLineEdit(this);
+  connect(_command, SIGNAL(signalStatus(bool)), this, SLOT(buttonStatus()));
+  _form->addRow(tr("Command"), _command);
+  
   _file = new FileButton(this);
   connect(_file, SIGNAL(signalSelectionChanged()), this, SLOT(buttonStatus()));
   _form->addRow(tr("Script File"), _file);
 
-  _text = new WidgetLineEdit(this);
-  connect(_text, SIGNAL(signalStatus(bool)), this, SLOT(buttonStatus()));
-  _form->addRow(tr("Command"), _text);
-
   _interval = new QSpinBox;
+  _interval->setValue(60);
+//  _interval->setInterval(60);
   _interval->setMinimum(0);
-  _interval->setValue(0);
-  _form->addRow(tr("Launch every X seconds"), _interval);
+  _form->addRow(tr("Interval"), _interval);
 
   _startup = new QCheckBox;
-  _form->addRow(tr("Launch at application start"), _startup);
+  _form->addRow(tr("Launch when app starts"), _startup);
+  
+  _comment = new QTextEdit;
+  _form->addRow(tr("Comment"), _comment);
 }
 
 void ScriptRunDialog::done ()
 {
+  if (_newFlag)
+  {
+    ScriptFunctions sf;
+    QStringList l;
+    sf.names(l);
+    if (l.indexOf(_name->text()) != -1)
+    {
+      _message->setText(tr("Script name already exists. Enter a unique name."));
+      return;
+    }
+  }
+  
   _saveFlag++;
 
   KeyScriptDataBase keys;
-  Data file, command, startup, interval;
+  Data file, command, startup, interval, name, comment;
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_NAME), name);
   _settings.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
   _settings.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
   _settings.toData(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
-  _settings.toData(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_INTERVAL), interval);
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_COMMENT), comment);
   
-  QStringList l = _file->files();
+  name.set(_name->text());
+  _settings.set(keys.indexToString(KeyScriptDataBase::_NAME), name);
+  _settings.setName(_name->text());
+  
+ QStringList l = _file->files();
   QString tfile = l.at(0);
   file.set(l);
   _settings.set(keys.indexToString(KeyScriptDataBase::_FILE), file);
   
-  command.set(_text->text());
+  command.set(_command->text());
   _settings.set(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
   
   startup.set(_startup->isChecked());
   _settings.set(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
   
   interval.set(_interval->value());
-  _settings.set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  _settings.set(keys.indexToString(KeyScriptDataBase::_INTERVAL), interval);
+  
+  comment.set(_comment->toPlainText());
+  _settings.set(keys.indexToString(KeyScriptDataBase::_COMMENT), comment);
   
   saveSettings();
 
-  emit signalDone(command.toString(), tfile, startup.toBool(), interval.toInteger());
+//  emit signalDone(command.toString(), tfile, startup.toBool(), interval.toInteger());
 
   accept();
 }
@@ -100,13 +136,16 @@ void ScriptRunDialog::buttonStatus ()
   bool status = FALSE;
   int count = 0;
   
+  if (! _name->text().isEmpty())
+    count++;
+
   if (_file->fileCount())
     count++;
   
-  if (! _text->text().isEmpty())
+  if (! _command->text().isEmpty())
     count++;
   
-  if (count == 2)
+  if (count == 3)
     status = TRUE;
   
   _okButton->setEnabled(status);
@@ -114,20 +153,35 @@ void ScriptRunDialog::buttonStatus ()
 
 void ScriptRunDialog::setGUI ()
 {
+  ScriptFunctions sf;
+  QStringList l;
+  sf.names(l);
+  _name->addItems(l);
+
   KeyScriptDataBase keys;
-  Data file, command, startup, interval;
+  Data file, command, startup, interval, name, comment;
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_NAME), name);
   _settings.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
   _settings.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
   _settings.toData(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
-  _settings.toData(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_INTERVAL), interval);
+  _settings.toData(keys.indexToString(KeyScriptDataBase::_COMMENT), comment);
+
+  _name->setText(name.toString());
+  if (name.toString().isEmpty())
+    _newFlag++;
+  else
+    _name->setEnabled(FALSE);
   
-  QStringList l = file.toList();
+  l = file.toList();
   if (l.size())
     _file->setFiles(l);
     
-  _text->setText(command.toString());
+  _command->setText(command.toString());
     
   _startup->setChecked(startup.toBool());
-    
+
   _interval->setValue(interval.toInteger());
+  
+  _comment->append(comment.toString());
 }

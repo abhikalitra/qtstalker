@@ -31,23 +31,25 @@ class ScriptLaunchButton : public QToolButton
   Q_OBJECT
 
   signals:
-    void signalButtonClicked (QString, QString);
+    void signalButtonClicked (QString);
 
   public:
     ScriptLaunchButton (int);
+    void loadSettings ();
+    void setSettings (QString name, QString icon, bool use);
+    void saveSettings ();
 
   public slots:
     void buttonClicked ();
     void configure ();
-    void configure2 (QString, QString, QString, int);
+    void configure2 (QString, QString, bool);
     void contextMenu ();
 
   private:
     int _position;
-    QString _scriptName;
-    QString _command;
+    QString _name;
     QString _icon;
-    int _useIcon;
+    bool _useIcon;
     QMenu *_menu;
 };
 

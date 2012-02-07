@@ -21,10 +21,11 @@
 
 #include "ScriptLaunchButtonDialog.h"
 #include "WindowTitle.h"
+#include "ScriptFunctions.h"
 
 #include <QtDebug>
 
-ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString command, QString script, QString icon, int use) : Dialog (p)
+ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString name, QString icon, bool use) : Dialog (p)
 {
   _keySize = "script_launch_button_dialog_window_size";
   _keyPos = "script_launch_button_dialog_window_position";
@@ -35,36 +36,15 @@ ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString command,
   createMainPage();
 
   loadSettings();
-
-  QStringList l;
-  l << script;
-  _script->setFiles(l);
-
-  _command->setText(command);
-
-  _icon->setFile(icon);
-
-  if (use)
-  {
-    _useIcon->setChecked(TRUE);
-    useIconToggled(TRUE);
-  }
-  else
-  {
-    _useIcon->setChecked(FALSE);
-    useIconToggled(FALSE);
-  }
+  
+  setGUI(name, icon, use);
 }
 
 void ScriptLaunchButtonDialog::createMainPage ()
 {
-  // file button
-  _script = new FileButton(this);
-  _form->addRow(tr("Script File"), _script);
-
-  // command
-  _command = new LineEdit(this);
-  _form->addRow(tr("Command"), _command);
+  // name
+  _name = new WidgetLineEdit(this);
+  _form->addRow(tr("Script"), _name);
 
   // icon widgets
   QWidget *w = new QWidget;
@@ -76,25 +56,18 @@ void ScriptLaunchButtonDialog::createMainPage ()
   // use icon checkbox
   _useIcon = new QCheckBox;
   hbox->addWidget(_useIcon);
-//  _form->addRow(tr("Use Icon"), _useIcon);
   connect(_useIcon, SIGNAL(toggled(bool)), this, SLOT(useIconToggled(bool)));
 
   // icon
   _icon = new IconButton(this, QString());
   hbox->addWidget(_icon, 1, 0);
-//  _form->addRow(tr("Icon"), _icon);
 
   _form->addRow(tr("Icon"), w);
 }
 
 void ScriptLaunchButtonDialog::done ()
 {
-  QStringList l = _script->files();
-  QString script;
-  if (l.count())
-    script = l.at(0);
-
-  emit signalDone(_command->text(), script, _icon->file(), (int) _useIcon->isChecked());
+  emit signalDone(_name->text(), _icon->file(), _useIcon->isChecked());
 
   saveSettings();
 
@@ -103,8 +76,19 @@ void ScriptLaunchButtonDialog::done ()
 
 void ScriptLaunchButtonDialog::useIconToggled (bool d)
 {
-  if (d)
-    _icon->setEnabled(TRUE);
-  else
-    _icon->setEnabled(FALSE);
+  _icon->setEnabled(d);
+}
+
+void ScriptLaunchButtonDialog::setGUI (QString name, QString icon, bool use)
+{
+  ScriptFunctions sf;
+  QStringList l;
+  sf.names(l);
+  _name->setItems(l);
+  _name->setText(name);
+
+  _icon->setFile(icon);
+
+  _useIcon->setChecked(use);
+  useIconToggled(use);
 }

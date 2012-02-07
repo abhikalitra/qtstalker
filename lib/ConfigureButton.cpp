@@ -128,9 +128,7 @@ void ConfigureButton::configureDialog ()
 void ConfigureButton::addIndicator ()
 {
   QSettings settings(g_globalSettings);
-  
   QString file = settings.value("system_script_directory").toString();
   file.append("IndicatorAdd.pl");
-  
-  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
+  g_sidePanel->scriptPanel()->runScriptSystem(file);
 }

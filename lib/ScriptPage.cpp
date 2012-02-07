@@ -31,9 +31,9 @@
 #include "KeyScriptDataBase.h"
 #include "ScriptFunctions.h"
 
-//#include "../pics/edit.xpm"
-//#include "../pics/delete.xpm"
-//#include "../pics/new.xpm"
+#include "../pics/edit.xpm"
+#include "../pics/delete.xpm"
+#include "../pics/new.xpm"
 #include "../pics/script.xpm"
 #include "../pics/configure.xpm"
 #include "../pics/cancel.xpm"
@@ -42,6 +42,7 @@
 #include <QSettings>
 #include <QInputDialog>
 #include <QStatusBar>
+#include <QDir>
 
 ScriptPage::ScriptPage (QWidget *p) : QWidget (p)
 {
@@ -53,6 +54,7 @@ ScriptPage::ScriptPage (QWidget *p) : QWidget (p)
   
   _timer.setInterval(60000);
   connect(&_timer, SIGNAL(timeout()), this, SLOT(runIntervalScripts()));
+  _timer.start();
 }
 
 void ScriptPage::createGUI ()
@@ -88,7 +90,7 @@ void ScriptPage::createGUI ()
     for (; loop2 < cols; loop2++, pos++)
     {
       ScriptLaunchButton *b = new ScriptLaunchButton(pos);
-      connect(b, SIGNAL(signalButtonClicked(QString, QString)), this, SLOT(runScript(QString, QString)));
+      connect(b, SIGNAL(signalButtonClicked(QString)), this, SLOT(runScriptInternal(QString)));
       tb->addWidget(b);
     }
   }
@@ -106,8 +108,29 @@ void ScriptPage::createActions ()
   action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
   action->setToolTip(tr("Run Script") + "...");
   action->setStatusTip(tr("Run Script") + "...");
-  connect(action, SIGNAL(activated()), this, SLOT(runScript()));
+  connect(action, SIGNAL(activated()), this, SLOT(runScriptDialog()));
   _actions.insert(_RunScript, action);
+
+  action = new QAction(QIcon(new_xpm), tr("&New Script") + "...", this);
+  action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_N));
+  action->setToolTip(tr("New Script") + "...");
+  action->setStatusTip(tr("New Script") + "...");
+  connect(action, SIGNAL(activated()), this, SLOT(newScript()));
+  _actions.insert(_ScriptNew, action);
+
+  action = new QAction(QIcon(edit_xpm), tr("&Edit Script") + "...", this);
+  action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_E));
+  action->setToolTip(tr("Edit Script") + "...");
+  action->setStatusTip(tr("Edit Script") + "...");
+  connect(action, SIGNAL(activated()), this, SLOT(editScript()));
+  _actions.insert(_ScriptEdit, action);
+
+  action = new QAction(QIcon(delete_xpm), tr("&Delete Script") + "...", this);
+  action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_D));
+  action->setToolTip(tr("Delete Script") + "...");
+  action->setStatusTip(tr("Delete Script") + "...");
+  connect(action, SIGNAL(activated()), this, SLOT(deleteScript()));
+  _actions.insert(_ScriptDelete, action);
 
   action = new QAction(QIcon(configure_xpm), tr("Set Launch Button Rows") + "...", this);
   action->setToolTip(tr("Set Launch Button Rows") + "...");
@@ -128,6 +151,10 @@ void ScriptPage::createButtonMenu ()
   _queMenu->addAction(_actions.value(_RunScript));
   _queMenu->addAction(_actions.value(_Cancel));
   _queMenu->addSeparator();
+  _queMenu->addAction(_actions.value(_ScriptNew));
+  _queMenu->addAction(_actions.value(_ScriptEdit));
+  _queMenu->addAction(_actions.value(_ScriptDelete));
+  _queMenu->addSeparator();
   _queMenu->addAction(_actions.value(_LaunchButtonRows));
   _queMenu->addAction(_actions.value(_LaunchButtonCols));
 }
@@ -147,24 +174,75 @@ void ScriptPage::queStatus ()
   _actions.value(_Cancel)->setEnabled(status);
 }
 
-void ScriptPage::runScript ()
+void ScriptPage::runScriptSystem (QString file)
 {
-  QSettings settings(g_globalSettings);
+  QDir dir;
+  if (! dir.exists(file))
+    return;
   
-  QString file = settings.value("system_script_directory").toString();
-  file.append("ScriptPanelScriptRun.pl");
-
-  QFileInfo fi(file);
   Script *script = new Script(g_parent);
   connect(script, SIGNAL(signalMessage(QString)), this, SLOT(scriptThreadMessage(QString)));
-  script->setName(fi.baseName());
+  script->setName(file);
   script->setFile(file);
   script->setCommand(QString("perl"));
   script->start();
 }
 
-void ScriptPage::runScript (QString command, QString file)
+void ScriptPage::runScriptDialog ()
 {
+  QSettings settings(g_globalSettings);
+  QString file = settings.value("system_script_directory").toString();
+  file.append("ScriptPanelScriptRun.pl");
+  runScriptSystem(file);
+}
+
+void ScriptPage::runScriptInternal (QString name)
+{
+  ScriptFunctions sf;
+  Entity settings;
+  settings.setName(name);
+  if (sf.load(settings))
+  {
+    qDebug() << "ScriptPage::runScriptInternal: error loading script" << name;
+    return;
+  }
+
+  KeyScriptDataBase keys;
+  Data command, file;
+  settings.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
+  settings.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
+
+  QDir dir;
+  if (! dir.exists(file.toString()))
+    return;
+  
+  QFileInfo fi(file.toString());
+  
+  Script *script = new Script(this);
+  script->setName(name);
+  script->setFile(file.toString());
+  script->setCommand(command.toString());
+  connect(script, SIGNAL(signalDone(QString)), this, SLOT(done(QString)));
+  connect(script, SIGNAL(signalMessage(QString)), this, SLOT(scriptThreadMessage(QString)));
+  _scripts.insert(script->id(), script);
+
+  QListWidgetItem *item = new QListWidgetItem(_queList);
+  item->setText(name);
+  _itemList.insert(script->id(), item);
+
+  QSettings qsettings(g_localSettings);
+  qsettings.setValue("script_panel_last_internal_script", name);
+  qsettings.sync();
+  
+  script->start();
+}
+
+void ScriptPage::runScriptExternal (QString command, QString file)
+{
+  QDir dir;
+  if (! dir.exists(file))
+    return;
+  
   QFileInfo fi(file);
 
   Script *script = new Script(this);
@@ -192,7 +270,37 @@ void ScriptPage::cancel ()
   if (! sl.count())
     return;
 
+  Script *script = _scripts.value(sl.at(0)->text());
+  if (! script)
+    return;
+  
+  script->stopScript();
+  
   done(sl.at(0)->text());
+}
+
+void ScriptPage::newScript ()
+{
+  QSettings settings(g_globalSettings);
+  QString file = settings.value("system_script_directory").toString();
+  file.append("ScriptPanelScriptNew.pl");
+  runScriptSystem(file);
+}
+
+void ScriptPage::editScript ()
+{
+  QSettings settings(g_globalSettings);
+  QString file = settings.value("system_script_directory").toString();
+  file.append("ScriptPanelScriptEdit.pl");
+  runScriptSystem(file);
+}
+
+void ScriptPage::deleteScript ()
+{
+  QSettings settings(g_globalSettings);
+  QString file = settings.value("system_script_directory").toString();
+  file.append("ScriptPanelScriptDelete.pl");
+  runScriptSystem(file);
 }
 
 void ScriptPage::done (QString id)
@@ -203,7 +311,7 @@ void ScriptPage::done (QString id)
 
   _itemList.remove(id);
   delete item;
-
+  
   _scripts.remove(id);
 }
 
@@ -254,26 +362,10 @@ QListWidget * ScriptPage::list ()
 
 void ScriptPage::runStartupScripts ()
 {
-  KeyScriptDataBase keys;
-  ScriptFunctions sf;
-  QStringList l;
-  sf.startupNames(l);
-
-  int loop = 0;
-  for (; loop < l.size(); loop++)
-  {
-    Entity settings;
-    settings.setName(l.at(loop));
-
-    if (sf.load(settings))
-      continue;
-
-    Data command, file;
-    settings.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
-    settings.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
-    
-    runScript(command.toString(), file.toString());
-  }
+  QSettings settings(g_globalSettings);
+  QString file = settings.value("system_script_directory").toString();
+  file.append("ScriptPanelScriptStartupRun.pl");
+  runScriptSystem(file);
 }
 
 void ScriptPage::scriptThreadMessage (QString id)
@@ -284,24 +376,8 @@ void ScriptPage::scriptThreadMessage (QString id)
 
 void ScriptPage::runIntervalScripts ()
 {
-  KeyScriptDataBase keys;
-  ScriptFunctions sf;
-  QStringList l;
-  sf.names(l);
-  
-  int loop = 0;
-  for (; loop < l.size(); loop++)
-  {
-    Entity settings;
-    settings.setName(l.at(loop));
-    
-    if (sf.load(settings))
-      continue;
-
-    Data command, file;
-    settings.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
-    settings.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
-    
-    runScript(command.toString(), file.toString());
-  }
+  QSettings settings(g_globalSettings);
+  QString file = settings.value("system_script_directory").toString();
+  file.append("ScriptPanelScriptIntervalRun.pl");
+  runScriptSystem(file);
 }

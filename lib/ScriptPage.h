@@ -47,6 +47,9 @@ class ScriptPage : public QWidget
       _Cancel,
       _LaunchButtonRows,
       _LaunchButtonCols,
+      _ScriptNew,
+      _ScriptEdit,
+      _ScriptDelete
     };
 
     ScriptPage (QWidget *);
@@ -56,14 +59,19 @@ class ScriptPage : public QWidget
     void createButtonMenu ();
     void createMainPage ();
     QListWidget * list ();
+    void runScriptSystem (QString);
 
   public slots:
     void queRightClick (const QPoint &);
     void queStatus ();
-    void runScript ();
-    void runScript (QString file, QString command);
+    void runScriptDialog ();
+    void runScriptInternal (QString name);
+    void runScriptExternal (QString file, QString command);
     void done (QString);
     void cancel ();
+    void newScript ();
+    void editScript ();
+    void deleteScript ();
     void launchButtonRows ();
     void launchButtonRows2 (int);
     void launchButtonCols ();

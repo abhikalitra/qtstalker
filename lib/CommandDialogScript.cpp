@@ -44,7 +44,12 @@ CommandDialogScript::CommandDialogScript ()
   Entity::set(keys.indexToString(KeyScriptDataBase::_STARTUP), td);
 
   td = Data(0);
-  Entity::set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), td);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_INTERVAL), td);
+
+  td = Data(QString());
+  Entity::set(keys.indexToString(KeyScriptDataBase::_COMMENT), td);
+
+  Entity::set(keys.indexToString(KeyScriptDataBase::_NAME), td);
 }
 
 QString CommandDialogScript::run (CommandParse &, void *scr)
@@ -52,18 +57,22 @@ QString CommandDialogScript::run (CommandParse &, void *scr)
   Script *script = (Script *) scr;
   
   KeyScriptDataBase keys;
-  Data file, command, startup, interval;
+  Data file, command, startup, interval, comment, name;
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_NAME), name);
   Entity::toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
   Entity::toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
   Entity::toData(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
-  Entity::toData(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_INTERVAL), interval);
+  Entity::toData(keys.indexToString(KeyScriptDataBase::_COMMENT), comment);
   
   Entity dialog;
   dialog.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG_SCRIPT));
+  dialog.set(keys.indexToString(KeyScriptDataBase::_NAME), name);
   dialog.set(keys.indexToString(KeyScriptDataBase::_FILE), file);
   dialog.set(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
   dialog.set(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
-  dialog.set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  dialog.set(keys.indexToString(KeyScriptDataBase::_INTERVAL), interval);
+  dialog.set(keys.indexToString(KeyScriptDataBase::_COMMENT), comment);
   
   QString id = QUuid::createUuid().toString();
   
@@ -71,15 +80,19 @@ QString CommandDialogScript::run (CommandParse &, void *scr)
   if (tmf.sendReturn(id, dialog, script))
     return _returnCode;
   
+  dialog.toData(keys.indexToString(KeyScriptDataBase::_NAME), name);
   dialog.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
   dialog.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
   dialog.toData(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
-  dialog.toData(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  dialog.toData(keys.indexToString(KeyScriptDataBase::_INTERVAL), interval);
+  dialog.toData(keys.indexToString(KeyScriptDataBase::_COMMENT), comment);
   
+  Entity::set(keys.indexToString(KeyScriptDataBase::_NAME), name);
   Entity::set(keys.indexToString(KeyScriptDataBase::_FILE), file);
   Entity::set(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
   Entity::set(keys.indexToString(KeyScriptDataBase::_STARTUP), startup);
-  Entity::set(keys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), interval);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_INTERVAL), interval);
+  Entity::set(keys.indexToString(KeyScriptDataBase::_COMMENT), comment);
   
   _returnCode = "OK";
   return _returnCode;

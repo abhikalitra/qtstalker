@@ -24,6 +24,7 @@
 #include "EAVSearch.h"
 
 #include <QtDebug>
+#include <QUuid>
 
 ScriptFunctions::ScriptFunctions ()
 {
@@ -32,6 +33,10 @@ ScriptFunctions::ScriptFunctions ()
 
 int ScriptFunctions::save (Entity &script)
 {
+  QString name = script.name();
+  if (name.isEmpty())
+    script.setName(QUuid::createUuid().toString());
+  
   _db.transaction();
   if (_db.set(script))
   {
@@ -56,11 +61,7 @@ int ScriptFunctions::names (QStringList &l)
 {
   l.clear();
   
-  KeyScriptDataBase skeys;
-  EAVSearch search;
-  search.append(skeys.indexToString(KeyScriptDataBase::_RUN_INTERVAL), ">", "0");
-
-  if (_db.search(search, l))
+  if (_db.names(l))
   {
     qDebug() << "ScriptFunctions::names: db error";
     return 1;
@@ -94,5 +95,57 @@ int ScriptFunctions::load (Entity &script)
     return 1;
   }
   
+  return 0;
+}
+
+int ScriptFunctions::intervalNames (QStringList &l)
+{
+  l.clear();
+  
+  KeyScriptDataBase keys;
+  EAVSearch search;
+  search.append(keys.indexToString(KeyScriptDataBase::_INTERVAL), ">", "0");
+  if (_db.search(search, l))
+  {
+    qDebug() << "ScriptFunctions::intervalNames: db error";
+    return 1;
+  }
+
+  return 0;
+}
+
+int ScriptFunctions::intervalPendingNames (QStringList &l)
+{
+  l.clear();
+  
+  QStringList tl;
+  intervalNames(tl);
+
+  KeyScriptDataBase keys;
+  int loop = 0;
+  for (; loop < tl.size(); loop++)
+  {
+    Entity script;
+    script.setName(tl.at(loop));
+    
+    if (_db.get(script))
+    {
+      qDebug() << "ScriptFunctions::intervalPendingNames: EAVDataBase error" << script.name();
+      continue;
+    }
+    
+    Data lastDate, interval;
+    script.toData(keys.indexToString(KeyScriptDataBase::_LAST_RUN), lastDate);
+    script.toData(keys.indexToString(KeyScriptDataBase::_INTERVAL), interval);
+    
+    QDateTime currentTime = QDateTime::currentDateTime();
+    int seconds = lastDate.toDateTime().secsTo(currentTime);
+    
+    if (seconds < interval.toInteger())
+      continue;
+    
+    l << tl.at(loop);
+  }  
+
   return 0;
 }

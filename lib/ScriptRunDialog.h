@@ -25,6 +25,7 @@
 #include <QStringList>
 #include <QSpinBox>
 #include <QCheckBox>
+#include <QTextEdit>
 
 #include "Dialog.h"
 #include "FileButton.h"
@@ -48,9 +49,12 @@ class ScriptRunDialog : public Dialog
 
   private:
     FileButton *_file;
-    WidgetLineEdit *_text;
+    WidgetLineEdit *_command;
+    WidgetLineEdit *_name;
     QCheckBox *_startup;
     QSpinBox *_interval;
+    QTextEdit *_comment;
+    int _newFlag;
 };
 
 #endif

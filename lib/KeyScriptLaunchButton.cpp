@@ -19,17 +19,13 @@
  *  USA.
  */
 
-#include "KeyScriptDataBase.h"
+#include "KeyScriptLaunchButton.h"
 
 #include <QtDebug>
 
-KeyScriptDataBase::KeyScriptDataBase ()
+KeyScriptLaunchButton::KeyScriptLaunchButton ()
 {
   _list << "NAME";
-  _list << "FILE";
-  _list << "STARTUP";
-  _list << "INTERVAL";
-  _list << "COMMAND";
-  _list << "LAST_RUN";
-  _list << "COMMENT";
+  _list << "ICON";
+  _list << "ICON_USE";
 }

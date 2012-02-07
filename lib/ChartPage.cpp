@@ -142,11 +142,9 @@ void ChartPage::rightClick (const QPoint &)
 void ChartPage::addToGroup ()
 {
   QSettings settings(g_globalSettings);
-  
   QString file = settings.value("system_script_directory").toString();
   file.append("ChartPanelAddToGroup.pl");
-
-  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
+  g_sidePanel->scriptPanel()->runScriptSystem(file);
 }
 
 void ChartPage::updateList ()
@@ -210,11 +208,9 @@ void ChartPage::selected (QStringList &l)
 void ChartPage::deleteSymbol ()
 {
   QSettings settings(g_globalSettings);
-  
   QString file = settings.value("system_script_directory").toString();
   file.append("ChartPanelRemoveSymbol.pl");
-
-  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
+  g_sidePanel->scriptPanel()->runScriptSystem(file);
 }
 
 void ChartPage::itemClicked (QListWidgetItem *d)

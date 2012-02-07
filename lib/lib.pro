@@ -182,6 +182,7 @@ HEADERS += KeyGroupDataBase.h
 HEADERS += KeyIndicatorDataBase.h
 HEADERS += KeyQuoteDataBase.h
 HEADERS += KeyScriptDataBase.h
+HEADERS += KeyScriptLaunchButton.h
 HEADERS += KeySymbol.h
 
 HEADERS += LineEdit.h
@@ -420,6 +421,7 @@ SOURCES += KeyGroupDataBase.cpp
 SOURCES += KeyIndicatorDataBase.cpp
 SOURCES += KeyQuoteDataBase.cpp
 SOURCES += KeyScriptDataBase.cpp
+SOURCES += KeyScriptLaunchButton.cpp
 SOURCES += KeySymbol.cpp
 
 SOURCES += LineEdit.cpp

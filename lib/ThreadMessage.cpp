@@ -223,7 +223,7 @@ void ThreadMessage::runMessage (Entity &e, QString id)
       Data file, command;
       e.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
       e.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
-      g_sidePanel->scriptPanel()->runScript(command.toString(), file.toString());
+      g_sidePanel->scriptPanel()->runScriptExternal(command.toString(), file.toString());
       break;
     }
     default:

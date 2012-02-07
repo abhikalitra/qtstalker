@@ -23,6 +23,8 @@
 #include "CommandParse.h"
 #include "CommandFactory.h"
 #include "TypeVerb.h"
+#include "ScriptFunctions.h"
+#include "KeyScriptDataBase.h"
 
 #include <QDebug>
 #include <QUuid>
@@ -60,6 +62,7 @@ void Script::run ()
   if (! _proc.waitForStarted())
   {
     qDebug() << "Script::run: error timed out" << _file;
+    _proc.kill();
     done(_TIMEOUT);
     deleteLater();
     return;
@@ -78,7 +81,6 @@ void Script::run ()
     {
       qDebug() << "Script::run: script terminated";
       rc = _CANCEL;
-      _proc.kill();
       break;
     }
 
@@ -92,7 +94,6 @@ void Script::run ()
     s = s.trimmed();
     if (! s.length())
     {
-      _proc.kill();
       rc = _OK;
       break;
     }
@@ -103,7 +104,6 @@ void Script::run ()
     {
       qDebug() << "Script::run: verb parse error";
       qDebug() << "Script::run:" << s;
-      _proc.kill();
       break;
     }
 
@@ -111,7 +111,6 @@ void Script::run ()
     if (verbs.stringToIndex(cp.command()) == -1)
     {
       qDebug() << "Script::run: invalid verb" << cp.command();
-      _proc.kill();
       break;
     }
 
@@ -120,7 +119,6 @@ void Script::run ()
     if (! command)
     {
       qDebug() << "Script::run: invalid command" << cp.command();
-      _proc.kill();
       break;
     }
 
@@ -131,7 +129,6 @@ void Script::run ()
     {
       qDebug() << "Script::run: command error" << cp.command() << rc;
       qDebug() << "Script::run:" << s;
-      _proc.kill();
       break;
     }
 
@@ -140,6 +137,8 @@ void Script::run ()
     _proc.write(rba);
     _proc.waitForBytesWritten(-1);
   }
+
+  _proc.kill();
   
   done(rc);
   
@@ -165,11 +164,29 @@ void Script::done (int rc)
       l << tr("error");
       break;
     default:
+    {
       l << tr("completed");
+      
+      ScriptFunctions sf;
+      Entity settings;
+      settings.setName(_name);
+      if (! sf.load(settings))
+      {
+        KeyScriptDataBase keys;
+        Data lastRun;
+        settings.toData(keys.indexToString(KeyScriptDataBase::_LAST_RUN), lastRun);
+        lastRun.set(QDateTime::currentDateTime());
+        settings.set(keys.indexToString(KeyScriptDataBase::_LAST_RUN), lastRun);
+        if (sf.save(settings))
+          qDebug() << "Script::done: error saving LAST_RUN" << _name;
+      }
+      
       break;
+    }
   }
 
   qDebug() << l.join(" ");
+  
   emit signalDone(_id);
 }
 

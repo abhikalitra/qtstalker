@@ -135,11 +135,9 @@ void GroupPage::editGroup ()
 void GroupPage::deleteGroup ()
 {
   QSettings settings(g_globalSettings);
-  
   QString file = settings.value("system_script_directory").toString();
   file.append("GroupRemove.pl");
-
-  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
+  g_sidePanel->scriptPanel()->runScriptSystem(file);
 }
 
 void GroupPage::groupSelected (int i)
@@ -206,11 +204,9 @@ void GroupPage::updateGroups ()
 void GroupPage::addToGroup ()
 {
   QSettings settings(g_globalSettings);
-  
   QString file = settings.value("system_script_directory").toString();
   file.append("GroupPanelAddToGroup.pl");
-
-  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
+  g_sidePanel->scriptPanel()->runScriptSystem(file);
 }
 
 void GroupPage::updateList ()

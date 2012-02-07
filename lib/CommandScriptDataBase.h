@@ -32,6 +32,7 @@ class CommandScriptDataBase : public Command
     int save ();
     int remove ();
     int list ();
+    int load ();
     
   private:
     QStringList _method;

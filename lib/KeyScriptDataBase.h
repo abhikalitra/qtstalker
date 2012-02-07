@@ -32,8 +32,10 @@ class KeyScriptDataBase : public Type
       _NAME,
       _FILE,
       _STARTUP,
-      _RUN_INTERVAL,
-      _COMMAND
+      _INTERVAL,
+      _COMMAND,
+      _LAST_RUN,
+      _COMMENT
     };
     
     KeyScriptDataBase ();

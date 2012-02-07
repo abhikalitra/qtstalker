@@ -22,25 +22,24 @@
 #ifndef SCRIPT_LAUNCH_BUTTON_DIALOG_HPP
 #define SCRIPT_LAUNCH_BUTTON_DIALOG_HPP
 
-#include <QDateTimeEdit>
-#include <QIcon>
 #include <QCheckBox>
+#include <QString>
 
 #include "IconButton.h"
 #include "Dialog.h"
-#include "FileButton.h"
-#include "LineEdit.h"
+#include "WidgetLineEdit.h"
 
 class ScriptLaunchButtonDialog : public Dialog
 {
   Q_OBJECT
 
   signals:
-    void signalDone (QString, QString, QString, int);
+    void signalDone (QString, QString, bool);
 
   public:
-    ScriptLaunchButtonDialog (QWidget *, QString command, QString script, QString icon, int);
+    ScriptLaunchButtonDialog (QWidget *, QString name, QString icon, bool);
     void createMainPage ();
+    void setGUI (QString name, QString icon, bool use);
 
   public slots:
     void done ();
@@ -48,8 +47,7 @@ class ScriptLaunchButtonDialog : public Dialog
 
   private:
     IconButton *_icon;
-    FileButton *_script;
-    LineEdit *_command;
+    WidgetLineEdit *_name;
     QCheckBox *_useIcon;
 };
 

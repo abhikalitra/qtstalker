@@ -151,11 +151,9 @@ void PlotMenu::createMenus ()
 void PlotMenu::deleteAllChartObjects ()
 {
   QSettings settings(g_globalSettings);
-  
   QString file = settings.value("system_script_directory").toString();
   file.append("IndicatorChartObjectRemove.pl");
-
-  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
+  g_sidePanel->scriptPanel()->runScriptSystem(file);
 }
 
 void PlotMenu::chartObjectMenuSelected (QAction *a)
@@ -171,19 +169,15 @@ void PlotMenu::setCOMenuStatus (bool status)
 void PlotMenu::addIndicator ()
 {
   QSettings settings(g_globalSettings);
-  
   QString file = settings.value("system_script_directory").toString();
   file.append("IndicatorAdd.pl");
-  
-  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
+  g_sidePanel->scriptPanel()->runScriptSystem(file);
 }
 
 void PlotMenu::removeIndicator ()
 {
   QSettings settings(g_globalSettings);
-  
   QString file = settings.value("system_script_directory").toString();
   file.append("IndicatorRemove.pl");
-
-  g_sidePanel->scriptPanel()->runScript(QString("perl"), file);
+  g_sidePanel->scriptPanel()->runScriptSystem(file);
 }

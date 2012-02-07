@@ -35,6 +35,8 @@ class ScriptFunctions
     int remove (QStringList);
     int names (QStringList &);
     int startupNames (QStringList &);
+    int intervalNames (QStringList &);
+    int intervalPendingNames (QStringList &);
     int load (Entity &);
     
   private:

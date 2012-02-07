@@ -22,34 +22,22 @@
 #include "ScriptLaunchButton.h"
 #include "ScriptLaunchButtonDialog.h"
 #include "Global.h"
+#include "EAVDataBase.h"
+#include "KeyScriptLaunchButton.h"
 
 #include "../pics/configure.xpm"
 
 #include <QPixmap>
 #include <QCursor>
 #include <QInputDialog>
-#include <QSettings>
 #include <QDebug>
-#include <QFileInfo>
 
 ScriptLaunchButton::ScriptLaunchButton (int pos)
 {
   setContextMenuPolicy(Qt::CustomContextMenu);
   _position = pos;
 
-  QSettings settings(g_localSettings);
-  _command = settings.value("script_launch_button_command_" + QString::number(_position)).toString();
-  _scriptName = settings.value("script_launch_button_file_" + QString::number(_position)).toString();
-  _icon = settings.value("script_launch_button_icon_" + QString::number(_position)).toString();
-  _useIcon = settings.value("script_launch_button_use_icon_" + QString::number(_position), 0).toInt();
-
-  QFileInfo fi(_scriptName);
-  setToolTip(fi.baseName());
-
-  setText(QString::number(_position));
-
-  if (_useIcon)
-    setIcon(QIcon(_icon));
+  loadSettings();
 
   connect(this, SIGNAL(clicked()), this, SLOT(buttonClicked()));
   connect(this, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(contextMenu()));
@@ -60,28 +48,54 @@ ScriptLaunchButton::ScriptLaunchButton (int pos)
 
 void ScriptLaunchButton::buttonClicked ()
 {
-  if (_scriptName.isEmpty())
+  if (_name.isEmpty())
     return;
 
-  emit signalButtonClicked(_command, _scriptName);
+  emit signalButtonClicked(_name);
 }
 
 void ScriptLaunchButton::configure ()
 {
-  ScriptLaunchButtonDialog *dialog = new ScriptLaunchButtonDialog(this, _command, _scriptName, _icon, _useIcon);
-  connect(dialog, SIGNAL(signalDone(QString, QString, QString, int)), this, SLOT(configure2(QString, QString, QString, int)));
+  ScriptLaunchButtonDialog *dialog = new ScriptLaunchButtonDialog(this, _name, _icon, _useIcon);
+  connect(dialog, SIGNAL(signalDone(QString, QString, bool)), this, SLOT(configure2(QString, QString, bool)));
   dialog->show();
 }
 
-void ScriptLaunchButton::configure2 (QString command, QString file, QString icon, int use)
+void ScriptLaunchButton::configure2 (QString name, QString icon, bool use)
 {
-  _command = command;
-  _scriptName = file;
+  setSettings(name, icon, use);
+  saveSettings();
+}
+
+void ScriptLaunchButton::contextMenu ()
+{
+  _menu->exec(QCursor::pos());
+}
+
+void ScriptLaunchButton::loadSettings ()
+{
+  EAVDataBase db("scriptLaunchButtons");
+  Entity settings;
+  settings.setName(QString::number(_position));
+  if (db.get(settings))
+    return;
+
+  KeyScriptLaunchButton keys;
+  Data name, icon, iconUse;
+  settings.toData(keys.indexToString(KeyScriptLaunchButton::_NAME), name);
+  settings.toData(keys.indexToString(KeyScriptLaunchButton::_ICON), icon);
+  settings.toData(keys.indexToString(KeyScriptLaunchButton::_ICON_USE), iconUse);
+  
+  setSettings(name.toString(), icon.toString(), iconUse.toInteger());
+}
+
+void ScriptLaunchButton::setSettings (QString name, QString icon, bool use)
+{
+  _name = name;
   _icon = icon;
   _useIcon = use;
 
-  QFileInfo fi(_scriptName);
-  setToolTip(fi.baseName());
+  setToolTip(name);
 
   setText(QString::number(_position));
 
@@ -89,16 +103,17 @@ void ScriptLaunchButton::configure2 (QString command, QString file, QString icon
     setIcon(QIcon(_icon));
   else
     setIcon(QIcon());
-
-  QSettings settings(g_localSettings);
-  settings.setValue("script_launch_button_command_" + QString::number(_position), _command);
-  settings.setValue("script_launch_button_file_" + QString::number(_position), _scriptName);
-  settings.setValue("script_launch_button_icon_" + QString::number(_position), _icon);
-  settings.setValue("script_launch_button_use_icon_" + QString::number(_position), _useIcon);
-  settings.sync();
 }
 
-void ScriptLaunchButton::contextMenu()
+void ScriptLaunchButton::saveSettings ()
 {
-  _menu->exec(QCursor::pos());
+  KeyScriptLaunchButton keys;
+  EAVDataBase db("scriptLaunchButtons");
+  Entity settings;
+  settings.setName(QString::number(_position));
+  settings.set(keys.indexToString(KeyScriptLaunchButton::_NAME), Data(_name));
+  settings.set(keys.indexToString(KeyScriptLaunchButton::_ICON), Data(_icon));
+  settings.set(keys.indexToString(KeyScriptLaunchButton::_ICON_USE), Data(_useIcon));
+  if (db.set(settings))
+    qDebug() << "ScriptLaunchButton::saveSettings: db error";
 }

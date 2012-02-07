@@ -28,7 +28,7 @@ $startup = <STDIN>; chomp($startup); if ($startup eq "ERROR") { exit; }
 print STDOUT "GET($dialogScriptCommand.RUN_INTERVAL)";
 $interval = <STDIN>; chomp($interval); if ($interval eq "ERROR") { exit; }
 
-if ($startup eq 'TRUE' or $interval gt 0)
+if ($startup eq 'true' or $interval gt 0)
 {
   print STDOUT "NEW(SCRIPT_DATABASE, $scriptDBCommand)";
   $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
