@@ -28,10 +28,11 @@
 #include <QListWidget>
 #include <QAction>
 #include <QHash>
-#include <QToolBar>
 #include <QTimer>
+#include <QLayout>
 
 #include "Script.h"
+#include "ScriptLaunchButton.h"
 
 class ScriptPage : public QWidget
 {
@@ -43,13 +44,14 @@ class ScriptPage : public QWidget
   public:
     enum Action
     {
-      _RunScript,
-      _Cancel,
-      _LaunchButtonRows,
-      _LaunchButtonCols,
-      _ScriptNew,
-      _ScriptEdit,
-      _ScriptDelete
+      _LAUNCH_BUTTON_NEW,
+      _SCRIPT_CANCEL,
+      _SCRIPT_DELETE,
+      _SCRIPT_EDIT,
+      _SCRIPT_NEW,
+      _SCRIPT_RUN,
+      _SCRIPT_SEARCH,
+      _SCRIPT_SHOW_ALL
     };
 
     ScriptPage (QWidget *);
@@ -60,10 +62,13 @@ class ScriptPage : public QWidget
     void createMainPage ();
     QListWidget * list ();
     void runScriptSystem (QString);
+    void selected (QStringList &);
 
   public slots:
     void queRightClick (const QPoint &);
+    void searchRightClick (const QPoint &);
     void queStatus ();
+    void searchStatus ();
     void runScriptDialog ();
     void runScriptInternal (QString name);
     void runScriptExternal (QString file, QString command);
@@ -72,21 +77,29 @@ class ScriptPage : public QWidget
     void newScript ();
     void editScript ();
     void deleteScript ();
-    void launchButtonRows ();
-    void launchButtonRows2 (int);
-    void launchButtonCols ();
-    void launchButtonCols2 (int);
+    void newLaunchButton ();
+    void newLaunchButton2 (QString script, QString icon, bool flag, int row, int col, QString text);
+    void deleteLaunchButton (QString);
     void runStartupScripts ();
     void scriptThreadMessage (QString);
     void runIntervalScripts ();
+    void updateSearchList ();
+    void searchDialog ();
+    void showAll ();
+    void setSearchList (QStringList);
+    void searchDoubleClicked (QListWidgetItem *);
 
   protected:
     QListWidget *_queList;
+    QListWidget *_searchList;
     QMenu *_queMenu;
+    QMenu *_searchMenu;
     QHash<int, QAction *> _actions;
     QHash<QString, QListWidgetItem *> _itemList;
     QHash<QString, Script *> _scripts;
     QTimer _timer;
+    QHash<QString, ScriptLaunchButton *> _launchButtons;
+    QGridLayout *_buttonGrid;
 };
 
 #endif

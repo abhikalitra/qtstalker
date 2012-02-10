@@ -19,17 +19,25 @@
  *  USA.
  */
 
-#ifndef COMMAND_AVERAGE_PRICE_HPP
-#define COMMAND_AVERAGE_PRICE_HPP
+#ifndef COMMAND_PRICE_HPP
+#define COMMAND_PRICE_HPP
 
 #include "Command.h"
 
-class CommandAveragePrice : public Command
+class CommandPrice : public Command
 {
   public:
-    CommandAveragePrice ();
+    CommandPrice ();
     QString run (CommandParse &, void *);
-    int getAP (Entity &, Entity &, Entity &, Entity &, Entity &line);
+    int getAP (void *);
+    int getAP2 (Entity &, Entity &, Entity &, Entity &, Entity &line);
+    int getTP (void *);
+    int getTP2 (Entity &, Entity &, Entity &, Entity &line);
+    int getWC (void *);
+    int getWC2 (Entity &, Entity &, Entity &, Entity &line);
+    
+  private:
+    QStringList _method;
 };
 
 #endif

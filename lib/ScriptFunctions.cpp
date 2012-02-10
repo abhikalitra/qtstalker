@@ -149,3 +149,8 @@ int ScriptFunctions::intervalPendingNames (QStringList &l)
 
   return 0;
 }
+
+int ScriptFunctions::keys (QStringList &l)
+{
+  return _db.keys(l);
+}

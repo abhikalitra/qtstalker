@@ -21,8 +21,6 @@
 
 #include "Dialog.h"
 #include "Doc.h"
-//#include "GlobalData.h"
-//#include "GlobalMutex.h"
 #include "ThreadMessageFunctions.h"
 
 #include <QtDebug>

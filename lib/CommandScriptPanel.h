@@ -19,17 +19,21 @@
  *  USA.
  */
 
-#ifndef COMMAND_WEIGHTED_CLOSE_HPP
-#define COMMAND_WEIGHTED_CLOSE_HPP
+#ifndef COMMAND_SCRIPT_PANEL_HPP
+#define COMMAND_SCRIPT_PANEL_HPP
 
 #include "Command.h"
 
-class CommandWeightedClose : public Command
+class CommandScriptPanel : public Command
 {
   public:
-    CommandWeightedClose ();
+    CommandScriptPanel ();
     QString run (CommandParse &, void *);
-    int getWC (Entity &, Entity &, Entity &, Entity &line);
+    int select (void *);
+    int run2 (void *);
+    
+  private:
+    QStringList _method;
 };
 
 #endif

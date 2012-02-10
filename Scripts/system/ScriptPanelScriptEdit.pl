@@ -1,8 +1,7 @@
 # selects and edits a script in the script database
 
+$scriptPanelCommand = 'scriptPanelCommand';
 $scriptDBCommand = 'scriptDBCommand';
-$selectDialogCommand = 'selectDialogCommand';
-$selectDialogTitle = 'Scripts';
 $scriptDialogCommand = 'scriptDialogCommand';
 
 ###################################################################
@@ -10,39 +9,32 @@ $|++;  # flush buffers
 ###################################################################
 
 ###################################################################
-#  get list of scripts
+#  get script panel selected items
 ###################################################################
 
-print STDOUT "NEW(SCRIPT_DATABASE, $scriptDBCommand)";
+print STDOUT "NEW(SCRIPT_PANEL, $scriptPanelCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "SET($scriptDBCommand.METHOD, LIST)";
+print STDOUT "SET($scriptPanelCommand.METHOD, SELECT)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "RUN($scriptDBCommand)";
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
-
-###################################################################
-###################  SCRIPT SELECTION DIALOG  ##################
-###################################################################
-
-print STDOUT "NEW(DIALOG_SELECT, $selectDialogCommand)";
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
-
-print STDOUT "SET($selectDialogCommand.LIST, $scriptDBCommand.LIST,
-                  $selectDialogCommand.TITLE, $selectDialogTitle,
-                  $selectDialogCommand.MODE, 1)"; # single selection only
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
-
-print STDOUT "RUN($selectDialogCommand)";
+print STDOUT "RUN($scriptPanelCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 #  load selected script
 ###################################################################
 
+# get the list of items selected
+print STDOUT "GET($scriptPanelCommand.LIST)";
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
+my @names = split(';', $rc);
+
+print STDOUT "NEW(SCRIPT_DATABASE, $scriptDBCommand)";
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
+
 print STDOUT "SET($scriptDBCommand.METHOD, LOAD,
-                  $scriptDBCommand.NAME, $selectDialogCommand.LIST)";
+                  $scriptDBCommand.NAME, $names[0])";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 print STDOUT "RUN($scriptDBCommand)";

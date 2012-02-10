@@ -1,5 +1,9 @@
 # adds a new indicator to app
 
+$dialogScriptCommand = 'dialogScriptCommand';
+$indicatorCommand = 'indicatorCommand';
+$chartPanelCommand = 'chartPanelCommand';
+
 ###################################################################
 $|++;  # flush buffers
 ###################################################################
@@ -8,37 +12,36 @@ $|++;  # flush buffers
 ###################  SCRIPT RUN DIALOG  ################################
 ###################################################################
 
-print STDOUT "NEW(DIALOG_SCRIPT, srd)";
+print STDOUT "NEW(DIALOG_SCRIPT, $dialogScriptCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "RUN(srd)";
+print STDOUT "RUN($dialogScriptCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  SAVE INDICATOR  ################################
 ###################################################################
 
-print STDOUT "NEW(INDICATOR, indicator)";
+print STDOUT "NEW(INDICATOR, $indicatorCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "SET(indicator.METHOD, ADD,
-                  indicator.FILE, srd.FILE,
-                  indicator.COMMAND, srd.COMMAND)";
+print STDOUT "SET($indicatorCommand.METHOD, ADD,
+                  $indicatorCommand.FILE, $dialogScriptCommand.FILE,
+                  $indicatorCommand.COMMAND, $dialogScriptCommand.COMMAND)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "RUN(indicator)";
+print STDOUT "RUN($indicatorCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
 ###################  RUN INDICATOR  ################################
 ###################################################################
 
-print STDOUT "NEW(SCRIPT, script)";
+print STDOUT "NEW(CHART_PANEL, $chartPanelCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "SET(script.FILE, srd.FILE,
-                  script.COMMAND, srd.COMMAND)";
+print STDOUT "SET($chartPanelCommand.METHOD, RELOAD)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "RUN(script)";
+print STDOUT "RUN($chartPanelCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }

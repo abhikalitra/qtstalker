@@ -148,6 +148,9 @@ void ThreadMessage::runMessage (Entity &e, QString id)
     case TypeThreadMessage::_CHART_PANEL_REFRESH:
       g_sidePanel->chartPanel()->updateList();
       break;
+    case TypeThreadMessage::_CHART_PANEL_RELOAD:
+      g_sidePanel->chartPanel()->reload();
+      break;
     case TypeThreadMessage::_CHART_PANEL_SELECT:
     {
       ThreadMessageFunctions tmf;
@@ -217,13 +220,31 @@ void ThreadMessage::runMessage (Entity &e, QString id)
       }
       break;
     }
-    case TypeThreadMessage::_SCRIPT:
+    case TypeThreadMessage::_SCRIPT_PANEL_SELECT:
     {
-      KeyScriptDataBase keys;
-      Data file, command;
-      e.toData(keys.indexToString(KeyScriptDataBase::_FILE), file);
-      e.toData(keys.indexToString(KeyScriptDataBase::_COMMAND), command);
-      g_sidePanel->scriptPanel()->runScriptExternal(command.toString(), file.toString());
+      ThreadMessageFunctions tmf;
+      QStringList l;
+      g_sidePanel->scriptPanel()->selected(l);
+      if (! l.size())
+      {
+	Entity te;
+        tmf.sendRelease(id, te);
+      }
+      else
+      {
+        Data list;
+        e.toData(QString("LIST"), list);
+        list.set(l);
+        e.set(QString("LIST"), list);
+        tmf.sendRelease(id, e);
+      }
+      break;
+    }
+    case TypeThreadMessage::_SCRIPT_PANEL_RUN:
+    {
+      Data name;
+      e.toData(QString("SCRIPT"), name);
+      g_sidePanel->scriptPanel()->runScriptInternal(name.toString());
       break;
     }
     default:

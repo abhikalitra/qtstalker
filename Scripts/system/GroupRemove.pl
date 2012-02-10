@@ -3,7 +3,7 @@
 $groupDBCommand = 'groupDBCommand';
 $listDialogCommand = 'listDialog';
 $listDialogTitle = 'Groups';
-$groupPanelRefreshCommand = 'groupPanelRefreshCommand';
+$groupPanelCommand = 'groupPanelCommand';
 
 ###################################################################
 $|++;  # flush buffers
@@ -51,8 +51,11 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 #  REFRESH GROUP PANEL
 ###################################################################
 
-print STDOUT "NEW(GROUP_PANEL_REFRESH, $groupPanelRefreshCommand)";
+print STDOUT "NEW(GROUP_PANEL, $groupPanelCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "RUN($groupPanelRefreshCommand)";
+print STDOUT "SET($groupPanelCommand.METHOD, REFRESH)";
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
+
+print STDOUT "RUN($groupPanelCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }

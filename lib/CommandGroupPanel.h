@@ -19,16 +19,21 @@
  *  USA.
  */
 
-#ifndef COMMAND_GROUP_PANEL_REFRESH_HPP
-#define COMMAND_GROUP_PANEL_REFRESH_HPP
+#ifndef COMMAND_GROUP_PANEL_HPP
+#define COMMAND_GROUP_PANEL_HPP
 
 #include "Command.h"
 
-class CommandGroupPanelRefresh : public Command
+class CommandGroupPanel : public Command
 {
   public:
-    CommandGroupPanelRefresh ();
+    CommandGroupPanel ();
     QString run (CommandParse &, void *);
+    int select (void *);
+    int refresh (void *);
+    
+  private:
+    QStringList _method;
 };
 
 #endif

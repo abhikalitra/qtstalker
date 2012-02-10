@@ -19,7 +19,7 @@
  *  USA.
  */
 
-#include "CommandChartPanelSelect.h"
+#include "CommandGroupPanel.h"
 #include "Script.h"
 #include "TypeThreadMessage.h"
 #include "ThreadMessageFunctions.h"
@@ -27,34 +27,75 @@
 #include <QtDebug>
 #include <QUuid>
 
-CommandChartPanelSelect::CommandChartPanelSelect ()
+CommandGroupPanel::CommandGroupPanel ()
 {
-  _name = "CHART_PANEL_SELECT";
+  _name = "GROUP_PANEL";
+  _method << "REFRESH" << "SELECT";
 
   Data td(TypeData::_LIST);
   Entity::set(QString("LIST"), td);
+
+  td = Data(_method, _method.at(0));
+  Entity::set(QString("METHOD"), td);
 }
 
-QString CommandChartPanelSelect::run (CommandParse &, void *scr)
+QString CommandGroupPanel::run (CommandParse &, void *d)
 {
-  Script *script = (Script *) scr;
+  Data method;
+  Entity::toData(QString("METHOD"), method);
+  
+  switch (_method.indexOf(method.toString()))
+  {
+    case 0: // REFRESH
+      if (refresh(d))
+        return _returnCode;
+      break;
+    case 1: // SELECT
+      if (select(d))
+        return _returnCode;
+      break;
+    default:
+      qDebug() << "CommandGroupPanel::run: invalid method" << method.toString();
+      return _returnCode;
+      break;
+  }
+  
+  _returnCode = "OK";
+  return _returnCode;
+}
+
+int CommandGroupPanel::select (void *d)
+{
+  Script *script = (Script *) d;
   
   Data list;
   Entity::toData(QString("LIST"), list);
   
   Entity e;
-  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_PANEL_SELECT));
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_GROUP_PANEL_SELECT));
   e.set(QString("LIST"), list);
   
   QString id = QUuid::createUuid().toString();
   
   ThreadMessageFunctions tmf;
   if (tmf.sendReturn(id, e, script))
-    return _returnCode;
+    return 1;
   
   e.toData(QString("LIST"), list);
   Entity::set(QString("LIST"), list);
 
-  _returnCode = "OK";
-  return _returnCode;
+  return 0;
+}
+
+int CommandGroupPanel::refresh (void *d)
+{
+  Script *script = (Script *) d;
+  
+  Entity e;
+  e.set(QString("MESSAGE"), Data(TypeThreadMessage::_GROUP_PANEL_REFRESH));
+  
+  ThreadMessageFunctions tmf;
+  tmf.send(e, script);
+  
+  return 0;
 }

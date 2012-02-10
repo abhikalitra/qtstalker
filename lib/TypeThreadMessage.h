@@ -34,6 +34,7 @@ class TypeThreadMessage
       _CHART_OBJECT,
       _CHART_OBJECT_REMOVE,
       _CHART_PANEL_REFRESH,
+      _CHART_PANEL_RELOAD,
       _CHART_PANEL_SELECT,
       _CHART_REMOVE,
       _CHART_UPDATE,
@@ -45,7 +46,8 @@ class TypeThreadMessage
       _DIALOG_SELECT,
       _GROUP_PANEL_REFRESH,
       _GROUP_PANEL_SELECT,
-      _SCRIPT
+      _SCRIPT_PANEL_SELECT,
+      _SCRIPT_PANEL_RUN
     };
 };
 

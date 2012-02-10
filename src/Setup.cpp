@@ -33,6 +33,7 @@
 #include <QDir>
 #include <QStringList>
 #include <QSettings>
+#include <QUuid>
 
 Setup::Setup ()
 {
@@ -150,17 +151,23 @@ void Setup::setupDefaultScripts ()
   QString file = INSTALL_DATA_DIR;
   file.append("/qtstalker/quote/YahooHistoryDownload.pl");
   
-  QString comment = QObject::tr("Downloads historical quotes from yahoo finance.\n");
+  QString comment = QObject::tr("Downloads historical quotes from yahoo finance.\n\n");
   comment.append(QObject::tr("Symbols to download are kept in a file maintained "));
   comment.append(QObject::tr("by the user. One yahoo symbol per line. For example:\n\n"));
-  comment.append(QString("GOOG\nIBM\nAAPL"));
+  comment.append(QString("GOOG\nIBM\nAAPL\n"));
   
   KeyScriptDataBase dbkeys;
   ScriptFunctions sf;
   Entity script;
   script.setName(name);
+  
+  Data td(TypeData::_FILE);
+  QStringList tl;
+  tl << file;
+  td.set(tl);  
+  script.set(dbkeys.indexToString(KeyScriptDataBase::_FILE), td);
+  
   script.set(dbkeys.indexToString(KeyScriptDataBase::_NAME), Data(name));
-  script.set(dbkeys.indexToString(KeyScriptDataBase::_FILE), Data(file));
   script.set(dbkeys.indexToString(KeyScriptDataBase::_COMMAND), Data(QString("perl")));
   script.set(dbkeys.indexToString(KeyScriptDataBase::_STARTUP), Data(FALSE));
   script.set(dbkeys.indexToString(KeyScriptDataBase::_INTERVAL), Data(0));
@@ -172,10 +179,13 @@ void Setup::setupDefaultScripts ()
   KeyScriptLaunchButton lkeys;
   EAVDataBase db("scriptLaunchButtons");
   Entity settings;
-  settings.setName(QString("1"));
-  settings.set(lkeys.indexToString(KeyScriptLaunchButton::_NAME), Data(name));
+  settings.setName(QUuid::createUuid());
+  settings.set(lkeys.indexToString(KeyScriptLaunchButton::_SCRIPT), Data(name));
   settings.set(lkeys.indexToString(KeyScriptLaunchButton::_ICON), Data());
   settings.set(lkeys.indexToString(KeyScriptLaunchButton::_ICON_USE), Data(FALSE));
+  settings.set(lkeys.indexToString(KeyScriptLaunchButton::_ROW), Data(0));
+  settings.set(lkeys.indexToString(KeyScriptLaunchButton::_COL), Data(0));
+  settings.set(lkeys.indexToString(KeyScriptLaunchButton::_TEXT), Data(QString("1")));
   if (db.set(settings))
     qDebug() << "Setup::setupDefaultScripts: error saving yahoo launch button";
 }

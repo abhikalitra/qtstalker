@@ -24,6 +24,8 @@
 
 #include <QCheckBox>
 #include <QString>
+#include <QSpinBox>
+#include <QComboBox>
 
 #include "IconButton.h"
 #include "Dialog.h"
@@ -34,21 +36,25 @@ class ScriptLaunchButtonDialog : public Dialog
   Q_OBJECT
 
   signals:
-    void signalDone (QString, QString, bool);
+    void signalDone (QString, QString, bool, int, int, QString);
 
   public:
-    ScriptLaunchButtonDialog (QWidget *, QString name, QString icon, bool);
+    ScriptLaunchButtonDialog (QWidget *, QString script, QString icon, bool, int row, int col, QString text);
     void createMainPage ();
-    void setGUI (QString name, QString icon, bool use);
+    void setGUI (QString script, QString icon, bool use, int tor, int col, QString text);
 
   public slots:
     void done ();
     void useIconToggled (bool);
+    void buttonStatus ();
 
   private:
     IconButton *_icon;
-    WidgetLineEdit *_name;
+    QComboBox *_script;
+    WidgetLineEdit *_text;
     QCheckBox *_useIcon;
+    QSpinBox *_row;
+    QSpinBox *_col;
 };
 
 #endif

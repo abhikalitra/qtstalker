@@ -51,6 +51,7 @@ class ChartPage : public QWidget
     void createMenu ();
     void selected (QStringList &);
     void refresh ();
+    void reload ();
 
   public slots:
     void rightClick (const QPoint &);

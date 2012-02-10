@@ -4,7 +4,6 @@ $chartPanelCommand = 'chartPanelCommand';
 $confirmDialogCommand = 'confirmDialog';
 $confirmDialogText = "Confirm deleting selected symbols from the database\n\n";
 $symbolDBCommand = 'symbolDBCommand';
-$chartPanelRefreshCommand = 'chartPanelRefreshCommand';
 
 ###################################################################
 $|++;  # flush buffers
@@ -14,7 +13,10 @@ $|++;  # flush buffers
 #  GET CHART PANEL SELECTED SYMBOLS
 ###################################################################
 
-print STDOUT "NEW(CHART_PANEL_SELECT, $chartPanelCommand)";
+print STDOUT "NEW(CHART_PANEL, $chartPanelCommand)";
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
+
+print STDOUT "SET($chartPanelCommand.METHOD, SELECT)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 print STDOUT "RUN($chartPanelCommand)";
@@ -59,8 +61,8 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 #  REFRESH CHART PANEL
 ###################################################################
 
-print STDOUT "NEW(CHART_PANEL_REFRESH, $chartPanelRefreshCommand)";
+print STDOUT "SET($chartPanelCommand.METHOD, REFRESH)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "RUN($chartPanelRefreshCommand)";
+print STDOUT "RUN($chartPanelCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }

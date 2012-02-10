@@ -26,6 +26,8 @@
 #ifndef EAV_DATA_BASE_HPP
 #define EAV_DATA_BASE_HPP
 
+#include <QHash>
+
 #include "DataBase.h"
 #include "Entity.h"
 #include "EAVSearch.h"
@@ -41,6 +43,7 @@ class EAVDataBase : public DataBase
     int get (Entity &);
     int search (EAVSearch &, QStringList &);
     int names (QStringList &);
+    int keys (QStringList &);
 };
 
 #endif

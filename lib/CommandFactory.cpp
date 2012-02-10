@@ -26,7 +26,6 @@
 #include "CommandArithmetic.h"
 #include "CommandAROON.h"
 #include "CommandATR.h"
-#include "CommandAveragePrice.h"
 #include "CommandBBANDS.h"
 #include "CommandBETA.h"
 #include "CommandBOP.h"
@@ -36,9 +35,8 @@
 #include "CommandCCI.h"
 #include "CommandChart.h"
 #include "CommandChartObjectRemove.h"
-#include "CommandChartPanelRefresh.h"
+#include "CommandChartPanel.h"
 #include "CommandChartRemove.h"
-#include "CommandChartPanelSelect.h"
 #include "CommandChartUpdate.h"
 #include "CommandCMO.h"
 #include "CommandCompare.h"
@@ -55,8 +53,7 @@
 #include "CommandFI.h"
 #include "CommandGet.h"
 #include "CommandGroupDataBase.h"
-#include "CommandGroupPanelRefresh.h"
-#include "CommandGroupPanelSelect.h"
+#include "CommandGroupPanel.h"
 #include "CommandHLine.h"
 #include "CommandHT.h"
 #include "CommandIndicator.h"
@@ -77,14 +74,15 @@
 #include "CommandPlotOHLC.h"
 #include "CommandPlotLine.h"
 #include "CommandPlotHistogram.h"
+#include "CommandPrice.h"
 #include "CommandRetracement.h"
 #include "CommandROC.h"
 #include "CommandRSI.h"
 #include "CommandRun.h"
 #include "CommandSAR.h"
 #include "CommandSave.h"
-#include "CommandScript.h"
 #include "CommandScriptDataBase.h"
+#include "CommandScriptPanel.h"
 #include "CommandSell.h"
 #include "CommandSet.h"
 #include "CommandShift.h"
@@ -103,14 +101,12 @@
 #include "CommandTHERM.h"
 #include "CommandTLine.h"
 #include "CommandTRIX.h"
-#include "CommandTypicalPrice.h"
 #include "CommandULTOSC.h"
 #include "CommandVAR.h"
 //#include "CommandVBP.h"
 #include "CommandVFI.h"
 #include "CommandVIDYA.h"
 #include "CommandVLine.h"
-#include "CommandWeightedClose.h"
 #include "CommandWILLR.h"
 #include "CommandYahooHistory.h"
 
@@ -141,9 +137,6 @@ Command * CommandFactory::command (QString type)
       break;
     case TypeCommand::_ATR:
       c = new CommandATR;
-      break;
-    case TypeCommand::_AVERAGE_PRICE:
-      c = new CommandAveragePrice;
       break;
     case TypeCommand::_BBANDS:
       c = new CommandBBANDS;
@@ -190,14 +183,11 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_CHART_OBJECT_VLINE:
       c = new CommandVLine;
       break;
-    case TypeCommand::_CHART_PANEL_REFRESH:
-      c = new CommandChartPanelRefresh;
+    case TypeCommand::_CHART_PANEL:
+      c = new CommandChartPanel;
       break;
     case TypeCommand::_CHART_REMOVE:
       c = new CommandChartRemove;
-      break;
-    case TypeCommand::_CHART_PANEL_SELECT:
-      c = new CommandChartPanelSelect;
       break;
     case TypeCommand::_CHART_UPDATE:
       c = new CommandChartUpdate;
@@ -247,11 +237,8 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_GROUP_DATA_BASE:
       c = new CommandGroupDataBase;
       break;
-    case TypeCommand::_GROUP_PANEL_REFRESH:
-      c = new CommandGroupPanelRefresh;
-      break;
-    case TypeCommand::_GROUP_PANEL_SELECT:
-      c = new CommandGroupPanelSelect;
+    case TypeCommand::_GROUP_PANEL:
+      c = new CommandGroupPanel;
       break;
     case TypeCommand::_HT:
       c = new CommandHT;
@@ -313,6 +300,9 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_PLOT_OHLC:
       c = new CommandPlotOHLC;
       break;
+    case TypeCommand::_PRICE:
+      c = new CommandPrice;
+      break;
     case TypeCommand::_ROC:
       c = new CommandROC;
       break;
@@ -328,11 +318,11 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_SAVE:
       c = new CommandSave;
       break;
-    case TypeCommand::_SCRIPT:
-      c = new CommandScript;
-      break;
     case TypeCommand::_SCRIPT_DATA_BASE:
       c = new CommandScriptDataBase;
+      break;
+    case TypeCommand::_SCRIPT_PANEL:
+      c = new CommandScriptPanel;
       break;
     case TypeCommand::_SET:
       c = new CommandSet;
@@ -376,9 +366,6 @@ Command * CommandFactory::command (QString type)
     case TypeCommand::_TRIX:
       c = new CommandTRIX;
       break;
-    case TypeCommand::_TYPICAL_PRICE:
-      c = new CommandTypicalPrice;
-      break;
     case TypeCommand::_ULTOSC:
       c = new CommandULTOSC;
       break;
@@ -393,9 +380,6 @@ Command * CommandFactory::command (QString type)
       break;
     case TypeCommand::_VIDYA:
       c = new CommandVIDYA;
-      break;
-    case TypeCommand::_WEIGHTED_CLOSE:
-      c = new CommandWeightedClose;
       break;
     case TypeCommand::_WILLR:
       c = new CommandWILLR;

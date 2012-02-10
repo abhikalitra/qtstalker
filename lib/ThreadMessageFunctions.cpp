@@ -95,9 +95,10 @@ int ThreadMessageFunctions::sendRelease (QString &id, Entity &e)
   
   g_mutex.lock();
   QMutex *mutex = g_mutexList.value(id);
+  mutex->unlock();
   g_mutex.unlock();
 
-  mutex->unlock();
+//  mutex->unlock();
   
   return 0;
 }

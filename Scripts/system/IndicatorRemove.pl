@@ -1,9 +1,9 @@
 # deletes an indicator
 
 $indicatorDBCommand = 'idb';
-
 $listDialogCommand = 'listDialog';
 $listDialogTitle = 'Remove Indicators';
+$chartRemoveCommand = 'chartRemove';
 
 ###################################################################
 $|++;  # flush buffers
@@ -51,11 +51,11 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 ###################  REMOVE PLOTS  ##################
 ###################################################################
 
-print STDOUT "NEW(CHART_REMOVE, crc)";
+print STDOUT "NEW(CHART_REMOVE, $chartRemoveCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "SET(crc.LIST, $listDialogCommand.LIST)";
+print STDOUT "SET($chartRemoveCommand.LIST, $listDialogCommand.LIST)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "RUN(crc)";
+print STDOUT "RUN($chartRemoveCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }

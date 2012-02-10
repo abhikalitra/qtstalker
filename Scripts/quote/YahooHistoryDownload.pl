@@ -6,6 +6,7 @@ $yahooDialogSettingsKey = 'yahoo_history_download_yahoo_dialog_settings';
 $csvCommand = 'CSV';
 $csvCommandName = 'csv';
 $csvDialogSettingsKey = 'yahoo_history_download_csv_dialog_settings';
+$refreshCommand = 'refreshCommand';
 
 ################################################################################
 # all perl scripts must turn on buffer flush flag otherwise script will hang
@@ -13,77 +14,67 @@ $|=1;
 ########################################################################################
 
 ########################################################################################
-############################# create the Yahoo dialog ####################################
+# create the Yahoo dialog
 ########################################################################################
 
 # create the yahoo_history object
-$command = "NEW($yahooCommand, $yahooCommandName)";
-print STDOUT $command;
+print STDOUT "NEW($yahooCommand, $yahooCommandName)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # load saved yahoo dialog settings
-$command = "LOAD($yahooCommandName, $yahooDialogSettingsKey)";
-print STDOUT $command;
+print STDOUT "LOAD($yahooCommandName, $yahooDialogSettingsKey)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # show dialog
-$command = "DIALOG($yahooCommandName)";
-print STDOUT $command;
+print STDOUT "DIALOG($yahooCommandName)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # save yahoo dialog settings
-$command = "SAVE($yahooCommandName, $yahooDialogSettingsKey)";
-print STDOUT $command;
+print STDOUT "SAVE($yahooCommandName, $yahooDialogSettingsKey)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-$command = "RUN($yahooCommandName)";
-print STDOUT $command;
+print STDOUT "RUN($yahooCommandName)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ########################################################################################
-############################# create the CSV dialog ####################################
+# create the CSV dialog
 ########################################################################################
 
 # create the CSV object
-$command = "NEW($csvCommand, $csvCommandName)";
-print STDOUT $command;
+print STDOUT "NEW($csvCommand, $csvCommandName)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # load saved csv dialog settings
-$command = "LOAD($csvCommandName, $csvDialogSettingsKey)";
-print STDOUT $command;
+print STDOUT "LOAD($csvCommandName, $csvDialogSettingsKey)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # set the csv dialog csv file location
-$command = "SET($csvCommandName.CSV_FILE, $yahooCommandName.CSV_FILE)";
-print STDOUT $command;
+print STDOUT "SET($csvCommandName.CSV_FILE, $yahooCommandName.CSV_FILE)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # show CSV dialog
-$command = "DIALOG($csvCommandName)";
-print STDOUT $command;
+print STDOUT "DIALOG($csvCommandName)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # save yahoo dialog settings
-$command = "SAVE($csvCommandName, $csvDialogSettingsKey)";
-print STDOUT $command;
+print STDOUT "SAVE($csvCommandName, $csvDialogSettingsKey)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # import the CSV file into the quote database
-$command = "RUN($csvCommandName)";
-print STDOUT $command;
+print STDOUT "RUN($csvCommandName)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ########################################################################################
-############################# refresh chart panel ####################################
+# refresh chart panel
 ########################################################################################
 
 # create the chart panel refresh object
-$command = "NEW(CHART_PANEL_REFRESH, refresh)";
-print STDOUT $command;
+print STDOUT "NEW(CHART_PANEL, $refreshCommand)";
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
+
+print STDOUT "SET($refreshCommand.METHOD, REFRESH)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # refresh the chart panel
-$command = "RUN(refresh)";
-print STDOUT $command;
+print STDOUT "RUN($refreshCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }

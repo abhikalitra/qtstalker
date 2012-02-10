@@ -224,7 +224,11 @@ void ChartPage::itemClicked (QListWidgetItem *d)
 void ChartPage::refresh ()
 {
   updateList();
+  reload();
+}
 
+void ChartPage::reload ()
+{
   KeySymbol keys;
   Data td;
   g_currentSymbol.toData(keys.indexToString(KeySymbol::_SYMBOL), td);

@@ -193,7 +193,7 @@ void Script::done (int rc)
 void Script::stopScript ()
 {
   _killFlag = TRUE;
-//qDebug() << "Script::stopScript";
+qDebug() << "Script::stopScript";
 }
 
 int Script::count ()

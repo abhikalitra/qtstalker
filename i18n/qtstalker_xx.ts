@@ -312,6 +312,25 @@ App restart required to take effect</source>
     </message>
 </context>
 <context>
+    <name>DialogEAVDataBaseSearch</name>
+    <message>
+        <source>Database Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search 2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DialogMessage</name>
     <message>
         <source>Message</source>
@@ -1174,16 +1193,17 @@ App restart required to take effect</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Downloads historical quotes from yahoo finance.
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Symbols to download are kept in a file maintained </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>by the user. One yahoo symbol per line. For example:
+
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Downloads historical quotes from yahoo finance.
 
 </source>
         <translation type="unfinished"></translation>
@@ -1232,6 +1252,14 @@ App restart required to take effect</source>
         <source>&amp;Configure</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Confirm delete button</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptLaunchButtonDialog</name>
@@ -1247,27 +1275,23 @@ App restart required to take effect</source>
         <source>Script</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Row</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Column</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Text</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScriptPage</name>
     <message>
         <source>&amp;Run Script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Rows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Columns</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Launch Button Rows</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Launch Button Columns</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1304,6 +1328,34 @@ App restart required to take effect</source>
     </message>
     <message>
         <source>Delete Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Active</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show &amp;All Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show All Scripts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>New Launch Button</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

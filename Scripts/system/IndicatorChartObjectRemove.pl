@@ -1,13 +1,10 @@
 # deletes chart objects from selected indicators
 
 $indicatorDBCommand = 'idb';
-
 $listDialogCommand = 'listDialog';
 $listDialogTitle = 'Indicators';
-
 $confirmDialogCommand = 'confirmDialog';
 $confirmDialogText = "Confirm removing all chart objects from following indicators\n\n";
-
 $chartObjectRemoveCommand = 'chartObjectRemove';
 
 ###################################################################

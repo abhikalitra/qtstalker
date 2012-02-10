@@ -19,16 +19,22 @@
  *  USA.
  */
 
-#ifndef COMMAND_CHART_PANEL_REFRESH_HPP
-#define COMMAND_CHART_PANEL_REFRESH_HPP
+#ifndef COMMAND_CHART_PANEL_HPP
+#define COMMAND_CHART_PANEL_HPP
 
 #include "Command.h"
 
-class CommandChartPanelRefresh : public Command
+class CommandChartPanel : public Command
 {
   public:
-    CommandChartPanelRefresh ();
+    CommandChartPanel ();
     QString run (CommandParse &, void *);
+    int select (void *);
+    int refresh (void *);
+    int reload (void *);
+    
+  private:
+    QStringList _method;
 };
 
 #endif

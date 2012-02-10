@@ -25,7 +25,7 @@
 
 #include <QtDebug>
 
-ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString name, QString icon, bool use) : Dialog (p)
+ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString script, QString icon, bool use, int row, int col, QString text) : Dialog (p)
 {
   _keySize = "script_launch_button_dialog_window_size";
   _keyPos = "script_launch_button_dialog_window_position";
@@ -37,15 +37,38 @@ ScriptLaunchButtonDialog::ScriptLaunchButtonDialog (QWidget *p, QString name, QS
 
   loadSettings();
   
-  setGUI(name, icon, use);
+  setGUI(script, icon, use, row, col, text);
+  
+  buttonStatus();
 }
 
 void ScriptLaunchButtonDialog::createMainPage ()
 {
-  // name
-  _name = new WidgetLineEdit(this);
-  _form->addRow(tr("Script"), _name);
+  // script
+  ScriptFunctions sf;
+  QStringList tl;
+  sf.names(tl);
+  
+  _script = new QComboBox(this);
+  connect(_script, SIGNAL(activated(int)), this, SLOT(buttonStatus()));
+  _script->addItems(tl);
+  _form->addRow(tr("Script"), _script);
+  
+  // row
+  _row = new QSpinBox;
+  _row->setRange(0, 10);
+  _form->addRow(tr("Row"), _row);
+  
+  // col
+  _col = new QSpinBox;
+  _col->setRange(0, 10);
+  _form->addRow(tr("Column"), _col);
 
+  // text
+  _text = new WidgetLineEdit(this);
+  connect(_text, SIGNAL(signalStatus(bool)), this, SLOT(buttonStatus()));
+  _form->addRow(tr("Text"), _text);
+  
   // icon widgets
   QWidget *w = new QWidget;
   QHBoxLayout *hbox = new QHBoxLayout;
@@ -67,10 +90,8 @@ void ScriptLaunchButtonDialog::createMainPage ()
 
 void ScriptLaunchButtonDialog::done ()
 {
-  emit signalDone(_name->text(), _icon->file(), _useIcon->isChecked());
-
+  emit signalDone(_script->currentText(), _icon->file(), _useIcon->isChecked(), _row->value(), _col->value(), _text->text());
   saveSettings();
-
   accept();
 }
 
@@ -79,16 +100,35 @@ void ScriptLaunchButtonDialog::useIconToggled (bool d)
   _icon->setEnabled(d);
 }
 
-void ScriptLaunchButtonDialog::setGUI (QString name, QString icon, bool use)
+void ScriptLaunchButtonDialog::setGUI (QString script, QString icon, bool use, int row, int col, QString text)
 {
-  ScriptFunctions sf;
-  QStringList l;
-  sf.names(l);
-  _name->setItems(l);
-  _name->setText(name);
+  _script->setCurrentIndex(_script->findText(script));
 
   _icon->setFile(icon);
 
   _useIcon->setChecked(use);
   useIconToggled(use);
+  
+  _row->setValue(row);
+  
+  _col->setValue(col);
+  
+  _text->setText(text);
+}
+
+void ScriptLaunchButtonDialog::buttonStatus ()
+{
+  bool status = FALSE;
+  int count = 0;
+  
+  if (! _script->currentText().isEmpty())
+    count++;
+
+  if (! _text->text().isEmpty())
+    count++;
+  
+  if (count == 2)
+    status = TRUE;
+  
+  _okButton->setEnabled(status);
 }

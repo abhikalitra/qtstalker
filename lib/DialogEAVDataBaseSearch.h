@@ -19,30 +19,48 @@
  *  USA.
  */
 
-#ifndef SCRIPT_FUNCTIONS_HPP
-#define SCRIPT_FUNCTIONS_HPP
+#ifndef DIALOG_EAV_DATA_BASE_SEARCH_HPP
+#define DIALOG_EAV_DATA_BASE_SEARCH_HPP
 
 #include <QStringList>
-#include <QHash>
+#include <QListWidget>
+#include <QComboBox>
+#include <QGroupBox>
 
-#include "Entity.h"
-#include "EAVDataBase.h"
+#include "Dialog.h"
+#include "WidgetLineEdit.h"
 
-class ScriptFunctions
+class DialogEAVDataBaseSearch : public Dialog
 {
+  Q_OBJECT
+
+  signals:
+    void signalDone (QStringList);
+
   public:
-    ScriptFunctions ();
-    int save (Entity &);
-    int remove (QStringList);
-    int names (QStringList &);
-    int startupNames (QStringList &);
-    int intervalNames (QStringList &);
-    int intervalPendingNames (QStringList &);
-    int load (Entity &);
-    int keys (QStringList &);
-    
+    DialogEAVDataBaseSearch (QWidget *);
+    void createGUI ();
+
+  public slots:
+    void search ();
+    void done ();
+//    void searchSelectionChanged ();
+//    void symbolSelectionChanged ();
+//    void searchButtonPressed ();
+//    void addButtonPressed ();
+//    void deleteButtonPressed ();
+
   private:
-    EAVDataBase _db;
+    QGroupBox *_gbox1;
+    QGroupBox *_gbox2;
+    QComboBox *_keys1;
+    QComboBox *_keys2;
+    QComboBox *_op1;
+    QComboBox *_op2;
+    WidgetLineEdit *_value1;
+    WidgetLineEdit *_value2;
+    QListWidget *_nameList;
+    QPushButton *_searchButton;
 };
 
 #endif

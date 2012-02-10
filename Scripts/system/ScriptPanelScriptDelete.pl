@@ -1,40 +1,25 @@
 # selects and deletes script(s) in the database
 
+$scriptPanelCommand = 'scriptPanelCommand';
 $scriptDBCommand = 'scriptDBCommand';
-$selectDialogCommand = 'selectDialogCommand';
-$selectDialogTitle = 'Scripts';
 $confirmDialogCommand = 'confirmDialogCommand';
-$confirmDialogText = 'Confirm delete for the following:';
+$confirmDialogText = "Confirm delete for the following:\n\n";
 
 ###################################################################
 $|++;  # flush buffers
 ###################################################################
 
 ###################################################################
-#  get list of scripts
+#  get script panel selected items
 ###################################################################
 
-print STDOUT "NEW(SCRIPT_DATABASE, $scriptDBCommand)";
+print STDOUT "NEW(SCRIPT_PANEL, $scriptPanelCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "SET($scriptDBCommand.METHOD, LIST)";
+print STDOUT "SET($scriptPanelCommand.METHOD, SELECT)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "RUN($scriptDBCommand)";
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
-
-###################################################################
-#  SCRIPT SELECTION DIALOG
-###################################################################
-
-print STDOUT "NEW(DIALOG_SELECT, $selectDialogCommand)";
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
-
-print STDOUT "SET($selectDialogCommand.LIST, $scriptDBCommand.LIST,
-                  $selectDialogCommand.TITLE, $selectDialogTitle)";
-$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
-
-print STDOUT "RUN($selectDialogCommand)";
+print STDOUT "RUN($scriptPanelCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 ###################################################################
@@ -42,7 +27,7 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 ###################################################################
 
 # get the list of items selected
-print STDOUT "GET($selectDialogCommand.LIST)";
+print STDOUT "GET($scriptPanelCommand.LIST)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 # construct the message for the dialog
@@ -62,8 +47,11 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 #  delete selected scripts from the database
 ###################################################################
 
+print STDOUT "NEW(SCRIPT_DATABASE, $scriptDBCommand)";
+$rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
+
 print STDOUT "SET($scriptDBCommand.METHOD, REMOVE,
-                  $scriptDBCommand.LIST, $selectDialogCommand.LIST)";
+                  $scriptDBCommand.LIST, $scriptPanelCommand.LIST)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
 print STDOUT "RUN($scriptDBCommand)";

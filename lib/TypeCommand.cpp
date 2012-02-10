@@ -30,7 +30,6 @@ TypeCommand::TypeCommand ()
   _list << "ARITHMETIC";
   _list << "AROON";
   _list << "ATR";
-  _list << "AVERAGE_PRICE";
   _list << "BBANDS";
   _list << "BETA";
   _list << "BOP";
@@ -46,8 +45,7 @@ TypeCommand::TypeCommand ()
   _list << "CHART_OBJECT_TEXT";
   _list << "CHART_OBJECT_TLINE";
   _list << "CHART_OBJECT_VLINE";
-  _list << "CHART_PANEL_REFRESH";
-  _list << "CHART_PANEL_SELECT";
+  _list << "CHART_PANEL";
   _list << "CHART_REMOVE";
   _list << "CHART_UPDATE";
   _list << "CMO";
@@ -65,8 +63,7 @@ TypeCommand::TypeCommand ()
   _list << "FI";
   _list << "GET";
   _list << "GROUP_DATABASE";
-  _list << "GROUP_PANEL_REFRESH";
-  _list << "GROUP_PANEL_SELECT";
+  _list << "GROUP_PANEL";
   _list << "HT";
   _list << "HT_PHASOR";
   _list << "HT_SINE";
@@ -83,17 +80,18 @@ TypeCommand::TypeCommand ()
   _list << "NEW";
   _list << "NEW_HIGH_LOW";
   _list << "NORMALIZE";
-  _list << "PO";
   _list << "PLOT_LINE";
   _list << "PLOT_HISTOGRAM";
   _list << "PLOT_OHLC";
+  _list << "PO";
+  _list << "PRICE";
   _list << "ROC";
   _list << "RSI";
   _list << "RUN";
   _list << "SAR";
   _list << "SAVE";
-  _list << "SCRIPT";
   _list << "SCRIPT_DATABASE";
+  _list << "SCRIPT_PANEL";
   _list << "SET";
   _list << "SHIFT";
   _list << "STDDEV";
@@ -108,13 +106,11 @@ TypeCommand::TypeCommand ()
   _list << "TEST";
   _list << "THERM";
   _list << "TRIX";
-  _list << "TYPICAL_PRICE";
   _list << "ULTOSC";
   _list << "VAR";
   _list << "VBP";
   _list << "VFI";
   _list << "VIDYA";
-  _list << "WEIGHTED_CLOSE";
   _list << "WILLR";
   _list << "YAHOO_HISTORY";
 }

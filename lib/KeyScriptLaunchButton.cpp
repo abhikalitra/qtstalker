@@ -25,7 +25,10 @@
 
 KeyScriptLaunchButton::KeyScriptLaunchButton ()
 {
-  _list << "NAME";
+  _list << "SCRIPT";
   _list << "ICON";
   _list << "ICON_USE";
+  _list << "ROW";
+  _list << "COL";
+  _list << "TEXT";
 }

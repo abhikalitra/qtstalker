@@ -32,9 +32,12 @@ class KeyScriptLaunchButton : public Type
   public:
     enum Key
     {
-      _NAME,
+      _SCRIPT,
       _ICON,
-      _ICON_USE
+      _ICON_USE,
+      _ROW,
+      _COL,
+      _TEXT
     };
     
     KeyScriptLaunchButton ();

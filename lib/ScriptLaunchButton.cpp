@@ -24,19 +24,26 @@
 #include "Global.h"
 #include "EAVDataBase.h"
 #include "KeyScriptLaunchButton.h"
+#include "DialogConfirm.h"
 
 #include "../pics/configure.xpm"
+#include "../pics/delete.xpm"
 
 #include <QPixmap>
 #include <QCursor>
-#include <QInputDialog>
 #include <QDebug>
+#include <QUuid>
 
-ScriptLaunchButton::ScriptLaunchButton (int pos)
+ScriptLaunchButton::ScriptLaunchButton (QString name)
 {
   setContextMenuPolicy(Qt::CustomContextMenu);
-  _position = pos;
-
+  _row = 0;
+  _col = 0;
+  
+  _name = name;
+  if (_name.isEmpty())
+    _name = QUuid::createUuid();
+  
   loadSettings();
 
   connect(this, SIGNAL(clicked()), this, SLOT(buttonClicked()));
@@ -44,26 +51,25 @@ ScriptLaunchButton::ScriptLaunchButton (int pos)
 
   _menu = new QMenu(this);
   _menu->addAction(QPixmap(configure_xpm), tr("&Configure"), this, SLOT(configure()), Qt::ALT+Qt::Key_C);
+  _menu->addAction(QPixmap(delete_xpm), tr("&Delete"), this, SLOT(remove()), Qt::ALT+Qt::Key_D);
 }
 
 void ScriptLaunchButton::buttonClicked ()
 {
-  if (_name.isEmpty())
-    return;
-
-  emit signalButtonClicked(_name);
+  emit signalButtonClicked(_script);
 }
 
 void ScriptLaunchButton::configure ()
 {
-  ScriptLaunchButtonDialog *dialog = new ScriptLaunchButtonDialog(this, _name, _icon, _useIcon);
-  connect(dialog, SIGNAL(signalDone(QString, QString, bool)), this, SLOT(configure2(QString, QString, bool)));
+  ScriptLaunchButtonDialog *dialog = new ScriptLaunchButtonDialog(this, _script, _icon, _useIcon, _row, _col, _text);
+  connect(dialog, SIGNAL(signalDone(QString, QString, bool, int, int, QString)),
+	  this, SLOT(configure2(QString, QString, bool, int, int, QString)));
   dialog->show();
 }
 
-void ScriptLaunchButton::configure2 (QString name, QString icon, bool use)
+void ScriptLaunchButton::configure2 (QString script, QString icon, bool use, int row, int col, QString text)
 {
-  setSettings(name, icon, use);
+  setSettings(script, icon, use, row, col, text);
   saveSettings();
 }
 
@@ -76,28 +82,35 @@ void ScriptLaunchButton::loadSettings ()
 {
   EAVDataBase db("scriptLaunchButtons");
   Entity settings;
-  settings.setName(QString::number(_position));
+  settings.setName(_name);
   if (db.get(settings))
     return;
 
   KeyScriptLaunchButton keys;
-  Data name, icon, iconUse;
-  settings.toData(keys.indexToString(KeyScriptLaunchButton::_NAME), name);
+  Data script, icon, iconUse, row, col, text;
+  settings.toData(keys.indexToString(KeyScriptLaunchButton::_SCRIPT), script);
   settings.toData(keys.indexToString(KeyScriptLaunchButton::_ICON), icon);
   settings.toData(keys.indexToString(KeyScriptLaunchButton::_ICON_USE), iconUse);
+  settings.toData(keys.indexToString(KeyScriptLaunchButton::_ROW), row);
+  settings.toData(keys.indexToString(KeyScriptLaunchButton::_COL), col);
+  settings.toData(keys.indexToString(KeyScriptLaunchButton::_TEXT), text);
   
-  setSettings(name.toString(), icon.toString(), iconUse.toInteger());
+  setSettings(script.toString(), icon.toString(), iconUse.toInteger(), row.toInteger(),
+	      col.toInteger(), text.toString());
 }
 
-void ScriptLaunchButton::setSettings (QString name, QString icon, bool use)
+void ScriptLaunchButton::setSettings (QString script, QString icon, bool use, int row, int col, QString text)
 {
-  _name = name;
+  _script = script;
   _icon = icon;
   _useIcon = use;
+  _row = row;
+  _col = col;
+  _text = text;
 
-  setToolTip(name);
+  setToolTip(_script);
 
-  setText(QString::number(_position));
+  setText(_text);
 
   if (_useIcon)
     setIcon(QIcon(_icon));
@@ -108,12 +121,48 @@ void ScriptLaunchButton::setSettings (QString name, QString icon, bool use)
 void ScriptLaunchButton::saveSettings ()
 {
   KeyScriptLaunchButton keys;
-  EAVDataBase db("scriptLaunchButtons");
   Entity settings;
-  settings.setName(QString::number(_position));
-  settings.set(keys.indexToString(KeyScriptLaunchButton::_NAME), Data(_name));
+  settings.setName(_name);
+  settings.set(keys.indexToString(KeyScriptLaunchButton::_SCRIPT), Data(_script));
   settings.set(keys.indexToString(KeyScriptLaunchButton::_ICON), Data(_icon));
   settings.set(keys.indexToString(KeyScriptLaunchButton::_ICON_USE), Data(_useIcon));
+  settings.set(keys.indexToString(KeyScriptLaunchButton::_ROW), Data(_row));
+  settings.set(keys.indexToString(KeyScriptLaunchButton::_COL), Data(_col));
+  settings.set(keys.indexToString(KeyScriptLaunchButton::_TEXT), Data(_text));
+  
+  EAVDataBase db("scriptLaunchButtons");
   if (db.set(settings))
     qDebug() << "ScriptLaunchButton::saveSettings: db error";
+}
+
+int ScriptLaunchButton::row ()
+{
+  return _row;
+}
+
+int ScriptLaunchButton::col ()
+{
+  return _col;
+}
+
+QString ScriptLaunchButton::name ()
+{
+  return _name;
+}
+
+void ScriptLaunchButton::remove ()
+{
+  DialogConfirm *dialog = new DialogConfirm(this, QString(), Entity());
+  connect(dialog, SIGNAL(accepted()), this, SLOT(remove2()));
+  
+  QStringList tl;
+  tl << tr("Confirm delete button") << _text;
+  dialog->setMessage(tl.join(" "));
+  
+  dialog->show();
+}
+
+void ScriptLaunchButton::remove2 ()
+{
+  emit signalButtonRemove(_name);
 }

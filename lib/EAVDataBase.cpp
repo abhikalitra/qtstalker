@@ -250,3 +250,23 @@ int EAVDataBase::names (QStringList &rl)
 
   return 0;
 }
+
+int EAVDataBase::keys (QStringList &d)
+{
+  d.clear();
+
+  QSqlQuery q(_db);
+
+  QString s = "SELECT key FROM " + _table + " GROUP BY key";
+  q.exec(s);
+  if (q.lastError().isValid())
+  {
+    qDebug() << "EAVDataBase::names: " << q.lastError().text();
+    return 1;
+  }
+
+  while (q.next())
+    d << q.value(0).toString();
+  
+  return 0;
+}
