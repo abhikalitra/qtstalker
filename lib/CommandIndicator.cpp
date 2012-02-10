@@ -22,13 +22,14 @@
 #include "CommandIndicator.h"
 #include "Global.h"
 #include "IndicatorFunctions.h"
+#include "KeyIndicatorDataBase.h"
 
 #include <QtDebug>
 
 CommandIndicator::CommandIndicator ()
 {
   _name = "INDICATOR";
-  _method << "LIST" << "ADD" << "REMOVE";
+  _method << "LIST" << "SAVE" << "REMOVE";
   
   Data td(_method, _method.at(0));
   Entity::set(QString("METHOD"), td);
@@ -38,6 +39,9 @@ CommandIndicator::CommandIndicator ()
   
   td = Data(QString());
   Entity::set(QString("COMMAND"), td);
+  
+  td = Data(QString());
+  Entity::set(QString("NAME"), td);
   
   td = Data(TypeData::_LIST);
   Entity::set(QString("LIST"), td);
@@ -54,8 +58,8 @@ QString CommandIndicator::run (CommandParse &, void *)
       if (list())
         return _returnCode;
       break;
-    case 1: // ADD
-      if (add())
+    case 1: // SAVE
+      if (save())
         return _returnCode;
       break;
     case 2: // REMOVE
@@ -72,20 +76,22 @@ QString CommandIndicator::run (CommandParse &, void *)
   return _returnCode;
 }
 
-int CommandIndicator::add ()
+int CommandIndicator::save ()
 {
-  Data file, command;
+  Data name, file, command;
+  Entity::toData(QString("NAME"), name);
   Entity::toData(QString("FILE"), file);
   Entity::toData(QString("COMMAND"), command);
   
-  QStringList l = file.toList();
-  if (! l.size())
-    return 1;
-  
-  QString ts = l.at(0);
+  KeyIndicatorDataBase keys;
+  Entity ind;
+  ind.setName(name.toString());
+  ind.set(keys.indexToString(KeyIndicatorDataBase::_FILE), file);
+  ind.set(keys.indexToString(KeyIndicatorDataBase::_COMMAND), command);
+  ind.set(keys.indexToString(KeyIndicatorDataBase::_SESSION), Data(g_session));
   
   IndicatorFunctions func;
-  if (func.add(command.toString(), ts))
+  if (func.set(ind))
     return 1;
   
   return 0;

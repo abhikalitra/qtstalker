@@ -25,7 +25,8 @@ $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 print STDOUT "NEW(INDICATOR, $indicatorCommand)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }
 
-print STDOUT "SET($indicatorCommand.METHOD, ADD,
+print STDOUT "SET($indicatorCommand.METHOD, SAVE,
+                  $indicatorCommand.NAME, $dialogScriptCommand.NAME,
                   $indicatorCommand.FILE, $dialogScriptCommand.FILE,
                   $indicatorCommand.COMMAND, $dialogScriptCommand.COMMAND)";
 $rc = <STDIN>; chomp($rc); if ($rc eq "ERROR") { exit; }

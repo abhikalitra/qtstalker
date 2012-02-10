@@ -67,8 +67,13 @@ QString CommandChart::run (CommandParse &, void *d)
     e.set(keys.at(loop), td);
   }
   e.set(QString("MESSAGE"), Data(TypeThreadMessage::_CHART_NEW));
-  e.set(QString("FILE"), Data(script->file()));
   e.set(QString("COMMAND"), Data(script->command()));
+  
+  Data td(TypeData::_FILE);
+  QStringList tl;
+  tl << script->file();
+  td.set(tl);
+  e.set(QString("FILE"), td);
 
   ThreadMessageFunctions tmf;
   tmf.send(e, script);

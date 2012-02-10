@@ -31,7 +31,7 @@ class ChartNew
   public:
     ChartNew ();
     int run (Entity &);
-    int run (QString chart, QString command, QString script, int row, int col, bool date, bool log);
+    int run (QString chart, QString script, int row, int col, bool date, bool log);
 };
 
 #endif

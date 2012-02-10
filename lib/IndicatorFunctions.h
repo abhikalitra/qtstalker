@@ -30,7 +30,6 @@ class IndicatorFunctions
 {
   public:
     IndicatorFunctions ();
-    int add (QString command, QString file);
     int remove (QStringList);
     int list (QStringList &);
     int get (Entity &i);

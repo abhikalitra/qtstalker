@@ -29,7 +29,7 @@ class CommandIndicator : public Command
   public:
     CommandIndicator ();
     QString run (CommandParse &, void *);
-    int add ();
+    int save ();
     int remove ();
     int list ();
     

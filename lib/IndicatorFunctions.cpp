@@ -20,31 +20,15 @@
  */
 
 #include "IndicatorFunctions.h"
-#include "GlobalParent.h"
-#include "GlobalSidePanel.h"
 #include "Global.h"
 #include "EAVSearch.h"
 #include "KeyIndicatorDataBase.h"
 
 #include <QtDebug>
-#include <QSettings>
 
 IndicatorFunctions::IndicatorFunctions ()
 {
   _db = EAVDataBase("indicators");
-}
-
-int IndicatorFunctions::add (QString command, QString file)
-{
-  QSettings settings(g_localSettings);
-  settings.setValue("add_indicator_last_script", file);
-  settings.setValue("add_indicator_last_command", command);
-  settings.sync();
-
-  // launch indicator
-//  g_sidePanel->scriptPanel()->runScript(command, file);
-  
-  return 0;
 }
 
 int IndicatorFunctions::remove (QStringList l)
@@ -56,8 +40,6 @@ int IndicatorFunctions::remove (QStringList l)
     return 1;
   }
   _db.commit();
-
-//  g_plotGroup->removePlot(_indicator);
 
   return 0;
 }
