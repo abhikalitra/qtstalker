@@ -57,6 +57,7 @@ void ThreadMessage::getMessage (QString id)
   switch ((TypeThreadMessage::Key) td.toInteger())
   {
     case TypeThreadMessage::_DIALOG:
+    case TypeThreadMessage::_DIALOG_USER:
     {
       DataDialog *dialog = new DataDialog(g_parent, id, e);
       dialog->show();

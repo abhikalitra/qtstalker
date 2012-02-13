@@ -25,6 +25,7 @@
 
 #include <QtDebug>
 #include <QUuid>
+#include <QWaitCondition>
 
 ThreadMessageFunctions::ThreadMessageFunctions ()
 {
@@ -47,6 +48,53 @@ int ThreadMessageFunctions::send (Entity &e, Script *script)
 
 int ThreadMessageFunctions::sendReturn (QString &id, Entity &e, Script *script)
 {
+/*  
+  // put data into global area
+  g_dataMutex.lock();
+  g_dataList.insert(id, e);
+  g_dataMutex.unlock();
+
+  // create dialog status
+  g_dialog.lock();
+  g_dialogStatus.insert(id, 0);
+  g_dialog.unlock();
+
+  // emit the message signal
+  script->threadMessage(id);
+  
+  while (1)
+  {
+    QMutex mutex;
+    mutex.lock();
+    QWaitCondition waitCondition;
+    waitCondition.wait(&mutex, 100);
+    mutex.unlock();
+    
+    g_dialog.lock();
+    int rc = g_dialogStatus.value(id);
+    if (rc)
+    {
+      g_dialogStatus.remove(id);
+      g_dialog.unlock();
+      break;
+    }
+      
+    g_dialog.unlock();
+  }
+  
+  // remove data from global area
+  g_dataMutex.lock();
+  e = g_dataList.value(id);
+  g_dataList.remove(id);
+  g_dataMutex.unlock();
+  
+  // check if dialog was cancelled
+  if (! e.dkeyCount())
+    return 1;
+  
+  return 0;
+*/  
+  
   // create new mutex
   QMutex *mutex = new QMutex;
   mutex->lock();
@@ -89,16 +137,33 @@ int ThreadMessageFunctions::sendReturn (QString &id, Entity &e, Script *script)
 
 int ThreadMessageFunctions::sendRelease (QString &id, Entity &e)
 {
+/*  
+  g_dataMutex.lock();
+  g_dataList.insert(id, e);
+  g_dataMutex.unlock();
+  
+  g_dialog.lock();
+  g_dialogStatus.insert(id, 1);
+  g_dialog.unlock();
+
+  return 0;
+*/
+
+
   g_dataMutex.lock();
   g_dataList.insert(id, e);
   g_dataMutex.unlock();
   
   g_mutex.lock();
   QMutex *mutex = g_mutexList.value(id);
+  if (! mutex)
+  {
+    g_mutex.unlock();
+    return 1;
+  }
+  
   mutex->unlock();
   g_mutex.unlock();
 
-//  mutex->unlock();
-  
   return 0;
 }

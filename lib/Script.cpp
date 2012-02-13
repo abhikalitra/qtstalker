@@ -33,6 +33,7 @@ Script::Script (QObject *p) : QThread (p)
 {
   _killFlag = 0;
   _id = QUuid::createUuid().toString();
+  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 Script::~Script ()
@@ -64,7 +65,7 @@ void Script::run ()
     qDebug() << "Script::run: error timed out" << _file;
     _proc.kill();
     done(_TIMEOUT);
-    deleteLater();
+//    deleteLater();
     return;
   }
   
@@ -142,7 +143,7 @@ void Script::run ()
   
   done(rc);
   
-  deleteLater();
+//  deleteLater();
 }
 
 void Script::done (int rc)
