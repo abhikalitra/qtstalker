@@ -19,16 +19,32 @@
  *  USA.
  */
 
-#ifndef COMMAND_DIALOG_USER_HPP
-#define COMMAND_DIALOG_USER_HPP
+#include "KeyDialog.h"
 
-#include "Command.h"
+#include <QtDebug>
 
-class CommandDialogUser : public Command
+KeyDialog::KeyDialog ()
 {
-  public:
-    CommandDialogUser ();
-    int setData (CommandParse &);
-};
-
-#endif
+  _list << "STRING_0";
+  _list << "STRING_1";
+  _list << "STRING_2";
+  _list << "INTEGER_0";
+  _list << "INTEGER_1";
+  _list << "INTEGER_2";
+  _list << "DOUBLE_0";
+  _list << "DOUBLE_1";
+  _list << "DOUBLE_2";
+  _list << "COLOR_0";
+  _list << "COLOR_1";
+  _list << "COLOR_2";
+  _list << "COLOR_3";
+  _list << "BOOL_0";
+  _list << "BOOL_1";
+  _list << "BOOL_2";
+  _list << "FILE_0";
+  _list << "FILE_1";
+  _list << "FILE_2";
+  _list << "MA_0";
+  _list << "MA_1";
+  _list << "MA_2";
+}

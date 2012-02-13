@@ -49,7 +49,6 @@
 #include "CommandDialogNew.h"
 #include "CommandDialogScript.h"
 #include "CommandDialogSelect.h"
-#include "CommandDialogUser.h"
 #include "CommandFI.h"
 #include "CommandGet.h"
 #include "CommandGroupDataBase.h"
@@ -224,9 +223,6 @@ Command * CommandFactory::command (QString type)
       break;
     case TypeCommand::_DIALOG_SELECT:
       c = new CommandDialogSelect;
-      break;
-    case TypeCommand::_DIALOG_USER:
-      c = new CommandDialogUser;
       break;
     case TypeCommand::_FI:
       c = new CommandFI;

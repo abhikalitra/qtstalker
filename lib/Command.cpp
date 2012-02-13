@@ -30,6 +30,7 @@ Command::Command ()
 {
   _type = TypeEntity::_COMMAND;
   _returnCode = "ERROR";
+  _settingSubTypes << "TAB" << "LABEL";
 }
 
 QString Command::run (CommandParse &, void *)
@@ -63,7 +64,7 @@ int Command::setData (CommandParse &sg, void *d)
     int pos = loop;
     QString ts = sg.value(pos++);
     QStringList l = ts.split(".", QString::SkipEmptyParts);
-    if (l.size() != 2)
+    if (l.size() < 2)
     {
       qDebug() << "Command::setData: invalid setting" << ts;
       return 1;
@@ -81,14 +82,24 @@ int Command::setData (CommandParse &sg, void *d)
     {
       qDebug() << "Command::setData: invalid setting name" << l.at(1);
       return 1;
-    } 
+    }
+    
+    // verify sub type setting
+    if (l.size() == 3)
+    {
+      if (_settingSubTypes.indexOf(l.at(2)) == -1)
+      {
+        qDebug() << "Command::setData: invalid setting" << l.at(2);
+        return 1;
+      }
+    }
     
     // value
     ts = sg.value(pos);
     QStringList l2 = ts.split(".", QString::SkipEmptyParts);
     if (l2.size() != 2)
     {
-      if (parseValue(setting, ts))
+      if (parseValue(setting, ts, l))
         return 1;
       
       c->set(l.at(1), setting);
@@ -98,7 +109,7 @@ int Command::setData (CommandParse &sg, void *d)
     Command *c2 = script->scriptCommand(l2.at(0));
     if (! c2)
     {
-      if (parseValue(setting, ts))
+      if (parseValue(setting, ts, l))
         return 1;
       
       c->set(l.at(1), setting);
@@ -168,22 +179,42 @@ int Command::copySetting (Data &setting, Data &setting2)
   return 0;
 }
 
-int Command::parseValue (Data &setting, QString &s)
+int Command::parseValue (Data &setting, QString &s, QStringList &l)
 {
-  switch ((TypeData::Key) setting.type())
+  if (l.size() == 3)
   {
-    case TypeData::_FILE:
-      setting.set(s.split(";"));
-      break;
-    default:
-      if (setting.set(s, setting.type()))
+    switch (_settingSubTypes.indexOf(l.at(2)))
+    {
+      case 0: // TAB
       {
-        qDebug() << "Command::parseValue: invalid value"  << s;
-        return 1;
+	bool ok;
+	int t = s.toInt(&ok);
+	if (! ok)
+	  return 1;
+	setting.setTab(t);
+        break;
       }
-      break;
+      default: // LABEL
+	setting.setLabel(s);
+        break;
+    }
+  }
+  else
+  {
+    switch ((TypeData::Key) setting.type())
+    {
+      case TypeData::_FILE:
+        setting.set(s.split(";"));
+        break;
+      default:
+        if (setting.set(s, setting.type()))
+        {
+          qDebug() << "Command::parseValue: invalid value"  << s;
+          return 1;
+        }
+        break;
+    }
   }
   
   return 0;
 }
-  

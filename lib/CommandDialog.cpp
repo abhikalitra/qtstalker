@@ -20,65 +20,98 @@
  */
 
 #include "CommandDialog.h"
+#include "KeyDialog.h"
 #include "Script.h"
 #include "TypeThreadMessage.h"
 #include "ThreadMessageFunctions.h"
+#include "TypeMA.h"
 
 #include <QtDebug>
+#include <QColor>
 #include <QUuid>
 
 CommandDialog::CommandDialog ()
 {
   _name = "DIALOG";
+
+  KeyDialog keys;
+
+  // string
+  Data td;
+  Entity::set(keys.indexToString(KeyDialog::_STRING_0), td);
+  Entity::set(keys.indexToString(KeyDialog::_STRING_1), td);
+  Entity::set(keys.indexToString(KeyDialog::_STRING_2), td);
+
+  // integer
+  td = Data(0);
+  Entity::set(keys.indexToString(KeyDialog::_INTEGER_0), td);
+  Entity::set(keys.indexToString(KeyDialog::_INTEGER_1), td);
+  Entity::set(keys.indexToString(KeyDialog::_INTEGER_2), td);
+
+  // double
+  td = Data(0.0);
+  Entity::set(keys.indexToString(KeyDialog::_DOUBLE_0), td);
+  Entity::set(keys.indexToString(KeyDialog::_DOUBLE_1), td);
+  Entity::set(keys.indexToString(KeyDialog::_DOUBLE_2), td);
+
+  // color
+  td = Data(QColor(Qt::red));
+  Entity::set(keys.indexToString(KeyDialog::_COLOR_0), td);
+  Entity::set(keys.indexToString(KeyDialog::_COLOR_1), td);
+  Entity::set(keys.indexToString(KeyDialog::_COLOR_2), td);
+  Entity::set(keys.indexToString(KeyDialog::_COLOR_3), td);
+
+  // bool
+  td = Data(FALSE);
+  Entity::set(keys.indexToString(KeyDialog::_BOOL_0), td);
+  Entity::set(keys.indexToString(KeyDialog::_BOOL_1), td);
+  Entity::set(keys.indexToString(KeyDialog::_BOOL_2), td);
+
+  // file
+  td = Data(TypeData::_FILE);
+  Entity::set(keys.indexToString(KeyDialog::_FILE_0), td);
+  Entity::set(keys.indexToString(KeyDialog::_FILE_1), td);
+  Entity::set(keys.indexToString(KeyDialog::_FILE_2), td);
+
+  // ma
+  TypeMA tma;
+  td = Data(tma.list(), QString("EMA"));
+  Entity::set(keys.indexToString(KeyDialog::_MA_0), td);
+  Entity::set(keys.indexToString(KeyDialog::_MA_1), td);
+  Entity::set(keys.indexToString(KeyDialog::_MA_2), td);
 }
 
-QString CommandDialog::run (CommandParse &sg, void *scr)
+QString CommandDialog::run (CommandParse &, void *scr)
 {
-  if (sg.values() != 1)
-  {
-    qDebug() << "CommandDialog::run: invalid number of values";
-    return _returnCode;
-  }
-  
   Script *script = (Script *) scr;
   
-  int pos = 0;
-  QString name = sg.value(pos++);
-  Command *c = script->scriptCommand(name);
-  if (! c)
-  {
-    qDebug() << "CommandDialog::run: invalid entity" << name;
-    return _returnCode;
-  }
-
   Entity dialog;
   dialog.set(QString("MESSAGE"), Data(TypeThreadMessage::_DIALOG));
   
   QList<QString> keys;
-  c->dkeys(keys);
+  Entity::dkeys(keys);
   
   int loop = 0;
   for (; loop < keys.size(); loop++)
   {
     Data td;
-    c->toData(keys.at(loop), td);
+    Entity::toData(keys.at(loop), td);
     dialog.set(keys.at(loop), td);
   }
-  
+    
   QString id = QUuid::createUuid().toString();
   
   ThreadMessageFunctions tmf;
   if (tmf.sendReturn(id, dialog, script))
     return _returnCode;
   
-  // copy new data into entity
   for (loop = 0; loop < keys.size(); loop++)
   {
     Data td;
     dialog.toData(keys.at(loop), td);
-    c->set(keys.at(loop), td);
+    Entity::set(keys.at(loop), td);
   }
-
+  
   _returnCode = "OK";
   return _returnCode;
 }

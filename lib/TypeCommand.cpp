@@ -59,7 +59,6 @@ TypeCommand::TypeCommand ()
   _list << "DIALOG_NEW";
   _list << "DIALOG_SCRIPT";
   _list << "DIALOG_SELECT";
-  _list << "DIALOG_USER";
   _list << "FI";
   _list << "GET";
   _list << "GROUP_DATABASE";

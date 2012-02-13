@@ -63,7 +63,6 @@ class TypeCommand : public Type
       _DIALOG_NEW,
       _DIALOG_SCRIPT,
       _DIALOG_SELECT,
-      _DIALOG_USER,
       _FI,
       _GET,
       _GROUP_DATA_BASE,

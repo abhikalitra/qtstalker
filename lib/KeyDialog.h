@@ -19,24 +19,44 @@
  *  USA.
  */
 
-#ifndef COMMAND_HPP
-#define COMMAND_HPP
+// *************************************************************************************************
+// *************************************************************************************************
 
-#include "CommandParse.h"
-#include "Entity.h"
+#ifndef KEY_DIALOG_HPP
+#define KEY_DIALOG_HPP
 
-class Command : public Entity
+#include "Type.h"
+
+class KeyDialog : public Type
 {
   public:
-    Command ();
-    virtual QString run (CommandParse &, void *);
-    int setData (CommandParse &, void *);
-    int copySetting (Data &, Data &);
-    int parseValue (Data &, QString &, QStringList &);
+    enum Key
+    {
+      _STRING_0,
+      _STRING_1,
+      _STRING_2,
+      _INTEGER_0,
+      _INTEGER_1,
+      _INTEGER_2,
+      _DOUBLE_0,
+      _DOUBLE_1,
+      _DOUBLE_2,
+      _COLOR_0,
+      _COLOR_1,
+      _COLOR_2,
+      _COLOR_3,
+      _BOOL_0,
+      _BOOL_1,
+      _BOOL_2,
+      _FILE_0,
+      _FILE_1,
+      _FILE_2,
+      _MA_0,
+      _MA_1,
+      _MA_2
+    };
     
-  protected:
-    QString _returnCode;
-    QStringList _settingSubTypes;
+    KeyDialog ();
 };
 
 #endif
