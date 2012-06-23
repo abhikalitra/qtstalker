@@ -19,26 +19,31 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+// *************************************************************************************************
+// *************************************************************************************************
+
+#ifndef CURVE_LINE_TYPE_HPP
+#define CURVE_LINE_TYPE_HPP
 
 #include <QStringList>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+class CurveLineType
 {
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
+    enum Key
+    {
+      _DASH,
+      _DOT,
+      _SOLID
+    };
+
+    CurveLineType ();
+    QStringList list ();
+    int stringToIndex (QString);
+    QString indexToString (int);
     
   private:
-    EAVDataBase _db;
+    QStringList _list;
 };
 
 #endif

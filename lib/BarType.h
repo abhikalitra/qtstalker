@@ -19,26 +19,37 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+// *************************************************************************************************
+// *************************************************************************************************
+
+#ifndef BAR_TYPE_HPP
+#define BAR_TYPE_HPP
 
 #include <QStringList>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+class BarType
 {
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
+    enum Key
+    {
+      _DATE,
+      _OPEN,
+      _HIGH,
+      _LOW,
+      _CLOSE,
+      _VOLUME,
+      _OI,
+      _VALUE,
+      _BASE
+    };
+
+    BarType ();
+    QStringList list ();
+    int stringToIndex (QString);
+    QString indexToString (int);
     
   private:
-    EAVDataBase _db;
+    QStringList _list;
 };
 
 #endif

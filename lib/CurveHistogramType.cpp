@@ -19,26 +19,31 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#include "CurveHistogramType.h"
 
-#include <QStringList>
+#include <QDebug>
+#include <QObject>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+CurveHistogramType::CurveHistogramType ()
 {
-  public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
-};
+  _list << QObject::tr("Bar");
+  _list << QObject::tr("Solid");
+}
 
-#endif
+QStringList
+CurveHistogramType::list ()
+{
+  return _list;
+}
+
+int
+CurveHistogramType::stringToIndex (QString d)
+{
+  return _list.indexOf(d);
+}
+
+QString
+CurveHistogramType::indexToString (int d)
+{
+  return _list.at(d);
+}

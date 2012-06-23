@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,26 +19,35 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#ifndef PLOT_SETTINGS_HPP
+#define PLOT_SETTINGS_HPP
 
-#include <QStringList>
+#include <QColor>
+#include <QHash>
+#include <QList>
+#include <QString>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
+#include "Marker.h"
+#include "Curve.h"
 
-class GroupFunctions
+typedef struct
 {
-  public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
-};
+  QColor colorBackground;
+  int barLength;
+  QHash<QString, Marker *> markers;
+  QHash<QString, Curve *> curves;
+  QString name;
+  Marker *selected;
+  bool antiAlias;
+  int spacing;
+  double high;
+  double low;
+  int startPos;
+  int endPos;
+  int status;
+  bool info;
+  
+} PlotSettings;
+
 
 #endif

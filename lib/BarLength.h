@@ -19,26 +19,40 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+// ******************************************************
+// ******************************************************
 
+#ifndef BAR_LENGTH_HPP
+#define BAR_LENGTH_HPP
+
+#include <QString>
 #include <QStringList>
+#include <QDateTime>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+class BarLength
 {
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
+    enum Key
+    {
+      _MINUTE1,
+      _MINUTE5,
+      _MINUTE10,
+      _MINUTE15,
+      _MINUTE30,
+      _MINUTE60,
+      _DAILY,
+      _WEEKLY,
+      _MONTHLY
+    };
+
+    BarLength ();
+    QStringList list ();
+    int stringToIndex (QString);
+    QString indexToString (int);
+    void interval (QDateTime dt, int length, QDateTime &startDate, QDateTime &endDate);
     
   private:
-    EAVDataBase _db;
+    QStringList _list;
 };
 
 #endif

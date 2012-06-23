@@ -19,26 +19,41 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#ifndef OTA_H
+#define OTA_H
 
+#include <QMainWindow>
 #include <QStringList>
+#include <QLayout>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+class OTA : public QMainWindow
 {
+  Q_OBJECT
+
+  signals:
+    void signalLoadSettings ();
+    void signalShutDown ();
+
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
+    OTA (QString session, QString plugin);
+    void createGUI ();
+    void loadSettings ();
+
+  public slots:
+    void save ();
+    void statusMessage (QString);
+    void wakeup ();
+    void shutDown ();
+    int loadPlugin (QString);
+    void pluginDialog ();
+    void pluginDialog2 (QString);
+    void newPluginDialog ();
+    void help ();
+    void runSession ();
+    void runSession2 (QString);
     
   private:
-    EAVDataBase _db;
+    QString _helpFile;
 };
 
 #endif

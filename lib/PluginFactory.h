@@ -19,26 +19,31 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#ifndef PLUGIN_FACTORY_H
+#define PLUGIN_FACTORY_H
 
 #include <QStringList>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
+#include "Plugin.h"
+//#include "PluginDialog.h"
+//#include "PluginDB.h"
+//#include "PluginCurve.h"
+//#include "PluginMarker.h"
+//#include "PluginIndicator.h"
+//#include "PluginScript.h"
 
-class GroupFunctions
+class PluginFactory
 {
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
+    PluginFactory ();
+    Plugin * load (QString);
+//    QObject * load (QString);
+//    PluginDialog * loadDialog (QString);
+//    PluginDB * loadDB (QString);
+//    PluginCurve * loadCurve (QString);
+//    PluginMarker * loadMarker (QString);
+//    PluginIndicator * loadIndicator (QString);
+//    PluginScript * loadScript (QString);
 };
 
 #endif

@@ -19,26 +19,36 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+// ******************************************************
+// ******************************************************
+
+#ifndef MA_TYPE_HPP
+#define MA_TYPE_HPP
 
 #include <QStringList>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+class MAType
 {
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
+    enum Key
+    {
+      _SMA,
+      _EMA,
+      _WMA,
+      _DEMA,
+      _TEMA,
+      _TRIMA,
+      _KAMA,
+      _WILDER
+    };
+
+    MAType ();
+    QStringList list ();
+    int stringToIndex (QString);
+    QString indexToString (int);
     
   private:
-    EAVDataBase _db;
+    QStringList _list;
 };
 
 #endif

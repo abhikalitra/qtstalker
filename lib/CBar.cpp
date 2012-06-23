@@ -19,26 +19,65 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#include "CBar.h"
 
-#include <QStringList>
+#include <QtDebug>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+CBar::CBar ()
 {
-  public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
-};
+}
 
-#endif
+void
+CBar::setDate (QDateTime d)
+{
+  _date = d;
+}
+
+QDateTime
+CBar::date ()
+{
+  return _date;
+}
+
+void
+CBar::set (QString k, double d)
+{
+  _values.insert(k, d);
+}
+
+int
+CBar::get (QString k, double &d)
+{
+  if (! _values.contains(k))
+    return 0;
+  
+  d = _values.value(k);
+  return 1;
+}
+
+int
+CBar::highLow (double &h, double &l)
+{
+  bool flag = FALSE;
+  QHashIterator<QString, double> it(_values);
+  while (it.hasNext())
+  {
+    it.next();
+    
+    if (! flag)
+    {
+      h = it.value();
+      l = it.value();
+      flag = TRUE;
+    }
+    else
+    {
+      if (it.value() > h)
+        h = it.value();
+      if (it.value() < l)
+        l = it.value();
+    }
+  }
+
+  return 0;
+}

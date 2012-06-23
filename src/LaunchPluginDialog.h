@@ -19,26 +19,27 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#ifndef LAUNCH_PLUGIN_DIALOG_HPP
+#define LAUNCH_PLUGIN_DIALOG_HPP
 
-#include <QStringList>
+#include <QComboBox>
+#include <QLineEdit>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
+#include "Dialog.h"
 
-class GroupFunctions
+class LaunchPluginDialog : public Dialog
 {
+  Q_OBJECT
+  
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
+    LaunchPluginDialog (QWidget *);
+
+  public slots:
+    void done ();
+
+  protected:
+    QComboBox *_plugin;
+    QLineEdit *_session;
 };
 
 #endif

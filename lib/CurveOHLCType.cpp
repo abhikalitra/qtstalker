@@ -19,26 +19,31 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#include "CurveOHLCType.h"
 
-#include <QStringList>
+#include <QDebug>
+#include <QObject>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+CurveOHLCType::CurveOHLCType ()
 {
-  public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
-};
+  _list << QObject::tr("Candle");
+  _list << QObject::tr("OHLC");
+}
 
-#endif
+QStringList
+CurveOHLCType::list ()
+{
+  return _list;
+}
+
+int
+CurveOHLCType::stringToIndex (QString d)
+{
+  return _list.indexOf(d);
+}
+
+QString
+CurveOHLCType::indexToString (int d)
+{
+  return _list.at(d);
+}

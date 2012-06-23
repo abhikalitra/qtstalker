@@ -19,26 +19,32 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#include "CurveLineType.h"
 
-#include <QStringList>
+#include <QDebug>
+#include <QObject>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+CurveLineType::CurveLineType ()
 {
-  public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
-};
+  _list << QObject::tr("Dash");
+  _list << QObject::tr("Dot");
+  _list << QObject::tr("Solid");
+}
 
-#endif
+QStringList
+CurveLineType::list ()
+{
+  return _list;
+}
+
+int
+CurveLineType::stringToIndex (QString d)
+{
+  return _list.indexOf(d);
+}
+
+QString
+CurveLineType::indexToString (int d)
+{
+  return _list.at(d);
+}

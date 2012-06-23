@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,26 +19,35 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#include "Widget.h"
 
-#include <QStringList>
+#include <QDebug>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+Widget::Widget ()
 {
-  public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
-};
+  _toolbar = 0;
+}
 
-#endif
+void
+Widget::message (QString d)
+{
+  emit signalMessage(d);
+}
+
+void
+Widget::enable (bool d)
+{
+  emit signalEnable(d);
+}
+
+void
+Widget::setToolBar (QToolBar *d)
+{
+  _toolbar = d;
+}
+
+QToolBar *
+Widget::toolbar ()
+{
+  return _toolbar;
+}

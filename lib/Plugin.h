@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2007 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,26 +19,22 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#ifndef PLUGIN_HPP
+#define PLUGIN_HPP
 
-#include <QStringList>
+#include <QPainter>
+#include <qwt_plot.h>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
+#include "PluginData.h"
 
-class GroupFunctions
+class Plugin
 {
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
+    virtual ~Plugin () {}
+    virtual int draw (QPainter *, const QwtScaleMap &, const QwtScaleMap &, const QRect &, void *) = 0;
+    virtual int command (PluginData *) = 0;
 };
+
+Q_DECLARE_INTERFACE(Plugin, "com.trolltech.OTA.Plugin/1.0")
 
 #endif

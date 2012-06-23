@@ -20,8 +20,7 @@
  */
 
 #include "GroupFunctions.h"
-#include "KeyGroupDataBase.h"
-#include "Entity.h"
+#include "EntityGroup.h"
 
 #include <QtDebug>
 
@@ -32,19 +31,16 @@ GroupFunctions::GroupFunctions ()
 
 int GroupFunctions::add (QString name, QStringList al)
 {
-  Entity group;
+  EntityGroup group;
   group.setName(name);
   
-  if (_db.get(group))
+  if (_db.get(&group))
   {
     qDebug() << "GroupFunctions::add: invalid name" << name;
     return 1;
   }
 
-  KeyGroupDataBase gkeys;
-  Data glist;
-  group.toData(gkeys.indexToString(KeyGroupDataBase::_LIST), glist);
-  QStringList l = glist.toList();
+  QStringList l = group.list();
 
   int loop = 0;
   for (; loop < al.size(); loop++)
@@ -52,11 +48,10 @@ int GroupFunctions::add (QString name, QStringList al)
   
   l.removeDuplicates();
 
-  glist.set(l);
-  group.set(gkeys.indexToString(KeyGroupDataBase::_LIST), glist);
+  group.setList(l);
 
   _db.transaction();
-  if (_db.set(group))
+  if (_db.set(&group))
   {
     qDebug() << "GroupFunctions::add: database error";
     return 1;
@@ -96,9 +91,9 @@ int GroupFunctions::names (QStringList &l)
   return 0;
 }
 
-int GroupFunctions::get (Entity &group)
+int GroupFunctions::get (EntityGroup &group)
 {
-  if (_db.get(group))
+  if (_db.get(&group))
   {
     qDebug() << "GroupFunctions::get: database error";
     return 1;
@@ -109,13 +104,12 @@ int GroupFunctions::get (Entity &group)
 
 int GroupFunctions::set (QString name, QStringList l)
 {
-  KeyGroupDataBase keys;
-  Entity group;
+  EntityGroup group;
   group.setName(name);
-  group.set(keys.indexToString(KeyGroupDataBase::_LIST), Data(l));
+  group.setList(l);
   
   _db.transaction();
-  if (_db.set(group))
+  if (_db.set(&group))
   {
     qDebug() << "GroupFunctions::set: database error";
     return 1;

@@ -19,26 +19,29 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+// ******************************************************
+// ******************************************************
 
-#include <QStringList>
+#ifndef CBAR_HPP
+#define CBAR_HPP
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
+#include <QHash>
 
-class GroupFunctions
+#include "Bar.h"
+
+class CBar : public Bar
 {
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
+    CBar ();
+    void setDate (QDateTime);
+    QDateTime date ();
+    void set (QString, double);
+    int get (QString, double &);
+    int highLow (double &h, double &l);
     
   private:
-    EAVDataBase _db;
+    QDateTime _date;
+    QHash<QString, double> _values;
 };
 
 #endif

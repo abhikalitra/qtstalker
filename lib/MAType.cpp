@@ -19,26 +19,36 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#include "MAType.h"
 
-#include <QStringList>
+#include <QtDebug>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+MAType::MAType ()
 {
-  public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
-};
+  _list << "SMA";
+  _list << "EMA";
+  _list << "WMA";
+  _list << "DEMA";
+  _list << "TEMA";
+  _list << "TRIMA";
+  _list << "KAMA";
+  _list << "Wilder";
+}
 
-#endif
+QStringList
+MAType::list ()
+{
+  return _list;
+}
+
+int
+MAType::stringToIndex (QString d)
+{
+  return _list.indexOf(d);
+}
+
+QString
+MAType::indexToString (int d)
+{
+  return _list.at(d);
+}

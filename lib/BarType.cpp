@@ -19,26 +19,38 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+#include "BarType.h"
 
-#include <QStringList>
+#include <QDebug>
+#include <QObject>
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+BarType::BarType ()
 {
-  public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
-};
+  _list << "Date";
+  _list << "Open";
+  _list << "High";
+  _list << "Low";
+  _list << "Close";
+  _list << "Volume";
+  _list << "OI";
+  _list << "Value";
+  _list << "Base";
+}
 
-#endif
+QStringList
+BarType::list ()
+{
+  return _list;
+}
+
+int
+BarType::stringToIndex (QString d)
+{
+  return _list.indexOf(d);
+}
+
+QString
+BarType::indexToString (int d)
+{
+  return _list.at(d);
+}

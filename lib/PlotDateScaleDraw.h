@@ -19,26 +19,34 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+// *************************************************************************************************
+// Plots the date area of a chart
+// *************************************************************************************************
 
-#include <QStringList>
+#ifndef PLOT_DATE_SCALE_DRAW_HPP
+#define PLOT_DATE_SCALE_DRAW_HPP
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
+#include <QHash>
+#include <QDateTime>
+#include <qwt_scale_draw.h>
 
-class GroupFunctions
+#include "Bars.h"
+
+
+class PlotDateScaleDraw : public QwtScaleDraw
 {
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
+    PlotDateScaleDraw ();
+    void clear ();
+    void setDates ();
+    virtual QwtText label (double) const;
+    void info (int index, QStringList &);
+    virtual void draw (QPainter *, const QPalette &) const;
+    int startEndRange (int &start, int &end);
+    int dateToX (QDateTime);
+
   private:
-    EAVDataBase _db;
+    QHash<QString, int> _dates;
 };
 
 #endif

@@ -19,26 +19,23 @@
  *  USA.
  */
 
-#ifndef GROUP_FUNCTIONS_HPP
-#define GROUP_FUNCTIONS_HPP
+// ******************************************************
+// ******************************************************
 
-#include <QStringList>
+#ifndef PLOT_STATUS_HPP
+#define PLOT_STATUS_HPP
 
-#include "EAVDataBase.h"
-#include "EntityGroup.h"
-
-class GroupFunctions
+class PlotStatus
 {
   public:
-    GroupFunctions ();
-    int add (QString, QStringList);
-    int remove (QStringList);
-    int names (QStringList &);
-    int get (EntityGroup &);
-    int set (QString, QStringList);
-    
-  private:
-    EAVDataBase _db;
+    enum Key
+    {
+      _NONE,
+      _SELECTED,
+      _MOVE,
+      _MOVE2,
+      _CREATE_MOVE
+    };
 };
 
 #endif
