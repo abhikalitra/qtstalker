@@ -26,7 +26,7 @@
 #include <QtDebug>
 
 #include "OTA.h"
-//#include "../qtstalker_defines.h"
+#include "../qtstalker_defines.h"
 
 int main(int argc, char *argv[])
 {
