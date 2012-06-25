@@ -21,14 +21,13 @@
 
 #include "Dialog.h"
 #include "Doc.h"
-#include "ThreadMessageFunctions.h"
+#include "Global.h"
 
 #include <QtDebug>
 #include <QSettings>
 
 Dialog::Dialog (QWidget *p) : QDialog (p)
 {
-  _saveFlag = 0;
   _helpFile = "main.html";
   connect(this, SIGNAL(finished(int)), this, SLOT(deleteLater()));
 
@@ -65,30 +64,19 @@ Dialog::Dialog (QWidget *p) : QDialog (p)
   _cancelButton->setFocus();
 
   // help button
-  QPushButton *b = _buttonBox->button(QDialogButtonBox::Help);
-  b->setText(tr("&Help"));
-  connect(b, SIGNAL(clicked()), this, SLOT(help()));
+  _helpButton = _buttonBox->button(QDialogButtonBox::Help);
+  _helpButton->setText(tr("&Help"));
+  connect(_helpButton, SIGNAL(clicked()), this, SLOT(help()));
 }
 
 Dialog::~Dialog ()
 {
-  if (_id.isEmpty())
-    return;
-
-  ThreadMessageFunctions tmf;
-  if (_saveFlag)
-    tmf.sendRelease(_id, _settings);
-  else
-  {
-    Entity e;
-    tmf.sendRelease(_id, e);
-  }
+  saveSettings();
 }
 
 // virtual
 void Dialog::done ()
 {
-  saveSettings();
   accept();
 }
 
@@ -102,14 +90,14 @@ void Dialog::help ()
 // virtual
 void Dialog::cancel ()
 {
-  saveSettings();
   reject();
 }
 
 // virtual
 void Dialog::loadSettings ()
 {
-  QSettings settings("QtStalker/qtstalkerrc");
+  QSettings settings(g_settings);
+  settings.beginGroup(g_session);
 
   QSize sz = settings.value(_keySize, QSize(200,200)).toSize();
   resize(sz);
@@ -123,10 +111,10 @@ void Dialog::loadSettings ()
 // virtual
 void Dialog::saveSettings ()
 {
-  QSettings settings("QtStalker/qtstalkerrc");
+  QSettings settings(g_settings);
+  settings.beginGroup(g_session);
   settings.setValue(_keySize, size());
   settings.setValue(_keyPos, pos());
-  settings.sync();
 }
 
 void Dialog::setWidget (QWidget *w)

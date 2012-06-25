@@ -1,7 +1,7 @@
 /*
  *  Qtstalker stock charter
  *
- *  Copyright (C) 2001-2010 Stefan S. Stratigakos
+ *  Copyright (C) 2001-2011 Stefan S. Stratigakos
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,13 +29,24 @@
 #include <QtSql>
 #include <QStringList>
 
+#include "Entity.h"
+
 class DataBase
 {
   public:
-    DataBase ();
-    void open ();
+    DataBase (QString);
+    int init ();
+    int open ();
     void transaction ();
     void commit ();
+    int remove (QStringList);
+    int set (Entity *);
+    int get (Entity *);
+    int getTypes (QString type, QStringList &);
+    int names (QStringList &);
+//    int search (EAVSearch &, QStringList &);
+//    int keys (QStringList &);
+//    int attributeValues (QString field, QStringList &l);
 
   protected:
     QSqlDatabase _db;

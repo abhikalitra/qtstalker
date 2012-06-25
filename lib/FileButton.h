@@ -30,7 +30,7 @@ class FileButton : public QPushButton
   Q_OBJECT
 
   signals:
-    void signalSelectionChanged ();
+    void signalSelectionChanged (QStringList);
 
   public:
     FileButton (QWidget *);
@@ -38,14 +38,17 @@ class FileButton : public QPushButton
     void updateButtonText ();
     void setPath (QString);
     int fileCount ();
+    void setTextFlag (bool);
+    void setFiles (QStringList);
 
   public slots:
     void fileDialog ();
-    void setFiles (QStringList);
+    void fileDialog2 (QStringList);
         
   private:
     QStringList _files;
     QString _path;
+    bool _textFlag;
 };
 
 #endif

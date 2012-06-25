@@ -20,7 +20,6 @@
  */
 
 #include "PlotInfo.h"
-#include "Strip.h"
 
 #include <QDebug>
 #include <qwt_plot.h>
@@ -28,6 +27,7 @@
 
 PlotInfo::PlotInfo ()
 {
+  _color = QColor(Qt::white);
   setYAxis(QwtPlot::yRight);
   setZ(9999);
 }
@@ -37,54 +37,33 @@ PlotInfo::~PlotInfo ()
   detach();
 }
 
-int PlotInfo::rtti () const
+int
+PlotInfo::rtti () const
 {
   return Rtti_PlotUserItem;
 }
 
-void PlotInfo::clearData ()
+void
+PlotInfo::setColor (QColor c)
 {
-  _name.clear();
-  _textList.clear();
-  _colorList.clear();
-  _valList.clear();
+  _color = c;
 }
 
-void PlotInfo::setData (QString d, QColor c, double v)
+void
+PlotInfo::setData (QStringList l)
 {
-  _textList << d;
-  _colorList << c;
-  _valList << v;
+  _text = l;
 }
 
-void PlotInfo::setName (QString d)
-{
-  _name = d;
-}
-
-void PlotInfo::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap &, const QRect &) const
+void
+PlotInfo::draw (QPainter *p, const QwtScaleMap &, const QwtScaleMap &, const QRect &) const
 {
   QFontMetrics fm = p->fontMetrics();
 
-  QFont font = p->font();
-  font.setBold(TRUE);
-  p->setFont(font);
+  p->setPen(_color);
 
   int x = 5;
   int y = fm.height();
-
-  Strip strip;
-  int loop = 0;
-  for (; loop < _textList.count(); loop++)
-  {
-    p->setPen(_colorList.at(loop));
-
-    QString ts;
-    strip.strip(_valList.at(loop), 4, ts);
-
-    QString s = _textList.at(loop) + "=" + ts;
-    p->drawText(x, y, s);
-
-    x += fm.width(s, -1) + 5;
-  }
+  for (int loop = 0; loop < _text.size(); loop++, y += fm.height())
+    p->drawText(x, y, _text.at(loop));
 }

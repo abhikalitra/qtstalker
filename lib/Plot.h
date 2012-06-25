@@ -23,25 +23,25 @@
 #define PLOT_HPP
 
 #include <QString>
-#include <qwt_plot.h>
 #include <QList>
 #include <QDateTime>
 #include <QColor>
 #include <QFont>
 #include <QPoint>
 #include <QHash>
-#include <qwt_plot_grid.h>
 #include <QMenu>
+#include <QAction>
+#include <qwt_plot_grid.h>
+#include <qwt_plot.h>
 
 #include "Entity.h"
 #include "Curve.h"
-#include "PlotMenu.h"
-#include "ChartObject.h"
-#include "DateScaleDraw.h"
+#include "PlotDateScaleDraw.h"
 #include "PlotScaleDraw.h"
 #include "PlotPicker.h"
-#include "DataDialog.h"
 #include "PlotInfo.h"
+#include "PlotSettings.h"
+#include "Bars.h"
 
 class Plot : public QwtPlot
 {
@@ -49,83 +49,77 @@ class Plot : public QwtPlot
 
   signals:
     void signalMessage (QString);
-    void signalInfoMessage (Entity);
+    void signalInfoMessage (Entity *);
     void signalIndex (int);
+    void signalResizeScrollBar (Plot *);
+    void signalInfo (QStringList &);
+    void signalDeleteMarkers (QStringList);
 
   public:
     Plot (QString, QWidget *);
     ~Plot ();
-    void setDates (Entity &);
-    void setDates ();
     void setCurve (Curve *);
     void setHighLow ();
-    void saveChartObjects ();
-    void dates (QList<QDateTime> &);
     int index ();
-    PlotMenu * plotMenu ();
+    QMenu * menu ();
     void setYPoints ();
-    void addChartObject (ChartObject *);
-    void unselect ();
-    void select (QString);
-    void showChartObjectMenu ();
-    void setScriptFile (QString);
-    QString scriptFile ();
-    void setRow (int);
-    int row ();
-    void setCol (int);
-    int col ();
+    void setMarker (Marker *);
+    void unselectMarker ();
+    void selectMarker (QString);
+    void showMarkerMenu ();
     void setName (QString);
     QString name ();
-    QHash<QString, Curve *> curves ();
+    void scrollBarSize (int &page, int &max);
+    void createMenu ();
+    bool date ();
+    bool grid ();
+    bool info ();
+    QHash<QString, Marker *> markers ();
 
   public slots:
     virtual void clear ();
+    void setDates ();
     void updatePlot ();
-    void loadSettings ();
     void setStartIndex (int index);
     void setBackgroundColor (QColor);
     void setFont (QFont);
     void setGridColor (QColor);
     void setGrid (bool);
+    void setInfo (bool);
     void showDate (bool);
     void setLogScaling (bool);
     void showContextMenu ();
     void mouseMove (QPoint);
     void mouseClick (int, QPoint);
     void mouseDoubleClick (int, QPoint);
-    void deleteAllChartObjects ();
-    void chartObjectNew (QString);
+    void newMarker (QString);
     void setCrossHairs (bool);
     void setCrossHairsColor (QColor);
     void setBarSpacing (int);
-    void chartObjectDialog ();
-    void deleteChartObject ();
-    void deleteChartObject2 ();
-    void chartObjectDialog2 ();
-    void chartObjectDialog3 ();
+    void setBarLength (int);
+    void markerDialog ();
+    void markerDialog2 ();
+    void deleteMarker ();
+    void deleteMarker2 ();
+    void markerMenuSelected (QAction *);
+    void deleteAllMarkersDialog ();
+    void deleteAllMarkers ();
+
+  protected:
+    void resizeEvent (QResizeEvent *event);    
 
   private:
-    int _spacing;
-    QHash<QString, ChartObject *> _chartObjects;
-    QHash<QString, Curve *> _curves;
-    DateScaleDraw *_dateScaleDraw;
+    PlotSettings _ps;
+    PlotDateScaleDraw *_dateScaleDraw;
     PlotScaleDraw *_plotScaleDraw;
     QwtPlotGrid *_grid;
     PlotPicker *_picker;
-    double _high;
-    double _low;
-    int _startPos;
-    int _endPos;
-    ChartObject *_selected;
-    PlotMenu *_menu;
-    QMenu *_chartObjectMenu;
-    bool _antiAlias;
-    QString _name;
-    DataDialog *_chartObjectDialog;
-    QString _scriptFile;
-    int _row;
-    int _col;
+    QMenu *_menu;
+    QMenu *_markerMenu;
     PlotInfo *_plotInfo;
+    QAction *_dateAction;
+    QAction *_gridAction;
+    QAction *_infoAction;
 };
 
 #endif

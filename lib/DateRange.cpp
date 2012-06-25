@@ -22,145 +22,94 @@
 #include "DateRange.h"
 
 #include <QDebug>
+#include <QObject>
 
 DateRange::DateRange ()
 {
+  _list << QString("1D");
+  _list << QString("1W");
+  _list << QString("1M");
+  _list << QString("3M");
+  _list << QString("6M");
+  _list << QString("1Y");
+  _list << QString("2Y");
+  _list << QString("5Y");
+  _list << QString("10Y");
+  _list << QString("25Y");
+  _list << QString("50Y");
+  _list << QString("*");
 }
 
-int DateRange::dateRange (TypeDateRange::Key type, QDateTime &input, QDateTime &output)
+QStringList
+DateRange::list ()
 {
-  if (! input.isValid())
-    return 1;
-
-  switch (type)
-  {
-    case TypeDateRange::_DAY:
-      output = input.addDays(-1);
-      break;
-    case TypeDateRange::_WEEK:
-      output = input.addDays(-7);
-      break;
-    case TypeDateRange::_MONTH:
-      output = input.addDays(-31);
-      break;
-    case TypeDateRange::_MONTH3:
-      output = input.addDays(-63);
-      break;
-    case TypeDateRange::_MONTH6:
-      output = input.addDays(-186);
-      break;
-    case TypeDateRange::_YEAR:
-      output = input.addYears(-1);
-      break;
-    case TypeDateRange::_YEAR2:
-      output = input.addYears(-2);
-      break;
-    case TypeDateRange::_YEAR5:
-      output = input.addYears(-5);
-      break;
-    case TypeDateRange::_YEAR10:
-      output = input.addYears(-10);
-      break;
-    case TypeDateRange::_YEAR25:
-      output = input.addYears(-25);
-      break;
-    case TypeDateRange::_YEAR50:
-      output = input.addYears(-50);
-      break;
-    case TypeDateRange::_ALL:
-      output = input.addYears(-1000);
-      break;
-    default:
-      return 1;
-      break;
-  }
-
-  return 0;
+  return _list;
 }
 
-void DateRange::dateInterval (QDateTime dt, TypeBarLength::Key length, QDateTime &startDate, QDateTime &endDate)
+int
+DateRange::stringToIndex (QString d)
 {
-  startDate = dt;
+  return _list.indexOf(d);
+}
 
-  switch ((TypeBarLength::Key) length)
+QString
+DateRange::indexToString (int d)
+{
+  return _list.at(d);
+}
+
+QDateTime
+DateRange::interval (QDateTime ed, int type)
+{
+  QDateTime sd;
+  
+  switch ((Key) type)
   {
-    case TypeBarLength::_NONE:
-      endDate = startDate;
+    case _DAY:
+      sd = ed.addDays(-1);
       break;
-    case TypeBarLength::_MINUTE1:
-      startDate.setTime(QTime(startDate.time().hour(), startDate.time().minute(), 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(60);
-      endDate = endDate.addSecs(-1);
+    case _WEEK:
+      sd = ed.addDays(-7);
       break;
-    case TypeBarLength::_MINUTE5:
-    {
-      int tint = startDate.time().minute() / 5;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 5, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(300);
-      endDate = endDate.addSecs(-1);
+    case _MONTH:
+      sd = ed.addDays(-31);
       break;
-    }
-    case TypeBarLength::_MINUTE10:
-    {
-      int tint = startDate.time().minute() / 10;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 10, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(600);
-      endDate = endDate.addSecs(-1);
+    case _MONTH3:
+      sd = ed.addDays(-63);
       break;
-    }
-    case TypeBarLength::_MINUTE15:
-    {
-      int tint = startDate.time().minute() / 15;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 15, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(900);
-      endDate = endDate.addSecs(-1);
+    case _MONTH6:
+      sd = ed.addDays(-186);
       break;
-    }
-    case TypeBarLength::_MINUTE30:
-    {
-      int tint = startDate.time().minute() / 30;
-      startDate.setTime(QTime(startDate.time().hour(), tint * 30, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(1800);
-      endDate = endDate.addSecs(-1);
+    case _YEAR:
+      sd = ed.addYears(-1);
       break;
-    }
-    case TypeBarLength::_MINUTE60:
-      startDate.setTime(QTime(startDate.time().hour(), 0, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addSecs(3600);
-      endDate = endDate.addSecs(-1);
+    case _YEAR2:
+      sd = ed.addYears(-2);
       break;
-    case TypeBarLength::_DAILY:
-      startDate.setTime(QTime(0, 0, 0, 0));
-      endDate = startDate;
-      endDate = endDate.addDays(1);
-      endDate = endDate.addSecs(-1);
+    case _YEAR5:
+      sd = ed.addYears(-5);
       break;
-    case TypeBarLength::_WEEKLY:
-      startDate.setTime(QTime(0, 0, 0, 0));
-      startDate = startDate.addDays(- startDate.date().dayOfWeek());
-      endDate = startDate;
-      endDate = endDate.addDays(7);
-      endDate = endDate.addSecs(-1);
+    case _YEAR10:
+      sd = ed.addYears(-10);
       break;
-    case TypeBarLength::_MONTHLY:
-      startDate.setTime(QTime(0, 0, 0, 0));
-      startDate = startDate.addDays(- (startDate.date().day() - 1));
-      endDate = startDate;
-      endDate = endDate.addDays(endDate.date().daysInMonth());
-      endDate = endDate.addSecs(-1);
+    case _YEAR25:
+      sd = ed.addYears(-25);
+      break;
+    case _YEAR50:
+      sd = ed.addYears(-50);
+      break;
+    case _ALL:
+      sd = ed.addYears(-1000);
       break;
     default:
       break;
   }
+  
+  return sd;
 }
 
-QString DateRange::rangeKey (QDateTime sd, QDateTime ed)
+QString
+DateRange::rangeKey (QDateTime sd, QDateTime ed)
 {
   QString s = sd.toString(Qt::ISODate) + ed.toString(Qt::ISODate);
   return s;

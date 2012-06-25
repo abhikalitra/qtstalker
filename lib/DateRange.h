@@ -20,25 +20,42 @@
  */
 
 // *************************************************************************************************
-// Input the Range and input datetime and the output datetime will be a ranged back from the
-// input. eg. Range is Day, output datetime will be one day back from the input datetime
 // *************************************************************************************************
 
 #ifndef DATE_RANGE_HPP
 #define DATE_RANGE_HPP
 
+#include <QStringList>
 #include <QDateTime>
-
-#include "TypeBarLength.h"
-#include "TypeDateRange.h"
 
 class DateRange
 {
   public:
+    enum Key
+    {
+      _DAY,
+      _WEEK,
+      _MONTH,
+      _MONTH3,
+      _MONTH6,
+      _YEAR,
+      _YEAR2,
+      _YEAR5,
+      _YEAR10,
+      _YEAR25,
+      _YEAR50,
+      _ALL
+    };
+
     DateRange ();
-    int dateRange (TypeDateRange::Key, QDateTime &input, QDateTime &output);
-    void dateInterval (QDateTime dt, TypeBarLength::Key length, QDateTime &startDate, QDateTime &endDate);
+    QStringList list ();
+    int stringToIndex (QString);
+    QString indexToString (int);
+    QDateTime interval (QDateTime, int);
     QString rangeKey (QDateTime sd, QDateTime ed);
+    
+  private:
+    QStringList _list;
 };
 
 #endif

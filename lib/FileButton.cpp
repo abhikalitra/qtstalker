@@ -20,7 +20,6 @@
  */
 
 #include "FileButton.h"
-#include "WindowTitle.h"
 
 #include <QFileDialog>
 #include <QFileInfo>
@@ -28,6 +27,7 @@
 
 FileButton::FileButton (QWidget *w) : QPushButton (w)
 {
+  _textFlag = TRUE;
   QObject::connect(this, SIGNAL(clicked()), this, SLOT(fileDialog()));
   _path = QDir::homePath();
   updateButtonText();
@@ -50,6 +50,12 @@ void FileButton::setPath (QString d)
   updateButtonText();
 }
 
+void FileButton::setTextFlag (bool d)
+{
+  _textFlag = d;
+  updateButtonText();
+}
+
 void FileButton::fileDialog ()
 {
   if (_files.count())
@@ -58,31 +64,47 @@ void FileButton::fileDialog ()
     _path = fi.absolutePath();
   }
 
-  WindowTitle wt;
   QFileDialog *dialog = new QFileDialog(this);
   dialog->setFileMode(QFileDialog::AnyFile);
   dialog->setDirectory(_path);
-  dialog->setWindowTitle(wt.title(tr("Select Files"), QString()));
+  dialog->setWindowTitle(tr("OTA - Select Files"));
   connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-  connect(dialog, SIGNAL(filesSelected(const QStringList &)), this, SLOT(setFiles(QStringList)));
+  connect(dialog, SIGNAL(filesSelected(const QStringList &)), this, SLOT(fileDialog2(QStringList)));
   dialog->show();
+}
+
+void FileButton::fileDialog2 (QStringList l)
+{
+  _files = l;
+  updateButtonText();
+  emit signalSelectionChanged(_files);
 }
 
 void FileButton::updateButtonText ()
 {
-  QStringList l;
+  if (! _textFlag)
+  {
+    setText(QString("..."));
+    return;
+  }
   
+  QStringList l;
   if (_files.count() == 1)
-    l << _files.at(0);
+  {
+    QFileInfo fi(_files.at(0));
+    l << fi.fileName();
+    
+    setToolTip(_files.at(0));
+  }
   else
   {
     l << QString::number(_files.count());
     l << tr("Files");
+    
+    setToolTip(_files.join("\n"));
   }
   
   setText(l.join(" "));
-
-  emit signalSelectionChanged();
 }
 
 int FileButton::fileCount ()

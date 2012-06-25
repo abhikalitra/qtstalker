@@ -1,6 +1,6 @@
 #include "Global.h"
 
 QString g_session;
-QString g_localSettings;
-QString g_globalSettings;
-QMutex g_chartRefreshMutex;
+QString g_settings;
+QString g_title;
+Bars *g_symbol = 0;

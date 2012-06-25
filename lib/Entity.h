@@ -26,43 +26,33 @@
 #define ENTITY_HPP
 
 #include <QStringList>
-//#include <QMetaType>
 #include <QHash>
-#include <QMap>
+#include <QSettings>
+#include <QVariant>
 
-#include "Data.h"
+//#include "Setting.h"
 
 class Entity
 {
   public:
     Entity ();
-    void setType (int);
-    int type ();
+    ~Entity ();
+    void clear ();
+    void set (QString k, QVariant *);
+    QVariant * get (QString k);
+    void remove (QString);
+    QList<QString> keys ();
+    int size ();
+    int saveSettings (QSettings &);
+    int loadSettings (QSettings &);
+//    void order (QStringList &);
     void setName (QString);
     QString name ();
-    void data (QHash<QString, Data> &);
-    void remove (QString);
-    int set (QString, Data);
-    int set (QHash<QString, Data> &);
-    int setEntity (int, Entity &);
-    int toData (QString, Data &);
-    int toIndex (int, Entity &);
-    int toOffset (int, Entity &);
-    int highLow (double &, double &);
-    void dkeys (QList<QString> &);
-    void ekeys (QList<int> &);
-    int dkeyCount ();
-    int ekeyCount ();
-    void ekeyRange (int &, int &);
-    void merge (Entity &);
-
+    QHash<QString, QVariant *> settings ();
+    
   protected:
     QString _name;
-    int _type;
-    QHash<QString, Data> _data;
-    QMap<int, Entity> _bars;
+    QHash<QString, QVariant *> _settings;
 };
-
-//Q_DECLARE_METATYPE(Entity)
 
 #endif

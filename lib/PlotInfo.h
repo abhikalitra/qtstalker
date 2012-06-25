@@ -22,9 +22,8 @@
 #ifndef PLOT_INFO_HPP
 #define PLOT_INFO_HPP
 
-#include <QList>
 #include <QPainter>
-#include <QString>
+#include <QStringList>
 #include <QColor>
 #include <qwt_plot_item.h>
 #include <qwt_scale_map.h>
@@ -36,16 +35,12 @@ class PlotInfo : public QwtPlotItem
     ~PlotInfo ();
     void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const;
     int rtti () const;
-
-    void clearData ();
-    void setData (QString, QColor, double);
-    void setName (QString);
+    void setColor (QColor);
+    void setData (QStringList);
 
   protected:
-    QString _name;
-    QList<QString> _textList;
-    QList<QColor> _colorList;
-    QList<double> _valList;
+    QColor _color;
+    QStringList _text;
 };
 
 #endif

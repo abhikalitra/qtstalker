@@ -37,7 +37,7 @@ class ColorButton : public QPushButton
   Q_OBJECT
 
   signals:
-    void valueChanged();
+    void valueChanged(QColor);
 
   public:
     ColorButton (QWidget *, QColor);

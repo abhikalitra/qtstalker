@@ -22,41 +22,50 @@
 #ifndef CURVE_HPP
 #define CURVE_HPP
 
-#include <QStringList>
-#include <QHash>
-#include <QColor>
-#include <QPainter>
-#include <QList>
 #include <qwt_plot_curve.h>
-#include <qwt_interval_data.h>
-#include <qwt_text.h>
-#include <qwt_scale_map.h>
+#include <QMap>
 
-#include "Entity.h"
+//#include "Plugin.h"
+#include "Bar.h"
 
 class Curve : public QwtPlotCurve
 {
   public:
+    Curve (QString);
     Curve ();
     ~Curve ();
-    virtual int highLow (double &h, double &l);
-    virtual int highLowRange (int start, int end, double &h, double &l);
-    virtual int info (int, Entity &);
-    virtual int scalePoint (int, QColor &, double &);
-
-    QwtDoubleRect boundingRect () const;
+    void setPlugin (QString);
+    void draw (QPainter *, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &) const; //plugin
+    int info (int, QStringList &); // plugin
+    int scalePoint (int, QColor &, double &); // plugin
+    int highLowRange (int start, int end, double &h, double &l); // plugin
+    int fill (QString k1, QString k2, QString k3, QString k4, QColor);
     int rtti () const;
     void init ();
-    void setSettings (Entity &);
-    Entity & settings ();
-    void keys (QList<int> &);
-    void keyRange (int &startIndex, int &endIndex);
-    int setAllColor (QColor color);
+    void setType (int);
+    int type ();
+    void setLabel (QString);
+    QString label ();
+    void setPen (int);
+    int pen ();
+    void setStyle (int);
+    int style ();
+    void setColor (QColor);
+    QColor color ();
+    void setBar (int, Bar *);
+    Bar * bar (int);
+    int bars ();
 
   protected:
-    mutable Entity _settings;
-    double _high;
-    double _low;
+//    Plugin *_plugin;
+    QString _pluginString;
+    int _type;
+    QString _label;
+    int _pen;
+    int _style;
+    QString _name;
+    QColor _color;
+    QMap<int, Bar *> _bars;
 };
 
 #endif

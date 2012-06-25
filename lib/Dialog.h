@@ -52,13 +52,11 @@ class Dialog : public QDialog
     QFormLayout *_form;
     QPushButton *_okButton;
     QPushButton *_cancelButton;
+    QPushButton *_helpButton;
     QString _helpFile;
     QLabel *_message;
     QString _keySize;
     QString _keyPos;
-    QString _id;
-    Entity _settings;
-    int _saveFlag;
 };
 
 #endif

@@ -25,16 +25,15 @@
 #include <QLocale>
 #include <QtDebug>
 
-#include "Qtstalker.h"
-#include "../lib/qtstalker_defines.h"
-#include "Entity.h"
+#include "OTA.h"
+#include "../qtstalker_defines.h"
 
 int main(int argc, char *argv[])
 {
-  QString session("0");
-  QString asset;
+  QString session;
+  QString plugin;
   int loop;
-  for (loop = 0; loop <= argc; loop++)
+  for (loop = 1; loop <= argc; loop++)
   {
     QString s = argv[loop];
     if (s == "-session")
@@ -42,49 +41,35 @@ int main(int argc, char *argv[])
       loop++;
       if (loop > argc)
         break;
-      else
-      {
-        bool ok;
-        s = argv[loop];
-        s.toInt(&ok);
-        if (! ok)
-          break;
-        session = argv[loop];
-	continue;
-      }
+      
+      session = argv[loop];
+      continue;
     }
-
-    if (s == "-asset")
+    
+    if (s == "-plugin")
     {
       loop++;
       if (loop > argc)
         break;
-      else
-      {
-        asset = argv[loop];
-        continue;
-      }
+      
+      plugin = argv[loop];
+      continue;
     }
   }
 
   QApplication a(argc, argv);
-  QCoreApplication::setOrganizationName("QtStalker");
-  QCoreApplication::setApplicationName("QtStalker");
-  QTranslator tor( 0 );
+  QCoreApplication::setOrganizationName("OTA");
+  QCoreApplication::setApplicationName("OTA");
+  QTranslator tor(0);
 
-  QString i18nDir = QString("%1/qtstalker/i18n").arg(INSTALL_DATA_DIR);
-  QString i18nFilename = QString("qtstalker_%1").arg(QLocale::system().name());
+  QString i18nDir = QString("%1/OTA/i18n").arg(INSTALL_DATA_DIR);
+  QString i18nFilename = QString("ota_%1").arg(QLocale::system().name());
   tor.load(i18nFilename, i18nDir);
   a.installTranslator( &tor );
 
-  qRegisterMetaType<Entity>("Entity");
-//  qRegisterMetaType<AppCommand>("AppCommand");
-//  qRegisterMetaType<Data>("Data");
-//  qRegisterMetaType<QList<Data *> >("QList<Data *>");
-//  qRegisterMetaType<QList<Symbol> >("QList<Symbol>");
+//qDebug() << "OTA::main: using args" << session << plugin;
 
-  QtstalkerApp qtstalker(session, asset);
-  qtstalker.show();
+  OTA app(session, plugin);
+  app.show();
   return a.exec();
 }
-

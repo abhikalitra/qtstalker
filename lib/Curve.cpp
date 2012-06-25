@@ -21,11 +21,18 @@
 
 #include "Curve.h"
 #include "Strip.h"
-#include "CurveBar.h"
-#include "KeyCurveBar.h"
-#include "KeyCurveData.h"
+#include "Bar.h"
+#include "BarType.h"
+#include "PluginFactory.h"
+#include "PluginData.h"
 
 #include <QDebug>
+
+Curve::Curve (QString plugin)
+{
+  init();
+  setPlugin(plugin);
+}
 
 Curve::Curve ()
 {
@@ -34,158 +41,246 @@ Curve::Curve ()
 
 Curve::~Curve ()
 {
+  qDeleteAll(_bars);
 }
 
-void Curve::init ()
+void
+Curve::init ()
 {
-  _high = 0;
-  _low = 0;
+//  _plugin = 0;
   setZ(-1);
-
+  _type = -1;
+  _pen = 1;
+  _style = -1;
+  _color = QColor(Qt::red);
   setItemAttribute(QwtPlotItem::AutoScale, TRUE);
   setItemAttribute(QwtPlotItem::Legend, TRUE);
 }
 
-QwtDoubleRect Curve::boundingRect () const
+void
+Curve::setPlugin (QString plugin)
 {
-  QwtDoubleRect rect(0, 0, 0, 0);
-  rect.setBottom(_low);
-  rect.setTop(_high);
-  return rect;
+  if (plugin.isEmpty())
+    return;
+  
+  _pluginString = plugin;
+  
+//  PluginFactory fac;
+//  _plugin = fac.load(plugin);
 }
 
-int Curve::rtti () const
+void
+Curve::draw (QPainter *painter, const QwtScaleMap &xMap, const QwtScaleMap &yMap, const QRect &rect) const
+{
+//  if (! _plugin)
+//    return;
+
+  PluginFactory fac;
+  Plugin *plug = fac.load(_pluginString);
+  if (! plug)
+    return;
+
+  plug->draw(painter,
+                xMap,
+                yMap,
+                rect,
+                (void *) this);
+}
+
+int
+Curve::info (int index, QStringList &l)
+{
+//  if (! _plugin)
+//    return 0;
+
+  PluginFactory fac;
+  Plugin *plug = fac.load(_pluginString);
+  if (! plug)
+    return 0;
+
+  PluginData pd;
+  pd.command = QString("info");
+  pd.index = index;
+  pd.data = (void *) this;
+
+  int rc = plug->command(&pd);
+  if (rc)
+  {
+    for (int pos = 0; pos < pd.info.size(); pos++)
+      l << pd.info.at(pos);
+  }
+  
+  return rc;
+  
+//  return plug->info(index, l, (void *) this);
+}
+
+int
+Curve::scalePoint (int i, QColor &color, double &v)
+{
+//  if (! _plugin)
+//    return 0;
+
+  PluginFactory fac;
+  Plugin *plug = fac.load(_pluginString);
+  if (! plug)
+    return 0;
+
+  PluginData pd;
+  pd.command = QString("scalePoint");
+  pd.index = i;
+  pd.data = (void *) this;
+
+  int rc = plug->command(&pd);
+  if (rc)
+  {
+    color = pd.color;
+    v = pd.value;
+  }
+  
+  return rc;
+  
+//  return plug->scalePoint(i, color, v, (void *) this);
+}
+
+int
+Curve::highLowRange (int start, int end, double &h, double &l)
+{
+//  if (! _plugin)
+//    return 0;
+
+  PluginFactory fac;
+  Plugin *plug = fac.load(_pluginString);
+  if (! plug)
+    return 0;
+
+  PluginData pd;
+  pd.command = QString("highLowRange");
+  pd.start = start;
+  pd.end = end;
+  pd.data = (void *) this;
+
+  int rc = plug->command(&pd);
+  if (rc)
+  {
+    h = pd.high;
+    l = pd.low;
+  }
+  
+  return rc;
+  
+//  return plug->highLowRange(start, end, h, l, (void *) this);
+}
+
+int
+Curve::fill (QString k1, QString k2, QString k3, QString k4, QColor color)
+{
+//  if (! _plugin)
+//    return 0;
+
+  PluginFactory fac;
+  Plugin *plug = fac.load(_pluginString);
+  if (! plug)
+    return 0;
+
+  PluginData pd;
+  pd.command = QString("fill");
+  pd.key1 = k1;
+  pd.key2 = k2;
+  pd.key3 = k3;
+  pd.key4 = k4;
+  pd.color = color;
+  pd.data = (void *) this;
+
+  return plug->command(&pd);
+  
+//  return plug->fill((void *) this, k1, k2, k3, k4, color);
+}
+
+int
+Curve::rtti () const
 {
   return QwtPlotCurve::UserCurve;
 }
 
-int Curve::highLow (double &h, double &l)
+void
+Curve::setType (int d)
 {
-  h = _high;
-  l = _low;
-  return 0;
+  _type = d;
 }
 
-int Curve::highLowRange (int start, int end, double &h, double &l)
+int
+Curve::type ()
 {
-  int rc = 1;
-  int loop = start;
-  int flag = 0;
-  for (; loop < end; loop++)
-  {
-    CurveBar r;
-    if (_settings.toIndex(loop, r))
-      continue;
-
-    double th, tl;
-    if (r.highLow(th, tl))
-      continue;
-
-    rc = 0;
-
-    if (! flag)
-    {
-      h = th;
-      l = tl;
-      flag++;
-    }
-    else
-    {
-      if (th > h)
-        h = th;
-      if (tl < l)
-        l = tl;
-    }
-  }
-
-  return rc;
+  return _type;
 }
 
-int Curve::info (int index, Entity &data)
+void
+Curve::setLabel (QString d)
 {
-  Entity b;
-  if (_settings.toIndex(index, b))
-    return 1;
+  _label = d;
+}
+
+QString
+Curve::label ()
+{
+  return _label;
+}
+
+void
+Curve::setPen (int d)
+{
+  _pen = d;
+}
+
+int
+Curve::pen ()
+{
+  return _pen;
+}
+
+void
+Curve::setStyle (int d)
+{
+  _style = d;
+}
+
+int
+Curve::style ()
+{
+  return _style;
+}
+
+void
+Curve::setColor (QColor d)
+{
+  _color = d;
+}
+
+QColor
+Curve::color ()
+{
+  return _color;
+}
+
+void
+Curve::setBar (int k, Bar *d)
+{
+  Bar *b = _bars.value(k);
+  if (b)
+    delete b;
   
-  KeyCurveBar cbkeys;
-  Data value;
-  if (b.toData(cbkeys.indexToString(KeyCurveBar::_VALUE), value))
-    return 1;
-
-  KeyCurveData cdkeys;
-  Data label;
-  if (_settings.toData(cdkeys.indexToString(KeyCurveData::_LABEL), label))
-    return 1;
-
-  Strip strip;
-  QString s;
-  strip.strip(value.toDouble(), 4, s);
-  data.set(label.toString(), s);
-
-  return 0;
+  _bars.insert(k, d);
 }
 
-void Curve::keys (QList<int> &d)
+Bar *
+Curve::bar (int d)
 {
-  _settings.ekeys(d);
+  return _bars.value(d);
 }
 
-void Curve::keyRange (int &startIndex, int &endIndex)
+int
+Curve::bars ()
 {
-  startIndex = 0;
-  endIndex = 0;
-  _settings.ekeyRange(startIndex, endIndex);
-}
-
-int Curve::setAllColor (QColor color)
-{
-  KeyCurveBar cbkeys;
-  QList<int> keys;
-  _settings.ekeys(keys);
-  int loop = 0;
-  for (; loop < keys.size(); loop++)
-  {
-    Entity bar;
-    if (_settings.toIndex(keys.at(loop), bar))
-      continue;
-    
-    bar.set(cbkeys.indexToString(KeyCurveBar::_COLOR), Data(color));
-    _settings.setEntity(keys.at(loop), bar);
-  }
-
-  return 0;
-}
-
-void Curve::setSettings (Entity &d)
-{
-  _settings = d;
-
-  KeyCurveData keys;
-  Data tdi;
-  _settings.toData(keys.indexToString(KeyCurveData::_Z), tdi);
-  setZ(tdi.toInteger());
-}
-
-Entity & Curve::settings ()
-{
-  return _settings;
-}
-
-int Curve::scalePoint (int i, QColor &color, double &v)
-{
-  Entity bar;
-  if (_settings.toIndex(i, bar))
-    return 1;
-
-  KeyCurveBar keys;
-  Data td;
-  if (bar.toData(keys.indexToString(KeyCurveBar::_COLOR), td))
-    return 1;
-  color = td.toColor();
-  
-  if (bar.toData(keys.indexToString(KeyCurveBar::_VALUE), td))
-    return 1;
-  v = td.toDouble();
-
-  return 0;
+  return _bars.size();
 }

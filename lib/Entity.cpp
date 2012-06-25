@@ -20,206 +20,188 @@
  */
 
 #include "Entity.h"
-#include "TypeEntity.h"
+#include "Global.h"
+//#include "SettingType.h"
 
 #include <QtDebug>
 
 Entity::Entity ()
 {
-  _type = TypeEntity::_SETTING;
 }
 
-void Entity::setType (int d)
+Entity::~Entity ()
 {
-  _type = d;
+  qDeleteAll(_settings);
 }
 
-int Entity::type ()
+void
+Entity::clear ()
 {
-  return _type;
+  qDeleteAll(_settings);
+  _settings.clear();
 }
 
-void Entity::setName (QString d)
+void
+Entity::set (QString k, QVariant *d)
+{
+  QVariant *set = _settings.value(k);
+  if (set)
+    delete set;
+  
+  _settings.insert(k, d);
+}
+
+QVariant *
+Entity::get (QString k)
+{
+  if (_settings.contains(k))
+    return _settings.value(k);
+  
+  return 0;
+}
+
+void
+Entity::remove (QString d)
+{
+  QVariant *set = _settings.value(d);
+  if (! set)
+    return;
+  
+  _settings.remove(d);
+  
+  delete set;
+}
+
+QList<QString>
+Entity::keys ()
+{
+  return _settings.keys();
+}
+
+int
+Entity::size ()
+{
+  return _settings.size();
+}
+
+int
+Entity::saveSettings (QSettings &settings)
+{
+  QHashIterator<QString, QVariant *> it(_settings);
+  while (it.hasNext())
+  {
+    it.next();
+    QVariant *tset = it.value();
+
+    switch ((QVariant::Type) tset->type())
+    {
+      case QVariant::String:
+        settings.setValue(it.key(), tset->toString());
+        break;
+      case QVariant::StringList:
+        settings.setValue(it.key(), tset->toStringList());
+        break;
+      case QVariant::Int:
+        settings.setValue(it.key(), tset->toInt());
+        break;
+      case QVariant::Double:
+        settings.setValue(it.key(), tset->toDouble());
+        break;
+      case QVariant::Bool:
+        settings.setValue(it.key(), tset->toBool());
+        break;
+      case QVariant::DateTime:
+        settings.setValue(it.key(), tset->toDateTime());
+        break;
+      default:
+        return 0;
+        break;
+    }
+  }
+  
+  return 1;
+}
+
+int
+Entity::loadSettings (QSettings &settings)
+{
+  QHashIterator<QString, QVariant *> it(_settings);
+  while (it.hasNext())
+  {
+    it.next();
+    QVariant *tset = it.value();
+
+    switch ((QVariant::Type) tset->type())
+    {
+      case QVariant::String:
+        tset->setValue(settings.value(it.key()).toString());
+        break;
+      case QVariant::StringList:
+        tset->setValue(settings.value(it.key()).toStringList());
+        break;
+      case QVariant::Int:
+        tset->setValue(settings.value(it.key()).toInt());
+        break;
+      case QVariant::Double:
+        tset->setValue(settings.value(it.key()).toDouble());
+        break;
+      case QVariant::Bool:
+        tset->setValue(settings.value(it.key()).toBool());
+        break;
+      case QVariant::DateTime:
+        tset->setValue(settings.value(it.key()).toDateTime());
+        break;
+      default:
+        return 0;
+        break;
+    }
+  }
+  
+  return 1;
+}
+
+/*
+void
+Entity::order (QStringList &d)
+{
+  d.clear();
+  
+  QMap<int, QString> order;
+  QHashIterator<QString, Setting *> it(_settings);
+  while (it.hasNext())
+  {
+    it.next();
+    Setting *td = it.value();
+    
+    if (td->order() < 0)
+      continue;
+    
+    order.insert(td->order(), it.key());
+  }
+  
+  QMapIterator<int, QString> it2(order);
+  while (it2.hasNext())
+  {
+    it2.next();
+    d << it2.value();
+  }
+}
+*/
+
+void
+Entity::setName (QString d)
 {
   _name = d;
 }
 
-QString Entity::name ()
+QString
+Entity::name ()
 {
   return _name;
 }
 
-void Entity::remove (QString d)
+QHash<QString, QVariant *>
+Entity::settings ()
 {
-  _data.remove(d);
-}
-
-void Entity::data (QHash<QString, Data> &d)
-{
-  d = _data;
-}
-
-int Entity::set (QString k, Data d)
-{
-  _data.insert(k, d);
-  return 0;
-}
-
-int Entity::set (QHash<QString, Data> &d)
-{
-  _data = d;
-  return 0;
-}
-
-int Entity::setEntity (int k, Entity &d)
-{
-  _bars.insert(k, d);
-  return 0;
-}
-
-int Entity::toData (QString k, Data &d)
-{
-  int rc = 0;
-  
-  if (_data.contains(k))
-    d = _data.value(k);
-  else
-    rc++;
-  
-  return rc;
-}
-
-int Entity::toIndex (int k, Entity &d)
-{
-  int rc = 0;
-  
-  if (_bars.contains(k))
-    d = _bars.value(k);
-  else
-    rc++;
-  
-  return rc;
-}
-
-int Entity::toOffset (int k, Entity &d)
-{
-  if (k < 0)
-    return 1;
-  
-  int count = k;
-  QMapIterator<int, Entity> it(_bars);
-  it.toBack();
-  while (it.hasPrevious() && count > -1)
-  {
-    it.previous();
-    count--;
-  }
-  
-  if (! it.hasPrevious())
-    return 1;
-  
-  d = it.value();  
-  
-  return 0;
-}
-
-int Entity::highLow (double &h, double &l)
-{
-  int rc = 1;
-  int empty = 1;
-
-  QHashIterator<QString, Data> it(_data);
-  while (it.hasNext())
-  {
-    it.next();
-    Data td = it.value();
-    if (td.type() != TypeData::_DOUBLE)
-      continue;
-
-    double t = td.toDouble();
-    
-    if (empty)
-    {
-      empty = 0;
-      h = t;
-      l = t;
-      rc = 0;
-    }
-    else
-    {
-      if (t > h)
-        h = t;
-
-      if (t < l)
-        l = t;
-    }
-  }
-
-  return rc;
-}
-
-void Entity::ekeys (QList<int> &d)
-{
-  d = _bars.keys();
-}
-
-void Entity::dkeys (QList<QString> &d)
-{
-  d = _data.keys();
-}
-
-int Entity::dkeyCount ()
-{
-  return _data.size();
-}
-
-int Entity::ekeyCount ()
-{
-  return _bars.size();
-}
-
-void Entity::ekeyRange (int &start, int &end)
-{
-  start = -1;
-  end = -1;
-  
-  QMapIterator<int, Entity> it(_bars);
-  it.toFront();
-  if (it.hasNext())
-  {
-    it.next();
-    start = it.key();
-    end = start;
-  }
-  
-  it.toBack();
-  if (it.hasPrevious())
-  {
-    it.previous();
-    end = it.key();
-  }
-}
-
-void Entity::merge (Entity &osettings)
-{
-  QList<QString> keys;
-  dkeys(keys);
-  
-  int loop = 0;
-  for (; loop < keys.size(); loop++)
-  {
-    Data ntd;
-    toData(keys.at(loop), ntd);
-    if (ntd.toString().isEmpty())
-      continue;
-      
-    Data otd;
-    if (osettings.toData(keys.at(loop), otd))
-      continue;
-
-    if (ntd.set(otd.toString(), ntd.type()))
-      continue;
-      
-    set(keys.at(loop), ntd);
-  }
+  return _settings;
 }

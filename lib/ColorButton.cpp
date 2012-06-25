@@ -71,7 +71,7 @@ void ColorButton::colorDialog2 (QColor color)
 
   _changed = TRUE;
 
-  emit valueChanged();
+  emit valueChanged(_color);
 }
 
 void ColorButton::setColor (QColor c)
