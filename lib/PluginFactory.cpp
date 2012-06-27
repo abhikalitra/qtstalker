@@ -33,7 +33,7 @@ PluginFactory::load (QString d)
 {
   QString s = "/usr/local/lib/OTA/plugins/lib" + d;
 #if defined(Q_OS_MAC)  
-  s.append(".dynlib");
+  s.append(".dylib");
 #endif
 #if defined(Q_OS_UNIX)  
   s.append(".so");
@@ -62,7 +62,7 @@ PluginFactory::load (QString d)
 {
   QString s = "/usr/local/lib/OTA/plugins/lib" + d;
 #if defined(Q_OS_MAC)  
-  s.append(".dynlib");
+  s.append(".dylib");
 #endif
 #if defined(Q_OS_UNIX)  
   s.append(".so");
