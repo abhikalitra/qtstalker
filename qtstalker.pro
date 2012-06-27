@@ -58,11 +58,11 @@ exists(.qmake.cache) {
   message("Initial INCLUDEPATH=$$INCLUDEPATH")
   message("Initial LIBS=$$LIBS")
 
-  !exists(qtstalker.config) {
-    error("Missing configuration file qtstalker.config")
+  !exists(ota.config) {
+    error("Missing configuration file ota.config")
   } else {
-    message("Including qtstalker.config")
-    include(qtstalker.config)
+    message("Including ota.config")
+    include(ota.config)
   }
 
   TA_LIB_VERSION = $$system(ta-lib-config --version)
@@ -105,11 +105,52 @@ message("Operating system: $$MY_OS")
 
 TEMPLATE = subdirs
 
-# compile qtstalker lib
+# compile lib
 SUBDIRS += lib
 
 # compile app
 SUBDIRS += src
 
+# compile plugins
+SUBDIRS += plugins/ADX
+SUBDIRS += plugins/AROON
+SUBDIRS += plugins/BBANDS
+SUBDIRS += plugins/CCI
+SUBDIRS += plugins/CDL
+SUBDIRS += plugins/CSV
+SUBDIRS += plugins/CurveHistogram
+SUBDIRS += plugins/CurveLine
+SUBDIRS += plugins/CurveOHLC
+SUBDIRS += plugins/DBStock
+SUBDIRS += plugins/DBSymbol
+SUBDIRS += plugins/Group
+SUBDIRS += plugins/Indicator
+SUBDIRS += plugins/MACD
+SUBDIRS += plugins/MarkerBuy
+SUBDIRS += plugins/MarkerHLine
+SUBDIRS += plugins/MarkerRetracement
+SUBDIRS += plugins/MarkerSell
+SUBDIRS += plugins/MarkerText
+SUBDIRS += plugins/MarkerTLine
+SUBDIRS += plugins/MarkerVLine
+SUBDIRS += plugins/MOM
+SUBDIRS += plugins/OHLC
+SUBDIRS += plugins/ROC
+SUBDIRS += plugins/RSI
+SUBDIRS += plugins/SAR
+#SUBDIRS += plugins/Script
+#SUBDIRS += plugins/SCRIPT_ADD
+#SUBDIRS += plugins/SCRIPT_DIV
+#SUBDIRS += plugins/SCRIPT_MA
+#SUBDIRS += plugins/SCRIPT_MULT
+#SUBDIRS += plugins/SCRIPT_PLOT_HISTOGRAM
+#SUBDIRS += plugins/SCRIPT_PLOT_LINE
+#SUBDIRS += plugins/SCRIPT_PLOT_OHLC
+#SUBDIRS += plugins/SCRIPT_SUB
+SUBDIRS += plugins/STOCHF
+SUBDIRS += plugins/STOCHS
+SUBDIRS += plugins/Volume
+SUBDIRS += plugins/YahooHistory
+
 # install docs and i18n
-SUBDIRS += docs
+#SUBDIRS += docs
