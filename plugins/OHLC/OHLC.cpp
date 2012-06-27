@@ -29,7 +29,7 @@
 #include "CurveOHLCType.h"
 #include "Global.h"
 #include "OHLCDialog.h"
-#include "PluginType.h"
+
 
 
 int

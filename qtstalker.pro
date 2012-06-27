@@ -58,11 +58,11 @@ exists(.qmake.cache) {
   message("Initial INCLUDEPATH=$$INCLUDEPATH")
   message("Initial LIBS=$$LIBS")
 
-  !exists(ota.config) {
-    error("Missing configuration file ota.config")
+  !exists(qtstalker.config) {
+    error("Missing configuration file qtstalker.config")
   } else {
-    message("Including ota.config")
-    include(ota.config)
+    message("Including qtstalker.config")
+    include(qtstalker.config)
   }
 
   TA_LIB_VERSION = $$system(ta-lib-config --version)

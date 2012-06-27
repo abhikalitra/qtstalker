@@ -23,7 +23,7 @@
 
 #include "Indicator.h"
 #include "PlotWidget.h"
-#include "PluginType.h"
+
 
 int
 Indicator::command (PluginData *pd)

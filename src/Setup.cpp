@@ -23,7 +23,6 @@
 #include "Global.h"
 #include "qtstalker_defines.h"
 #include "PluginFactory.h"
-#include "PluginType.h"
 
 #include <QtDebug>
 #include <QDir>
