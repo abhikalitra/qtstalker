@@ -63,7 +63,6 @@ class GUIWidget : public Widget
     void deleteGroup ();
     void saveGroup ();
     void addButtonPressed ();
-    void addButtonPressed2 (QString, QString, QStringList);
     void deleteButtonPressed ();
     void search ();
     void buttonStatus ();

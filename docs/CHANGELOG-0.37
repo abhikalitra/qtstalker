@@ -1354,4 +1354,34 @@
            format. These changes allow for reducing commands and faster execution overall.
 
 
+************************************************************************************************************
+
+20120627:  REALLY REALLY REALLY REALLY BIG CHANGES
+
+           Up until recently this project was heading down a path which leads to becoming giant, bloated,
+           complex multi-threaded monster that no one developer can grasp. Doomed to stagnate once the
+           core team has moved on. Instead I chose to approach the code from the opposite side.
+           Revisit the tried and true method of chaining together simple tools to create new ones.
+
+           All functionality is derived from plugins. One instance of qtstalker runs one plugin. Thats it.
+           No threading, each instance running in its own space happily. The qtstalker app is reduced to an empty
+           window that can be filled by anything you want. All the app can do is load a plugin. It is up to the
+           plugin to provide the functionality. The app just provides a window to display content by the plugin.
+
+           Each instance of the app we refer to as a 'session'. Each session keeps track of its own settings etc.
+           We have three choices. Create a new session, load an existing one or change the plugin running in the
+           current one. 
            
+           This gives us the ultimate in flexibility. We have a small library of core functions that provides
+           communication between plugins and the app window and thats it. Plugins call other plugins to do tasks.
+           Any functionality is just added as a new plugin. Anyone can add new functionality without having
+           to understand how to integrate it. Just write the plugin, drop it into the plugin directory and it
+           now becomes ready to use. All the developer needs to know is a few simple setup parameters within the
+           plugin code.
+
+           A basic set of buggy plugins are in CVS now. A few indicators, group management, yahoo quotes
+           and csv import plugins are currently available.
+
+           No docs until the current plugins and session management are deemed stable. Then we can proceed to
+           port the plugins from the old codebase.
+
