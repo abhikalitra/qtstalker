@@ -31,8 +31,9 @@
 #include <QPushButton>
 #include <QColor>
 #include <QWidget>
+#include "defs.h"
 
-class ColorButton : public QPushButton
+class QTSTALKER_SHARED_EXPORT ColorButton : public QPushButton
 {
   Q_OBJECT
 

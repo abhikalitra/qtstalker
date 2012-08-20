@@ -32,8 +32,9 @@
 #include <QMouseEvent>
 #include <QColor>
 #include <QPoint>
+#include "defs.h"
 
-class PlotPicker : public QwtPlotPicker
+class QTSTALKER_SHARED_EXPORT PlotPicker : public QwtPlotPicker
 {
   Q_OBJECT
 

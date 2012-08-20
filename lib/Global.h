@@ -4,9 +4,11 @@
 #include <QString>
 #include "Bars.h"
 
-extern QString g_session;
-extern QString g_settings;
-extern QString g_title;
-extern Bars *g_symbol;
+QTSTALKER_SHARED_EXPORT extern QString g_session;
+QTSTALKER_SHARED_EXPORT extern QString g_settings;
+QTSTALKER_SHARED_EXPORT extern QString g_title;
+QTSTALKER_SHARED_EXPORT extern Bars *g_symbol;
+
+#define MAX_SIZE 1024
 
 #endif

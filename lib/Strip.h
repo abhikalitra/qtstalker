@@ -23,8 +23,9 @@
 #define STRIP_HPP
 
 #include <QString>
+#include "defs.h"
 
-class Strip
+class QTSTALKER_SHARED_EXPORT Strip
 {
   public:
     Strip ();

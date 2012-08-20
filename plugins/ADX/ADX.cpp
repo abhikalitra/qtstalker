@@ -28,8 +28,6 @@
 #include "ADXDialog.h"
 #include "BarType.h"
 
-
-
 int
 ADX::command (PluginData *pd)
 {
@@ -37,7 +35,7 @@ ADX::command (PluginData *pd)
 
   QStringList cl;
   cl << "type" << "dialog" << "runIndicator" << "settings";
-  
+
   switch (cl.indexOf(pd->command))
   {
     case 0: // type
@@ -56,7 +54,7 @@ ADX::command (PluginData *pd)
     default:
       break;
   }
-  
+
   return rc;
 }
 
@@ -68,17 +66,17 @@ ADX::dialog (PluginData *pd)
     qDebug() << "ADX::dialog: invalid parent";
     return 0;
   }
-  
+
   if (! pd->settings)
   {
     qDebug() << "ADX::dialog: invalid settings";
     return 0;
   }
-  
+
   ADXDialog *dialog = new ADXDialog(pd->dialogParent);
   dialog->setGUI(pd->settings);
   pd->dialog = dialog;
-  
+
   return 1;
 }
 
@@ -92,36 +90,36 @@ ADX::run (PluginData *pd)
   QVariant *period = pd->settings->get(QString("period"));
   if (! period)
     return 0;
-  
+
   // MDI
   QVariant *show = pd->settings->get(QString("mdiShow"));
   if (! show)
     return 0;
-  
+
   if (show->toBool())
   {
     QVariant *var = pd->settings->get(QString("mdiColor"));
     if (! var)
       return 0;
     QColor color(var->toString());
-  
+
     QVariant *label = pd->settings->get(QString("mdiLabel"));
     if (! label)
       return 0;
-  
+
     QVariant *style = pd->settings->get(QString("mdiStyle"));
     if (! label)
       return 0;
-  
+
     QVariant *width = pd->settings->get(QString("mdiWidth"));
     if (! width)
       return 0;
-    
+
     if (! getADX(0,
                  period->toInt(),
                  label->toString()))
       return 0;
-  
+
     CurveLineType clt;
     Curve *c = new Curve(QString("CurveLine"));
     c->setColor(color);
@@ -131,36 +129,36 @@ ADX::run (PluginData *pd)
     c->setPen(width->toInt());
     pd->curves << c;
   }
-  
+
   // PDI
   show = pd->settings->get(QString("pdiShow"));
   if (! show)
     return 0;
-  
+
   if (show->toBool())
   {
     QVariant *var = pd->settings->get(QString("pdiColor"));
     if (! var)
       return 0;
     QColor color(var->toString());
-  
+
     QVariant *label = pd->settings->get(QString("pdiLabel"));
     if (! label)
       return 0;
-  
+
     QVariant *style = pd->settings->get(QString("pdiStyle"));
     if (! label)
       return 0;
-  
+
     QVariant *width = pd->settings->get(QString("pdiWidth"));
     if (! width)
       return 0;
-    
+
     if (! getADX(1,
                  period->toInt(),
                  label->toString()))
       return 0;
-  
+
     CurveLineType clt;
     Curve *c = new Curve(QString("CurveLine"));
     c->setColor(color);
@@ -170,27 +168,27 @@ ADX::run (PluginData *pd)
     c->setPen(width->toInt());
     pd->curves << c;
   }
-  
+
   // ADX
   show = pd->settings->get(QString("adxShow"));
   if (! show)
     return 0;
-  
+
   if (show->toBool())
   {
     QVariant *var = pd->settings->get(QString("adxColor"));
     if (! var)
       return 0;
     QColor color(var->toString());
-  
+
     QVariant *label = pd->settings->get(QString("adxLabel"));
     if (! label)
       return 0;
-  
+
     QVariant *style = pd->settings->get(QString("adxStyle"));
     if (! label)
       return 0;
-  
+
     QVariant *width = pd->settings->get(QString("adxWidth"));
     if (! width)
       return 0;
@@ -199,7 +197,7 @@ ADX::run (PluginData *pd)
                  period->toInt(),
                  label->toString()))
       return 0;
-  
+
     CurveLineType clt;
     Curve *c = new Curve(QString("CurveLine"));
     c->setColor(color);
@@ -209,27 +207,27 @@ ADX::run (PluginData *pd)
     c->setPen(width->toInt());
     pd->curves << c;
   }
-  
+
   // ADXR
   show = pd->settings->get(QString("adxrShow"));
   if (! show)
     return 0;
-  
+
   if (show->toBool())
   {
     QVariant *var = pd->settings->get(QString("adxrColor"));
     if (! var)
       return 0;
     QColor color(var->toString());
-  
+
     QVariant *label = pd->settings->get(QString("adxrLabel"));
     if (! label)
       return 0;
-  
+
     QVariant *style = pd->settings->get(QString("adxrStyle"));
     if (! label)
       return 0;
-  
+
     QVariant *width = pd->settings->get(QString("adxrWidth"));
     if (! width)
       return 0;
@@ -238,7 +236,7 @@ ADX::run (PluginData *pd)
                  period->toInt(),
                  label->toString()))
       return 0;
-  
+
     CurveLineType clt;
     Curve *c = new Curve(QString("CurveLine"));
     c->setColor(color);
@@ -248,7 +246,7 @@ ADX::run (PluginData *pd)
     c->setPen(width->toInt());
     pd->curves << c;
   }
-  
+
   return 1;
 }
 
@@ -257,18 +255,21 @@ ADX::getADX (int type, int period, QString key)
 {
   if (! g_symbol)
     return 0;
-  
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug() << "ADX::ADX: error on TA_Initialize";
 
   QList<int> keys = g_symbol->keys();
 
-  int size = keys.size();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Real out[size];
+  const int size = keys.size();
+
+  if (size ==0) return 0;
+
+  TA_Real high[MAX_SIZE];
+  TA_Real low[MAX_SIZE];
+  TA_Real close[MAX_SIZE];
+  TA_Real out[MAX_SIZE];
   TA_Integer outBeg;
   TA_Integer outNb;
 
@@ -276,24 +277,24 @@ ADX::getADX (int type, int period, QString key)
   QString highKey = bt.indexToString(BarType::_HIGH);
   QString lowKey = bt.indexToString(BarType::_LOW);
   QString closeKey = bt.indexToString(BarType::_CLOSE);
-  
+
   int dpos = 0;
   for (int kpos = 0; kpos < keys.size(); kpos++)
   {
     CBar *bar = g_symbol->bar(keys.at(kpos));
-    
+
     double h;
     if (! bar->get(highKey, h))
       continue;
-    
+
     double l;
     if (! bar->get(lowKey, l))
       continue;
-    
+
     double c;
     if (! bar->get(closeKey, c))
       continue;
-    
+
     high[dpos] = (TA_Real) h;
     low[dpos] = (TA_Real) l;
     close[dpos] = (TA_Real) c;
@@ -318,7 +319,7 @@ ADX::getADX (int type, int period, QString key)
       return 0;
       break;
   }
-      
+
   if (rc != TA_SUCCESS)
   {
     qDebug() << "ADX::getADX: TA-Lib error" << rc;
@@ -334,7 +335,7 @@ ADX::getADX (int type, int period, QString key)
     keyLoop--;
     outLoop--;
   }
-  
+
   return 1;
 }
 
@@ -353,27 +354,27 @@ ADX::settings (PluginData *pd)
   command->set(QString("mdiStyle"), new QVariant(clt.indexToString(CurveLineType::_SOLID)));
   command->set(QString("mdiWidth"), new QVariant(1));
   command->set(QString("mdiShow"), new QVariant(TRUE));
-  
+
   command->set(QString("pdiColor"), new QVariant(QString("green")));
   command->set(QString("pdiLabel"), new QVariant(QString("PDI")));
   command->set(QString("pdiStyle"), new QVariant(clt.indexToString(CurveLineType::_SOLID)));
   command->set(QString("pdiWidth"), new QVariant(1));
   command->set(QString("pdiShow"), new QVariant(TRUE));
-  
+
   command->set(QString("adxColor"), new QVariant(QString("yellow")));
   command->set(QString("adxLabel"), new QVariant(QString("ADX")));
   command->set(QString("adxStyle"), new QVariant(clt.indexToString(CurveLineType::_SOLID)));
   command->set(QString("adxWidth"), new QVariant(1));
   command->set(QString("adxShow"), new QVariant(TRUE));
-  
+
   command->set(QString("adxrColor"), new QVariant(QString("blue")));
   command->set(QString("adxrLabel"), new QVariant(QString("ADXR")));
   command->set(QString("adxrStyle"), new QVariant(clt.indexToString(CurveLineType::_SOLID)));
   command->set(QString("adxrWidth"), new QVariant(1));
   command->set(QString("adxrShow"), new QVariant(TRUE));
-  
+
   pd->settings = command;
-  
+
   return 1;
 }
 

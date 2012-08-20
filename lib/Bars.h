@@ -30,8 +30,9 @@
 #include <QMap>
 
 #include "CBar.h"
+#include "defs.h"
 
-class Bars
+class QTSTALKER_SHARED_EXPORT Bars
 {
   public:
     Bars ();

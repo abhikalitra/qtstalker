@@ -30,6 +30,9 @@
 
 int main(int argc, char *argv[])
 {
+
+    qDebug() << "Starting OTA...";
+
   QString session;
   QString plugin;
   int loop;
@@ -43,6 +46,8 @@ int main(int argc, char *argv[])
         break;
       
       session = argv[loop];
+      qDebug() << "Session:" << session;
+
       continue;
     }
     
@@ -53,6 +58,7 @@ int main(int argc, char *argv[])
         break;
       
       plugin = argv[loop];
+      qDebug() << "Plugin:" << plugin;
       continue;
     }
   }
@@ -61,6 +67,11 @@ int main(int argc, char *argv[])
   QCoreApplication::setOrganizationName("OTA");
   QCoreApplication::setApplicationName("OTA");
   QTranslator tor(0);
+
+  qDebug() << "Install INSTALL_DATA_DIR:" << INSTALL_DATA_DIR;
+  qDebug() << "Install INSTALL_BIN_DIR:" << INSTALL_BIN_DIR;
+  qDebug() << "Install INSTALL_DOCS_DIR:" << INSTALL_DOCS_DIR;
+  qDebug() << "Install INSTALL_LIB_DIR:" << INSTALL_LIB_DIR;
 
   QString i18nDir = QString("%1/OTA/i18n").arg(INSTALL_DATA_DIR);
   QString i18nFilename = QString("ota_%1").arg(QLocale::system().name());

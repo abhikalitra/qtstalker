@@ -26,8 +26,9 @@
 #include <qwt_plot.h>
 
 #include "PluginData.h"
+#include "defs.h"
 
-class Plugin
+class QTSTALKER_SHARED_EXPORT Plugin
 {
   public:
     virtual ~Plugin () {}

@@ -27,8 +27,9 @@
 
 #include <QStringList>
 #include <QDateTime>
+#include "defs.h"
 
-class DateRange
+class QTSTALKER_SHARED_EXPORT DateRange
 {
   public:
     enum Key

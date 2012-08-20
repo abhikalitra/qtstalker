@@ -236,11 +236,10 @@ MACD::getMACD (QString inKey, int fp, int sp, int fma, int sma, int sigp,
 
   QList<int> keys = g_symbol->keys();
 
-  int size = keys.size();
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Real out3[size];
+  TA_Real input[MAX_SIZE];
+  TA_Real out[MAX_SIZE];
+  TA_Real out2[MAX_SIZE];
+  TA_Real out3[MAX_SIZE];
   TA_Integer outBeg;
   TA_Integer outNb;
 

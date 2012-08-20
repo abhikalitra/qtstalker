@@ -31,8 +31,9 @@
 //#include "PluginMarker.h"
 //#include "PluginIndicator.h"
 //#include "PluginScript.h"
+#include "defs.h"
 
-class PluginFactory
+class QTSTALKER_SHARED_EXPORT PluginFactory
 {
   public:
     PluginFactory ();

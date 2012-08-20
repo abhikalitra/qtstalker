@@ -29,9 +29,9 @@
 #include <qwt_scale_map.h>
 
 #include "Entity.h"
+#include "defs.h"
 
-
-class Marker : public QwtPlotItem
+class QTSTALKER_SHARED_EXPORT Marker : public QwtPlotItem
 {
   public:
     Marker (QString);

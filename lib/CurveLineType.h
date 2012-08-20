@@ -26,8 +26,9 @@
 #define CURVE_LINE_TYPE_HPP
 
 #include <QStringList>
+#include "defs.h"
 
-class CurveLineType
+class QTSTALKER_SHARED_EXPORT CurveLineType
 {
   public:
     enum Key

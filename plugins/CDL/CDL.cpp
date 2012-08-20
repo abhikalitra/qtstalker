@@ -218,12 +218,11 @@ CDL::getCDL (int method, double pen, QString okey)
 
   QList<int> keys = g_symbol->keys();
 
-  int size = keys.size();
-  TA_Real open[size];
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real close[size];
-  TA_Integer iout[size];
+  TA_Real open[MAX_SIZE];
+  TA_Real high[MAX_SIZE];
+  TA_Real low[MAX_SIZE];
+  TA_Real close[MAX_SIZE];
+  TA_Integer iout[MAX_SIZE];
   TA_Integer outBeg;
   TA_Integer outNb;
 

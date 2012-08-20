@@ -24,8 +24,9 @@
 
 #include <QPushButton>
 #include <QStringList>
+#include "defs.h"
 
-class FileButton : public QPushButton
+class QTSTALKER_SHARED_EXPORT FileButton : public QPushButton
 {
   Q_OBJECT
 

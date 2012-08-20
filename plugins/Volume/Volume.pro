@@ -1,3 +1,5 @@
+include(../../plugin.pri)
+
 TEMPLATE = lib
 CONFIG += plugin
 INCLUDEPATH += ../../lib

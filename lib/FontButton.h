@@ -30,8 +30,9 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QFont>
+#include "defs.h"
 
-class FontButton : public QPushButton
+class QTSTALKER_SHARED_EXPORT FontButton : public QPushButton
 {
   Q_OBJECT
 

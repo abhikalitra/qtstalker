@@ -27,8 +27,9 @@
 
 //#include "Plugin.h"
 #include "Bar.h"
+#include "defs.h"
 
-class Curve : public QwtPlotCurve
+class QTSTALKER_SHARED_EXPORT Curve : public QwtPlotCurve
 {
   public:
     Curve (QString);

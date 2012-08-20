@@ -31,9 +31,9 @@
 #include <qwt_scale_draw.h>
 
 #include "Bars.h"
+#include "defs.h"
 
-
-class PlotDateScaleDraw : public QwtScaleDraw
+class QTSTALKER_SHARED_EXPORT PlotDateScaleDraw : public QwtScaleDraw
 {
   public:
     PlotDateScaleDraw ();

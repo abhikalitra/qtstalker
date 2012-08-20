@@ -28,8 +28,9 @@
 #include <QDateTime>
 #include <QColor>
 #include <QString>
+#include "defs.h"
 
-class Bar
+class QTSTALKER_SHARED_EXPORT Bar
 {
   public:
     Bar ();

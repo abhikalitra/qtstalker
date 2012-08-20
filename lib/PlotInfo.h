@@ -27,8 +27,9 @@
 #include <QColor>
 #include <qwt_plot_item.h>
 #include <qwt_scale_map.h>
+#include "defs.h"
 
-class PlotInfo : public QwtPlotItem
+class QTSTALKER_SHARED_EXPORT PlotInfo : public QwtPlotItem
 {
   public:
     PlotInfo ();

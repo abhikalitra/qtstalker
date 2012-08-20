@@ -1,4 +1,5 @@
 #include "Global.h"
+#include "defs.h"
 
 QString g_session;
 QString g_settings;

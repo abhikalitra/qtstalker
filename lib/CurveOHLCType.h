@@ -26,8 +26,9 @@
 #define CURVE_OHLC_TYPE_HPP
 
 #include <QStringList>
+#include "defs.h"
 
-class CurveOHLCType
+class QTSTALKER_SHARED_EXPORT  CurveOHLCType
 {
   public:
     enum Key

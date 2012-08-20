@@ -28,8 +28,9 @@
 
 #include <qwt_picker_machine.h>
 #include <QEvent>
+#include "defs.h"
 
-class PickerMachine: public QwtPickerMachine
+class QTSTALKER_SHARED_EXPORT PickerMachine: public QwtPickerMachine
 {
   public:
     PickerMachine ();

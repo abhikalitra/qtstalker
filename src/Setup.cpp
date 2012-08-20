@@ -29,6 +29,7 @@
 #include <QStringList>
 #include <QSettings>
 #include <QPluginLoader>
+#include <QFileDialog>
 
 Setup::Setup ()
 {
@@ -95,23 +96,36 @@ void Setup::scanPlugins ()
   
   QHash<QString, QStringList> h;
 
+
   QDir dir = QDir(settings.value("plugin_directory").toString());
-     
+
+  qDebug() << "plugin dir:" << settings.value("plugin_directory").toString();
+
   foreach (QString fileName, dir.entryList(QDir::Files))
   {
+
+    qDebug() <<  "plugin:" << fileName;
+
+#if defined(Q_OS_WIN32)
+    QString name(fileName);
+    name.truncate(name.lastIndexOf("."));
+#else
     QString name = fileName.right(fileName.length() - 3);
-    name.truncate(name.lastIndexOf(".", -1));
-    
+    name.truncate(name.lastIndexOf("."));
+#endif
+
+    qDebug() <<  "plugin:" << name << "," << fileName ;
+
     QPluginLoader loader(dir.absoluteFilePath(fileName));
     QObject *plugin = loader.instance();
-    if (! plugin)
+    if (!plugin)
     {
       qDebug() << "Setup::scanPlugins:" << loader.errorString();
       continue;
     }
     
     Plugin *plug = qobject_cast<Plugin *>(plugin);
-    if (! plug)
+    if (!plug)
     {
       qDebug() << "Setup::scanPlugins:load: error casting Plugin";
       continue;
@@ -120,12 +134,15 @@ void Setup::scanPlugins ()
     PluginData pd;
     pd.command = QString("type");
     
-    if (! plug->command(&pd))
+    if (!plug->command(&pd))
       continue;
     
     QStringList l = h.value(pd.type);
     l << name;
     h.insert(pd.type, l);
+
+    qDebug() << "scan complete for" << name << "," << pd.type;
+
   }     
 
   settings.beginGroup("plugins");
@@ -137,4 +154,6 @@ void Setup::scanPlugins ()
     QStringList l = it.value();
     settings.setValue(it.key(), l);
   }
+
+  qDebug() << "Scan plugins done..";
 }

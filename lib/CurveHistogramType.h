@@ -26,8 +26,9 @@
 #define CURVE_HISTOGRAM_TYPE_HPP
 
 #include <QStringList>
+#include "defs.h"
 
-class CurveHistogramType
+class QTSTALKER_SHARED_EXPORT CurveHistogramType
 {
   public:
     enum Key

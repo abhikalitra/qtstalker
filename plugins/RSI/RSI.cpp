@@ -207,9 +207,8 @@ RSI::getRSI (QString ikey, int period, QString okey)
 
   QList<int> keys = g_symbol->keys();
 
-  int size = keys.size();
-  TA_Real input[size];
-  TA_Real out[size];
+  TA_Real input[MAX_SIZE];
+  TA_Real out[MAX_SIZE];
   TA_Integer outBeg;
   TA_Integer outNb;
 
@@ -304,9 +303,8 @@ RSI::getMA (QString inKey, QString outKey, int type, int period)
 
   QList<int> keys = g_symbol->keys();
 
-  int size = keys.size();
-  TA_Real input[size];
-  TA_Real out[size];
+  TA_Real input[MAX_SIZE];
+  TA_Real out[MAX_SIZE];
   TA_Integer outBeg;
   TA_Integer outNb;
 

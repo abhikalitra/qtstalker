@@ -26,8 +26,9 @@
 #define BAR_TYPE_HPP
 
 #include <QStringList>
+#include "defs.h"
 
-class BarType
+class QTSTALKER_SHARED_EXPORT BarType
 {
   public:
     enum Key

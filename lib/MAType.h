@@ -26,8 +26,9 @@
 #define MA_TYPE_HPP
 
 #include <QStringList>
+#include "defs.h"
 
-class MAType
+class QTSTALKER_SHARED_EXPORT MAType
 {
   public:
     enum Key

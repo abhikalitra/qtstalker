@@ -23,6 +23,9 @@
 
 #include <QtDebug>
 #include <QPluginLoader>
+#include <QSettings>
+#include <QDir>
+#include "Global.h"
 
 PluginFactory::PluginFactory ()
 {
@@ -31,7 +34,22 @@ PluginFactory::PluginFactory ()
 Plugin *
 PluginFactory::load (QString d)
 {
-  QString s = "/usr/local/lib/OTA/plugins/lib" + d;
+
+    qDebug() << "PluginFactory::loading" << d;
+    QSettings settings(g_settings);
+    QString plugindir = settings.value("plugin_directory").toString();
+    QDir plugins(plugindir);
+
+    if (!plugins.exists()) {
+        qDebug() << "Cant locate plugin dir:" << plugindir;
+        return 0;
+    }
+
+    QString pluginpath = plugins.filePath(d);
+
+#if defined(Q_OS_WIN32)
+    pluginpath.append(".dll");
+#endif
 #if defined(Q_OS_MAC)  
   s.append(".dylib");
 #endif
@@ -39,14 +57,17 @@ PluginFactory::load (QString d)
   s.append(".so");
 #endif
   
-//qDebug() << "PluginFactory::loadDialog: loading" << s;
+  qDebug() << "PluginFactory::loading" << pluginpath;
   
-  QPluginLoader pluginLoader(s);
+  QPluginLoader pluginLoader(pluginpath);
   QObject *tp = pluginLoader.instance();
   if (! tp)
   {
     qDebug() << "PluginFactory::load:" << pluginLoader.errorString();
     return 0;
+  }
+  else {
+      qDebug() << "Loaded ok";
   }
 
   Plugin *plugin = qobject_cast<Plugin *>(tp);

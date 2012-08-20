@@ -53,8 +53,8 @@ CVS $Revision: 1.1 $ $Date: 2010/11/07 23:25:04 $
 
 #include <QString>
 #include <QProcess>
-
-class Doc
+#include "defs.h"
+class QTSTALKER_SHARED_EXPORT Doc
 {
   public:
     Doc ();

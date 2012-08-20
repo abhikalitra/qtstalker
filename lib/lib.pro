@@ -2,6 +2,13 @@
 # SOURCE
 #####################################################
 
+include (../config.pri)
+
+LIBS += -lqwt5
+
+//DEFINES += QTSTALKER_LIBRARY
+
+HEADERS += defs.h
 HEADERS += Bar.h
 SOURCES += Bar.cpp
 HEADERS += Bars.h
@@ -71,26 +78,27 @@ SOURCES += Widget.cpp
 
 TEMPLATE = lib
 
-CONFIG += thread warn_on debug
+CONFIG += thread warn_on
 #CONFIG(debug, debug|release): DEFINES += DEBUG _DEBUG
 
-QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
+!win32 {
+    QMAKE_CXXFLAGS += -rdynamic -ffast-math -O2
+}
 
 TARGET = OTA
 
-VERSION = 0.1.0
+#VERSION = 0.1.0
 
-message("Using INCLUDEPATH=$$INCLUDEPATH")
-message("Using LIBS=$$LIBS")
+message("lib Using INCLUDEPATH=$$INCLUDEPATH")
+message("lib Using LIBS=$$LIBS")
 
 target.path = "$${INSTALL_LIB_DIR}"
 INSTALLS += target
 
-QMAKE_DISTCLEAN += qtstalker_defines.h
-QMAKE_DISTCLEAN += ../.qmake.cache
-
 MOC_DIR += build
 OBJECTS_DIR += build
+
+DEFINES += QTSTALKER_LIBRARY QWT_DLL
 
 QT += core
 QT += gui

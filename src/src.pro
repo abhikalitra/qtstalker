@@ -1,3 +1,5 @@
+include (../config.pri)
+
 ######################################################
 # FILES
 #####################################################
@@ -16,19 +18,21 @@ HEADERS += Setup.h
 
 TEMPLATE = app
 
-CONFIG += qt thread warn_on debug
+CONFIG += qt thread warn_on
 #CONFIG(debug, debug|release): DEFINES += DEBUG _DEBUG
 
+!win32 {
 QMAKE_CXXFLAGS += -rdynamic -ffast-math
+}
 
 INCLUDEPATH += ../lib
 
-LIBS += -L../lib -lOTA
+LIBS += -L$${OTA_LIB1} -lOTA
 
 TARGET = ota
 
-message("Using INCLUDEPATH=$$INCLUDEPATH")
-message("Using LIBS=$$LIBS")
+message("src Using INCLUDEPATH=$$INCLUDEPATH")
+message("src Using LIBS=$$LIBS")
 
 target.path = "$${INSTALL_BIN_DIR}"
 INSTALLS += target

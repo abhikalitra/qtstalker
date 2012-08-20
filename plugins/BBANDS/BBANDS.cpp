@@ -30,7 +30,6 @@
 #include "Global.h"
 #include "BBANDSDialog.h"
 
-
 int
 BBANDS::command (PluginData *pd)
 {
@@ -38,7 +37,7 @@ BBANDS::command (PluginData *pd)
 
   QStringList cl;
   cl << "type" << "dialog" << "runIndicator" << "settings";
-  
+
   switch (cl.indexOf(pd->command))
   {
     case 0: // type
@@ -57,7 +56,7 @@ BBANDS::command (PluginData *pd)
     default:
       break;
   }
-  
+
   return rc;
 }
 
@@ -69,17 +68,17 @@ BBANDS::dialog (PluginData *pd)
     qDebug() << "BBANDS::dialog: invalid parent";
     return 0;
   }
-  
+
   if (! pd->settings)
   {
     qDebug() << "BBANDS::dialog: invalid settings";
     return 0;
   }
-  
+
   BBANDSDialog *dialog = new BBANDSDialog(pd->dialogParent);
   dialog->setGUI(pd->settings);
   pd->dialog = dialog;
-  
+
   return 1;
 }
 
@@ -88,49 +87,49 @@ BBANDS::run (PluginData *pd)
 {
   if (! g_symbol)
     return 0;
-  
+
   QVariant *uc = pd->settings->get(QString("upColor"));
   if (! uc)
     return 0;
-  
+
   QVariant *dc = pd->settings->get(QString("downColor"));
   if (! dc)
     return 0;
-  
+
   QVariant *nc = pd->settings->get(QString("neutralColor"));
   if (! nc)
     return 0;
-  
+
   QVariant *label = pd->settings->get(QString("label"));
   if (! label)
     return 0;
-  
+
   QVariant *style = pd->settings->get(QString("style"));
   if (! style)
     return 0;
-  
+
   Curve *ohlc = getOHLC(style->toString(), label->toString(), uc->toString(), dc->toString(), nc->toString());
   if (! ohlc)
     return 0;
   pd->curves << ohlc;
-  
+
   // bbands
   QVariant *input = pd->settings->get(QString("input"));
   if (! input)
     return 0;
-  
+
   QVariant *period = pd->settings->get(QString("period"));
   if (! period)
     return 0;
-  
+
   QVariant *pdev = pd->settings->get(QString("devUp"));
   if (! pdev)
     return 0;
-  
+
   QVariant *ndev = pd->settings->get(QString("devDown"));
   if (! ndev)
     return 0;
-  
+
   QVariant *maType = pd->settings->get(QString("type"));
   if (! maType)
     return 0;
@@ -140,15 +139,15 @@ BBANDS::run (PluginData *pd)
   QVariant *bbuLabel = pd->settings->get(QString("upLabel"));
   if (! bbuLabel)
     return 0;
-  
+
   QVariant *bbmLabel = pd->settings->get(QString("midLabel"));
   if (! bbmLabel)
     return 0;
-  
+
   QVariant *bblLabel = pd->settings->get(QString("downLabel"));
   if (! bblLabel)
     return 0;
-  
+
   if (! getBBANDS(input->toString(),
                   period->toInt(),
                   pdev->toDouble(),
@@ -163,22 +162,22 @@ BBANDS::run (PluginData *pd)
   QVariant *show = pd->settings->get(QString("upShow"));
   if (! show)
     return 0;
-  
+
   if (show->toBool())
   {
     QVariant *var = pd->settings->get(QString("upperColor"));
     if (! var)
       return 0;
     QColor color(var->toString());
-  
+
     QVariant *style = pd->settings->get(QString("upStyle"));
     if (! style)
       return 0;
-  
+
     QVariant *width = pd->settings->get(QString("upWidth"));
     if (! width)
       return 0;
-    
+
     CurveLineType clt;
     Curve *c = new Curve(QString("CurveLine"));
     c->setColor(color);
@@ -193,22 +192,22 @@ BBANDS::run (PluginData *pd)
   show = pd->settings->get(QString("midShow"));
   if (! show)
     return 0;
-  
+
   if (show->toBool())
   {
     QVariant *var = pd->settings->get(QString("midColor"));
     if (! var)
       return 0;
     QColor color(var->toString());
-  
+
     QVariant *style = pd->settings->get(QString("midStyle"));
     if (! style)
       return 0;
-  
+
     QVariant *width = pd->settings->get(QString("midWidth"));
     if (! width)
       return 0;
-    
+
     CurveLineType clt;
     Curve *c = new Curve(QString("CurveLine"));
     c->setColor(color);
@@ -217,28 +216,28 @@ BBANDS::run (PluginData *pd)
     c->fill(bbmLabel->toString(), QString(), QString(), QString(), QColor());
     c->setPen(width->toInt());
     pd->curves << c;
-  }  
+  }
 
   // lower
   show = pd->settings->get(QString("downShow"));
   if (! show)
     return 0;
-  
+
   if (show->toBool())
   {
     QVariant *var = pd->settings->get(QString("lowerColor"));
     if (! var)
       return 0;
     QColor color(var->toString());
-  
+
     QVariant *style = pd->settings->get(QString("downStyle"));
     if (! style)
       return 0;
-  
+
     QVariant *width = pd->settings->get(QString("downWidth"));
     if (! width)
       return 0;
-    
+
     CurveLineType clt;
     Curve *c = new Curve(QString("CurveLine"));
     c->setColor(color);
@@ -248,7 +247,7 @@ BBANDS::run (PluginData *pd)
     c->setPen(width->toInt());
     pd->curves << c;
   }
-  
+
   return 1;
 }
 
@@ -258,7 +257,7 @@ BBANDS::getBBANDS (QString inKey, int period, double pdev, double ndev, int type
 {
   if (! g_symbol)
     return 0;
-  
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug() << "BBANDS::BBANDS: error on TA_Initialize";
@@ -266,10 +265,10 @@ BBANDS::getBBANDS (QString inKey, int period, double pdev, double ndev, int type
   QList<int> keys = g_symbol->keys();
 
   int size = keys.size();
-  TA_Real input[size];
-  TA_Real out[size];
-  TA_Real out2[size];
-  TA_Real out3[size];
+  TA_Real input[MAX_SIZE];
+  TA_Real out[MAX_SIZE];
+  TA_Real out2[MAX_SIZE];
+  TA_Real out3[MAX_SIZE];
   TA_Integer outBeg;
   TA_Integer outNb;
 
@@ -277,11 +276,11 @@ BBANDS::getBBANDS (QString inKey, int period, double pdev, double ndev, int type
   for (int kpos = 0; kpos < keys.size(); kpos++)
   {
     CBar *bar = g_symbol->bar(keys.at(kpos));
-    
+
     double v;
     if (! bar->get(inKey, v))
       continue;
-    
+
     input[dpos++] = (TA_Real) v;
   }
 
@@ -308,15 +307,15 @@ BBANDS::getBBANDS (QString inKey, int period, double pdev, double ndev, int type
   while (keyLoop > -1 && outLoop > -1)
   {
     CBar *bar = g_symbol->bar(keys.at(keyLoop));
-    
+
     bar->set(ulabel, out[outLoop]);
     bar->set(mlabel, out2[outLoop]);
     bar->set(llabel, out3[outLoop]);
-    
+
     keyLoop--;
     outLoop--;
   }
-  
+
   return 1;
 }
 
@@ -325,31 +324,31 @@ BBANDS::getOHLC (QString tstyle, QString key, QString tuc, QString tdc, QString 
 {
   if (! g_symbol)
     return 0;
-  
+
   Curve *ohlc = new Curve(QString("CurveOHLC"));
   ohlc->setLabel(key);
-  
+
   CurveOHLCType ohlcType;
   ohlc->setStyle(ohlcType.stringToIndex(tstyle));
-  
+
   QColor uc(tuc);
   QColor dc(tdc);
   QColor nc(tnc);
-  
+
   BarType bt;
   ohlc->fill(bt.indexToString(BarType::_OPEN),
              bt.indexToString(BarType::_HIGH),
              bt.indexToString(BarType::_LOW),
              bt.indexToString(BarType::_CLOSE),
              nc);
-  
+
   QList<int> keys = g_symbol->keys();
 
   for (int pos = 1; pos < keys.size(); pos++)
   {
     Bar *pbar = ohlc->bar(keys.at(pos - 1));
     Bar *bar = ohlc->bar(keys.at(pos));
-    
+
     if (bar->close() > pbar->close())
       bar->setColor(uc);
     else
@@ -357,8 +356,8 @@ BBANDS::getOHLC (QString tstyle, QString key, QString tuc, QString tdc, QString 
       if (bar->close() < pbar->close())
         bar->setColor(dc);
     }
-  }  
-  
+  }
+
   return ohlc;
 }
 
@@ -370,7 +369,7 @@ BBANDS::settings (PluginData *pd)
   CurveOHLCType ct;
   CurveLineType clt;
   MAType mat;
-  
+
   command->set(QString("plugin"), new QVariant(QString("BBANDS")));
   command->set(QString("type"), new QVariant(QString("indicator")));
 
@@ -379,7 +378,7 @@ BBANDS::settings (PluginData *pd)
   command->set(QString("downColor"), new QVariant(QString("red")));
   command->set(QString("neutralColor"), new QVariant(QString("blue")));
   command->set(QString("label"), new QVariant(QString("OHLC")));
-  
+
   command->set(QString("input"), new QVariant(bt.indexToString(BarType::_CLOSE)));
   command->set(QString("type"), new QVariant(mat.indexToString(MAType::_EMA)));
   command->set(QString("period"), new QVariant(20));
@@ -403,9 +402,9 @@ BBANDS::settings (PluginData *pd)
   command->set(QString("lowerColor"), new QVariant(QString("green")));
   command->set(QString("downLabel"), new QVariant(QString("BBL")));
   command->set(QString("downShow"), new QVariant(TRUE));
-  
+
   pd->settings = command;
-  
+
   return 1;
 }
 

@@ -28,8 +28,9 @@
 #include <QString>
 #include <QStringList>
 #include <QDateTime>
+#include "defs.h"
 
-class BarLength
+class QTSTALKER_SHARED_EXPORT BarLength
 {
   public:
     enum Key

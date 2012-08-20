@@ -25,8 +25,9 @@
 #include <QWidget>
 #include <QString>
 #include <QToolBar>
+#include "defs.h"
 
-class Widget : public QWidget
+class QTSTALKER_SHARED_EXPORT Widget : public QWidget
 {
   Q_OBJECT
 

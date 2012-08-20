@@ -1,7 +1,10 @@
+include (../../plugin.pri)
+
+
 TEMPLATE = lib
 CONFIG += plugin
 INCLUDEPATH += ../../lib
-LIBS += -L../../lib -lOTA
+
 MOC_DIR += build
 OBJECTS_DIR += build
 

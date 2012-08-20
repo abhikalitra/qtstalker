@@ -28,7 +28,6 @@
 #include "BarType.h"
 #include "AROONDialog.h"
 
-
 int
 AROON::command (PluginData *pd)
 {
@@ -36,7 +35,7 @@ AROON::command (PluginData *pd)
 
   QStringList cl;
   cl << "type" << "dialog" << "runIndicator" << "settings";
-  
+
   switch (cl.indexOf(pd->command))
   {
     case 0: // type
@@ -55,7 +54,7 @@ AROON::command (PluginData *pd)
     default:
       break;
   }
-  
+
   return rc;
 }
 
@@ -67,17 +66,17 @@ AROON::dialog (PluginData *pd)
     qDebug() << "AROON::dialog: invalid parent";
     return 0;
   }
-  
+
   if (! pd->settings)
   {
     qDebug() << "AROON::dialog: invalid settings";
     return 0;
   }
-  
+
   AROONDialog *dialog = new AROONDialog(pd->dialogParent);
   dialog->setGUI(pd->settings);
   pd->dialog = dialog;
-  
+
   return 1;
 }
 
@@ -90,15 +89,15 @@ AROON::run (PluginData *pd)
   QVariant *period = pd->settings->get(QString("period"));
   if (! period)
     return 0;
-  
+
   QVariant *ulabel = pd->settings->get(QString("upLabel"));
   if (! ulabel)
     return 0;
-  
+
   QVariant *dlabel = pd->settings->get(QString("downLabel"));
   if (! dlabel)
     return 0;
-  
+
   if (! getAROON(period->toInt(), ulabel->toString(), dlabel->toString()))
     return 0;
 
@@ -106,22 +105,22 @@ AROON::run (PluginData *pd)
   QVariant *show = pd->settings->get(QString("upShow"));
   if (! show)
     return 0;
-  
+
   if (show->toBool())
   {
     QVariant *var = pd->settings->get(QString("upColor"));
     if (! var)
       return 0;
     QColor color(var->toString());
-  
+
     QVariant *style = pd->settings->get(QString("upStyle"));
     if (! style)
       return 0;
-  
+
     QVariant *width = pd->settings->get(QString("upWidth"));
     if (! width)
       return 0;
-    
+
     // up
     CurveLineType clt;
     Curve *c = new Curve(QString("CurveLine"));
@@ -137,22 +136,22 @@ AROON::run (PluginData *pd)
   show = pd->settings->get(QString("downShow"));
   if (! show)
     return 0;
-  
+
   if (show->toBool())
   {
     QVariant *var = pd->settings->get(QString("downColor"));
     if (! var)
       return 0;
     QColor color(var->toString());
-  
+
     QVariant *style = pd->settings->get(QString("downStyle"));
     if (! style)
       return 0;
-  
+
     QVariant *width = pd->settings->get(QString("downWidth"));
     if (! width)
       return 0;
-  
+
     CurveLineType clt;
     Curve *c = new Curve(QString("CurveLine"));
     c->setColor(color);
@@ -162,7 +161,7 @@ AROON::run (PluginData *pd)
     c->setPen(width->toInt());
     pd->curves << c;
   }
-  
+
   return 1;
 }
 
@@ -171,45 +170,44 @@ AROON::getAROON (int period, QString ukey, QString dkey)
 {
   if (! g_symbol)
     return 0;
-  
+
   TA_RetCode rc = TA_Initialize();
   if (rc != TA_SUCCESS)
     qDebug() << "AROON::AROON: error on TA_Initialize";
 
   QList<int> keys = g_symbol->keys();
 
-  int size = keys.size();
-  TA_Real high[size];
-  TA_Real low[size];
-  TA_Real out[size];
-  TA_Real out2[size];
+  TA_Real high[MAX_SIZE];
+  TA_Real low[MAX_SIZE];
+  TA_Real out[MAX_SIZE];
+  TA_Real out2[MAX_SIZE];
   TA_Integer outBeg;
   TA_Integer outNb;
 
   BarType bt;
   QString highKey = bt.indexToString(BarType::_HIGH);
   QString lowKey = bt.indexToString(BarType::_LOW);
-  
+
   int dpos = 0;
   for (int kpos = 0; kpos < keys.size(); kpos++)
   {
     CBar *bar = g_symbol->bar(keys.at(kpos));
-    
+
     double h;
     if (! bar->get(highKey, h))
       continue;
-    
+
     double l;
     if (! bar->get(lowKey, l))
       continue;
-    
+
     high[dpos] = (TA_Real) h;
     low[dpos] = (TA_Real) l;
     dpos++;
   }
 
   rc = TA_AROON(0, dpos - 1, &high[0], &low[0], period, &outBeg, &outNb, &out[0], &out2[0]);
-      
+
   if (rc != TA_SUCCESS)
   {
     qDebug() << "AROON::getAROON: TA-Lib error" << rc;
@@ -226,7 +224,7 @@ AROON::getAROON (int period, QString ukey, QString dkey)
     keyLoop--;
     outLoop--;
   }
-  
+
   return 1;
 }
 
@@ -245,15 +243,15 @@ AROON::settings (PluginData *pd)
   command->set(QString("upStyle"), new QVariant(clt.indexToString(CurveLineType::_SOLID)));
   command->set(QString("upWidth"), new QVariant(1));
   command->set(QString("upShow"), new QVariant(TRUE));
-  
+
   command->set(QString("downColor"), new QVariant(QString("red")));
   command->set(QString("downLabel"), new QVariant(tr("Down")));
   command->set(QString("downStyle"), new QVariant(clt.indexToString(CurveLineType::_SOLID)));
   command->set(QString("downWidth"), new QVariant(1));
   command->set(QString("downShow"), new QVariant(TRUE));
-  
+
   pd->settings = command;
-  
+
   return 1;
 }
 

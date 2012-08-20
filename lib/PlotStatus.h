@@ -24,8 +24,9 @@
 
 #ifndef PLOT_STATUS_HPP
 #define PLOT_STATUS_HPP
+#include "defs.h"
 
-class PlotStatus
+class QTSTALKER_SHARED_EXPORT PlotStatus
 {
   public:
     enum Key

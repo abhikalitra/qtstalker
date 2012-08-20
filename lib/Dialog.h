@@ -27,10 +27,10 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 #include <QFormLayout>
-
+#include "defs.h"
 #include "Entity.h"
 
-class Dialog : public QDialog
+class QTSTALKER_SHARED_EXPORT Dialog : public QDialog
 {
   Q_OBJECT
 

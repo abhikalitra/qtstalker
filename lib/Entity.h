@@ -29,10 +29,9 @@
 #include <QHash>
 #include <QSettings>
 #include <QVariant>
+#include "defs.h"
 
-//#include "Setting.h"
-
-class Entity
+class QTSTALKER_SHARED_EXPORT  Entity
 {
   public:
     Entity ();

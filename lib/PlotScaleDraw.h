@@ -31,8 +31,9 @@
 #include <QList>
 #include <QColor>
 #include <QPainter>
+#include "defs.h"
 
-class PlotScaleDraw : public QwtScaleDraw
+class QTSTALKER_SHARED_EXPORT PlotScaleDraw : public QwtScaleDraw
 {
   public:
     PlotScaleDraw ();

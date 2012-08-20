@@ -42,8 +42,10 @@
 #include "PlotInfo.h"
 #include "PlotSettings.h"
 #include "Bars.h"
+#include "defs.h"
+#include "defs.h"
 
-class Plot : public QwtPlot
+class QTSTALKER_SHARED_EXPORT Plot : public QwtPlot
 {
   Q_OBJECT
 

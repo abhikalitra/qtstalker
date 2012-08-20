@@ -26,6 +26,7 @@
 #include <QInputDialog>
 #include <QToolButton>
 #include <QProcess>
+#include <QFileDialog>
 
 #include "OTA.h"
 #include "PluginFactory.h"
@@ -52,6 +53,21 @@ OTA::OTA (QString session, QString plugin)
 
   Setup setup;
   setup.setup(session);
+
+
+  QSettings settings(g_settings);
+  QDir dir = QDir(settings.value("plugin_directory").toString());
+
+  qDebug() << "plugin dir:" << settings.value("plugin_directory").toString();
+
+  if (!dir.exists()) {
+      qDebug("plugin scan failed as dir not found!");
+      QString plugindir = QFileDialog::getExistingDirectory(this, "Choose plugin directory", ".", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+      settings.setValue("plugin_directory", plugindir);
+      settings.sync();
+      qDebug() << "New plugin dir:" << plugindir;
+  }
+
   setup.scanPlugins();
 
   createGUI();
@@ -66,7 +82,13 @@ OTA::OTA (QString session, QString plugin)
     QSettings settings(g_settings);
     settings.beginGroup(g_session);
     tplugin = settings.value("plugin").toString();
+
+    if (tplugin.isEmpty()) {
+        tplugin = "MACD";
+    }
   }
+
+  qDebug() << "Loading:" << tplugin;
 
   loadPlugin(tplugin);
 }
@@ -80,7 +102,7 @@ OTA::shutDown ()
 void
 OTA::createGUI ()
 {
-  statusBar()->showMessage(tr("Ready"), 2000);
+  statusBar()->showMessage(tr("Ready"), 10000);
   
   // add buttons to statusbar
   QToolButton *b = new QToolButton;

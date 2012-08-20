@@ -28,8 +28,9 @@
 #include <QHash>
 
 #include "Bar.h"
+#include "defs.h"
 
-class CBar : public Bar
+class QTSTALKER_SHARED_EXPORT CBar : public Bar
 {
   public:
     CBar ();

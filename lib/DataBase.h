@@ -30,8 +30,9 @@
 #include <QStringList>
 
 #include "Entity.h"
+#include "defs.h"
 
-class DataBase
+class QTSTALKER_SHARED_EXPORT DataBase
 {
   public:
     DataBase (QString);
